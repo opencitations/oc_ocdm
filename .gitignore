@@ -1,0 +1,12 @@
+# PyCharm project setting
+.idea
+
+# build files
+dist/*
+*.pyc
+
+# WorkInProgress directories
+oc_graphlib/WIP/*
+
+# automatically generated files
+oc_graphlib.egg-info/*
