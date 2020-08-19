@@ -240,5 +240,3 @@ def has_supplier_prefix(string_iri, base_iri):
 def is_dataset(string_iri):
     # return re.search("^.+/[0-9]+$", string_iri) is None
     return re.search("^.+/[0-9]+(-[0-9]+)?(/[0-9]+)?$", string_iri) is None
-
-###########################################################################################################################
