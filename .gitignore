@@ -10,3 +10,6 @@ oc_graphlib/WIP/*
 
 # automatically generated files
 oc_graphlib.egg-info/*
+
+# support directory for testing purposes
+tests/info_dir/*
