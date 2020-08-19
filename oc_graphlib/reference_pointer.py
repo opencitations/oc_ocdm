@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from oc_graphlib.bibliographic_reference import BibliographicReference
     from oc_graphlib.reference_annotation import ReferenceAnnotation
-from oc_graphlib.prov_entity import GraphEntity
+from oc_graphlib.graph_entity import GraphEntity
 from oc_graphlib.bibliographic_entity import BibliographicEntity
 
 """

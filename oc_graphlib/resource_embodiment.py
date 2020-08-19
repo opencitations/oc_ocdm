@@ -16,7 +16,7 @@
 from __future__ import annotations
 import re
 
-from oc_graphlib.prov_entity import GraphEntity
+from oc_graphlib.graph_entity import GraphEntity
 from oc_graphlib.bibliographic_entity import BibliographicEntity
 
 """

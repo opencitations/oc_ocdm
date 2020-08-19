@@ -18,7 +18,7 @@ import re
 
 from rdflib import URIRef
 
-from oc_graphlib.prov_entity import GraphEntity
+from oc_graphlib.graph_entity import GraphEntity
 from oc_graphlib.support.support import is_string_empty, encode_url
 
 """

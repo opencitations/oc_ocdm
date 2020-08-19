@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from oc_graphlib.bibliographic_reference import BibliographicReference
     from oc_graphlib.discourse_element import DiscourseElement
     from oc_graphlib.resource_embodiment import ResourceEmbodiment
-from oc_graphlib.prov_entity import GraphEntity
+from oc_graphlib.graph_entity import GraphEntity
 from oc_graphlib.bibliographic_entity import BibliographicEntity
 
 """

@@ -19,7 +19,7 @@ from rdflib import URIRef
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from oc_graphlib.bibliographic_resource import BibliographicResource
-from oc_graphlib.prov_entity import GraphEntity
+from oc_graphlib.graph_entity import GraphEntity
 from oc_graphlib.bibliographic_entity import BibliographicEntity
 
 """

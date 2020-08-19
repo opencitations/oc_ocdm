@@ -22,7 +22,7 @@ import os
 
 from rdflib import Graph, Namespace, URIRef
 
-from oc_graphlib.prov_entity import GraphEntity
+from oc_graphlib.graph_entity import GraphEntity
 from oc_graphlib.support.support import get_short_name, \
                                         get_count,\
                                         find_local_line_id,\
