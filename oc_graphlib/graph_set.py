@@ -29,19 +29,17 @@ from oc_graphlib.support.support import get_short_name, \
                                         get_prefix
 from oc_graphlib.support.reporter import Reporter
 
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from oc_graphlib.agent_role import AgentRole
-    from oc_graphlib.bibliographic_reference import BibliographicReference
-    from oc_graphlib.bibliographic_resource import BibliographicResource
-    from oc_graphlib.citation import Citation
-    from oc_graphlib.discourse_element import DiscourseElement
-    from oc_graphlib.identifier import Identifier
-    from oc_graphlib.pointer_list import PointerList
-    from oc_graphlib.reference_annotation import ReferenceAnnotation
-    from oc_graphlib.reference_pointer import ReferencePointer
-    from oc_graphlib.resource_embodiment import ResourceEmbodiment
-    from oc_graphlib.responsible_agent import ResponsibleAgent
+from oc_graphlib.agent_role import AgentRole
+from oc_graphlib.bibliographic_reference import BibliographicReference
+from oc_graphlib.bibliographic_resource import BibliographicResource
+from oc_graphlib.citation import Citation
+from oc_graphlib.discourse_element import DiscourseElement
+from oc_graphlib.identifier import Identifier
+from oc_graphlib.pointer_list import PointerList
+from oc_graphlib.reference_annotation import ReferenceAnnotation
+from oc_graphlib.reference_pointer import ReferencePointer
+from oc_graphlib.resource_embodiment import ResourceEmbodiment
+from oc_graphlib.responsible_agent import ResponsibleAgent
 
 
 class GraphSet(object):
