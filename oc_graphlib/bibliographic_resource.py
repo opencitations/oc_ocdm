@@ -19,7 +19,8 @@ from datetime import datetime
 
 from rdflib import URIRef, XSD
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
+
 if TYPE_CHECKING:
     from oc_graphlib.bibliographic_reference import BibliographicReference
     from oc_graphlib.discourse_element import DiscourseElement
@@ -73,7 +74,7 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS PUBLICATION DATE
     # <self.res> PRISM:publicationDate "string"
-    def create_pub_date(self, date_list) -> bool:
+    def create_pub_date(self, date_list: List[Optional[int]] = None) -> bool:
         if date_list is not None:
             l_date_list = len(date_list)
             if l_date_list != 0 and date_list[0] is not None:
@@ -91,9 +92,9 @@ class BibliographicResource(BibliographicEntity):
                     cur_type = XSD.gYear
                     string = datetime(date_list[0], 1, 1, 0, 0).strftime('%Y')
                 return self._create_literal(GraphEntity.has_publication_date, string, cur_type, False)
+        return False # Added by @iosonopersia
 
     # IS EMBODIED AS (ResourceEmbodiment)
-    # TODO: Cambiare il nome a questo metodo! Ci dev'essere stato un errore...
     # <self.res> FRBR:embodiment <re_res>
     def has_format(self, re_res: ResourceEmbodiment) -> None:
         self.g.add((self.res, GraphEntity.embodiment, URIRef(str(re_res))))
