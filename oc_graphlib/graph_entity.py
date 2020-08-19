@@ -153,7 +153,7 @@ class GraphEntity(object):
             self.res = res
             existing_ref = True
 
-        if g_set is not None and isinstance(g_set, GraphSet):
+        if g_set is not None:
             if self.res in g_set.entity_g:
                 # Use the rdflib.Graph already registered inside the GraphSet
                 self.g = g_set.entity_g[self.res]
