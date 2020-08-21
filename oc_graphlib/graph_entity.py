@@ -134,6 +134,7 @@ class GraphEntity(object):
     wikidata: ClassVar[URIRef] = DATACITE.wikidata  # new #TODO add to datacite!
     has_edition: ClassVar[URIRef] = PRISM.edition
     relation: ClassVar[URIRef] = DCTERMS.relation
+    has_citation_creation_date: ClassVar[URIRef] = CITO.hasCitationCreationDate
 
     def __init__(self, g: Graph, res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
                  source_agent: str = None, source: str = None, count: str = None, label: str = None,
