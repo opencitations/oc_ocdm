@@ -29,7 +29,6 @@ from oc_graphlib.bibliographic_entity import BibliographicEntity
 """
 Notes about CI:
     
-    HAS CITATION TIME SPAN is missing!
     HAS CITATION CHARACTERIZATION is missing!
 """
 
@@ -65,3 +64,9 @@ class Citation(BibliographicEntity):
                     string = datetime(date_list[0], 1, 1, 0, 0).strftime('%Y')
                 return self._create_literal(GraphEntity.has_citation_creation_date, string, cur_type, False)
         return False  # Added by @iosonopersia
+
+    # HAS CITATION TIME SPAN
+    # <self.res> CITO:hasCitationTimeSpan "string"
+    def has_citation_time_span(self, string: str) -> bool:
+        return self._create_literal(GraphEntity.has_citation_time_span, string, XSD.duration, False)
+
