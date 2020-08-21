@@ -93,6 +93,8 @@ class DiscourseElement(BibliographicEntity):
     def create_text_chunk(self) -> None:  #  new
         self._create_type(GraphEntity.text_chunk)
 
-    # missing Table (DOCO:Table)
+    def create_table(self) -> None:
+        self._create_type(GraphEntity.table)
+
     # missing Footnote (DOCO:Footnote)
     # missing Caption (DEO:Caption)
