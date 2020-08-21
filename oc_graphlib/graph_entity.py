@@ -136,6 +136,7 @@ class GraphEntity(object):
     relation: ClassVar[URIRef] = DCTERMS.relation
     has_citation_creation_date: ClassVar[URIRef] = CITO.hasCitationCreationDate
     has_citation_time_span: ClassVar[URIRef] = CITO.hasCitationTimeSpan
+    digital_manifestation: ClassVar[URIRef] = FABIO.DigitalManifestation
 
     def __init__(self, g: Graph, res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
                  source_agent: str = None, source: str = None, count: str = None, label: str = None,

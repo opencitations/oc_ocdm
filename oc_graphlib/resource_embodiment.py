@@ -48,6 +48,10 @@ class ResourceEmbodiment(BibliographicEntity):
         return self._create_literal(GraphEntity.ending_page, page_number)
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
+    # <self.res> RDF:type <type>
+
+    def create_digital_embodiment(self) -> None:
+        self._create_type(GraphEntity.digital_manifestation)
 
     # missing Digital embodiment (FABIO:DigitalManifestation)
     # missing Print embodiment (FABIO:PrintObject)
