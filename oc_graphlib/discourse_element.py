@@ -78,7 +78,9 @@ class DiscourseElement(BibliographicEntity):
         else:
             self._create_type(GraphEntity.discourse_element)
 
-    # missing Section (DOCO:Section)
+    def create_section(self) -> None:
+        self._create_type(GraphEntity.section)
+
     # missing SectionTitle (DOCO:SectionTitle)
     # missing Paragraph (DOCO:Paragraph)
 
