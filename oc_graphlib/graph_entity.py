@@ -141,6 +141,7 @@ class GraphEntity(object):
     has_url: ClassVar[URIRef] = FRBR.exemplar
     self_citation: ClassVar[URIRef] = CITO.SelfCitation
     affiliation_self_citation: ClassVar[URIRef] = CITO.AffiliationSelfCitation
+    author_network_self_citation: ClassVar[URIRef] = CITO.AuthorNetworkSelfCitation
 
     def __init__(self, g: Graph, res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
                  source_agent: str = None, source: str = None, count: str = None, label: str = None,

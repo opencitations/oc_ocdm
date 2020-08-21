@@ -84,3 +84,6 @@ class Citation(BibliographicEntity):
     def create_affiliation_self_citation(self) -> None:
         self._create_type(GraphEntity.affiliation_self_citation)
 
+    def create_author_network_self_citation(self) -> None:
+        self._create_type(GraphEntity.author_network_self_citation)
+
