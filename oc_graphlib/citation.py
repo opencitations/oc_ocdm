@@ -96,3 +96,6 @@ class Citation(BibliographicEntity):
     def create_journal_self_citation(self) -> None:
         self._create_type(GraphEntity.journal_self_citation)
 
+    def create_journal_cartel_citation(self) -> None:
+        self._create_type(GraphEntity.journal_cartel_citation)
+

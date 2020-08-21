@@ -145,6 +145,7 @@ class GraphEntity(object):
     author_self_citation: ClassVar[URIRef] = CITO.AuthorSelfCitation
     funder_self_citation: ClassVar[URIRef] = CITO.FunderSelfCitation
     journal_self_citation: ClassVar[URIRef] = CITO.JournalSelfCitation
+    journal_cartel_citation: ClassVar[URIRef] = CITO.JournalCartelCitation
 
     def __init__(self, g: Graph, res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
                  source_agent: str = None, source: str = None, count: str = None, label: str = None,
