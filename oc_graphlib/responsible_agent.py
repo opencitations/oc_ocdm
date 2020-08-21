@@ -25,7 +25,7 @@ from oc_graphlib.bibliographic_entity import BibliographicEntity
 """
 Notes about RA:
 
-    HAS RELATED AGENT is missing!
+    Chill down, everything seems OK here!
 """
 
 
@@ -56,3 +56,8 @@ class ResponsibleAgent(BibliographicEntity):
     """
     def has_role(self, ar_res: AgentRole):
         ar_res.g.add((URIRef(str(ar_res)), GraphEntity.is_held_by, self.res))
+
+    # HAS RELATED AGENT
+    # <self.res> DCTERMS:relation <thing_ref>
+    def has_related_agent(self, thing_ref: URIRef) -> None:
+        self.g.add((self.res, GraphEntity.relation, thing_ref))
