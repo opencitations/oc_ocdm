@@ -99,4 +99,5 @@ class DiscourseElement(BibliographicEntity):
     def create_footnote(self) -> None:
         self._create_type(GraphEntity.footnote)
 
-    # missing Caption (DEO:Caption)
+    def create_caption(self) -> None:
+        self._create_type(GraphEntity.caption)
