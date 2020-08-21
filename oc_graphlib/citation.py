@@ -74,3 +74,10 @@ class Citation(BibliographicEntity):
     # <self.res> CITO:hasCitationCharacterization <thing_ref>
     def has_citation_characterization(self, thing_ref: URIRef) -> None:
         self.g.add((self.res, GraphEntity.citation_characterisation, thing_ref))
+
+    # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
+    # <self.res> RDF:type <type>
+
+    def create_self_citation(self) -> None:  # new
+        self._create_type(GraphEntity.self_citation)
+
