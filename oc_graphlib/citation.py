@@ -93,3 +93,6 @@ class Citation(BibliographicEntity):
     def create_funder_self_citation(self) -> None:
         self._create_type(GraphEntity.funder_self_citation)
 
+    def create_journal_self_citation(self) -> None:
+        self._create_type(GraphEntity.journal_self_citation)
+
