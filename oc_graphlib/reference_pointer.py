@@ -39,8 +39,8 @@ class ReferencePointer(BibliographicEntity):
 
     # HAS NEXT (ReferencePointer)
     # <self.res> OCO:hasNext <rp_res>
-    # def has_next_rp(self, rp_res: ReferencePointer) -> None:  # new
-    #    self.g.add((self.res, GraphEntity.has_next, URIRef(str(rp_res))))
+    def has_next_rp(self, rp_res: ReferencePointer) -> None:  # new
+        self.g.add((self.res, GraphEntity.has_next, URIRef(str(rp_res))))
 
     # DENOTES (BibliographicReference)
     # <self.res> C4O:denotes <be_res>
