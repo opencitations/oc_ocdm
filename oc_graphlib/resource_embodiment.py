@@ -23,7 +23,6 @@ from oc_graphlib.bibliographic_entity import BibliographicEntity
 Notes about RE:
 
     HAS FORMAT is missing!
-    HAS URL is missing!
 """
 
 
@@ -45,6 +44,11 @@ class ResourceEmbodiment(BibliographicEntity):
         else:
             page_number = re.sub("^.*[-–]+", "", string)
         return self._create_literal(GraphEntity.ending_page, page_number)
+
+    # HAS URL
+    # <self.res> FRBR:exemplar "string"
+    def has_url(self, string: str) -> bool:
+        return self._create_literal(GraphEntity.has_url, string)
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
     # <self.res> RDF:type <type>

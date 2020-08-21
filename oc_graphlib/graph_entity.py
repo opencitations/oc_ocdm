@@ -138,6 +138,7 @@ class GraphEntity(object):
     has_citation_time_span: ClassVar[URIRef] = CITO.hasCitationTimeSpan
     digital_manifestation: ClassVar[URIRef] = FABIO.DigitalManifestation
     print_object: ClassVar[URIRef] = FABIO.PrintObject
+    has_url: ClassVar[URIRef] = FRBR.exemplar
 
     def __init__(self, g: Graph, res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
                  source_agent: str = None, source: str = None, count: str = None, label: str = None,
