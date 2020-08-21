@@ -99,3 +99,5 @@ class Citation(BibliographicEntity):
     def create_journal_cartel_citation(self) -> None:
         self._create_type(GraphEntity.journal_cartel_citation)
 
+    def create_distant_citation(self) -> None:
+        self._create_type(GraphEntity.distant_citation)
