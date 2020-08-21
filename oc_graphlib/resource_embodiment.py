@@ -22,7 +22,6 @@ from oc_graphlib.bibliographic_entity import BibliographicEntity
 """
 Notes about RE:
 
-    HAS TYPE is missing! (Maybe factory methods are missing too)
     HAS FORMAT is missing!
     HAS URL is missing!
 """
@@ -53,5 +52,5 @@ class ResourceEmbodiment(BibliographicEntity):
     def create_digital_embodiment(self) -> None:
         self._create_type(GraphEntity.digital_manifestation)
 
-    # missing Digital embodiment (FABIO:DigitalManifestation)
-    # missing Print embodiment (FABIO:PrintObject)
+    def create_print_embodiment(self) -> None:
+        self._create_type(GraphEntity.print_object)
