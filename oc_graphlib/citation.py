@@ -29,7 +29,7 @@ from oc_graphlib.bibliographic_entity import BibliographicEntity
 """
 Notes about CI:
     
-    HAS CITATION CHARACTERIZATION is missing!
+    Chill down, everything seems OK here!
 """
 
 
@@ -70,3 +70,7 @@ class Citation(BibliographicEntity):
     def has_citation_time_span(self, string: str) -> bool:
         return self._create_literal(GraphEntity.has_citation_time_span, string, XSD.duration, False)
 
+    # HAS CITATION CHARACTERIZATION
+    # <self.res> CITO:hasCitationCharacterization <thing_ref>
+    def has_citation_characterization(self, thing_ref: URIRef) -> None:
+        self.g.add((self.res, GraphEntity.citation_characterisation, thing_ref))
