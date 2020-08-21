@@ -140,6 +140,7 @@ class GraphEntity(object):
     print_object: ClassVar[URIRef] = FABIO.PrintObject
     has_url: ClassVar[URIRef] = FRBR.exemplar
     self_citation: ClassVar[URIRef] = CITO.SelfCitation
+    affiliation_self_citation: ClassVar[URIRef] = CITO.AffiliationSelfCitation
 
     def __init__(self, g: Graph, res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
                  source_agent: str = None, source: str = None, count: str = None, label: str = None,
