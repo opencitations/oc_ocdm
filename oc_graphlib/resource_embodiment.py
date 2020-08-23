@@ -28,6 +28,9 @@ Notes about RE:
 
 
 class ResourceEmbodiment(BibliographicEntity):
+    """Resource embodiment (short: re): the particular physical or digital format in which a
+       bibliographic resource was made available by its publisher."""
+
     # HAS FORMAT
     # <self.res> DCTERMS:format "string"
     def has_media_type(self, string: str) -> bool:

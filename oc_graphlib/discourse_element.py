@@ -35,6 +35,11 @@ Notes about DE:
 
 
 class DiscourseElement(BibliographicEntity):
+    """Discourse element (short: de): a document component, either structural (e.g.
+       paragraph, section, chapter, table, caption, footnote, title) or rhetorical (e.g.
+       introduction, discussion, acknowledgements, reference list, figure, appendix), in which
+       the content of a bibliographic resource can be organized."""
+
     # HAS TITLE
     # <self.res> DCTERMS:title "string"
     def create_title(self, string: str) -> bool:

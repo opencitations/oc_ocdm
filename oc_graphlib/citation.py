@@ -34,6 +34,14 @@ Notes about CI:
 
 
 class Citation(BibliographicEntity):
+    """Citation (short: ci): a permanent conceptual directional link from the citing
+       bibliographic resource to a cited bibliographic resource. A citation is created by the
+       performative act of an author citing a published work that is relevant to the current
+       work by using a particular textual device. Typically, citations are made by including a
+       bibliographic reference in the reference list of the citing work and by denoting such a
+       bibliographic reference using one or more in-text reference pointers (e.g. '[1]'), or by
+       the inclusion within the citing work of a link, in the form of an HTTP Uniform Resource
+       Locator (URL), to the cited bibliographic resource on the World Wide Web."""
 
     # HAS CITING DOCUMENT (BibliographicResource)
     # HAS CITED DOCUMENT (BibliographicResource)

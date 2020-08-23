@@ -30,6 +30,10 @@ Notes about PL:
 
 
 class PointerList(BibliographicEntity):
+    """Pointer list (short: pl): a textual device (e.g. '[1, 2, 3]' or '[4-9]') which includes a
+       number of reference pointers denoting the specific bibliographic references to which
+       the list pertains."""
+
     # HAS POINTER LIST TEXT
     # <self.res> C4O:hasContent "string"
     def create_content(self, string: str) -> bool:

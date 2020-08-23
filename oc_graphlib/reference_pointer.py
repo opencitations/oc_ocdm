@@ -32,6 +32,11 @@ Notes about RP:
 
 
 class ReferencePointer(BibliographicEntity):
+    """Reference pointer (long: in-text reference pointer; short: rp): a textual device (e.g.
+       '[1]'), denoting a single bibliographic reference, that is embedded in the text of a
+       document within the context of a particular sentence or text chunk. A bibliographic
+       reference can be denoted in the text by one or more in-text reference pointers."""
+
     # HAS REFERENCE POINTER TEXT
     # <self.res> C4O:hasContent "string"
     def create_content(self, string: str) -> bool:

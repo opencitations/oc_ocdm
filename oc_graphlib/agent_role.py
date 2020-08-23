@@ -32,6 +32,8 @@ Notes about AR:
 
 
 class AgentRole(BibliographicEntity):
+    """Agent role (short: ar): a particular role held by an agent with respect to a bibliographic resource."""
+
     """
     AAA: this should have inverse logic!!!
     See below:

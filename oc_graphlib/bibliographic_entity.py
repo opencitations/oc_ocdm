@@ -29,9 +29,9 @@ Notes about BibliographicEntity:
 
 
 class BibliographicEntity(GraphEntity):
+    """The base class for each bibliographic entity of the OpenCitations DataModel (OCDM)."""
+
     # HAS IDENTIFIER
     # <self.res> DATACITE:hasIdentifier <id_res>
     def has_id(self, id_res: Identifier) -> None:
         self.g.add((self.res, GraphEntity.has_identifier, URIRef(str(id_res))))
-
-

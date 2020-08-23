@@ -30,6 +30,10 @@ Notes about RA:
 
 
 class ResponsibleAgent(BibliographicEntity):
+    """Responsible agent (short: ra): the agent (usually a person or an organisation) having
+       a certain role with respect to a bibliographic resource (e.g. an author of a paper or
+       book, or an editor of a journal)."""
+
     # HAS NAME STRING
     # <self.res> FOAF:name "string"
     def create_name(self, string: str) -> bool:

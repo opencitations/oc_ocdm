@@ -32,6 +32,11 @@ Notes about BE:
 
 
 class BibliographicReference(BibliographicEntity):
+    """Bibliographic reference (short: be): the particular textual bibliographic reference,
+       usually occurring in the reference list (and denoted by one or more in-text reference
+       pointers within the text of a citing bibliographic resource), that references another
+       bibliographic resource."""
+
     # HAS BIBLIOGRAPHIC REFERENCE TEXT
     # <self.res> C4O:hasContent "string"
     def create_content(self, string: str) -> bool:

@@ -30,6 +30,14 @@ Notes about AN:
 
 
 class ReferenceAnnotation(BibliographicEntity):
+    """Reference annotation (short: an): an annotation, attached either to an in-text
+       reference pointer or to a bibliographic reference, describing the related citation. If an
+       in-text reference pointer is annotated, the related citation may be characterized with a
+       citation function (the reason for that citation) specific to the textual location of that
+       in-text reference pointer within the citing entity. If a bibliographic reference is
+       annotated, the related citation may be similarly characterized in a more general way
+       with a citation function (the reason for that citation)."""
+
     # HAS CITATION (Citation)
     # <self.res> OA:hasBody <ci_res>
     def _create_body_annotation(self, ci_res: Citation) -> None:

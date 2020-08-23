@@ -41,6 +41,9 @@ Notes about BR:
 
 
 class BibliographicResource(BibliographicEntity):
+    """Bibliographic resource (short: br): a published bibliographic resource that cites/is
+       cited by another published bibliographic resource."""
+
     # HAS TITLE
     # <self.res> DCTERMS:title "string"
     def create_title(self, string: str) -> bool:
