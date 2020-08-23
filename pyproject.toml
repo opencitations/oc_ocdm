@@ -1,8 +1,32 @@
 [tool.poetry]
 name = "oc_graphlib"
 version = "0.1.0"
-description = ""
-authors = ["Simone Persiani <iosonopersia@gmail.com>"]
+description = "Object mapping library for OpenCitations, OCDM 2.0.1 compliant."
+authors = [
+    "Silvio Peroni <essepuntato@gmail.com>",
+    "Marilena Daquino <marilena.daquino2@unibo.it>",
+    "Simone Persiani <iosonopersia@gmail.com>"
+]
+readme = "README.md"
+license = "ISC"
+homepage = "http://opencitations.net"
+# repository = "https://github.com/opencitations/oc_graphlib"
+# documentation = "https://oc_graphlib.github.io"
+keywords = ["opencitations", "openscience", "datamodel", "mapping"]
+
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: ISC License (ISCL)",
+    "Natural Language :: English",
+    "Natural Language :: Italian",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Topic :: Database",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Archiving",
+    "Typing :: Typed"
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
