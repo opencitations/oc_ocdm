@@ -15,9 +15,52 @@
 # SOFTWARE.
 import unittest
 
+from rdflib import URIRef, Literal
+
+from oc_graphlib.graph_entity import GraphEntity
+from oc_graphlib.graph_set import GraphSet
+
 
 class TestReferencePointer(unittest.TestCase):
-    pass
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.graph_set = GraphSet("http://test/", "context_base", "./info_dir/info_file_", 0, "", wanted_label=False)
+
+    def setUp(self):
+        self.graph_set.g = []
+        self.an = self.graph_set.add_an(self.__class__.__name__)
+        self.rp1 = self.graph_set.add_rp(self.__class__.__name__)
+        self.rp2 = self.graph_set.add_rp(self.__class__.__name__)
+        self.be = self.graph_set.add_be(self.__class__.__name__)
+
+    def test_create_content(self):
+        content = "Content"
+        result = self.rp1.create_content(content)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.rp1)), GraphEntity.has_content, Literal(content)
+        self.assertIn(triple, self.rp1.g)
+
+    def test_has_next_rp(self):
+        result = self.rp1.has_next_rp(self.rp2)
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.rp1)), GraphEntity.has_next, URIRef(str(self.rp2))
+        self.assertIn(triple, self.rp1.g)
+
+    def test_denotes_be(self):
+        result = self.rp1.denotes_be(self.be)
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.rp1)), GraphEntity.denotes, URIRef(str(self.be))
+        self.assertIn(triple, self.rp1.g)
+
+    def test_has_annotation(self):
+        result = self.rp1._create_annotation(self.an)
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.rp1)), GraphEntity.has_annotation, URIRef(str(self.an))
+        self.assertIn(triple, self.rp1.g)
 
 
 if __name__ == '__main__':
