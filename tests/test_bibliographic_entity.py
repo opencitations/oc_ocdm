@@ -15,9 +15,28 @@
 # SOFTWARE.
 import unittest
 
+from rdflib import URIRef
+
+from oc_graphlib.graph_entity import GraphEntity
+from oc_graphlib.graph_set import GraphSet
+
 
 class TestBibliographicEntity(unittest.TestCase):
-    pass
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.graph_set = GraphSet("http://test/", "context_base", "./info_dir/info_file_", 0, "", wanted_label=False)
+
+    def setUp(self):
+        self.graph_set.g = []
+        self.entity = self.graph_set.add_ar(self.__class__.__name__)
+        self.identifier = self.graph_set.add_id(self.__class__.__name__)
+
+    def test_has_id(self):
+        result = self.entity.has_id(self.identifier)
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.entity)), GraphEntity.has_identifier, URIRef(str(self.identifier))
+        self.assertIn(triple, self.entity.g)
 
 
 if __name__ == '__main__':
