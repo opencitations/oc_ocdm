@@ -15,9 +15,60 @@
 # SOFTWARE.
 import unittest
 
+from rdflib import Literal, URIRef
+
+from oc_graphlib.graph_entity import GraphEntity
+from oc_graphlib.graph_set import GraphSet
+
 
 class TestResponsibleAgent(unittest.TestCase):
-    pass
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.graph_set = GraphSet("http://test/", "context_base", "./info_dir/info_file_", 0, "", wanted_label=False)
+
+    def setUp(self):
+        self.graph_set.g = []
+        self.ra = self.graph_set.add_ra(self.__class__.__name__)
+        self.ar = self.graph_set.add_ar(self.__class__.__name__)
+
+    def test_create_name(self):
+        name = "Name"
+        result = self.ra.create_name(name)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.ra)), GraphEntity.name, Literal(name)
+        self.assertIn(triple, self.ra.g)
+
+    def test_create_given_name(self):
+        given_name = "GivenName"
+        result = self.ra.create_given_name(given_name)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.ra)), GraphEntity.given_name, Literal(given_name)
+        self.assertIn(triple, self.ra.g)
+
+    def test_create_family_name(self):
+        family_name = "GivenName"
+        result = self.ra.create_family_name(family_name)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.ra)), GraphEntity.family_name, Literal(family_name)
+        self.assertIn(triple, self.ra.g)
+
+    def test_has_role(self):
+        result = self.ra.has_role(self.ar)
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.ar)), GraphEntity.is_held_by, URIRef(str(self.ra))
+        self.assertIn(triple, self.ar.g)
+
+    def test_has_related_agent(self):
+        related_agent = URIRef("http://test/RelatedAgent")
+        result = self.ra.has_related_agent(related_agent)
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.ra)), GraphEntity.relation, related_agent
+        self.assertIn(triple, self.ra.g)
 
 
 if __name__ == '__main__':
