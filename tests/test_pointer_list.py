@@ -15,9 +15,36 @@
 # SOFTWARE.
 import unittest
 
+from rdflib import URIRef, Literal
+
+from oc_graphlib.graph_entity import GraphEntity
+from oc_graphlib.graph_set import GraphSet
+
 
 class TestPointerList(unittest.TestCase):
-    pass
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.graph_set = GraphSet("http://test/", "context_base", "./info_dir/info_file_", 0, "", wanted_label=False)
+
+    def setUp(self):
+        self.graph_set.g = []
+        self.rp = self.graph_set.add_rp(self.__class__.__name__)
+        self.pl = self.graph_set.add_pl(self.__class__.__name__)
+
+    def test_create_content(self):
+        content = "Content"
+        result = self.pl.create_content(content)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.pl)), GraphEntity.has_content, Literal(content)
+        self.assertIn(triple, self.pl.g)
+
+    def test_contains_element(self):
+        result = self.pl.contains_element(self.rp)
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.pl)), GraphEntity.has_element, URIRef(str(self.rp))
+        self.assertIn(triple, self.pl.g)
 
 
 if __name__ == '__main__':
