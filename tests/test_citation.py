@@ -15,9 +15,204 @@
 # SOFTWARE.
 import unittest
 
+from rdflib import URIRef, XSD, Literal, RDF
+
+from oc_graphlib.graph_entity import GraphEntity
+from oc_graphlib.graph_set import GraphSet
+
 
 class TestCitation(unittest.TestCase):
-    pass
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.graph_set = GraphSet("http://test/", "context_base", "./info_dir/info_file_", 0, "", wanted_label=False)
+
+    def setUp(self):
+        self.graph_set.g = []
+        self.br1 = self.graph_set.add_br(self.__class__.__name__)
+        self.br2 = self.graph_set.add_br(self.__class__.__name__)
+        self.ci = self.graph_set.add_ci(self.__class__.__name__, self.br1, self.br2)
+
+    def test_create_citation(self):
+        result = self.ci._create_citation(citing_res=self.br1, cited_res=self.br2)
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.ci)), GraphEntity.has_citing_entity, URIRef(str(self.br1))
+        self.assertIn(triple, self.ci.g)
+
+        triple = URIRef(str(self.ci)), GraphEntity.has_cited_entity, URIRef(str(self.br2))
+        self.assertIn(triple, self.ci.g)
+
+    def test_has_citation_creation_date(self):
+        with self.subTest("date_list is [int, int, int]"):
+            string = "2020-05-25"
+            datatype = XSD.date
+            result = self.ci.has_citation_creation_date([2020, 5, 25])
+            self.assertTrue(result)
+
+            triple = URIRef(str(self.ci)), GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
+                                                                                      normalize=False)
+            self.assertIn(triple, self.ci.g)
+        with self.subTest("date_list is [int, int]"):
+            string = "2020-05"
+            datatype = XSD.gYearMonth
+            result = self.ci.has_citation_creation_date([2020, 5])
+            self.assertTrue(result)
+
+            triple = URIRef(str(self.ci)), GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
+                                                                                      normalize=False)
+            self.assertIn(triple, self.ci.g)
+        with self.subTest("date_list is [int]"):
+            string = "2020"
+            datatype = XSD.gYear
+            result = self.ci.has_citation_creation_date([2020])
+            self.assertTrue(result)
+
+            triple = URIRef(str(self.ci)), GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
+                                                                                      normalize=False)
+            self.assertIn(triple, self.ci.g)
+        with self.subTest("date_list is [int, None]"):
+            string = "2020"
+            datatype = XSD.gYear
+            result = self.ci.has_citation_creation_date([2020, None])
+            self.assertTrue(result)
+
+            triple = URIRef(str(self.ci)), GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
+                                                                                      normalize=False)
+            self.assertIn(triple, self.ci.g)
+        with self.subTest("date_list is [int, None, None]"):
+            string = "2020"
+            datatype = XSD.gYear
+            result = self.ci.has_citation_creation_date([2020, None, None])
+            self.assertTrue(result)
+
+            triple = URIRef(str(self.ci)), GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
+                                                                                      normalize=False)
+            self.assertIn(triple, self.ci.g)
+        with self.subTest("date_list is [None, None, None]"):
+            prev_len = len(self.ci.g)
+            result = self.ci.has_citation_creation_date([None, None, None])
+            self.assertFalse(result)
+            self.assertIsNotNone(result)
+
+            after_len = len(self.ci.g)
+            self.assertEqual(prev_len, after_len)
+        with self.subTest("date_list is empty"):
+            prev_len = len(self.ci.g)
+            result = self.ci.has_citation_creation_date([])
+            self.assertFalse(result)
+            self.assertIsNotNone(result)
+
+            after_len = len(self.ci.g)
+            self.assertEqual(prev_len, after_len)
+        with self.subTest("date_list is None"):
+            prev_len = len(self.ci.g)
+            result = self.ci.has_citation_creation_date()
+            self.assertFalse(result)
+            self.assertIsNotNone(result)
+
+            after_len = len(self.ci.g)
+            self.assertEqual(prev_len, after_len)
+        with self.subTest("date_list is [int, 1, int]"):
+            string = "2020-01-25"
+            datatype = XSD.date
+            result = self.ci.has_citation_creation_date([2020, 1, 25])
+            self.assertTrue(result)
+
+            triple = URIRef(str(self.ci)), GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
+                                                                                      normalize=False)
+            self.assertIn(triple, self.ci.g)
+        with self.subTest("date_list is [int, 1, 1]"):
+            string = "2020"
+            datatype = XSD.gYear
+            result = self.ci.has_citation_creation_date([2020, 1, 1])
+            self.assertTrue(result)
+
+            triple = URIRef(str(self.ci)), GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
+                                                                                      normalize=False)
+            self.assertIn(triple, self.ci.g)
+        with self.subTest("date_list is [int, 5, 1]"):
+            string = "2020-05-01"
+            datatype = XSD.date
+            result = self.ci.has_citation_creation_date([2020, 5, 1])
+            self.assertTrue(result)
+
+            triple = URIRef(str(self.ci)), GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
+                                                                                      normalize=False)
+            self.assertIn(triple, self.ci.g)
+
+    def test_has_citation_time_span(self):
+        duration = "P2Y6M5DT12H35M30S"  # 2 years, 6 months, 5 days, 12 hours, 35 minutes, 30 seconds
+        datatype = XSD.duration
+        result = self.ci.has_citation_time_span(duration)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.ci)), GraphEntity.has_citation_time_span, Literal(duration, datatype=datatype,
+                                                                                       normalize=False)
+        self.assertIn(triple, self.ci.g)
+
+    def test_has_citation_characterization(self):
+        characterization = URIRef("http://test/characterization")
+        result = self.ci.has_citation_characterization(characterization)
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.ci)), GraphEntity.citation_characterisation, characterization
+        self.assertIn(triple, self.ci.g)
+
+    def test_create_self_citation(self):
+        result = self.ci.create_self_citation()
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.ci)), RDF.type, GraphEntity.self_citation
+        self.assertIn(triple, self.ci.g)
+
+    def test_create_affiliation_self_citation(self):
+        result = self.ci.create_affiliation_self_citation()
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.ci)), RDF.type, GraphEntity.affiliation_self_citation
+        self.assertIn(triple, self.ci.g)
+
+    def test_create_author_network_self_citation(self):
+        result = self.ci.create_author_network_self_citation()
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.ci)), RDF.type, GraphEntity.author_network_self_citation
+        self.assertIn(triple, self.ci.g)
+
+    def test_create_author_self_citation(self):
+        result = self.ci.create_author_self_citation()
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.ci)), RDF.type, GraphEntity.author_self_citation
+        self.assertIn(triple, self.ci.g)
+
+    def test_create_funder_self_citation(self):
+        result = self.ci.create_funder_self_citation()
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.ci)), RDF.type, GraphEntity.funder_self_citation
+        self.assertIn(triple, self.ci.g)
+
+    def test_create_journal_self_citation(self):
+        result = self.ci.create_journal_self_citation()
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.ci)), RDF.type, GraphEntity.journal_self_citation
+        self.assertIn(triple, self.ci.g)
+
+    def test_create_journal_cartel_citation(self):
+        result = self.ci.create_journal_cartel_citation()
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.ci)), RDF.type, GraphEntity.journal_cartel_citation
+        self.assertIn(triple, self.ci.g)
+
+    def test_create_distant_citation(self):
+        result = self.ci.create_distant_citation()
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.ci)), RDF.type, GraphEntity.distant_citation
+        self.assertIn(triple, self.ci.g)
 
 
 if __name__ == '__main__':
