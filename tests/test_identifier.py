@@ -15,9 +15,163 @@
 # SOFTWARE.
 import unittest
 
+from rdflib import URIRef, Literal
+
+from oc_graphlib.graph_entity import GraphEntity
+from oc_graphlib.graph_set import GraphSet
+
 
 class TestIdentifier(unittest.TestCase):
-    pass
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.graph_set = GraphSet("http://test/", "context_base", "./info_dir/info_file_", 0, "", wanted_label=False)
+
+    def setUp(self):
+        self.graph_set.g = []
+        self.id = self.graph_set.add_id(self.__class__.__name__)
+
+    def test_create_orcid(self):
+        orcid = "abcdefghi"
+        result = self.id.create_orcid(orcid)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.id)), GraphEntity.has_literal_value, Literal(orcid)
+        self.assertIn(triple, self.id.g)
+
+        triple = URIRef(str(self.id)), GraphEntity.uses_identifier_scheme, GraphEntity.orcid
+        self.assertIn(triple, self.id.g)
+
+    def test_create_doi(self):
+        doi = "abcdefghi"
+        result = self.id.create_doi(doi)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.id)), GraphEntity.has_literal_value, Literal(doi)
+        self.assertIn(triple, self.id.g)
+
+        triple = URIRef(str(self.id)), GraphEntity.uses_identifier_scheme, GraphEntity.doi
+        self.assertIn(triple, self.id.g)
+
+    def test_create_pmid(self):
+        pmid = "abcdefghi"
+        result = self.id.create_pmid(pmid)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.id)), GraphEntity.has_literal_value, Literal(pmid)
+        self.assertIn(triple, self.id.g)
+
+        triple = URIRef(str(self.id)), GraphEntity.uses_identifier_scheme, GraphEntity.pmid
+        self.assertIn(triple, self.id.g)
+
+    def test_create_pmcid(self):
+        pmcid = "abcdefghi"
+        result = self.id.create_pmcid(pmcid)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.id)), GraphEntity.has_literal_value, Literal(pmcid)
+        self.assertIn(triple, self.id.g)
+
+        triple = URIRef(str(self.id)), GraphEntity.uses_identifier_scheme, GraphEntity.pmcid
+        self.assertIn(triple, self.id.g)
+
+    def test_create_issn(self):
+        issn = "abcdefghi"
+        result = self.id.create_issn(issn)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.id)), GraphEntity.has_literal_value, Literal(issn)
+        self.assertIn(triple, self.id.g)
+
+        triple = URIRef(str(self.id)), GraphEntity.uses_identifier_scheme, GraphEntity.issn
+        self.assertIn(triple, self.id.g)
+
+    def test_create_isbn(self):
+        isbn = "abcdefghi"
+        result = self.id.create_isbn(isbn)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.id)), GraphEntity.has_literal_value, Literal(isbn)
+        self.assertIn(triple, self.id.g)
+
+        triple = URIRef(str(self.id)), GraphEntity.uses_identifier_scheme, GraphEntity.isbn
+        self.assertIn(triple, self.id.g)
+
+    def test_create_url(self):
+        url = "abcdefghi"
+        result = self.id.create_url(url)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.id)), GraphEntity.has_literal_value, Literal(url)
+        self.assertIn(triple, self.id.g)
+
+        triple = URIRef(str(self.id)), GraphEntity.uses_identifier_scheme, GraphEntity.url
+        self.assertIn(triple, self.id.g)
+
+    def test_create_xpath(self):
+        xpath = "abcdefghi"
+        result = self.id.create_xpath(xpath)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.id)), GraphEntity.has_literal_value, Literal(xpath)
+        self.assertIn(triple, self.id.g)
+
+        triple = URIRef(str(self.id)), GraphEntity.uses_identifier_scheme, GraphEntity.xpath
+        self.assertIn(triple, self.id.g)
+
+    def test_create_intrepid(self):
+        intrepid = "abcdefghi"
+        result = self.id.create_intrepid(intrepid)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.id)), GraphEntity.has_literal_value, Literal(intrepid)
+        self.assertIn(triple, self.id.g)
+
+        triple = URIRef(str(self.id)), GraphEntity.uses_identifier_scheme, GraphEntity.intrepid
+        self.assertIn(triple, self.id.g)
+
+    def test_create_xmlid(self):
+        xmlid = "abcdefghi"
+        result = self.id.create_xmlid(xmlid)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.id)), GraphEntity.has_literal_value, Literal(xmlid)
+        self.assertIn(triple, self.id.g)
+
+        triple = URIRef(str(self.id)), GraphEntity.uses_identifier_scheme, GraphEntity.xmlid
+        self.assertIn(triple, self.id.g)
+
+    def test_create_wikidata(self):
+        wikidata = "abcdefghi"
+        result = self.id.create_wikidata(wikidata)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.id)), GraphEntity.has_literal_value, Literal(wikidata)
+        self.assertIn(triple, self.id.g)
+
+        triple = URIRef(str(self.id)), GraphEntity.uses_identifier_scheme, GraphEntity.wikidata
+        self.assertIn(triple, self.id.g)
+
+    def test_create_crossref(self):
+        crossref = "abcdefghi"
+        result = self.id.create_crossref(crossref)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.id)), GraphEntity.has_literal_value, Literal(crossref)
+        self.assertIn(triple, self.id.g)
+
+        triple = URIRef(str(self.id)), GraphEntity.uses_identifier_scheme, GraphEntity.crossref
+        self.assertIn(triple, self.id.g)
+
+    def test_create_viaf(self):
+        viaf = "abcdefghi"
+        result = self.id.create_viaf(viaf)
+        self.assertTrue(result)
+
+        triple = URIRef(str(self.id)), GraphEntity.has_literal_value, Literal(viaf)
+        self.assertIn(triple, self.id.g)
+
+        triple = URIRef(str(self.id)), GraphEntity.uses_identifier_scheme, GraphEntity.viaf
+        self.assertIn(triple, self.id.g)
 
 
 if __name__ == '__main__':
