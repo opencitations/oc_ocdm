@@ -15,9 +15,30 @@
 # SOFTWARE.
 import unittest
 
+from rdflib import URIRef
+
+from oc_graphlib.graph_entity import GraphEntity
+from oc_graphlib.graph_set import GraphSet
+
 
 class TestReferenceAnnotation(unittest.TestCase):
-    pass
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.graph_set = GraphSet("http://test/", "context_base", "./info_dir/info_file_", 0, "", wanted_label=False)
+
+    def setUp(self):
+        self.graph_set.g = []
+        self.an = self.graph_set.add_an(self.__class__.__name__)
+        self.br1 = self.graph_set.add_br(self.__class__.__name__)
+        self.br2 = self.graph_set.add_br(self.__class__.__name__)
+        self.ci = self.graph_set.add_ci(self.__class__.__name__, self.br1, self.br2)
+
+    def test_create_body_annotation(self):
+        result = self.an._create_body_annotation(self.ci)
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.an)), GraphEntity.has_body, URIRef(str(self.ci))
+        self.assertIn(triple, self.an.g)
 
 
 if __name__ == '__main__':
