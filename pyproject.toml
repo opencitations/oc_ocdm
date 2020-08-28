@@ -5,6 +5,7 @@ description = "Object mapping library for OpenCitations, OCDM 2.0.1 compliant."
 authors = [
     "Silvio Peroni <essepuntato@gmail.com>",
     "Marilena Daquino <marilena.daquino2@unibo.it>",
+    "Fabio Mariani <fabio.mariani6@studio.unibo.it>",
     "Simone Persiani <iosonopersia@gmail.com>"
 ]
 readme = "README.md"
