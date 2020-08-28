@@ -15,11 +15,11 @@
 # SOFTWARE.
 from __future__ import annotations
 
-from datetime import datetime
-
-from rdflib import URIRef, XSD
+from rdflib import URIRef
 
 from typing import TYPE_CHECKING, List, Optional
+
+from oc_graphlib.support.support import create_date
 
 if TYPE_CHECKING:
     from oc_graphlib.bibliographic_reference import BibliographicReference
@@ -75,24 +75,10 @@ class BibliographicResource(BibliographicEntity):
     # HAS PUBLICATION DATE
     # <self.res> PRISM:publicationDate "string"
     def create_pub_date(self, date_list: List[Optional[int]] = None) -> bool:
-        if date_list is not None:
-            l_date_list = len(date_list)
-            if l_date_list != 0 and date_list[0] is not None:
-                if l_date_list == 3 and \
-                        ((date_list[1] is not None and date_list[1] != 1) or
-                         (date_list[2] is not None and date_list[2] != 1)):
-                    cur_type = XSD.date
-                    string = datetime(
-                        date_list[0], date_list[1], date_list[2], 0, 0).strftime('%Y-%m-%d')
-                elif l_date_list == 2 and date_list[1] is not None:
-                    cur_type = XSD.gYearMonth
-                    string = datetime(
-                        date_list[0], date_list[1], 1, 0, 0).strftime('%Y-%m')
-                else:
-                    cur_type = XSD.gYear
-                    string = datetime(date_list[0], 1, 1, 0, 0).strftime('%Y')
-                return self._create_literal(GraphEntity.has_publication_date, string, cur_type, False)
-        return False # Added by @iosonopersia
+        cur_type, string = create_date(date_list)
+        if cur_type is not None and string is not None:
+            return self._create_literal(GraphEntity.has_publication_date, string, cur_type, False)
+        return False  # Added by @iosonopersia
 
     # IS EMBODIED AS (ResourceEmbodiment)
     # <self.res> FRBR:embodiment <re_res>
