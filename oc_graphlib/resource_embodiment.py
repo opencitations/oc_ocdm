@@ -57,9 +57,9 @@ class ResourceEmbodiment(BibliographicEntity):
         return self._create_literal(GraphEntity.ending_page, page_number)
 
     # HAS URL
-    # <self.res> FRBR:exemplar "string"
-    def has_url(self, string: str) -> bool:
-        return self._create_literal(GraphEntity.has_url, string)
+    # <self.res> FRBR:exemplar <thing_ref>
+    def has_url(self, thing_ref: URIRef) -> None:
+        self.g.add((self.res, GraphEntity.has_url, thing_ref))
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
     # <self.res> RDF:type <type>

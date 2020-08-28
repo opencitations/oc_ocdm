@@ -55,11 +55,11 @@ class TestResourceEmbodiment(unittest.TestCase):
         self.assertIn(triple, self.re.g)
 
     def test_has_url(self):
-        url = "http://test/url"
+        url = URIRef("http://test/url")
         result = self.re.has_url(url)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
-        triple = URIRef(str(self.re)), GraphEntity.has_url, Literal(url)
+        triple = URIRef(str(self.re)), GraphEntity.has_url, url
         self.assertIn(triple, self.re.g)
 
     def test_create_digital_embodiment(self):
