@@ -31,11 +31,11 @@ class TestResourceEmbodiment(unittest.TestCase):
         self.re = self.graph_set.add_re(self.__class__.__name__)
 
     def test_has_media_type(self):
-        media_type = "MediaType"
+        media_type = URIRef("http://test/MediaType")
         result = self.re.has_media_type(media_type)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
-        triple = URIRef(str(self.re)), GraphEntity.has_format, Literal(media_type)
+        triple = URIRef(str(self.re)), GraphEntity.has_format, media_type
         self.assertIn(triple, self.re.g)
 
     def test_create_starting_page(self):

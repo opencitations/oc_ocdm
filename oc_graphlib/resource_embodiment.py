@@ -16,6 +16,8 @@
 from __future__ import annotations
 import re
 
+from rdflib import URIRef
+
 from oc_graphlib.graph_entity import GraphEntity
 from oc_graphlib.bibliographic_entity import BibliographicEntity
 
@@ -32,9 +34,9 @@ class ResourceEmbodiment(BibliographicEntity):
        bibliographic resource was made available by its publisher."""
 
     # HAS FORMAT
-    # <self.res> DCTERMS:format "string"
-    def has_media_type(self, string: str) -> bool:
-        return self._create_literal(GraphEntity.has_format, string)
+    # <self.res> DCTERMS:format <thing_ref>
+    def has_media_type(self, thing_ref: URIRef) -> None:
+        self.g.add((self.res, GraphEntity.has_format, thing_ref))
 
     # HAS FIRST PAGE
     # <self.res> PRISM:startingPage "string"
