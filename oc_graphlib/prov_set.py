@@ -201,7 +201,7 @@ class ProvSet(GraphSet):
             #    g_prov.replace(self.base_iri, self.info_dir.rsplit(os.sep, 2)[0] + os.sep) + short_name + ".txt"
 
         list_of_entities = [] if prov_subject is None else [prov_subject]
-        cur_g, count, label = self._add(graph_url=self.g_prov, res=res, info_file_path=prov_info_path, short_name=short_name,
+        cur_g, count, label = self._add(graph_url=g_prov, res=res, info_file_path=prov_info_path, short_name=short_name,
                                         list_of_entities=list_of_entities)
         return ProvEntity(list_of_entities[0] if list_of_entities else None, cur_g, res=res, res_type=prov_type, short_name=short_name,
                           resp_agent=resp_agent,
