@@ -22,6 +22,9 @@ from typing import ClassVar
 from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import RDFS
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from oc_graphlib.graph_set import GraphSet
 from oc_graphlib.support.support import create_literal,\
                                         create_type
 
