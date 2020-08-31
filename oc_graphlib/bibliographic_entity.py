@@ -34,4 +34,9 @@ class BibliographicEntity(GraphEntity):
     # HAS IDENTIFIER
     # <self.res> DATACITE:hasIdentifier <id_res>
     def has_id(self, id_res: Identifier) -> None:
+        """In addition to the internal dataset identifier assigned to the entity upon initial
+        curation (format: [entity short name]/[local identifier], as specified above), other
+        external third-party identifiers can be specified through this attribute (e.g. DOI, ORCID,
+        PubMedID).
+        """
         self.g.add((self.res, GraphEntity.has_identifier, URIRef(str(id_res))))
