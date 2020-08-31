@@ -14,3 +14,6 @@ oc_graphlib.egg-info/*
 # support directory for testing purposes
 tests/info_dir/*
 info_dir/*
+
+# documentation build folder
+docs/build/*
