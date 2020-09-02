@@ -77,7 +77,7 @@ class GraphEntity(object):
     issn: ClassVar[URIRef] = DATACITE.issn
     url: ClassVar[URIRef] = DATACITE.url
     uses_identifier_scheme: ClassVar[URIRef] = DATACITE.usesIdentifierScheme
-    title: ClassVar[URIRef] = DCTERMS.title
+    title: ClassVar[URIRef] = DCTERMS["title"]
     caption: ClassVar[URIRef] = DEO.Caption  #  new
     discourse_element: ClassVar[URIRef] = DEO.DiscourseElement  #  new
     footnote: ClassVar[URIRef] = DOCO.Footnote  #  new
