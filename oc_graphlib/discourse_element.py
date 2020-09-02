@@ -22,6 +22,7 @@ from rdflib import URIRef
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from oc_graphlib.reference_pointer import ReferencePointer
+    from oc_graphlib.pointer_list import PointerList
 from oc_graphlib.graph_entity import GraphEntity
 from oc_graphlib.bibliographic_entity import BibliographicEntity
 
@@ -75,12 +76,12 @@ class DiscourseElement(BibliographicEntity):
     # IS CONTEXT OF (ReferencePointer or PointerList)
     # <self.res> C4O:isContextOf <de_res>
     # TODO: Invece di usare typings.Union si potrebbero creare due metodi diversi
-    #       (uno per DiscourseElement e uno per ReferencePointer), ovvero is_context_of_rp e is_context_of_de
-    def is_context_of_rp_or_pl(self, de_res: Union[DiscourseElement, ReferencePointer]) -> None:
+    #       (uno per ReferencePointer e uno per PointerList), ovvero is_context_of_rp e is_context_of_pl
+    def is_context_of_rp_or_pl(self, rp_or_pl_res: Union[ReferencePointer, PointerList]) -> None:
         """Provides the textual and semantic context of the in-text reference pointer or list of
         in-text reference pointers that appears within the discourse element.
         """
-        self.g.add((self.res, GraphEntity.is_context_of, URIRef(str(de_res))))
+        self.g.add((self.res, GraphEntity.is_context_of, URIRef(str(rp_or_pl_res))))
 
     # HAS CONTENT
     # <self.res> C4O:hasContent "string"
