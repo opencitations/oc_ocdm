@@ -43,16 +43,25 @@ class AgentRole(BibliographicEntity):
         self.g.add((self.res, GraphEntity.has_next, URIRef(str(ar_res))))
     """
     def follows(self, ar_res: AgentRole) -> None:
+        """The previous role in a sequence of agent roles of the same type associated with the
+        same bibliographic resource (so as to define, for instance, an ordered list of authors).
+        """
         ar_res.g.add((URIRef(str(ar_res)), GraphEntity.has_next, self.res))
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
     def create_publisher(self, br_res: BibliographicResource) -> bool:
+        """The specific type of role under consideration (e.g. author, editor or publisher).
+        """
         return self._associate_role_with_document(GraphEntity.publisher, br_res)
 
     def create_author(self, br_res: BibliographicResource) -> bool:
+        """The specific type of role under consideration (e.g. author, editor or publisher).
+        """
         return self._associate_role_with_document(GraphEntity.author, br_res)
 
     def create_editor(self, br_res: BibliographicResource) -> bool:
+        """The specific type of role under consideration (e.g. author, editor or publisher).
+        """
         return self._associate_role_with_document(GraphEntity.editor, br_res)
 
     # <self.res> PRO:withRole <role_type>

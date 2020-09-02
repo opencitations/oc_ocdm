@@ -36,11 +36,15 @@ class ResourceEmbodiment(BibliographicEntity):
     # HAS FORMAT
     # <self.res> DCTERMS:format <thing_ref>
     def has_media_type(self, thing_ref: URIRef) -> None:
+        """It allows one to specify the IANA media type of the embodiment.
+        """
         self.g.add((self.res, GraphEntity.has_format, thing_ref))
 
     # HAS FIRST PAGE
     # <self.res> PRISM:startingPage "string"
     def create_starting_page(self, string: str) -> bool:
+        """The first page of the bibliographic resource according to the current embodiment.
+        """
         if re.search("[-–]+", string) is None:
             page_number = string
         else:
@@ -50,6 +54,8 @@ class ResourceEmbodiment(BibliographicEntity):
     # HAS LAST PAGE
     # <self.res> PRISM:endingPage "string"
     def create_ending_page(self, string: str) -> bool:
+        """The last page of the bibliographic resource according to the current embodiment.
+        """
         if re.search("[-–]+", string) is None:
             page_number = string
         else:
@@ -59,13 +65,19 @@ class ResourceEmbodiment(BibliographicEntity):
     # HAS URL
     # <self.res> FRBR:exemplar <thing_ref>
     def has_url(self, thing_ref: URIRef) -> None:
+        """The URL at which the embodiment of the bibliographic resource is available.
+        """
         self.g.add((self.res, GraphEntity.has_url, thing_ref))
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
     # <self.res> RDF:type <type>
 
     def create_digital_embodiment(self) -> None:
+        """It identifies the particular type of the embodiment, either digital or print.
+        """
         self._create_type(GraphEntity.digital_manifestation)
 
     def create_print_embodiment(self) -> None:
+        """It identifies the particular type of the embodiment, either digital or print.
+        """
         self._create_type(GraphEntity.print_object)

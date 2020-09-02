@@ -33,17 +33,31 @@ Notes about BE:
 
 class BibliographicReference(BibliographicEntity):
     """Bibliographic reference (short: be): the particular textual bibliographic reference,
-       usually occurring in the reference list (and denoted by one or more in-text reference
-       pointers within the text of a citing bibliographic resource), that references another
-       bibliographic resource."""
+    usually occurring in the reference list (and denoted by one or more in-text reference
+    pointers within the text of a citing bibliographic resource), that references another
+    bibliographic resource.
+    """
 
     # HAS BIBLIOGRAPHIC REFERENCE TEXT
     # <self.res> C4O:hasContent "string"
     def create_content(self, string: str) -> bool:
+        """The literal text of a bibliographic reference occurring in the reference list (or
+        elsewhere) within a bibliographic resource, that references another bibliographic
+        resource. The reference text should be recorded “as given” in the citing bibliographic
+        resource, including any errors (e.g. mis-spellings of authors’ names, or changes from
+        “β” in the original published title to “beta” in the reference text) or omissions (e.g.
+        omission of the title of the referenced bibliographic resource, or omission of sixth and
+        subsequent authors’ names, as required by certain publishers), and in whatever format
+        it has been made available. For instance, the reference text can be either as plain text
+        or as a block of XML.
+        """
         return self._create_literal(GraphEntity.has_content, string)
 
     # new
     # HAS ANNOTATION (ReferenceAnnotation)
     # <self.res> OCO:hasAnnotation <an_res>
     def _create_annotation(self, an_res: ReferenceAnnotation) -> None:
+        """An annotation characterizing the related citation, in terms of its citation function (the
+        reason for that citation).
+        """
         self.g.add((self.res, GraphEntity.has_annotation, URIRef(str(an_res))))

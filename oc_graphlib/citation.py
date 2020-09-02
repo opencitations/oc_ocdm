@@ -48,12 +48,20 @@ class Citation(BibliographicEntity):
     # <self.res> CITO:hasCitingEntity <citing_res>
     # <self.res> CITO:hasCitedEntity <cited_res>
     def _create_citation(self, citing_res: BibliographicResource, cited_res: BibliographicResource) -> None:
+        """The bibliographic resource which acts as the source for the citation and the
+        bibliographic resource which acts as the target for the citation.
+        """
         self.g.add((self.res, GraphEntity.has_citing_entity, URIRef(str(citing_res))))
         self.g.add((self.res, GraphEntity.has_cited_entity, URIRef(str(cited_res))))
 
     # HAS CITATION CREATION DATE
     # <self.res> CITO:hasCitationCreationDate "string"
     def has_citation_creation_date(self, date_list: List[Optional[int]] = None) -> bool:
+        """The date on which the citation was created. This has the same numerical value
+        as the publication date of the citing bibliographic resource, but is a property
+        of the citation itself. When combined with the citation time span, it permits
+        that citation to be located in history.
+        """
         cur_type, string = create_date(date_list)
         if cur_type is not None and string is not None:
             return self._create_literal(GraphEntity.has_citation_creation_date, string, cur_type, False)
@@ -62,11 +70,16 @@ class Citation(BibliographicEntity):
     # HAS CITATION TIME SPAN
     # <self.res> CITO:hasCitationTimeSpan "string"
     def has_citation_time_span(self, string: str) -> bool:
+        """The date interval between the publication date of the cited bibliographic resource and
+        the publication date of the citing bibliographic resource.
+        """
         return self._create_literal(GraphEntity.has_citation_time_span, string, XSD.duration, False)
 
     # HAS CITATION CHARACTERIZATION
     # <self.res> CITO:hasCitationCharacterization <thing_ref>
     def has_citation_characterization(self, thing_ref: URIRef) -> None:
+        """The citation function characterizing the purpose of the citation.
+        """
         self.g.add((self.res, GraphEntity.citation_characterisation, thing_ref))
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++

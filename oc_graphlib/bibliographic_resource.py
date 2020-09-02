@@ -47,11 +47,15 @@ class BibliographicResource(BibliographicEntity):
     # HAS TITLE
     # <self.res> DCTERMS:title "string"
     def create_title(self, string: str) -> bool:
+        """The title of the bibliographic resource.
+        """
         return self._create_literal(GraphEntity.title, string)
 
     # HAS SUBTITLE
     # <self.res> FABIO:hasSubtitle "string"
     def create_subtitle(self, string: str) -> bool:
+        """The subtitle of the bibliographic resource.
+        """
         return self._create_literal(GraphEntity.has_subtitle, string)
 
     """
@@ -65,16 +69,24 @@ class BibliographicResource(BibliographicEntity):
     # IS PART OF (BibliographicResource)
     # <br_res> FRBR:partOf <self.res>
     def has_part(self, br_res: BibliographicResource) -> None:
+        """The corpus identifier of the bibliographic resource (e.g. issue, volume, journal,
+        conference proceedings) that contains the subject bibliographic resource.
+        """
         br_res.g.add((URIRef(str(br_res)), GraphEntity.part_of, self.res))
 
     # CITES (BibliographicResource)
     # <self.res> CITO:cites <br_res>
     def has_citation(self, br_res: BibliographicResource) -> None:
+        """The corpus identifier of the bibliographic resource cited by the subject bibliographic
+        resource.
+        """
         self.g.add((self.res, GraphEntity.cites, URIRef(str(br_res))))
 
     # HAS PUBLICATION DATE
     # <self.res> PRISM:publicationDate "string"
     def create_pub_date(self, date_list: List[Optional[int]] = None) -> bool:
+        """The date of publication of the bibliographic resource.
+        """
         cur_type, string = create_date(date_list)
         if cur_type is not None and string is not None:
             return self._create_literal(GraphEntity.has_publication_date, string, cur_type, False)
@@ -83,26 +95,43 @@ class BibliographicResource(BibliographicEntity):
     # IS EMBODIED AS (ResourceEmbodiment)
     # <self.res> FRBR:embodiment <re_res>
     def has_format(self, re_res: ResourceEmbodiment) -> None:
+        """The corpus identifier of the resource embodiment defining the format in which the
+        bibliographic resource has been embodied, which can be either print or digital.
+        """
         self.g.add((self.res, GraphEntity.embodiment, URIRef(str(re_res))))
 
     # HAS NUMBER
     # <self.res> FABIO:hasSequenceIdentifier "string"
     def create_number(self, string: str) -> bool:
+        """A literal (for example a number or a letter) that identifies the sequence position of the
+        bibliographic resource as a particular item within a larger collection (e.g. an article
+        number within a journal issue, a volume number of a journal, a chapter number within
+        a book).
+        """
         return self._create_literal(GraphEntity.has_sequence_identifier, string)
 
     # HAS EDITION
     # <self.res> PRISM:edition "string"
     def has_edition(self, string: str) -> bool:
+        """An identifier for one of several alternative editions of a particular bibliographic
+        resource.
+        """
         return self._create_literal(GraphEntity.has_edition, string)
 
     # HAS PART (BibliographicReference)
     # <self.res> FRBR:part <be_res>
     def contains_in_reference_list(self, be_res: BibliographicReference) -> None:
+        """A bibliographic reference within the bibliographic resource, or a discourse element
+        wherein the text of the bibliographic resources can be organized.
+        """
         self.g.add((self.res, GraphEntity.contains_reference, URIRef(str(be_res))))
 
     # HAS PART (DiscourseElement)
     # <self.res> FRBR:part <de_res>
     def contains_discourse_element(self, de_res: DiscourseElement) -> None:  #  new
+        """A bibliographic reference within the bibliographic resource, or a discourse element
+        wherein the text of the bibliographic resources can be organized.
+        """
         self.g.add((self.res, GraphEntity.contains_de, URIRef(str(de_res))))
 
     """
@@ -111,6 +140,9 @@ class BibliographicResource(BibliographicEntity):
 
     # <de_res> FRBR:part <self.res>
     def contained_in_discourse_element(self, de_res: DiscourseElement) -> None:  #  new
+        """A bibliographic reference within the bibliographic resource, or a discourse element
+        wherein the text of the bibliographic resources can be organized.
+        """
         self.g.add((URIRef(str(de_res)), GraphEntity.contains_de, self.res))
 
     """
@@ -124,96 +156,158 @@ class BibliographicResource(BibliographicEntity):
     """
     # <be_res> BIRO:references <self.res>
     def has_reference(self, be_res: BibliographicReference) -> None:
+        """The bibliographic reference that cites this bibliographic resource.
+        """
         be_res.g.add((URIRef(str(be_res)), GraphEntity.references, self.res))
 
     # HAS RELATED DOCUMENT
     # <self.res> DCTERMS:relation <thing_ref>
     def has_related_document(self, thing_ref: URIRef) -> None:
+        """A document external to the Corpus, that is related to the bibliographic resource (such
+        as a version of the bibliographic resource – for example a preprint – recorded in an
+        external database).
+        """
         self.g.add((self.res, GraphEntity.relation, thing_ref))
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
     # <self.res> RDF:type <type>
 
     def create_archival_document(self) -> None:  # new
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.archival_document)
 
     def create_book(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.book)
 
     def create_book_chapter(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.book_chapter)
 
     def create_book_part(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.part)
 
     def create_book_section(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.expression_collection)
 
     def create_book_series(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.book_series)
 
     def create_book_set(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.book_set)
 
     def create_book_track(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.expression)
 
     def create_component(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.expression)
 
     def create_dataset(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.data_file)
 
     def create_dissertation(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.thesis)
 
     def create_edited_book(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.book)
 
     def create_journal_article(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.journal_article)
 
     def create_issue(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.journal_issue)
 
     def create_volume(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.journal_volume)
 
     def create_journal(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.journal)
 
     def create_monograph(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.book)
 
     def create_proceedings_article(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.proceedings_paper)
 
     def create_proceedings(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.academic_proceedings)
 
     def create_reference_book(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.reference_book)
 
     def create_reference_entry(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.reference_entry)
 
     def create_report_series(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.series)
 
     def create_report(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.report_document)
 
     def create_standard_series(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.series)
 
     def create_standard(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.specification_document)
 
     def create_series(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.series)  # new
 
     def create_expression_collection(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.expression_collection)
 
     def create_other(self) -> None:
+        """The type of the bibliographic resource
+        """
         self._create_type(GraphEntity.expression)

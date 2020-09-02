@@ -37,16 +37,23 @@ class ResponsibleAgent(BibliographicEntity):
     # HAS NAME STRING
     # <self.res> FOAF:name "string"
     def create_name(self, string: str) -> bool:
+        """The name of an agent (for people, usually in the format: given name followed by family
+        name, separated by a space).
+        """
         return self._create_literal(GraphEntity.name, string)
 
     # HAS GIVEN NAME
     # <self.res> FOAF:givenName "string"
     def create_given_name(self, string: str) -> bool:
+        """The given name of an agent, if a person.
+        """
         return self._create_literal(GraphEntity.given_name, string)
 
     # HAS FAMILY NAME
     # <self.res> FOAF:familyName "string"
     def create_family_name(self, string: str) -> bool:
+        """The family name of an agent, if a person.
+        """
         return self._create_literal(GraphEntity.family_name, string)
 
     """
@@ -59,9 +66,14 @@ class ResponsibleAgent(BibliographicEntity):
             self.g.add((self.res, GraphEntity.is_held_by, URIRef(str(ar_res))))
     """
     def has_role(self, ar_res: AgentRole):
+        """[AgentRole] The agent holding this role with respect to a particular bibliographic resource.
+        """
         ar_res.g.add((URIRef(str(ar_res)), GraphEntity.is_held_by, self.res))
 
     # HAS RELATED AGENT
     # <self.res> DCTERMS:relation <thing_ref>
     def has_related_agent(self, thing_ref: URIRef) -> None:
+        """An external agent that/who is related in some relevant way with this responsible agent
+        (e.g. for inter-linking purposes).
+        """
         self.g.add((self.res, GraphEntity.relation, thing_ref))

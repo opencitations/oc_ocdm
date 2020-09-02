@@ -43,11 +43,16 @@ class DiscourseElement(BibliographicEntity):
     # HAS TITLE
     # <self.res> DCTERMS:title "string"
     def create_title(self, string: str) -> bool:
+        """The title of the discourse element, such as the title of a figure or a section in an article.
+        """
         return self._create_literal(GraphEntity.title, string)
 
     # HAS PART (DiscourseElement)
     # <self.res> FRBR:part <de_res>
     def contains_discourse_element(self, de_res: DiscourseElement) -> None:  #  new
+        """The discourse element hierarchically nested within the parent element, such as a
+        sentence within a paragraph, or a paragraph within a section.
+        """
         self.g.add((self.res, GraphEntity.contains_de, URIRef(str(de_res))))
 
     """
@@ -55,11 +60,16 @@ class DiscourseElement(BibliographicEntity):
     """
     # <de_res> FRBR:part <self.res>
     def contained_in_discourse_element(self, de_res: DiscourseElement) -> None:  #  new
+        """The discourse element hierarchically nested within the parent element, such as a
+        sentence within a paragraph, or a paragraph within a section.
+        """
         self.g.add((URIRef(str(de_res)), GraphEntity.contains_de, self.res))
 
     # HAS NEXT (DiscourseElement)
     # <self.res> OCO:hasNext <de_res>
     def has_next_de(self, de_res: DiscourseElement) -> None:  # new
+        """The following discourse element that includes at least one in-text reference pointer.
+        """
         self.g.add((self.res, GraphEntity.has_next, URIRef(str(de_res))))
 
     # IS CONTEXT OF (ReferencePointer or PointerList)
@@ -67,42 +77,74 @@ class DiscourseElement(BibliographicEntity):
     # TODO: Invece di usare typings.Union si potrebbero creare due metodi diversi
     #       (uno per DiscourseElement e uno per ReferencePointer), ovvero is_context_of_rp e is_context_of_de
     def is_context_of_rp_or_pl(self, de_res: Union[DiscourseElement, ReferencePointer]) -> None:
+        """Provides the textual and semantic context of the in-text reference pointer or list of
+        in-text reference pointers that appears within the discourse element.
+        """
         self.g.add((self.res, GraphEntity.is_context_of, URIRef(str(de_res))))
 
     # HAS CONTENT
     # <self.res> C4O:hasContent "string"
     def create_content(self, string: str) -> bool:
+        """The literal document text contained by the discourse element.
+        """
         return self._create_literal(GraphEntity.has_content, string)
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
     # <self.res> RDF:type <type>
 
     def create_discourse_element(self, de_class: URIRef) -> None:  #  new
+        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.
+        """
         if de_class is not None:
             self._create_type(de_class)
         else:
             self._create_type(GraphEntity.discourse_element)
 
     def create_section(self) -> None:
+        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.
+        """
         self._create_type(GraphEntity.section)
 
     def create_section_title(self) -> None:
+        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.
+        """
         self._create_type(GraphEntity.section_title)
 
     def create_paragraph(self) -> None:
+        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.
+        """
         self._create_type(GraphEntity.paragraph)
 
     def create_sentence(self) -> None:  #  new
+        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.
+        """
         self._create_type(GraphEntity.sentence)
 
     def create_text_chunk(self) -> None:  #  new
+        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.
+        """
         self._create_type(GraphEntity.text_chunk)
 
     def create_table(self) -> None:
+        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.
+        """
         self._create_type(GraphEntity.table)
 
     def create_footnote(self) -> None:
+        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.
+        """
         self._create_type(GraphEntity.footnote)
 
     def create_caption(self) -> None:
+        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.
+        """
         self._create_type(GraphEntity.caption)

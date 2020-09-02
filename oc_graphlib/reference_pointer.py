@@ -40,20 +40,33 @@ class ReferencePointer(BibliographicEntity):
     # HAS REFERENCE POINTER TEXT
     # <self.res> C4O:hasContent "string"
     def create_content(self, string: str) -> bool:
+        """The literal text of the textual device forming an in-text reference pointer and denoting
+        a single bibliographic reference (e.g. “[1]”).
+        """
         return self._create_literal(GraphEntity.has_content, string)
 
     # HAS NEXT (ReferencePointer)
     # <self.res> OCO:hasNext <rp_res>
     def has_next_rp(self, rp_res: ReferencePointer) -> None:  # new
+        """The following in-text reference pointer, when included within a single in-text reference
+        pointer list.
+        """
         self.g.add((self.res, GraphEntity.has_next, URIRef(str(rp_res))))
 
     # DENOTES (BibliographicReference)
     # <self.res> C4O:denotes <be_res>
     def denotes_be(self, be_res: BibliographicReference) -> None:
+        """The bibliographic reference included in the list of bibliographic references, denoted by
+        the in-text reference pointer.
+        """
         self.g.add((self.res, GraphEntity.denotes, URIRef(str(be_res))))
 
     # new
     # HAS ANNOTATION (ReferenceAnnotation)
     # <self.res> OCO:hasAnnotation <an_res>
     def _create_annotation(self, an_res: ReferenceAnnotation) -> None:
+        """An annotation characterizing the citation to which the in-text reference pointer relates
+        in terms of its citation function (the reason for that citation) specific to the textual
+        location of that in-text reference pointer within the citing entity.
+        """
         self.g.add((self.res, GraphEntity.has_annotation, URIRef(str(an_res))))

@@ -42,4 +42,7 @@ class PointerList(BibliographicEntity):
     # HAS ELEMENT (ReferencePointer)
     # <self.res> CO:element <rp_res>
     def contains_element(self, rp_res: ReferencePointer) -> None:  #  new
+        """The in-text reference pointer that is part of the in-text reference pointer list present at
+        a particular location within the body of the citing work.
+        """
         self.g.add((self.res, GraphEntity.has_element, URIRef(str(rp_res))))
