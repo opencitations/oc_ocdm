@@ -71,5 +71,5 @@ html_context = {
   'display_github': True,
   'github_user': 'iosonopersia',
   'github_repo': 'oc_graphlib',
-  'github_version': 'master/docs/',
+  'github_version': 'master/docs/source/',
 }
