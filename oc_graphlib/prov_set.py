@@ -19,9 +19,11 @@ __author__ = 'essepuntato'
 
 import os
 from datetime import datetime
+from typing import Any, Optional, Set, Tuple, List
 
-from rdflib import Graph, ConjunctiveGraph
-from rdflib.compare import to_isomorphic, graph_diff
+from rdflib import Graph, ConjunctiveGraph, URIRef
+from rdflib.compare import to_isomorphic, graph_diff, IsomorphicGraph
+from rdflib.query import Result
 
 from oc_graphlib.graph_entity import GraphEntity
 from oc_graphlib.graph_set import GraphSet
@@ -30,44 +32,47 @@ from oc_graphlib.support.support import find_paths
 
 
 class ProvSet(GraphSet):
-    def __init__(self, prov_subj_graph_set, base_iri, context_path, default_dir, info_dir,
-                 resource_finder, dir_split, n_file_item, supplier_prefix, triplestore_url,wanted_label=True):
-        super(ProvSet, self).__init__(base_iri, context_path, info_dir, n_file_item, supplier_prefix,wanted_label=wanted_label)
-        self.rf = resource_finder
-        self.dir_split = dir_split
-        self.default_dir = default_dir
+    def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, context_path: str, default_dir: str, info_dir: str,
+                 resource_finder: Any, dir_split: int, n_file_item: int, supplier_prefix: str, triplestore_url: str,
+                 wanted_label: bool = True) -> None:
+        super(ProvSet, self).__init__(base_iri, context_path, info_dir, n_file_item, supplier_prefix,
+                                      wanted_label=wanted_label)
+        self.rf: Any = resource_finder  # external class ResourceFinder from spacin
+        self.dir_split: int = dir_split
+        self.default_dir: str = default_dir
         if triplestore_url is None:
-            self.ts = None
+            self.ts: Optional[ConjunctiveGraph] = None
         else:
-            self.triplestore_url = triplestore_url
-            self.ts = ConjunctiveGraph('SPARQLUpdateStore')
+            self.triplestore_url: str = triplestore_url
+            self.ts: Optional[ConjunctiveGraph] = ConjunctiveGraph('SPARQLUpdateStore')
             self.ts.open((triplestore_url, triplestore_url))
 
-        self.all_subjects = set()
+        self.all_subjects: Set[URIRef] = set()
         for cur_subj_g in prov_subj_graph_set.graphs():
             self.all_subjects.add(next(cur_subj_g.subjects(None, None)))
-        self.resp = "SPACIN ProvSet"
-        self.prov_g = prov_subj_graph_set
+        self.resp: str = "SPACIN ProvSet"
+        self.prov_g: GraphSet = prov_subj_graph_set
 
         if wanted_label:
             GraphSet.labels.update(
                  {
                     "pa": "provenance agent",
                     "se": "snapshot of entity metadata"
-                }
+                 }
              )
 
     # Add resources related to provenance information
 
-    def add_se(self, resp_agent=None, prov_subject=None, res=None):
+    def add_se(self, resp_agent: str = None, prov_subject: GraphEntity = None, res: URIRef = None) -> ProvEntity:
         return self._add_prov("se", ProvEntity.entity, res, resp_agent, prov_subject)
 
-    def generate_provenance(self, resp_agent, c_time=None, do_insert=True, remove_entity=False):
-        time_string = '%Y-%m-%dT%H:%M:%S'
+    def generate_provenance(self, resp_agent: Optional[str], c_time: float = None, do_insert: bool = True,
+                            remove_entity: bool = False) -> None:
+        time_string: str = '%Y-%m-%dT%H:%M:%S'
         if c_time is None:
-            cur_time = datetime.now().strftime(time_string)
+            cur_time: str = datetime.now().strftime(time_string)
         else:
-            cur_time = datetime.fromtimestamp(c_time).strftime(time_string)
+            cur_time: str = datetime.fromtimestamp(c_time).strftime(time_string)
 
         # Add all existing information for provenance agents
         self.rf.add_prov_triples_in_filesystem(self.base_iri)
@@ -77,17 +82,16 @@ class ProvSet(GraphSet):
         # The 'all_subjects' set includes only the subject of the created graphs that
         # have at least some new triples to add
         for prov_subject in self.all_subjects:
-            cur_subj = self.prov_g.get_entity(prov_subject)
+            cur_subj: GraphEntity = self.prov_g.get_entity(prov_subject)
 
             # Load all provenance data of snapshots for that subject
             self.rf.add_prov_triples_in_filesystem(str(prov_subject), "se")
-            last_snapshot = None
-            last_snapshot_res = self.rf.retrieve_last_snapshot(prov_subject)
+            last_snapshot: Optional[ProvEntity] = None
+            last_snapshot_res: Optional[URIRef] = self.rf.retrieve_last_snapshot(prov_subject)
             if last_snapshot_res is not None:
-                last_snapshot = self.add_se(resp_agent, cur_subj, last_snapshot_res)
+                last_snapshot: ProvEntity = self.add_se(resp_agent, cur_subj, last_snapshot_res)
             # Snapshot
-            cur_snapshot = None
-            cur_snapshot = self.add_se(resp_agent, cur_subj)
+            cur_snapshot: ProvEntity = self.add_se(resp_agent, cur_subj)
             cur_snapshot.snapshot_of(cur_subj)
             cur_snapshot.create_generation_time(cur_time)
             if cur_subj.source is not None:
@@ -98,27 +102,27 @@ class ProvSet(GraphSet):
             if last_snapshot is None and do_insert:  # Create a new entity
                 cur_snapshot.create_description("The entity '%s' has been created." % str(cur_subj.res))
             else:
-                if self._are_added_triples(cur_subj): # if diff != 0:
-                    update_query_data = None
-                    update_description = None
+                if self._are_added_triples(cur_subj):  # if diff != 0:
                     if do_insert:
-                        update_query_data = self._are_added_triples(cur_subj)
-                        update_description = "The entity '%s' has been extended with new statements." % str(cur_subj.res)
+                        update_query_data: Optional[str] = self._are_added_triples(cur_subj)
+                        update_description: str = "The entity '%s' has been extended with new statements." \
+                                                  % str(cur_subj.res)
                     else:
-                        update_query_data = self._create_delete_query(cur_subj.g)
+                        update_query_data: Optional[str] = self._create_delete_query(cur_subj.g)[0]
                         if remove_entity:
-                            update_description = "The entity '%s' has been removed." % str(cur_subj.res)
+                            update_description: str = "The entity '%s' has been removed." % str(cur_subj.res)
                         else:
-                            update_description = "Some data of the entity '%s' have been removed. " % str(cur_subj.res)
+                            update_description: str = "Some data of the entity '%s' have been removed. " \
+                                                      % str(cur_subj.res)
 
                     cur_snapshot.create_description(update_description)
                     cur_snapshot.create_update_query(update_query_data)
 
                 # Note: due to previous processing errors, it would be possible that no snapshot has been created
                 # in the past for an entity, even if the entity actually exists. In this case, since we have to modify
-                # the entity somehow, we create a new modification snapshot here without linking expicitly with the
+                # the entity somehow, we create a new modification snapshot here without linking explicitly with the
                 # previous one – which does not (currently) exist. However, the common expectation is that such
-                # missing snapshop situation cannot happen.
+                # missing snapshot situation cannot happen.
                 if last_snapshot is not None:
                     cur_snapshot.derives_from(last_snapshot)
                     last_snapshot.create_invalidation_time(cur_time)
@@ -130,46 +134,46 @@ class ProvSet(GraphSet):
                     cur_snapshot.create_invalidation_time(cur_time)
 
     @staticmethod
-    def _create_insert_query(cur_subj_g):
+    def _create_insert_query(cur_subj_g: Graph) -> Tuple[str, bool, bool, bool]:
         query_string, are_citations, are_ids, are_others = ProvSet.__create_process_query(cur_subj_g)
 
         return u"INSERT DATA { " + query_string + " }", are_citations, are_ids, are_others
 
     @staticmethod
-    def _create_delete_query(cur_subj_g):
+    def _create_delete_query(cur_subj_g: Graph) -> Tuple[str, bool, bool, bool]:
         query_string, are_citations, are_ids, are_others = ProvSet.__create_process_query(cur_subj_g)
 
         return u"DELETE DATA { " + query_string + " }", are_citations, are_ids, are_others
 
-    def _are_added_triples(self, cur_subj):
-        subj = cur_subj
-        cur_subj_g = cur_subj.g
-        prev_subj_g = Graph()
-        query = "CONSTRUCT {<%s> ?p ?o} WHERE {<%s> ?p ?o}" % (subj , subj)
+    def _are_added_triples(self, cur_subj: GraphEntity) -> Optional[str]:
+        subj: GraphEntity = cur_subj
+        cur_subj_g: Graph = cur_subj.g
+        prev_subj_g: Graph = Graph()
+        query: str = "CONSTRUCT {<%s> ?p ?o} WHERE {<%s> ?p ?o}" % (subj, subj)
         print(query, '\n')
-        result = self.ts.query(query)
+        result: Result = self.ts.query(query)
 
         if result:
-            for s,p,o in result:
-                prev_subj_g.add((s,p,o))
+            for s, p, o in result:
+                prev_subj_g.add((s, p, o))
 
-            iso1 = to_isomorphic(prev_subj_g)
-            iso2 = to_isomorphic(cur_subj_g)
-            if iso1 == iso2: # the graphs are the same
+            iso1: IsomorphicGraph = to_isomorphic(prev_subj_g)
+            iso2: IsomorphicGraph = to_isomorphic(cur_subj_g)
+            if iso1 == iso2:  # the graphs are the same
                 return None
             else:
                 in_both, in_first, in_second = graph_diff(iso1, iso2)
-                query_string = u"INSERT DATA { GRAPH <%s> { " % cur_subj_g.identifier
+                query_string: str = u"INSERT DATA { GRAPH <%s> { " % cur_subj_g.identifier
                 query_string += in_second.serialize(format="nt11", encoding="utf-8").decode("utf-8")
-                return query_string.replace('\n\n','') + "} }"
+                return query_string.replace('\n\n', '') + "} }"
 
     @staticmethod
-    def __create_process_query(cur_subj_g):
-        query_string = u"GRAPH <%s> { " % cur_subj_g.identifier
-        is_first = True
-        are_citations = False
-        are_ids = False
-        are_others = False
+    def __create_process_query(cur_subj_g: Graph) -> Tuple[str, bool, bool, bool]:
+        query_string: str = u"GRAPH <%s> { " % cur_subj_g.identifier
+        is_first: bool = True
+        are_citations: bool = False
+        are_ids: bool = False
+        are_others: bool = False
 
         for s, p, o in cur_subj_g.triples((None, None, None)):
             if p == GraphEntity.cites:
@@ -183,32 +187,32 @@ class ProvSet(GraphSet):
 
         return query_string + "}", are_citations, are_ids, are_others
 
-    def _add_prov(self, short_name, prov_type, res, resp_agent, prov_subject=None):
+    def _add_prov(self, short_name: str, prov_type: URIRef, res: URIRef, resp_agent: str,
+                  prov_subject: GraphEntity = None) -> ProvEntity:
         if prov_subject is None:
-            g_prov = self.base_iri + "prov/"
+            g_prov: str = self.base_iri + "prov/"
 
-            prov_info_path = \
+            prov_info_path: str = \
                 g_prov.replace(self.base_iri, self.info_dir.rsplit(os.sep, 2)[0] + os.sep) + short_name + ".txt"
         else:
-            g_prov = str(prov_subject) + "/prov/"
+            g_prov: str = str(prov_subject) + "/prov/"
 
-            res_file_path = \
+            res_file_path: str = \
                 find_paths(str(prov_subject), self.info_dir, self.base_iri, self.default_dir,
                            self.dir_split, self.n_file_item)[1][:-5]
 
-            prov_info_path = res_file_path + os.sep + "prov" + os.sep + short_name + ".txt"
-            #prov_info_path = \
-            #    g_prov.replace(self.base_iri, self.info_dir.rsplit(os.sep, 2)[0] + os.sep) + short_name + ".txt"
+            prov_info_path: str = res_file_path + os.sep + "prov" + os.sep + short_name + ".txt"
+            # prov_info_path = \
+            #     g_prov.replace(self.base_iri, self.info_dir.rsplit(os.sep, 2)[0] + os.sep) + short_name + ".txt"
 
-        list_of_entities = [] if prov_subject is None else [prov_subject]
+        list_of_entities: List[GraphEntity] = [] if prov_subject is None else [prov_subject]
         cur_g, count, label = self._add(graph_url=g_prov, res=res, info_file_path=prov_info_path, short_name=short_name,
                                         list_of_entities=list_of_entities)
-        return ProvEntity(list_of_entities[0] if list_of_entities else None, cur_g, res=res, res_type=prov_type, short_name=short_name,
-                          resp_agent=resp_agent,
-                          source_agent=None, source=None, count=count,
+        return ProvEntity(list_of_entities[0] if list_of_entities else None, cur_g, res=res, res_type=prov_type,
+                          short_name=short_name, resp_agent=resp_agent, source_agent=None, source=None, count=count,
                           label=label, g_set=self)
 
-    def _set_ns(self, g):
+    def _set_ns(self, g: Graph) -> None:
         super(ProvSet, self)._set_ns(g)
         g.namespace_manager.bind("oco", ProvEntity.OCO)
         g.namespace_manager.bind("prov", ProvEntity.PROV)
