@@ -90,6 +90,11 @@ class DiscourseElement(BibliographicEntity):
         """
         return self._create_literal(GraphEntity.has_content, string)
 
+    # HAS NUMBER
+    # <self.res> FABIO:hasSequenceIdentifier "string"
+    def create_number(self, string: str) -> bool:
+        return self._create_literal(GraphEntity.has_sequence_identifier, string)
+    
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
     # <self.res> RDF:type <type>
 
