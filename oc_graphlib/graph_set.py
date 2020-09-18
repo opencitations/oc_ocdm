@@ -259,7 +259,7 @@ class GraphSet(object):
             # Note: even if list of entities is actually a list, it seems
             # that it would be composed by at most one item (e.g. for provenance)
             if list_of_entities:
-                count = str(GraphSet._add_number(
+                count = str(self._add_number(
                     info_file_path, find_local_line_id(list_of_entities[0], self.n_file_item)))
                 related_to_label += " related to"
                 related_to_short_label += " ->"
@@ -282,11 +282,11 @@ class GraphSet(object):
                             cur_short_name, cur_entity_prefix, cur_entity_count)
             else:
                 count = self.supplier_prefix + \
-                        str(GraphSet._add_number(info_file_path))
+                        str(self._add_number(info_file_path))
 
             if self.wanted_label:  # new
                 label = "%s %s%s [%s/%s%s]" % (
-                    GraphSet.labels[short_name], count, related_to_label,
+                    self.labels[short_name], count, related_to_label,
                     short_name, count, related_to_short_label)
 
             return cur_g, count, label

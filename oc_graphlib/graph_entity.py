@@ -159,6 +159,7 @@ class GraphEntity(object):
         self.resp_agent: str = resp_agent
         self.source_agent: str = source_agent
         self.source: str = source
+        self.short_name: str = short_name
 
         existing_ref: bool = False
 

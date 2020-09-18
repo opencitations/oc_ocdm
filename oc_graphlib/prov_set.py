@@ -19,7 +19,11 @@ __author__ = 'essepuntato'
 
 import os
 from datetime import datetime
-from typing import Any, Optional, Set, Tuple, List
+from typing import Optional, Tuple, List, Any, Set
+from shutil import copymode, move
+from tempfile import mkstemp
+
+from typing.io import BinaryIO
 
 from rdflib import Graph, ConjunctiveGraph, URIRef
 from rdflib.compare import to_isomorphic, graph_diff, IsomorphicGraph
@@ -28,7 +32,6 @@ from rdflib.query import Result
 from oc_graphlib.graph_entity import GraphEntity
 from oc_graphlib.graph_set import GraphSet
 from oc_graphlib.prov_entity import ProvEntity
-from oc_graphlib.support.support import find_paths
 
 
 class ProvSet(GraphSet):
@@ -55,11 +58,11 @@ class ProvSet(GraphSet):
 
         if wanted_label:
             GraphSet.labels.update(
-                 {
+                {
                     "pa": "provenance agent",
                     "se": "snapshot of entity metadata"
-                 }
-             )
+                }
+            )
 
     # Add resources related to provenance information
 
@@ -197,13 +200,7 @@ class ProvSet(GraphSet):
         else:
             g_prov: str = str(prov_subject) + "/prov/"
 
-            res_file_path: str = \
-                find_paths(str(prov_subject), self.info_dir, self.base_iri, self.default_dir,
-                           self.dir_split, self.n_file_item)[1][:-5]
-
-            prov_info_path: str = res_file_path + os.sep + "prov" + os.sep + short_name + ".txt"
-            # prov_info_path = \
-            #     g_prov.replace(self.base_iri, self.info_dir.rsplit(os.sep, 2)[0] + os.sep) + short_name + ".txt"
+            prov_info_path: str = self.info_dir.replace('info_file', 'prov_file') + prov_subject.short_name + ".txt"
 
         list_of_entities: List[GraphEntity] = [] if prov_subject is None else [prov_subject]
         cur_g, count, label = self._add(graph_url=g_prov, res=res, info_file_path=prov_info_path, short_name=short_name,
@@ -216,3 +213,123 @@ class ProvSet(GraphSet):
         super(ProvSet, self)._set_ns(g)
         g.namespace_manager.bind("oco", ProvEntity.OCO)
         g.namespace_manager.bind("prov", ProvEntity.PROV)
+
+    ################################################################################################
+    initial_line_len: int = 3
+    trailing_char: str = ' '
+
+    @staticmethod
+    def _get_line_len(file: BinaryIO) -> int:
+        cur_char: str = file.read(1).decode('ascii')
+        count: int = 1
+        while cur_char is not None and len(cur_char) == 1 and cur_char != '\0':
+            cur_char = file.read(1).decode('ascii')
+            count += 1
+            if cur_char == '\n':
+                break
+
+        # Undo I/O pointer updates
+        file.seek(0)
+
+        if cur_char is None:
+            raise EOFError('Reached end-of-file without encountering a line separator!')
+        elif cur_char == '\0':
+            raise ValueError('Encountered a NULL byte!')
+        else:
+            return count
+
+    @staticmethod
+    def _increase_line_len(file_path: str, new_length: int = 0) -> None:
+        if new_length <= 0:
+            raise ValueError('new_length must be a positive non-zero integer number!')
+
+        with open(file_path, 'rb') as cur_file:
+            if ProvSet._get_line_len(cur_file) >= new_length:
+                raise ValueError('Current line length is greater than new_length!')
+
+        fh, abs_path = mkstemp()
+        with os.fdopen(fh, 'wb') as new_file:
+            with open(file_path, 'rt', encoding='ascii') as old_file:
+                for line in old_file:
+                    number: str = line.rstrip(ProvSet.trailing_char + '\n')
+                    new_line: str = str(number).ljust(new_length - 1, ProvSet.trailing_char) + '\n'
+                    new_file.write(new_line.encode('ascii'))
+
+        # Copy the file permissions from the old file to the new file
+        copymode(file_path, abs_path)
+
+        # Replace original file
+        os.remove(file_path)
+        move(abs_path, file_path)
+
+    @staticmethod
+    def _is_a_valid_line(buf: bytes) -> bool:
+        string: str = buf.decode('ascii')
+        return (string[-1] == '\n') and ('\0' not in string[:-1])
+
+    @staticmethod
+    def _fix_previous_lines(file: BinaryIO, line_len: int) -> None:
+        if line_len < ProvSet.initial_line_len:
+            raise ValueError('line_len should be at least %d!' % ProvSet.initial_line_len)
+
+        while file.tell() >= line_len:
+            file.seek(-line_len, os.SEEK_CUR)
+            buf: bytes = file.read(line_len)
+            if ProvSet._is_a_valid_line(buf) or len(buf) < line_len:
+                break
+            else:
+                file.seek(-line_len, os.SEEK_CUR)
+                fixed_line: str = (ProvSet.trailing_char * (line_len - 1)) + '\n'
+                file.write(fixed_line.encode('ascii'))
+                file.seek(-line_len, os.SEEK_CUR)
+
+    @staticmethod
+    def _read_number(file_path: str, line_number: int = 1) -> Tuple[int, int]:
+        if line_number <= 0:
+            raise ValueError('line_number must be a positive non-zero integer number!')
+
+        cur_number: int = 0
+        cur_line_len: int = 0
+        try:
+            with open(file_path, "rb") as file:
+                cur_line_len = ProvSet._get_line_len(file)
+                line_offset = (line_number - 1) * cur_line_len
+                file.seek(line_offset)
+                line = file.readline(cur_line_len).decode('ascii')
+                cur_number = int(line.rstrip(ProvSet.trailing_char + '\n'))
+        except ValueError:
+            cur_number = 0
+        except Exception as e:
+            print(e)
+
+        return cur_number, cur_line_len
+
+    @staticmethod
+    def _add_number(file_path: str, line_number: int = 1) -> int:
+        if line_number <= 0:
+            raise ValueError('line_number must be a positive non-zero integer number!')
+
+        if not os.path.exists(os.path.dirname(file_path)):
+            os.makedirs(os.path.dirname(file_path))
+
+        if not os.path.isfile(file_path):
+            with open(file_path, "wb") as file:
+                first_line = ProvSet.trailing_char * (ProvSet.initial_line_len - 1) + '\n'
+                file.write(first_line.encode('ascii'))
+
+        cur_number, cur_line_len = ProvSet._read_number(file_path, line_number)
+        cur_number += 1
+
+        cur_number_len: int = len(str(cur_number)) + 1
+        if cur_number_len > cur_line_len:
+            ProvSet._increase_line_len(file_path, new_length=cur_number_len)
+            cur_line_len = cur_number_len
+
+        with open(file_path, "r+b") as file:
+            line_offset: int = (line_number - 1) * cur_line_len
+            file.seek(line_offset)
+            line: str = str(cur_number).ljust(cur_line_len - 1, ProvSet.trailing_char) + '\n'
+            file.write(line.encode('ascii'))
+            file.seek(-cur_line_len, os.SEEK_CUR)
+            ProvSet._fix_previous_lines(file, cur_line_len)
+        return cur_number
