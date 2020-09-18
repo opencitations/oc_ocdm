@@ -23,8 +23,8 @@ from rdflib import Namespace, URIRef, Graph
 from rdflib.namespace import XSD
 
 if TYPE_CHECKING:
-    from oc_graphlib.bibliographic_entity import BibliographicEntity
     from oc_graphlib.prov_set import ProvSet
+    from oc_graphlib.responsible_agent import ResponsibleAgent
 from oc_graphlib.graph_entity import GraphEntity
 
 """
@@ -93,7 +93,7 @@ class ProvEntity(GraphEntity):
 
     # IS SNAPSHOT OF
     # <self.res> PROV:specializationOf <en_res>
-    def snapshot_of(self, en_res: BibliographicEntity) -> None:
+    def snapshot_of(self, en_res: GraphEntity) -> None:
         """This property is used to link a snapshot of entity metadata to the bibliographic entity
         to which the snapshot refers.
         """
@@ -109,7 +109,7 @@ class ProvEntity(GraphEntity):
 
     # HAS PRIMARY SOURCE
     # <self.res> PROV:hadPrimarySource <any_res>
-    def has_primary_source(self, any_res: URIRef) -> None:
+    def has_primary_source(self, any_res: str) -> None:
         """This property is used to identify the primary source from which the metadata
         described in the snapshot are derived (e.g. Crossref, as the result of querying the
         CrossRef API).
@@ -139,7 +139,7 @@ class ProvEntity(GraphEntity):
     # IS ATTRIBUTED TO
     # <self.res> PROV:wasAttributedTo <se_agent>
     # new
-    def has_resp_agent(self, se_agent: URIRef) -> None:
+    def has_resp_agent(self, se_agent: str) -> None:
         """The agent responsible for the creation of the current entity snapshot.
         """
         self.g.add((self.res, ProvEntity.was_attributed_to, URIRef(str(se_agent))))
@@ -170,5 +170,5 @@ class ProvEntity(GraphEntity):
     def has_role_type(self, any_res: URIRef) -> None:
         self.g.add((self.res, ProvEntity.had_role, URIRef(str(any_res))))
 
-    def has_role_in(self, ca_res: URIRef) -> None:
+    def has_role_in(self, ca_res: ResponsibleAgent) -> None:
         ca_res.g.add((URIRef(str(ca_res)), ProvEntity.associated_agent, self.res))
