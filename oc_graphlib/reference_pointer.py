@@ -26,7 +26,8 @@ from oc_graphlib.bibliographic_entity import BibliographicEntity
 
 """
 Notes about RP:
-
+    HAS NEXT is generated both by has_next_rp and has_next_de for backwards compatibility. has_next_de may be removed
+             in the future.
     Chill down, everything seems OK here!
 """
 
@@ -36,6 +37,14 @@ class ReferencePointer(BibliographicEntity):
        '[1]'), denoting a single bibliographic reference, that is embedded in the text of a
        document within the context of a particular sentence or text chunk. A bibliographic
        reference can be denoted in the text by one or more in-text reference pointers."""
+
+    # HAS NEXT (ReferencePointer)
+    # <self.res> OCO:hasNext <rp_res>
+    def has_next_de(self, rp_res: ReferencePointer) -> None:  # new
+        """The following in-text reference pointer, when included within a single in-text reference
+        pointer list.
+        """
+        self.g.add((self.res, GraphEntity.has_next, URIRef(str(rp_res))))
 
     # HAS REFERENCE POINTER TEXT
     # <self.res> C4O:hasContent "string"
