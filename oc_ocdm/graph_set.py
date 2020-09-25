@@ -233,7 +233,7 @@ class GraphSet(object):
             # that it would be composed by at most one item (e.g. for provenance)
             if list_of_entities:
                 count = str(self._add_number(
-                    info_file_path, find_local_line_id(list_of_entities[0], self.n_file_item)))
+                    info_file_path, int(get_count(URIRef(str(list_of_entities[0]))))))
                 related_to_label += " related to"
                 related_to_short_label += " ->"
                 for idx, cur_entity in enumerate(list_of_entities):
