@@ -63,6 +63,7 @@ class GraphEntity(object):
     citation_characterisation: ClassVar[URIRef] = CITO.hasCitationCharacterisation
     has_citing_entity: ClassVar[URIRef] = CITO.hasCitingEntity
     has_cited_entity: ClassVar[URIRef] = CITO.hasCitedEntity
+    oci: ClassVar[URIRef] = DATACITE.oci
     doi: ClassVar[URIRef] = DATACITE.doi
     occ: ClassVar[URIRef] = DATACITE.occ
     pmid: ClassVar[URIRef] = DATACITE.pmid

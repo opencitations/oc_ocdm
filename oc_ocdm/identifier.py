@@ -35,6 +35,9 @@ class Identifier(GraphEntity):
        metadata are themselves given unique corpus identifiers e.g. 'id/0420129'."""
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
+    def create_oci(self, string: str) -> bool:
+        return self._associate_identifier_with_scheme(string, GraphEntity.oci)
+
     def create_orcid(self, string: str) -> bool:
         return self._associate_identifier_with_scheme(string, GraphEntity.orcid)
 
