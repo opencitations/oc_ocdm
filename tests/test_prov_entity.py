@@ -17,7 +17,6 @@ import unittest
 
 from rdflib import URIRef, Literal, XSD, RDF
 
-from oc_ocdm.WIP.resfinder import ResourceFinder
 from oc_ocdm.graph_set import GraphSet
 from oc_ocdm.prov_entity import ProvEntity
 from oc_ocdm.prov_set import ProvSet
@@ -29,20 +28,10 @@ class TestProvEntity(unittest.TestCase):
         cls.prov_subj_graph_set = GraphSet("http://test/", "context_base", "./info_dir/info_file_", 0, "",
                                            wanted_label=False)
 
-        cls.rf = ResourceFinder(base_dir="./ccc/", base_iri="https://w3id.org/oc/ccc/",
-                                tmp_dir="tmp/",
-                                context_map={
-                                       "https://w3id.org/oc/ccc/context.json": "./context.json"
-                                },
-                                dir_split=10000,
-                                n_file_item=1000,
-                                default_dir="/")
-
         cls.prov_set = ProvSet(prov_subj_graph_set=cls.prov_subj_graph_set, base_iri="http://test/",
                                context_path="context_base", info_dir="./info_dir/info_file_",
                                wanted_label=False, dir_split=10000, n_file_item=1000, supplier_prefix="070",
-                               triplestore_url="http://localhost:9999/blazegraph/sparql", default_dir="/",
-                               resource_finder=cls.rf)
+                               triplestore_url="http://localhost:9999/blazegraph/sparql", default_dir="/")
 
     def setUp(self):
         self.prov_set.g = []

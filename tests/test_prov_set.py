@@ -16,7 +16,8 @@
 import os
 import unittest
 
-from oc_ocdm.WIP.resfinder import ResourceFinder
+from rdflib import URIRef
+
 from oc_ocdm.graph_set import GraphSet
 from oc_ocdm.prov_set import ProvSet
 
@@ -27,20 +28,10 @@ class TestProvSet(unittest.TestCase):
         cls.prov_subj_graph_set = GraphSet("http://test/", "context_base", "./info_dir/info_file_", 0, "",
                                            wanted_label=False)
 
-        cls.rf = ResourceFinder(base_dir="./ccc/", base_iri="https://w3id.org/oc/ccc/",
-                                tmp_dir="tmp/",
-                                context_map={
-                                    "https://w3id.org/oc/ccc/context.json": "./context.json"
-                                },
-                                dir_split=10000,
-                                n_file_item=1000,
-                                default_dir="/")
-
         cls.prov_set = ProvSet(prov_subj_graph_set=cls.prov_subj_graph_set, base_iri="http://test/",
                                context_path="context_base", info_dir="./info_dir/info_file_",
                                wanted_label=False, dir_split=10000, n_file_item=1000, supplier_prefix="070",
-                               triplestore_url="http://localhost:9999/blazegraph/sparql", default_dir="/",
-                               resource_finder=cls.rf)
+                               triplestore_url="http://localhost:9999/blazegraph/sparql", default_dir="/")
 
         cls.file_path = './info_dir/test_file.txt'
         if not os.path.exists(os.path.dirname(cls.file_path)):
@@ -158,6 +149,26 @@ class TestProvSet(unittest.TestCase):
                 self.assertTrue(ProvSet._is_a_valid_line(line.encode('ascii')))
 
         self.assertRaises(ValueError, ProvSet._add_number, self.file_path, -1)
+
+    def test_retrieve_last_snapshot(self):
+        br = self.prov_subj_graph_set.add_br(self.__class__.__name__)
+        br_res = URIRef(str(br))
+        result = self.prov_set._retrieve_last_snapshot(br_res)
+        self.assertIsNone(result)
+
+        se = self.prov_set.add_se(self.__class__.__name__, prov_subject=br)
+        result = self.prov_set._retrieve_last_snapshot(br_res)
+        self.assertIsNotNone(result)
+        self.assertEqual(str(result), str(se))
+
+        prov_subject = URIRef('https://w3id.org/oc/corpus/br/0')
+        self.assertRaises(ValueError, self.prov_set._retrieve_last_snapshot, prov_subject)
+
+        prov_subject = URIRef('https://w3id.org/oc/corpus/br/-1')
+        self.assertRaises(ValueError, self.prov_set._retrieve_last_snapshot, prov_subject)
+
+        prov_subject = URIRef('https://w3id.org/oc/corpus/br/abc')
+        self.assertRaises(ValueError, self.prov_set._retrieve_last_snapshot, prov_subject)
 
 
 if __name__ == '__main__':

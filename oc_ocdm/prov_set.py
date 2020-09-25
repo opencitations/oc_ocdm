@@ -19,7 +19,7 @@ __author__ = 'essepuntato'
 
 import os
 from datetime import datetime
-from typing import Optional, Tuple, List, Any, Set
+from typing import Optional, Tuple, List, Set
 from shutil import copymode, move
 from tempfile import mkstemp
 
@@ -32,15 +32,15 @@ from rdflib.query import Result
 from oc_ocdm.graph_entity import GraphEntity
 from oc_ocdm.graph_set import GraphSet
 from oc_ocdm.prov_entity import ProvEntity
+from oc_ocdm.support.support import get_short_name, get_count
 
 
 class ProvSet(GraphSet):
     def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, context_path: str, default_dir: str, info_dir: str,
-                 resource_finder: Any, dir_split: int, n_file_item: int, supplier_prefix: str, triplestore_url: str,
+                 dir_split: int, n_file_item: int, supplier_prefix: str, triplestore_url: str,
                  wanted_label: bool = True) -> None:
         super(ProvSet, self).__init__(base_iri, context_path, info_dir, n_file_item, supplier_prefix,
                                       wanted_label=wanted_label)
-        self.rf: Any = resource_finder  # external class ResourceFinder from spacin
         self.dir_split: int = dir_split
         self.default_dir: str = default_dir
         if triplestore_url is None:
@@ -77,9 +77,6 @@ class ProvSet(GraphSet):
         else:
             cur_time: str = datetime.fromtimestamp(c_time).strftime(time_string)
 
-        # Add all existing information for provenance agents
-        self.rf.add_prov_triples_in_filesystem(self.base_iri)
-
         if resp_agent is None:
             resp_agent = self.cur_name
         # The 'all_subjects' set includes only the subject of the created graphs that
@@ -87,10 +84,8 @@ class ProvSet(GraphSet):
         for prov_subject in self.all_subjects:
             cur_subj: GraphEntity = self.prov_g.get_entity(prov_subject)
 
-            # Load all provenance data of snapshots for that subject
-            self.rf.add_prov_triples_in_filesystem(str(prov_subject), "se")
             last_snapshot: Optional[ProvEntity] = None
-            last_snapshot_res: Optional[URIRef] = self.rf.retrieve_last_snapshot(prov_subject)
+            last_snapshot_res: Optional[URIRef] = self._retrieve_last_snapshot(prov_subject)
             if last_snapshot_res is not None:
                 last_snapshot: ProvEntity = self.add_se(resp_agent, cur_subj, last_snapshot_res)
             # Snapshot
@@ -333,3 +328,20 @@ class ProvSet(GraphSet):
             file.seek(-cur_line_len, os.SEEK_CUR)
             ProvSet._fix_previous_lines(file, cur_line_len)
         return cur_number
+
+    def _retrieve_last_snapshot(self, prov_subject: URIRef) -> Optional[URIRef]:
+        subj_short_name: str = get_short_name(prov_subject)
+        subj_count: str = get_count(prov_subject)
+        file_path: str = self.info_dir.replace('info_file', 'prov_file') + subj_short_name + ".txt"
+        try:
+            if int(subj_count) <= 0:
+                raise ValueError('prov_subject is not a valid URIRef. Extracted count value should be a positive '
+                                 'non-zero integer number!')
+        except ValueError:
+            raise ValueError('prov_subject is not a valid URIRef. Unable to extract the count value!')
+
+        last_snapshot_count: str = str(ProvSet._read_number(file_path, int(subj_count))[0])
+        if int(last_snapshot_count) <= 0:
+            return None
+        else:
+            return URIRef(str(prov_subject) + '/prov/se/' + last_snapshot_count)
