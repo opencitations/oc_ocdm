@@ -152,8 +152,8 @@ class GraphSet(object):
     def add_ci(self, resp_agent: str, citing_res: BibliographicResource, cited_res: BibliographicResource,
                rp_num: str = None, source_agent: str = None, source: str = None,
                res: URIRef = None) -> Citation:  #  new
-        cur_g, count, label = self._add_ci(graph_url=self.g_ci,  citing_res=citing_res, cited_res=cited_res,
-                                           rp_num=rp_num, res=res, info_file_path=self.ci_info_path, short_name="ci")
+        cur_g, count, label = self._add(graph_url=self.g_ci, res=res, info_file_path=self.ci_info_path, short_name="ci",
+                                        list_of_entities=[])
 
         return Citation(cur_g, res=res, res_type=GraphEntity.citation, resp_agent=resp_agent,
                         source_agent=source_agent, source=source, count=count,
@@ -206,33 +206,6 @@ class GraphSet(object):
         return ResourceEmbodiment(cur_g, res=res, res_type=GraphEntity.manifestation, short_name="re", resp_agent=resp_agent,
                                   source_agent=source_agent, source=source, count=count,
                                   label=label, g_set=self, forced_type=self.forced_type)
-
-    #  new
-    """
-        Missing label generation!
-    """
-    def _add_ci(self, graph_url: str, citing_res: BibliographicResource,
-                cited_res: BibliographicResource, rp_num: str, res: URIRef, info_file_path: str, short_name: str,
-                list_of_entities=[]) -> Tuple[Graph, Optional[str], Optional[str]]:
-        cur_g = Graph(identifier=graph_url)
-        self._set_ns(cur_g)
-        self.g += [cur_g]
-
-        count: Optional[str] = None
-        label: Optional[str] = None
-
-        if res is not None:
-            return cur_g, count, label
-        else:
-            citing_res, cited_res = str(citing_res), str(cited_res)
-            citing_count = citing_res.rsplit('/', 1)[-1]
-            cited_count = cited_res.rsplit('/', 1)[-1]
-            if rp_num is not None:
-                count = citing_count + '-' + cited_count + '/' + rp_num
-            else:
-                count = citing_count + '-' + cited_count
-
-            return cur_g, count, label
 
     def _add(self, graph_url: str, res: URIRef, info_file_path: str, short_name: str,
              list_of_entities=[]) -> Tuple[Graph, Optional[str], Optional[str]]:
