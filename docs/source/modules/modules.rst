@@ -1,7 +1,7 @@
-oc_graphlib
+oc_ocdm
 ===========
 
 .. toctree::
    :maxdepth: 4
 
-   oc_graphlib
+   oc_ocdm

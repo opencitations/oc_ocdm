@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "oc_graphlib"
+name = "oc_ocdm"
 version = "0.1.0"
 description = "Object mapping library for OpenCitations, OCDM 2.0.1 compliant."
 authors = [
@@ -11,8 +11,8 @@ authors = [
 readme = "README.md"
 license = "ISC"
 homepage = "http://opencitations.net"
-# repository = "https://github.com/opencitations/oc_graphlib"
-# documentation = "https://oc_graphlib.github.io"
+# repository = "https://github.com/opencitations/oc_ocdm"
+# documentation = "https://oc_ocdm.github.io"
 keywords = ["opencitations", "openscience", "datamodel", "mapping"]
 
 classifiers = [

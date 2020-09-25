@@ -18,9 +18,9 @@ from rdflib import URIRef
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from oc_graphlib.reference_annotation import ReferenceAnnotation
-from oc_graphlib.graph_entity import GraphEntity
-from oc_graphlib.bibliographic_entity import BibliographicEntity
+    from oc_ocdm.reference_annotation import ReferenceAnnotation
+from oc_ocdm.graph_entity import GraphEntity
+from oc_ocdm.bibliographic_entity import BibliographicEntity
 
 """
 Notes about BE:

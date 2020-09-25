@@ -24,8 +24,8 @@ from rdflib.namespace import RDFS
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from oc_graphlib.graph_set import GraphSet
-from oc_graphlib.support.support import create_literal,\
+    from oc_ocdm.graph_set import GraphSet
+from oc_ocdm.support.support import create_literal,\
                                         create_type
 
 

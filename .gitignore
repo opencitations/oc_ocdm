@@ -6,10 +6,10 @@ dist/*
 *.pyc
 
 # WorkInProgress directories
-oc_graphlib/WIP/*
+oc_ocdm/WIP/*
 
 # automatically generated files
-oc_graphlib.egg-info/*
+oc_ocdm.egg-info/*
 
 # support directory for testing purposes
 tests/info_dir/*

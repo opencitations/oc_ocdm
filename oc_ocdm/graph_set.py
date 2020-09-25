@@ -22,24 +22,24 @@ import os
 
 from rdflib import Graph, Namespace, URIRef
 
-from oc_graphlib.graph_entity import GraphEntity
-from oc_graphlib.support.support import get_short_name, \
+from oc_ocdm.graph_entity import GraphEntity
+from oc_ocdm.support.support import get_short_name, \
                                         get_count,\
                                         find_local_line_id,\
                                         get_prefix
-from oc_graphlib.support.reporter import Reporter
+from oc_ocdm.support.reporter import Reporter
 
-from oc_graphlib.agent_role import AgentRole
-from oc_graphlib.bibliographic_reference import BibliographicReference
-from oc_graphlib.bibliographic_resource import BibliographicResource
-from oc_graphlib.citation import Citation
-from oc_graphlib.discourse_element import DiscourseElement
-from oc_graphlib.identifier import Identifier
-from oc_graphlib.pointer_list import PointerList
-from oc_graphlib.reference_annotation import ReferenceAnnotation
-from oc_graphlib.reference_pointer import ReferencePointer
-from oc_graphlib.resource_embodiment import ResourceEmbodiment
-from oc_graphlib.responsible_agent import ResponsibleAgent
+from oc_ocdm.agent_role import AgentRole
+from oc_ocdm.bibliographic_reference import BibliographicReference
+from oc_ocdm.bibliographic_resource import BibliographicResource
+from oc_ocdm.citation import Citation
+from oc_ocdm.discourse_element import DiscourseElement
+from oc_ocdm.identifier import Identifier
+from oc_ocdm.pointer_list import PointerList
+from oc_ocdm.reference_annotation import ReferenceAnnotation
+from oc_ocdm.reference_pointer import ReferencePointer
+from oc_ocdm.resource_embodiment import ResourceEmbodiment
+from oc_ocdm.responsible_agent import ResponsibleAgent
 
 
 class GraphSet(object):

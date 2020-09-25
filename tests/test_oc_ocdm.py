@@ -1,4 +1,4 @@
-from oc_graphlib import __version__
+from oc_ocdm import __version__
 
 
 def test_version():

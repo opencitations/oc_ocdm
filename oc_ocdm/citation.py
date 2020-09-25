@@ -19,12 +19,12 @@ from rdflib import URIRef, XSD
 
 from typing import TYPE_CHECKING, Optional, List
 
-from oc_graphlib.support.support import create_date
+from oc_ocdm.support.support import create_date
 
 if TYPE_CHECKING:
-    from oc_graphlib.bibliographic_resource import BibliographicResource
-from oc_graphlib.graph_entity import GraphEntity
-from oc_graphlib.bibliographic_entity import BibliographicEntity
+    from oc_ocdm.bibliographic_resource import BibliographicResource
+from oc_ocdm.graph_entity import GraphEntity
+from oc_ocdm.bibliographic_entity import BibliographicEntity
 
 """
 Notes about CI:

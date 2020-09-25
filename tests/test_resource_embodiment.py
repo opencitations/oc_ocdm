@@ -17,8 +17,8 @@ import unittest
 
 from rdflib import URIRef, Literal, RDF
 
-from oc_graphlib.graph_entity import GraphEntity
-from oc_graphlib.graph_set import GraphSet
+from oc_ocdm.graph_entity import GraphEntity
+from oc_ocdm.graph_set import GraphSet
 
 
 class TestResourceEmbodiment(unittest.TestCase):

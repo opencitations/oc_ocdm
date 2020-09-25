@@ -18,8 +18,8 @@ from rdflib import URIRef
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from oc_graphlib.identifier import Identifier
-from oc_graphlib.graph_entity import GraphEntity
+    from oc_ocdm.identifier import Identifier
+from oc_ocdm.graph_entity import GraphEntity
 
 """
 Notes about BibliographicEntity:

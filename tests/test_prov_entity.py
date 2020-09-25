@@ -17,10 +17,10 @@ import unittest
 
 from rdflib import URIRef, Literal, XSD, RDF
 
-from oc_graphlib.WIP.resfinder import ResourceFinder
-from oc_graphlib.graph_set import GraphSet
-from oc_graphlib.prov_entity import ProvEntity
-from oc_graphlib.prov_set import ProvSet
+from oc_ocdm.WIP.resfinder import ResourceFinder
+from oc_ocdm.graph_set import GraphSet
+from oc_ocdm.prov_entity import ProvEntity
+from oc_ocdm.prov_set import ProvSet
 
 
 class TestProvEntity(unittest.TestCase):

@@ -1,21 +1,21 @@
-oc\_graphlib.support package
+oc\_ocdm.support package
 ============================
 
 Submodules
 ----------
 
-oc\_graphlib.support.reporter module
+oc\_ocdm.support.reporter module
 ------------------------------------
 
-.. automodule:: oc_graphlib.support.reporter
+.. automodule:: oc_ocdm.support.reporter
    :members:
    :undoc-members:
    :show-inheritance:
 
-oc\_graphlib.support.support module
+oc\_ocdm.support.support module
 -----------------------------------
 
-.. automodule:: oc_graphlib.support.support
+.. automodule:: oc_ocdm.support.support
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ oc\_graphlib.support.support module
 Module contents
 ---------------
 
-.. automodule:: oc_graphlib.support
+.. automodule:: oc_ocdm.support
    :members:
    :undoc-members:
    :show-inheritance:

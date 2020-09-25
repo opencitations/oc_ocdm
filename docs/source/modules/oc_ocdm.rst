@@ -1,4 +1,4 @@
-oc\_graphlib package
+oc\_ocdm package
 ====================
 
 Subpackages
@@ -7,135 +7,135 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   oc_graphlib.support
+   oc_ocdm.support
 
 Submodules
 ----------
 
-oc\_graphlib.agent\_role module
+oc\_ocdm.agent\_role module
 -------------------------------
 
-.. automodule:: oc_graphlib.agent_role
+.. automodule:: oc_ocdm.agent_role
    :members:
    :undoc-members:
    :show-inheritance:
 
-oc\_graphlib.bibliographic\_entity module
+oc\_ocdm.bibliographic\_entity module
 -----------------------------------------
 
-.. automodule:: oc_graphlib.bibliographic_entity
+.. automodule:: oc_ocdm.bibliographic_entity
    :members:
    :undoc-members:
    :show-inheritance:
 
-oc\_graphlib.bibliographic\_reference module
+oc\_ocdm.bibliographic\_reference module
 --------------------------------------------
 
-.. automodule:: oc_graphlib.bibliographic_reference
+.. automodule:: oc_ocdm.bibliographic_reference
    :members:
    :undoc-members:
    :show-inheritance:
 
-oc\_graphlib.bibliographic\_resource module
+oc\_ocdm.bibliographic\_resource module
 -------------------------------------------
 
-.. automodule:: oc_graphlib.bibliographic_resource
+.. automodule:: oc_ocdm.bibliographic_resource
    :members:
    :undoc-members:
    :show-inheritance:
 
-oc\_graphlib.citation module
+oc\_ocdm.citation module
 ----------------------------
 
-.. automodule:: oc_graphlib.citation
+.. automodule:: oc_ocdm.citation
    :members:
    :undoc-members:
    :show-inheritance:
 
-oc\_graphlib.discourse\_element module
+oc\_ocdm.discourse\_element module
 --------------------------------------
 
-.. automodule:: oc_graphlib.discourse_element
+.. automodule:: oc_ocdm.discourse_element
    :members:
    :undoc-members:
    :show-inheritance:
 
-oc\_graphlib.graph\_entity module
+oc\_ocdm.graph\_entity module
 ---------------------------------
 
-.. automodule:: oc_graphlib.graph_entity
+.. automodule:: oc_ocdm.graph_entity
    :members:
    :undoc-members:
    :show-inheritance:
 
-oc\_graphlib.graph\_set module
+oc\_ocdm.graph\_set module
 ------------------------------
 
-.. automodule:: oc_graphlib.graph_set
+.. automodule:: oc_ocdm.graph_set
    :members:
    :undoc-members:
    :show-inheritance:
 
-oc\_graphlib.identifier module
+oc\_ocdm.identifier module
 ------------------------------
 
-.. automodule:: oc_graphlib.identifier
+.. automodule:: oc_ocdm.identifier
    :members:
    :undoc-members:
    :show-inheritance:
 
-oc\_graphlib.pointer\_list module
+oc\_ocdm.pointer\_list module
 ---------------------------------
 
-.. automodule:: oc_graphlib.pointer_list
+.. automodule:: oc_ocdm.pointer_list
    :members:
    :undoc-members:
    :show-inheritance:
 
-oc\_graphlib.prov\_entity module
+oc\_ocdm.prov\_entity module
 --------------------------------
 
-.. automodule:: oc_graphlib.prov_entity
+.. automodule:: oc_ocdm.prov_entity
    :members:
    :undoc-members:
    :show-inheritance:
 
-oc\_graphlib.prov\_set module
+oc\_ocdm.prov\_set module
 -----------------------------
 
-.. automodule:: oc_graphlib.prov_set
+.. automodule:: oc_ocdm.prov_set
    :members:
    :undoc-members:
    :show-inheritance:
 
-oc\_graphlib.reference\_annotation module
+oc\_ocdm.reference\_annotation module
 -----------------------------------------
 
-.. automodule:: oc_graphlib.reference_annotation
+.. automodule:: oc_ocdm.reference_annotation
    :members:
    :undoc-members:
    :show-inheritance:
 
-oc\_graphlib.reference\_pointer module
+oc\_ocdm.reference\_pointer module
 --------------------------------------
 
-.. automodule:: oc_graphlib.reference_pointer
+.. automodule:: oc_ocdm.reference_pointer
    :members:
    :undoc-members:
    :show-inheritance:
 
-oc\_graphlib.resource\_embodiment module
+oc\_ocdm.resource\_embodiment module
 ----------------------------------------
 
-.. automodule:: oc_graphlib.resource_embodiment
+.. automodule:: oc_ocdm.resource_embodiment
    :members:
    :undoc-members:
    :show-inheritance:
 
-oc\_graphlib.responsible\_agent module
+oc\_ocdm.responsible\_agent module
 --------------------------------------
 
-.. automodule:: oc_graphlib.responsible_agent
+.. automodule:: oc_ocdm.responsible_agent
    :members:
    :undoc-members:
    :show-inheritance:
@@ -143,7 +143,7 @@ oc\_graphlib.responsible\_agent module
 Module contents
 ---------------
 
-.. automodule:: oc_graphlib
+.. automodule:: oc_ocdm
    :members:
    :undoc-members:
    :show-inheritance:

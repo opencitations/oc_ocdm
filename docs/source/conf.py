@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'oc_graphlib'
+project = 'oc_ocdm'
 copyright = '2020, Silvio Peroni, Marilena Daquino, Fabio Mariani, Simone Persiani'
 author = 'Silvio Peroni, Marilena Daquino, Fabio Mariani, Simone Persiani'
 
@@ -70,6 +70,6 @@ html_static_path = ['_static']
 html_context = {
   'display_github': True,
   'github_user': 'iosonopersia',
-  'github_repo': 'oc_graphlib',
+  'github_repo': 'oc_ocdm',
   'github_version': 'master/docs/source/',
 }

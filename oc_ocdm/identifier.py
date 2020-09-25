@@ -18,8 +18,8 @@ import re
 
 from rdflib import URIRef
 
-from oc_graphlib.graph_entity import GraphEntity
-from oc_graphlib.support.support import is_string_empty, encode_url
+from oc_ocdm.graph_entity import GraphEntity
+from oc_ocdm.support.support import is_string_empty, encode_url
 
 """
 Notes about ID:

@@ -19,14 +19,14 @@ from rdflib import URIRef
 
 from typing import TYPE_CHECKING, List, Optional
 
-from oc_graphlib.support.support import create_date
+from oc_ocdm.support.support import create_date
 
 if TYPE_CHECKING:
-    from oc_graphlib.bibliographic_reference import BibliographicReference
-    from oc_graphlib.discourse_element import DiscourseElement
-    from oc_graphlib.resource_embodiment import ResourceEmbodiment
-from oc_graphlib.graph_entity import GraphEntity
-from oc_graphlib.bibliographic_entity import BibliographicEntity
+    from oc_ocdm.bibliographic_reference import BibliographicReference
+    from oc_ocdm.discourse_element import DiscourseElement
+    from oc_ocdm.resource_embodiment import ResourceEmbodiment
+from oc_ocdm.graph_entity import GraphEntity
+from oc_ocdm.bibliographic_entity import BibliographicEntity
 
 """
 Notes about BR:

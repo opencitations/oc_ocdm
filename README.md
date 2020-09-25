@@ -1,4 +1,4 @@
-# oc_graphlib
+# oc_ocdm
 
 ### First steps
   1. Install Poetry:
@@ -7,8 +7,8 @@
 ```
   2. Clone this repository:
 ``` bash
-    git clone https://github.com/iosonopersia/oc_graphlib
-    cd ./oc_graphlib
+    git clone https://github.com/iosonopersia/oc_ocdm
+    cd ./oc_ocdm
 ```
   3. Install all the dependencies:
 ``` bash
@@ -21,12 +21,12 @@
   5. Globally install the package (_alternatively, you can also install it inside a virtual-env,
   by providing the full path to the .tar.gz archive_):
 ``` bash
-    pip install ./dist/oc_graphlib-<VERSION>.tar.gz
+    pip install ./dist/oc_ocdm-<VERSION>.tar.gz
 ```
-  6. If everything went the right way, than you should be able to use the `oc_graphlib` library in your Python modules as follows:
+  6. If everything went the right way, than you should be able to use the `oc_ocdm` library in your Python modules as follows:
 ``` python
-    from oc_graphlib.graph_set import GraphSet
-    from oc_graphlib.agent_role import AgentRole
+    from oc_ocdm.graph_set import GraphSet
+    from oc_ocdm.agent_role import AgentRole
     # ...
 ```
 

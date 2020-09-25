@@ -29,9 +29,9 @@ from rdflib import Graph, ConjunctiveGraph, URIRef
 from rdflib.compare import to_isomorphic, graph_diff, IsomorphicGraph
 from rdflib.query import Result
 
-from oc_graphlib.graph_entity import GraphEntity
-from oc_graphlib.graph_set import GraphSet
-from oc_graphlib.prov_entity import ProvEntity
+from oc_ocdm.graph_entity import GraphEntity
+from oc_ocdm.graph_set import GraphSet
+from oc_ocdm.prov_entity import ProvEntity
 
 
 class ProvSet(GraphSet):
