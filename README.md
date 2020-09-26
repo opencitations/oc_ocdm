@@ -40,6 +40,13 @@ Just run the following command inside the root project folder:
 See [Poetry commands documentation](https://python-poetry.org/docs/cli/).
 
 ### How to build the documentation
+___
+**Warning! In order to avoid getting the following `WARNING: html_static_path entry '_static' does not exist`, you'll
+need to manually create an empty `_static` folder with the command:**
+``` bash
+    mkdir docs/source/_static
+```
+___
   1. Always remember to move inside the `docs` folder:
 ``` bash
     cd docs
