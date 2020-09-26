@@ -17,18 +17,18 @@ import unittest
 
 from rdflib import URIRef, Graph
 
-from oc_ocdm.agent_role import AgentRole
-from oc_ocdm.bibliographic_reference import BibliographicReference
-from oc_ocdm.bibliographic_resource import BibliographicResource
-from oc_ocdm.citation import Citation
-from oc_ocdm.discourse_element import DiscourseElement
+from oc_ocdm.entities.bibliographic.agent_role import AgentRole
+from oc_ocdm.entities.bibliographic.bibliographic_reference import BibliographicReference
+from oc_ocdm.entities.bibliographic.bibliographic_resource import BibliographicResource
+from oc_ocdm.entities.bibliographic.citation import Citation
+from oc_ocdm.entities.bibliographic.discourse_element import DiscourseElement
 from oc_ocdm.graph_set import GraphSet
-from oc_ocdm.identifier import Identifier
-from oc_ocdm.pointer_list import PointerList
-from oc_ocdm.reference_annotation import ReferenceAnnotation
-from oc_ocdm.reference_pointer import ReferencePointer
-from oc_ocdm.resource_embodiment import ResourceEmbodiment
-from oc_ocdm.responsible_agent import ResponsibleAgent
+from oc_ocdm.entities.identifier import Identifier
+from oc_ocdm.entities.bibliographic.pointer_list import PointerList
+from oc_ocdm.entities.bibliographic.reference_annotation import ReferenceAnnotation
+from oc_ocdm.entities.bibliographic.reference_pointer import ReferencePointer
+from oc_ocdm.entities.bibliographic.resource_embodiment import ResourceEmbodiment
+from oc_ocdm.entities.bibliographic.responsible_agent import ResponsibleAgent
 
 
 class TestGraphSet(unittest.TestCase):

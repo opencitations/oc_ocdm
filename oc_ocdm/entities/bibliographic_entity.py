@@ -18,31 +18,24 @@ from rdflib import URIRef
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from oc_ocdm.reference_pointer import ReferencePointer
+    from oc_ocdm.entities.identifier import Identifier
 from oc_ocdm.graph_entity import GraphEntity
-from oc_ocdm.bibliographic_entity import BibliographicEntity
 
 """
-Notes about PL:
+Notes about BibliographicEntity:
 
     Chill down, everything seems OK here!
 """
 
 
-class PointerList(BibliographicEntity):
-    """Pointer list (short: pl): a textual device (e.g. '[1, 2, 3]' or '[4-9]') which includes a
-       number of reference pointers denoting the specific bibliographic references to which
-       the list pertains."""
+class BibliographicEntity(GraphEntity):
+    """The base class for each bibliographic entity of the OpenCitations DataModel (OCDM)."""
 
-    # HAS POINTER LIST TEXT
-    # <self.res> C4O:hasContent "string"
-    def create_content(self, string: str) -> bool:
-        return self._create_literal(GraphEntity.has_content, string)
-
-    # HAS ELEMENT (ReferencePointer)
-    # <self.res> CO:element <rp_res>
-    def contains_element(self, rp_res: ReferencePointer) -> None:  #  new
-        """The in-text reference pointer that is part of the in-text reference pointer list present at
-        a particular location within the body of the citing work.
+    # HAS IDENTIFIER
+    # <self.res> DATACITE:hasIdentifier <id_res>
+    def has_id(self, id_res: Identifier) -> None:
+        """In addition to the internal dataset identifier assigned to the entity upon initial
+        curation (format: [entity short name]/[local identifier]), other external third-party
+        identifiers can be specified through this attribute (e.g. DOI, ORCID, PubMedID).
         """
-        self.g.add((self.res, GraphEntity.has_element, URIRef(str(rp_res))))
+        self.g.add((self.res, GraphEntity.has_identifier, URIRef(str(id_res))))

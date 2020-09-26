@@ -24,22 +24,21 @@ from rdflib import Graph, Namespace, URIRef
 
 from oc_ocdm.graph_entity import GraphEntity
 from oc_ocdm.support.support import get_short_name, \
-                                        get_count,\
-                                        find_local_line_id,\
-                                        get_prefix
+                                    get_count, \
+                                    get_prefix
 from oc_ocdm.support.reporter import Reporter
 
-from oc_ocdm.agent_role import AgentRole
-from oc_ocdm.bibliographic_reference import BibliographicReference
-from oc_ocdm.bibliographic_resource import BibliographicResource
-from oc_ocdm.citation import Citation
-from oc_ocdm.discourse_element import DiscourseElement
-from oc_ocdm.identifier import Identifier
-from oc_ocdm.pointer_list import PointerList
-from oc_ocdm.reference_annotation import ReferenceAnnotation
-from oc_ocdm.reference_pointer import ReferencePointer
-from oc_ocdm.resource_embodiment import ResourceEmbodiment
-from oc_ocdm.responsible_agent import ResponsibleAgent
+from oc_ocdm.entities.bibliographic.agent_role import AgentRole
+from oc_ocdm.entities.bibliographic.bibliographic_reference import BibliographicReference
+from oc_ocdm.entities.bibliographic.bibliographic_resource import BibliographicResource
+from oc_ocdm.entities.bibliographic.citation import Citation
+from oc_ocdm.entities.bibliographic.discourse_element import DiscourseElement
+from oc_ocdm.entities.identifier import Identifier
+from oc_ocdm.entities.bibliographic.pointer_list import PointerList
+from oc_ocdm.entities.bibliographic.reference_annotation import ReferenceAnnotation
+from oc_ocdm.entities.bibliographic.reference_pointer import ReferencePointer
+from oc_ocdm.entities.bibliographic.resource_embodiment import ResourceEmbodiment
+from oc_ocdm.entities.bibliographic.responsible_agent import ResponsibleAgent
 
 
 class GraphSet(object):
@@ -154,7 +153,6 @@ class GraphSet(object):
                res: URIRef = None) -> Citation:  #  new
         cur_g, count, label = self._add(graph_url=self.g_ci, res=res, info_file_path=self.ci_info_path, short_name="ci",
                                         list_of_entities=[])
-
         return Citation(cur_g, res=res, res_type=GraphEntity.citation, resp_agent=resp_agent,
                         source_agent=source_agent, source=source, count=count,
                         label=None, g_set=self, forced_type=self.forced_type)

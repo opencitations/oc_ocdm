@@ -1,0 +1,11 @@
+
+from oc_ocdm.entities.bibliographic.agent_role import AgentRole
+from oc_ocdm.entities.bibliographic.bibliographic_reference import BibliographicReference
+from oc_ocdm.entities.bibliographic.bibliographic_resource import BibliographicResource
+from oc_ocdm.entities.bibliographic.citation import Citation
+from oc_ocdm.entities.bibliographic.discourse_element import DiscourseElement
+from oc_ocdm.entities.bibliographic.pointer_list import PointerList
+from oc_ocdm.entities.bibliographic.reference_annotation import ReferenceAnnotation
+from oc_ocdm.entities.bibliographic.reference_pointer import ReferencePointer
+from oc_ocdm.entities.bibliographic.resource_embodiment import ResourceEmbodiment
+from oc_ocdm.entities.bibliographic.responsible_agent import ResponsibleAgent

@@ -26,7 +26,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from oc_ocdm.graph_set import GraphSet
 from oc_ocdm.support.support import create_literal,\
-                                        create_type
+                                    create_type
 
 
 class GraphEntity(object):

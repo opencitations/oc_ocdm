@@ -18,9 +18,9 @@ from rdflib import URIRef
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from oc_ocdm.agent_role import AgentRole
+    from oc_ocdm.entities.bibliographic.agent_role import AgentRole
 from oc_ocdm.graph_entity import GraphEntity
-from oc_ocdm.bibliographic_entity import BibliographicEntity
+from oc_ocdm.entities.bibliographic_entity import BibliographicEntity
 
 """
 Notes about RA:

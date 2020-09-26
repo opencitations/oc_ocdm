@@ -18,24 +18,31 @@ from rdflib import URIRef
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from oc_ocdm.identifier import Identifier
+    from oc_ocdm.entities.bibliographic.reference_pointer import ReferencePointer
 from oc_ocdm.graph_entity import GraphEntity
+from oc_ocdm.entities.bibliographic_entity import BibliographicEntity
 
 """
-Notes about BibliographicEntity:
+Notes about PL:
 
     Chill down, everything seems OK here!
 """
 
 
-class BibliographicEntity(GraphEntity):
-    """The base class for each bibliographic entity of the OpenCitations DataModel (OCDM)."""
+class PointerList(BibliographicEntity):
+    """Pointer list (short: pl): a textual device (e.g. '[1, 2, 3]' or '[4-9]') which includes a
+       number of reference pointers denoting the specific bibliographic references to which
+       the list pertains."""
 
-    # HAS IDENTIFIER
-    # <self.res> DATACITE:hasIdentifier <id_res>
-    def has_id(self, id_res: Identifier) -> None:
-        """In addition to the internal dataset identifier assigned to the entity upon initial
-        curation (format: [entity short name]/[local identifier]), other external third-party
-        identifiers can be specified through this attribute (e.g. DOI, ORCID, PubMedID).
+    # HAS POINTER LIST TEXT
+    # <self.res> C4O:hasContent "string"
+    def create_content(self, string: str) -> bool:
+        return self._create_literal(GraphEntity.has_content, string)
+
+    # HAS ELEMENT (ReferencePointer)
+    # <self.res> CO:element <rp_res>
+    def contains_element(self, rp_res: ReferencePointer) -> None:  #  new
+        """The in-text reference pointer that is part of the in-text reference pointer list present at
+        a particular location within the body of the citing work.
         """
-        self.g.add((self.res, GraphEntity.has_identifier, URIRef(str(id_res))))
+        self.g.add((self.res, GraphEntity.has_element, URIRef(str(rp_res))))
