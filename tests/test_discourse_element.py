@@ -29,6 +29,7 @@ class TestDiscourseElement(unittest.TestCase):
     def setUp(self):
         self.graph_set.g = []
         self.rp = self.graph_set.add_rp(self.__class__.__name__)
+        self.pl = self.graph_set.add_pl(self.__class__.__name__)
         self.de1 = self.graph_set.add_de(self.__class__.__name__)
         self.de2 = self.graph_set.add_de(self.__class__.__name__)
 
@@ -55,16 +56,16 @@ class TestDiscourseElement(unittest.TestCase):
         self.assertIn(triple, self.de1.g)
 
     def test_is_context_of_rp_or_pl(self):
-        result = self.de1.is_context_of_rp_or_pl(self.de2)
-        self.assertIsNone(result)
-
-        triple = URIRef(str(self.de1)), GraphEntity.is_context_of, URIRef(str(self.de2))
-        self.assertIn(triple, self.de1.g)
-
         result = self.de1.is_context_of_rp_or_pl(self.rp)
         self.assertIsNone(result)
 
         triple = URIRef(str(self.de1)), GraphEntity.is_context_of, URIRef(str(self.rp))
+        self.assertIn(triple, self.de1.g)
+
+        result = self.de1.is_context_of_rp_or_pl(self.pl)
+        self.assertIsNone(result)
+
+        triple = URIRef(str(self.de1)), GraphEntity.is_context_of, URIRef(str(self.pl))
         self.assertIn(triple, self.de1.g)
 
     def test_create_content(self):
