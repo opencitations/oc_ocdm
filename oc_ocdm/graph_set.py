@@ -26,7 +26,6 @@ from oc_ocdm.graph_entity import GraphEntity
 from oc_ocdm.support.support import get_short_name, \
                                     get_count, \
                                     get_prefix
-from oc_ocdm.support.reporter import Reporter
 
 from oc_ocdm.entities.bibliographic.agent_role import AgentRole
 from oc_ocdm.entities.bibliographic.bibliographic_reference import BibliographicReference
@@ -102,11 +101,6 @@ class GraphSet(object):
         self.ra_info_path: str = info_dir + "ra.txt"
         self.re_info_path: str = info_dir + "re.txt"
         self.rp_info_path: str = info_dir + "rp.txt"  #  new
-
-        self.reperr: Reporter = Reporter(True)
-        self.reperr.new_article()
-        self.repok: Reporter = Reporter(True)
-        self.repok.new_article()
 
     def res_count(self) -> int:  # useless?
         return self.r_count
