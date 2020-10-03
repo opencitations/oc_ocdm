@@ -17,13 +17,8 @@ from __future__ import annotations
 
 __author__ = 'essepuntato'
 
-import os
 from datetime import datetime
 from typing import Optional, Tuple, List, Set
-from shutil import copymode, move
-from tempfile import mkstemp
-
-from typing.io import BinaryIO
 
 from rdflib import Graph, ConjunctiveGraph, URIRef
 from rdflib.compare import to_isomorphic, graph_diff, IsomorphicGraph
@@ -32,14 +27,15 @@ from rdflib.query import Result
 from oc_ocdm.graph_entity import GraphEntity
 from oc_ocdm.graph_set import GraphSet
 from oc_ocdm.prov_entity import ProvEntity
+from oc_ocdm.counter_handler.counter_handler import CounterHandler
 from oc_ocdm.support.support import get_short_name, get_count
 
 
 class ProvSet(GraphSet):
-    def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, context_path: str, default_dir: str, info_dir: str,
-                 dir_split: int, n_file_item: int, supplier_prefix: str, triplestore_url: str,
-                 wanted_label: bool = True) -> None:
-        super(ProvSet, self).__init__(base_iri, context_path, info_dir, n_file_item, supplier_prefix,
+    def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, context_path: str, default_dir: str,
+                 counter_handler: CounterHandler, dir_split: int, n_file_item: int, supplier_prefix: str,
+                 triplestore_url: str, wanted_label: bool = True) -> None:
+        super(ProvSet, self).__init__(base_iri, context_path, counter_handler, n_file_item, supplier_prefix,
                                       wanted_label=wanted_label)
         self.dir_split: int = dir_split
         self.default_dir: str = default_dir
@@ -187,18 +183,10 @@ class ProvSet(GraphSet):
 
     def _add_prov(self, short_name: str, prov_type: URIRef, res: URIRef, resp_agent: str,
                   prov_subject: GraphEntity = None) -> ProvEntity:
-        if prov_subject is None:
-            g_prov: str = self.base_iri + "prov/"
 
-            prov_info_path: str = \
-                g_prov.replace(self.base_iri, self.info_dir.rsplit(os.sep, 2)[0] + os.sep) + short_name + ".txt"
-        else:
-            g_prov: str = str(prov_subject) + "/prov/"
-
-            prov_info_path: str = self.info_dir.replace('info_file', 'prov_file') + prov_subject.short_name + ".txt"
-
+        g_prov: str = str(prov_subject) + "/prov/"
         list_of_entities: List[GraphEntity] = [] if prov_subject is None else [prov_subject]
-        cur_g, count, label = self._add(graph_url=g_prov, res=res, info_file_path=prov_info_path, short_name=short_name,
+        cur_g, count, label = self._add(graph_url=g_prov, res=res, short_name=short_name,
                                         list_of_entities=list_of_entities)
         return ProvEntity(list_of_entities[0] if list_of_entities else None, cur_g, res=res, res_type=prov_type,
                           short_name=short_name, resp_agent=resp_agent, source_agent=None, source=None, count=count,
@@ -209,130 +197,9 @@ class ProvSet(GraphSet):
         g.namespace_manager.bind("oco", ProvEntity.OCO)
         g.namespace_manager.bind("prov", ProvEntity.PROV)
 
-    ################################################################################################
-    initial_line_len: int = 3
-    trailing_char: str = ' '
-
-    @staticmethod
-    def _get_line_len(file: BinaryIO) -> int:
-        cur_char: str = file.read(1).decode('ascii')
-        count: int = 1
-        while cur_char is not None and len(cur_char) == 1 and cur_char != '\0':
-            cur_char = file.read(1).decode('ascii')
-            count += 1
-            if cur_char == '\n':
-                break
-
-        # Undo I/O pointer updates
-        file.seek(0)
-
-        if cur_char is None:
-            raise EOFError('Reached end-of-file without encountering a line separator!')
-        elif cur_char == '\0':
-            raise ValueError('Encountered a NULL byte!')
-        else:
-            return count
-
-    @staticmethod
-    def _increase_line_len(file_path: str, new_length: int = 0) -> None:
-        if new_length <= 0:
-            raise ValueError('new_length must be a positive non-zero integer number!')
-
-        with open(file_path, 'rb') as cur_file:
-            if ProvSet._get_line_len(cur_file) >= new_length:
-                raise ValueError('Current line length is greater than new_length!')
-
-        fh, abs_path = mkstemp()
-        with os.fdopen(fh, 'wb') as new_file:
-            with open(file_path, 'rt', encoding='ascii') as old_file:
-                for line in old_file:
-                    number: str = line.rstrip(ProvSet.trailing_char + '\n')
-                    new_line: str = str(number).ljust(new_length - 1, ProvSet.trailing_char) + '\n'
-                    new_file.write(new_line.encode('ascii'))
-
-        # Copy the file permissions from the old file to the new file
-        copymode(file_path, abs_path)
-
-        # Replace original file
-        os.remove(file_path)
-        move(abs_path, file_path)
-
-    @staticmethod
-    def _is_a_valid_line(buf: bytes) -> bool:
-        string: str = buf.decode('ascii')
-        return (string[-1] == '\n') and ('\0' not in string[:-1])
-
-    @staticmethod
-    def _fix_previous_lines(file: BinaryIO, line_len: int) -> None:
-        if line_len < ProvSet.initial_line_len:
-            raise ValueError('line_len should be at least %d!' % ProvSet.initial_line_len)
-
-        while file.tell() >= line_len:
-            file.seek(-line_len, os.SEEK_CUR)
-            buf: bytes = file.read(line_len)
-            if ProvSet._is_a_valid_line(buf) or len(buf) < line_len:
-                break
-            else:
-                file.seek(-line_len, os.SEEK_CUR)
-                fixed_line: str = (ProvSet.trailing_char * (line_len - 1)) + '\n'
-                file.write(fixed_line.encode('ascii'))
-                file.seek(-line_len, os.SEEK_CUR)
-
-    @staticmethod
-    def _read_number(file_path: str, line_number: int = 1) -> Tuple[int, int]:
-        if line_number <= 0:
-            raise ValueError('line_number must be a positive non-zero integer number!')
-
-        cur_number: int = 0
-        cur_line_len: int = 0
-        try:
-            with open(file_path, "rb") as file:
-                cur_line_len = ProvSet._get_line_len(file)
-                line_offset = (line_number - 1) * cur_line_len
-                file.seek(line_offset)
-                line = file.readline(cur_line_len).decode('ascii')
-                cur_number = int(line.rstrip(ProvSet.trailing_char + '\n'))
-        except ValueError:
-            cur_number = 0
-        except Exception as e:
-            print(e)
-
-        return cur_number, cur_line_len
-
-    @staticmethod
-    def _add_number(file_path: str, line_number: int = 1) -> int:
-        if line_number <= 0:
-            raise ValueError('line_number must be a positive non-zero integer number!')
-
-        if not os.path.exists(os.path.dirname(file_path)):
-            os.makedirs(os.path.dirname(file_path))
-
-        if not os.path.isfile(file_path):
-            with open(file_path, "wb") as file:
-                first_line = ProvSet.trailing_char * (ProvSet.initial_line_len - 1) + '\n'
-                file.write(first_line.encode('ascii'))
-
-        cur_number, cur_line_len = ProvSet._read_number(file_path, line_number)
-        cur_number += 1
-
-        cur_number_len: int = len(str(cur_number)) + 1
-        if cur_number_len > cur_line_len:
-            ProvSet._increase_line_len(file_path, new_length=cur_number_len)
-            cur_line_len = cur_number_len
-
-        with open(file_path, "r+b") as file:
-            line_offset: int = (line_number - 1) * cur_line_len
-            file.seek(line_offset)
-            line: str = str(cur_number).ljust(cur_line_len - 1, ProvSet.trailing_char) + '\n'
-            file.write(line.encode('ascii'))
-            file.seek(-cur_line_len, os.SEEK_CUR)
-            ProvSet._fix_previous_lines(file, cur_line_len)
-        return cur_number
-
     def _retrieve_last_snapshot(self, prov_subject: URIRef) -> Optional[URIRef]:
         subj_short_name: str = get_short_name(prov_subject)
         subj_count: str = get_count(prov_subject)
-        file_path: str = self.info_dir.replace('info_file', 'prov_file') + subj_short_name + ".txt"
         try:
             if int(subj_count) <= 0:
                 raise ValueError('prov_subject is not a valid URIRef. Extracted count value should be a positive '
@@ -340,7 +207,7 @@ class ProvSet(GraphSet):
         except ValueError:
             raise ValueError('prov_subject is not a valid URIRef. Unable to extract the count value!')
 
-        last_snapshot_count: str = str(ProvSet._read_number(file_path, int(subj_count))[0])
+        last_snapshot_count: str = str(self.counter_handler.read_counter(subj_short_name, "se", int(subj_count)))
         if int(last_snapshot_count) <= 0:
             return None
         else:

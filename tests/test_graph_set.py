@@ -29,12 +29,14 @@ from oc_ocdm.entities.bibliographic.reference_annotation import ReferenceAnnotat
 from oc_ocdm.entities.bibliographic.reference_pointer import ReferencePointer
 from oc_ocdm.entities.bibliographic.resource_embodiment import ResourceEmbodiment
 from oc_ocdm.entities.bibliographic.responsible_agent import ResponsibleAgent
+from oc_ocdm.counter_handler.filesystem_counter_handler import FilesystemCounterHandler
 
 
 class TestGraphSet(unittest.TestCase):
 
     def setUp(self):
-        self.graph_set = GraphSet("http://test/", "context_base", "./info_dir/info_file_", 0, "", wanted_label=False)
+        self.counter_handler = FilesystemCounterHandler("./info_dir/")
+        self.graph_set = GraphSet("http://test/", "context_base", self.counter_handler, 0, "", wanted_label=False)
 
     def test_res_count(self):
         count = 10

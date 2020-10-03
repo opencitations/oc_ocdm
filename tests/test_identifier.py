@@ -19,12 +19,14 @@ from rdflib import URIRef, Literal
 
 from oc_ocdm.graph_entity import GraphEntity
 from oc_ocdm.graph_set import GraphSet
+from oc_ocdm.counter_handler.filesystem_counter_handler import FilesystemCounterHandler
 
 
 class TestIdentifier(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.graph_set = GraphSet("http://test/", "context_base", "./info_dir/info_file_", 0, "", wanted_label=False)
+        cls.counter_handler = FilesystemCounterHandler("./info_dir/")
+        cls.graph_set = GraphSet("http://test/", "context_base", cls.counter_handler, 0, "", wanted_label=False)
 
     def setUp(self):
         self.graph_set.g = []

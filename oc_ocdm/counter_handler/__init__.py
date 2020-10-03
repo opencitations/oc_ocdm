@@ -13,3 +13,6 @@
 # DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
+from oc_ocdm.counter_handler.counter_handler import CounterHandler
+from oc_ocdm.counter_handler.filesystem_counter_handler import FilesystemCounterHandler
+from oc_ocdm.counter_handler.in_memory_counter_handler import InMemoryCounterHandler

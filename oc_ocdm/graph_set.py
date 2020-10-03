@@ -18,11 +18,11 @@ from __future__ import annotations
 __author__ = 'essepuntato'
 
 from typing import Dict, List, ClassVar, Tuple, Optional
-import os
 
 from rdflib import Graph, Namespace, URIRef
 
 from oc_ocdm.graph_entity import GraphEntity
+from oc_ocdm.counter_handler.counter_handler import CounterHandler
 from oc_ocdm.support.support import get_short_name, \
                                     get_count, \
                                     get_prefix
@@ -56,7 +56,7 @@ class GraphSet(object):
         "rp": "in-text reference pointer"  # new
     }
 
-    def __init__(self, base_iri: str, context_path: str, info_dir: str = "", n_file_item: int = 1,
+    def __init__(self, base_iri: str, context_path: str, counter_handler: CounterHandler, n_file_item: int = 1,
                  supplier_prefix: str = "", forced_type: bool = False, wanted_label: bool = True) -> None:
         self.r_count: int = 0
         # A list of rdflib.Graphs, one for subject entity
@@ -88,19 +88,7 @@ class GraphSet(object):
         self.g_re: str = base_iri + "re/"
         self.g_rp: str = base_iri + "rp/"  # new
 
-        # Local paths
-        self.info_dir: str = info_dir
-        self.an_info_path: str = info_dir + "an.txt"  #  new
-        self.ar_info_path: str = info_dir + "ar.txt"
-        self.be_info_path: str = info_dir + "be.txt"
-        self.br_info_path: str = info_dir + "br.txt"
-        self.ci_info_path: str = info_dir + "ci.txt"  #  new not really used
-        self.de_info_path: str = info_dir + "de.txt"  #  new
-        self.id_info_path: str = info_dir + "id.txt"
-        self.pl_info_path: str = info_dir + "pl.txt"  #  new
-        self.ra_info_path: str = info_dir + "ra.txt"
-        self.re_info_path: str = info_dir + "re.txt"
-        self.rp_info_path: str = info_dir + "rp.txt"  #  new
+        self.counter_handler: CounterHandler = counter_handler
 
     def res_count(self) -> int:  # useless?
         return self.r_count
@@ -112,32 +100,28 @@ class GraphSet(object):
     # Add resources related to bibliographic entities
     def add_an(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> ReferenceAnnotation:  #  new
-        cur_g, count, label = self._add(graph_url=self.g_an, res=res, info_file_path=self.an_info_path, short_name="an",
-                                        list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_an, res=res, short_name="an", list_of_entities=[])
         return ReferenceAnnotation(cur_g, res=res, res_type=GraphEntity.note, short_name="an", resp_agent=resp_agent,
                                    source_agent=source_agent, source=source, count=count,
                                    label=label, g_set=self, forced_type=self.forced_type)
 
     def add_ar(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> AgentRole:
-        cur_g, count, label = self._add(graph_url=self.g_ar, res=res, info_file_path=self.ar_info_path, short_name="ar",
-                                        list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_ar, res=res, short_name="ar", list_of_entities=[])
         return AgentRole(cur_g, res=res, res_type=GraphEntity.role_in_time, short_name="ar", resp_agent=resp_agent,
                          source_agent=source_agent, source=source, count=count,
                          label=label, g_set=self, forced_type=self.forced_type)
 
     def add_be(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> BibliographicReference:
-        cur_g, count, label = self._add(graph_url=self.g_be, res=res, info_file_path=self.be_info_path, short_name="be",
-                                        list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_be, res=res, short_name="be", list_of_entities=[])
         return BibliographicReference(cur_g, res=res, res_type=GraphEntity.bibliographic_reference, short_name="be", resp_agent=resp_agent,
                                       source_agent=source_agent, source=source, count=count,
                                       label=label, g_set=self, forced_type=self.forced_type)
 
     def add_br(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> BibliographicResource:
-        cur_g, count, label = self._add(graph_url=self.g_br, res=res, info_file_path=self.br_info_path, short_name="br",
-                                        list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_br, res=res, short_name="br", list_of_entities=[])
         return BibliographicResource(cur_g, res=res, res_type=GraphEntity.expression, short_name="br", resp_agent=resp_agent,
                                      source_agent=source_agent, source=source, count=count,
                                      label=label, g_set=self, forced_type=self.forced_type)
@@ -145,61 +129,54 @@ class GraphSet(object):
     def add_ci(self, resp_agent: str, citing_res: BibliographicResource, cited_res: BibliographicResource,
                rp_num: str = None, source_agent: str = None, source: str = None,
                res: URIRef = None) -> Citation:  #  new
-        cur_g, count, label = self._add(graph_url=self.g_ci, res=res, info_file_path=self.ci_info_path, short_name="ci",
-                                        list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_ci, res=res, short_name="ci", list_of_entities=[])
         return Citation(cur_g, res=res, res_type=GraphEntity.citation, resp_agent=resp_agent,
                         source_agent=source_agent, source=source, count=count,
                         label=None, g_set=self, forced_type=self.forced_type)
 
     def add_de(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> DiscourseElement:  # new
-        cur_g, count, label = self._add(graph_url=self.g_de, res=res, info_file_path=self.de_info_path, short_name="de",
-                                        list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_de, res=res, short_name="de", list_of_entities=[])
         return DiscourseElement(cur_g, res=res, res_type=GraphEntity.discourse_element, short_name="de", resp_agent=resp_agent,
                                 source_agent=source_agent, source=source, count=count,
                                 label=label, g_set=self, forced_type=self.forced_type)
 
     def add_id(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> Identifier:
-        cur_g, count, label = self._add(graph_url=self.g_id, res=res, info_file_path=self.id_info_path, short_name="id",
-                                        list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_id, res=res, short_name="id", list_of_entities=[])
         return Identifier(cur_g, res=res, res_type=GraphEntity.identifier, short_name="id", resp_agent=resp_agent,
                           source_agent=source_agent, source=source, count=count,
                           label=label, g_set=self, forced_type=self.forced_type)
 
     def add_pl(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> PointerList:  # new
-        cur_g, count, label = self._add(graph_url=self.g_pl, res=res, info_file_path=self.pl_info_path, short_name="pl",
-                                        list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_pl, res=res, short_name="pl", list_of_entities=[])
         return PointerList(cur_g, res=res, res_type=GraphEntity.singleloc_pointer_list, short_name="pl", resp_agent=resp_agent,
                            source_agent=source_agent, source=source, count=count,
                            label=label, g_set=self, forced_type=self.forced_type)
 
     def add_rp(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> ReferencePointer:  # new
-        cur_g, count, label = self._add(graph_url=self.g_rp, res=res, info_file_path=self.rp_info_path, short_name="rp",
-                                        list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_rp, res=res, short_name="rp", list_of_entities=[])
         return ReferencePointer(cur_g, res=res, res_type=GraphEntity.intextref_pointer, short_name="rp", resp_agent=resp_agent,
                                 source_agent=source_agent, source=source, count=count,
                                 label=label, g_set=self, forced_type=self.forced_type)
 
     def add_ra(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> ResponsibleAgent:
-        cur_g, count, label = self._add(graph_url=self.g_ra, res=res, info_file_path=self.ra_info_path, short_name="ra",
-                                        list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_ra, res=res, short_name="ra", list_of_entities=[])
         return ResponsibleAgent(cur_g, res=res, res_type=GraphEntity.agent, short_name="ra", resp_agent=resp_agent,
                                 source_agent=source_agent, source=source, count=count,
                                 label=label, g_set=self, forced_type=self.forced_type)
 
     def add_re(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> ResourceEmbodiment:
-        cur_g, count, label = self._add(graph_url=self.g_re, res=res, info_file_path=self.re_info_path, short_name="re",
-                                        list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_re, res=res, short_name="re", list_of_entities=[])
         return ResourceEmbodiment(cur_g, res=res, res_type=GraphEntity.manifestation, short_name="re", resp_agent=resp_agent,
                                   source_agent=source_agent, source=source, count=count,
                                   label=label, g_set=self, forced_type=self.forced_type)
 
-    def _add(self, graph_url: str, res: URIRef, info_file_path: str, short_name: str,
+    def _add(self, graph_url: str, res: URIRef, short_name: str,
              list_of_entities=[]) -> Tuple[Graph, Optional[str], Optional[str]]:
         cur_g: Graph = Graph(identifier=graph_url)
         self._set_ns(cur_g)
@@ -224,8 +201,9 @@ class GraphSet(object):
             # Note: even if list of entities is actually a list, it seems
             # that it would be composed by at most one item (e.g. for provenance)
             if list_of_entities:
-                count = str(self._add_number(
-                    info_file_path, int(get_count(URIRef(str(list_of_entities[0]))))))
+                entity_res: URIRef = URIRef(str(list_of_entities[0]))
+                count = str(self.counter_handler.increment_counter(
+                    get_short_name(entity_res), "se", int(get_count(entity_res))))
                 related_to_label += " related to"
                 related_to_short_label += " ->"
                 for idx, cur_entity in enumerate(list_of_entities):
@@ -247,7 +225,7 @@ class GraphSet(object):
                             cur_short_name, cur_entity_prefix, cur_entity_count)
             else:
                 count = self.supplier_prefix + \
-                        str(self._add_number(info_file_path))
+                        str(self.counter_handler.increment_counter(short_name))
 
             if self.wanted_label:  # new
                 label = "%s %s%s [%s/%s%s]" % (
@@ -298,41 +276,3 @@ class GraphSet(object):
     @staticmethod
     def get_graph_iri(g: Graph) -> str:
         return str(g.identifier)
-
-    @staticmethod
-    def _read_number(file_path: str, line_number: int = 1) -> int:
-        cur_number = 0
-
-        try:
-            with open(file_path) as f:
-                cur_number = int(f.readlines()[line_number - 1])
-        except Exception as e:
-            pass  # Do nothing
-
-        return cur_number
-
-    @staticmethod
-    def _add_number(file_path: str, line_number: int = 1) -> int:
-        cur_number = GraphSet._read_number(file_path, line_number) + 1
-
-        if not os.path.exists(os.path.dirname(file_path)):
-            os.makedirs(os.path.dirname(file_path))
-
-        if os.path.exists(file_path):
-            with open(file_path) as f:
-                all_lines = f.readlines()
-        else:
-            all_lines = []
-
-        line_len = len(all_lines)
-        zero_line_number = line_number - 1
-        for i in range(line_number):
-            if i >= line_len:
-                all_lines += ["\n"]
-            if i == zero_line_number:
-                all_lines[i] = str(cur_number) + "\n"
-
-        with open(file_path, "w") as f:
-            f.writelines(all_lines)
-
-        return cur_number

@@ -20,16 +20,18 @@ from rdflib import URIRef, Literal, XSD, RDF
 from oc_ocdm.graph_set import GraphSet
 from oc_ocdm.prov_entity import ProvEntity
 from oc_ocdm.prov_set import ProvSet
+from oc_ocdm.counter_handler.filesystem_counter_handler import FilesystemCounterHandler
 
 
 class TestProvEntity(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.prov_subj_graph_set = GraphSet("http://test/", "context_base", "./info_dir/info_file_", 0, "",
+        cls.counter_handler = FilesystemCounterHandler("./info_dir/")
+        cls.prov_subj_graph_set = GraphSet("http://test/", "context_base", cls.counter_handler, 0, "",
                                            wanted_label=False)
 
         cls.prov_set = ProvSet(prov_subj_graph_set=cls.prov_subj_graph_set, base_iri="http://test/",
-                               context_path="context_base", info_dir="./info_dir/info_file_",
+                               context_path="context_base", counter_handler=cls.counter_handler,
                                wanted_label=False, dir_split=10000, n_file_item=1000, supplier_prefix="070",
                                triplestore_url="http://localhost:9999/blazegraph/sparql", default_dir="/")
 

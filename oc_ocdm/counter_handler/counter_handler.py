@@ -13,3 +13,14 @@
 # DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
+from abc import ABC, abstractmethod
+
+
+class CounterHandler(ABC):
+    @abstractmethod
+    def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
+        raise NotImplementedError
+
+    @abstractmethod
+    def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
+        raise NotImplementedError
