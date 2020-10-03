@@ -36,7 +36,7 @@ class TestGraphSet(unittest.TestCase):
 
     def setUp(self):
         self.counter_handler = FilesystemCounterHandler("./info_dir/")
-        self.graph_set = GraphSet("http://test/", "context_base", self.counter_handler, 0, "", wanted_label=False)
+        self.graph_set = GraphSet("http://test/", "context_base", self.counter_handler, "", wanted_label=False)
 
     def test_res_count(self):
         count = 10
@@ -98,7 +98,7 @@ class TestGraphSet(unittest.TestCase):
         br1 = self.graph_set.add_br(self.__class__.__name__)
         br2 = self.graph_set.add_br(self.__class__.__name__)
         count1 = self.graph_set.r_count
-        ci = self.graph_set.add_ci(self.__class__.__name__, br1, br2)
+        ci = self.graph_set.add_ci(self.__class__.__name__)
         count2 = self.graph_set.r_count
 
         self.assertIsNotNone(ci)

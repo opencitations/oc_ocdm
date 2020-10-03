@@ -69,24 +69,33 @@ def is_string_empty(string):
 
 
 def get_short_name(res):
+    """
     if "/ci/" in str(res):
         return re.sub("^.+/([a-z][a-z])/((0[1-9]+0)?[1-9][0-9]*-(0[1-9]+0)?[1-9][0-9]*(/[1-9][0-9]*)?)$", "\\1", str(res))
     else:
         return re.sub("^.+/([a-z][a-z])(/[0-9]+)?$", "\\1", str(res))
+    """
+    return re.sub("^.+/([a-z][a-z])(/[0-9]+)?$", "\\1", str(res))
 
 
 def get_prefix(res):
+    """
     if "/ci/" in str(res):
         return re.sub("^.+/[a-z][a-z]/((0[1-9]+0)?[1-9][0-9]*-(0[1-9]+0)?[1-9][0-9]*(/[1-9][0-9]*)?)$", "\\2", str(res))
     else:
         return re.sub("^.+/[a-z][a-z]/(0[1-9]+0)?([1-9][0-9]*)$", "\\1", str(res))
+    """
+    return re.sub("^.+/[a-z][a-z]/(0[1-9]+0)?([1-9][0-9]*)$", "\\1", str(res))
 
 
 def get_count(res):
+    """
     if "/ci/" in str(res):
         return re.sub("^.+/[a-z][a-z]/((0[1-9]+0)?[1-9][0-9]*-(0[1-9]+0)?[1-9][0-9]*(/[1-9][0-9]*)?)$", "\\1", str(res))
     else:
         return re.sub("^.+/[a-z][a-z]/(0[1-9]+0)?([1-9][0-9]*)$", "\\2", str(res))
+    """
+    return re.sub("^.+/[a-z][a-z]/(0[1-9]+0)?([1-9][0-9]*)$", "\\2", str(res))
 
 
 def get_resource_number(string_iri):

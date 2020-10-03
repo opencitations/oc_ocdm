@@ -26,13 +26,13 @@ class TestProvSet(unittest.TestCase):
 
     def setUp(self):
         self.counter_handler = FilesystemCounterHandler("./info_dir/")
-        self.prov_subj_graph_set = GraphSet("http://test/", "context_base", self.counter_handler, 0, "",
+        self.prov_subj_graph_set = GraphSet("http://test/", "context_base", self.counter_handler, "",
                                            wanted_label=False)
 
         self.prov_set = ProvSet(prov_subj_graph_set=self.prov_subj_graph_set, base_iri="http://test/",
                                context_path="context_base", counter_handler=self.counter_handler,
-                               wanted_label=False, dir_split=10000, n_file_item=1000, supplier_prefix="070",
-                               triplestore_url="http://localhost:9999/blazegraph/sparql", default_dir="/")
+                               wanted_label=False, supplier_prefix="070",
+                               triplestore_url="http://localhost:9999/blazegraph/sparql")
 
     def test_retrieve_last_snapshot(self):
         br = self.prov_subj_graph_set.add_br(self.__class__.__name__)

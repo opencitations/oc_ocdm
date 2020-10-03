@@ -26,14 +26,14 @@ class TestReferenceAnnotation(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.counter_handler = FilesystemCounterHandler("./info_dir/")
-        cls.graph_set = GraphSet("http://test/", "context_base", cls.counter_handler, 0, "", wanted_label=False)
+        cls.graph_set = GraphSet("http://test/", "context_base", cls.counter_handler, "", wanted_label=False)
 
     def setUp(self):
         self.graph_set.g = []
         self.an = self.graph_set.add_an(self.__class__.__name__)
         self.br1 = self.graph_set.add_br(self.__class__.__name__)
         self.br2 = self.graph_set.add_br(self.__class__.__name__)
-        self.ci = self.graph_set.add_ci(self.__class__.__name__, self.br1, self.br2)
+        self.ci = self.graph_set.add_ci(self.__class__.__name__)
 
     def test_create_body_annotation(self):
         result = self.an._create_body_annotation(self.ci)

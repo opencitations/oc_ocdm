@@ -27,13 +27,13 @@ class TestProvEntity(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.counter_handler = FilesystemCounterHandler("./info_dir/")
-        cls.prov_subj_graph_set = GraphSet("http://test/", "context_base", cls.counter_handler, 0, "",
+        cls.prov_subj_graph_set = GraphSet("http://test/", "context_base", cls.counter_handler, "",
                                            wanted_label=False)
 
         cls.prov_set = ProvSet(prov_subj_graph_set=cls.prov_subj_graph_set, base_iri="http://test/",
                                context_path="context_base", counter_handler=cls.counter_handler,
-                               wanted_label=False, dir_split=10000, n_file_item=1000, supplier_prefix="070",
-                               triplestore_url="http://localhost:9999/blazegraph/sparql", default_dir="/")
+                               wanted_label=False, supplier_prefix="070",
+                               triplestore_url="http://localhost:9999/blazegraph/sparql")
 
     def setUp(self):
         self.prov_set.g = []

@@ -56,7 +56,7 @@ class GraphSet(object):
         "rp": "in-text reference pointer"
     }
 
-    def __init__(self, base_iri: str, context_path: str, counter_handler: CounterHandler, n_file_item: int = 1,
+    def __init__(self, base_iri: str, context_path: str, counter_handler: CounterHandler,
                  supplier_prefix: str = "", forced_type: bool = False, wanted_label: bool = True) -> None:
         self.r_count: int = 0
         # A list of rdflib.Graphs, one for subject entity
@@ -68,7 +68,6 @@ class GraphSet(object):
         self.base_iri: str = base_iri
         self.context_path: str = context_path
         self.cur_name: str = "OCDM " + self.__class__.__name__
-        self.n_file_item: int = n_file_item
         self.supplier_prefix: str = supplier_prefix
         self.wanted_label: bool = wanted_label
         self.forced_type: bool = forced_type
@@ -126,8 +125,7 @@ class GraphSet(object):
                                      resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                                      label=label, g_set=self, forced_type=self.forced_type)
 
-    def add_ci(self, resp_agent: str, citing_res: BibliographicResource, cited_res: BibliographicResource,
-               rp_num: str = None, source_agent: str = None, source: str = None,
+    def add_ci(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> Citation:
         cur_g, count, label = self._add(graph_url=self.g_ci, res=res, short_name="ci", list_of_entities=[])
         return Citation(cur_g, res=res, res_type=GraphEntity.citation, short_name="ci",

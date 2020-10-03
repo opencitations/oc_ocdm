@@ -32,13 +32,11 @@ from oc_ocdm.support.support import get_short_name, get_count
 
 
 class ProvSet(GraphSet):
-    def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, context_path: str, default_dir: str,
-                 counter_handler: CounterHandler, dir_split: int, n_file_item: int, supplier_prefix: str,
+    def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, context_path: str,
+                 counter_handler: CounterHandler, supplier_prefix: str,
                  triplestore_url: str, wanted_label: bool = True) -> None:
-        super(ProvSet, self).__init__(base_iri, context_path, counter_handler, n_file_item, supplier_prefix,
+        super(ProvSet, self).__init__(base_iri, context_path, counter_handler, supplier_prefix,
                                       wanted_label=wanted_label)
-        self.dir_split: int = dir_split
-        self.default_dir: str = default_dir
         if triplestore_url is None:
             self.ts: Optional[ConjunctiveGraph] = None
         else:
@@ -164,7 +162,6 @@ class ProvSet(GraphSet):
     @staticmethod
     def __create_process_query(cur_subj_g: Graph) -> Tuple[str, bool, bool, bool]:
         query_string: str = u"GRAPH <%s> { " % cur_subj_g.identifier
-        is_first: bool = True
         are_citations: bool = False
         are_ids: bool = False
         are_others: bool = False
