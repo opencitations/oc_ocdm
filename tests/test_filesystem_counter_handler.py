@@ -16,7 +16,7 @@
 import os
 import unittest
 
-from oc_ocdm.counter_handler.filesystem_counter_handler import FilesystemCounterHandler
+from oc_ocdm.counter_handler import FilesystemCounterHandler
 
 
 class TestFilesystemCounterHandler(unittest.TestCase):

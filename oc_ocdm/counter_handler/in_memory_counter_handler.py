@@ -15,7 +15,7 @@
 # SOFTWARE.
 from typing import List, Dict
 
-from oc_ocdm.counter_handler.counter_handler import CounterHandler
+from oc_ocdm.counter_handler import CounterHandler
 
 
 class InMemoryCounterHandler(CounterHandler):

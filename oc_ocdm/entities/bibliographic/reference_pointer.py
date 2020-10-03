@@ -15,14 +15,15 @@
 # SOFTWARE.
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from rdflib import URIRef
 
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from oc_ocdm.entities.bibliographic.bibliographic_reference import BibliographicReference
-    from oc_ocdm.entities.bibliographic.reference_annotation import ReferenceAnnotation
-from oc_ocdm.graph_entity import GraphEntity
-from oc_ocdm.entities.bibliographic_entity import BibliographicEntity
+    from oc_ocdm.entities.bibliographic import BibliographicReference
+    from oc_ocdm.entities.bibliographic import ReferenceAnnotation
+from oc_ocdm import GraphEntity
+from oc_ocdm.entities import BibliographicEntity
 
 """
 Notes about RP:

@@ -14,13 +14,15 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 from __future__ import annotations
-from rdflib import URIRef
 
 from typing import TYPE_CHECKING
+
+from rdflib import URIRef
+
 if TYPE_CHECKING:
-    from oc_ocdm.entities.bibliographic.citation import Citation
-from oc_ocdm.graph_entity import GraphEntity
-from oc_ocdm.entities.bibliographic_entity import BibliographicEntity
+    from oc_ocdm.entities.bibliographic import Citation
+from oc_ocdm import GraphEntity
+from oc_ocdm.entities import BibliographicEntity
 
 """
 Notes about AN:

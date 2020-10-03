@@ -14,12 +14,13 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 from __future__ import annotations
+
 import re
 
 from rdflib import URIRef
 
-from oc_ocdm.graph_entity import GraphEntity
-from oc_ocdm.support.support import is_string_empty, encode_url
+from oc_ocdm import GraphEntity
+from oc_ocdm.support import is_string_empty, encode_url
 
 """
 Notes about ID:

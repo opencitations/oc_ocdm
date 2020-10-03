@@ -16,14 +16,13 @@
 
 __author__ = 'essepuntato'
 
-import re
 import os
+import re
 from datetime import datetime
 from typing import Optional, List, Tuple
+from urllib.parse import quote
 
 from rdflib import Literal, RDF, URIRef, XSD
-
-from urllib.parse import quote
 
 
 def create_date(date_list: List[Optional[int]] = None) -> Tuple[Optional[URIRef], Optional[str]]:

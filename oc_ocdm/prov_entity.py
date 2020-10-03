@@ -23,9 +23,9 @@ from rdflib import Namespace, URIRef, Graph
 from rdflib.namespace import XSD
 
 if TYPE_CHECKING:
-    from oc_ocdm.prov_set import ProvSet
-    from oc_ocdm.entities.bibliographic.responsible_agent import ResponsibleAgent
-from oc_ocdm.graph_entity import GraphEntity
+    from oc_ocdm import ProvSet
+    from oc_ocdm.entities.bibliographic import ResponsibleAgent
+from oc_ocdm import GraphEntity
 
 """
 Notes about SE:

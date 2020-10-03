@@ -18,14 +18,14 @@ from __future__ import annotations
 __author__ = 'essepuntato'
 
 from typing import ClassVar
+from typing import TYPE_CHECKING
 
 from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import RDFS
 
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from oc_ocdm.graph_set import GraphSet
-from oc_ocdm.support.support import create_literal,\
+    from oc_ocdm import GraphSet
+from oc_ocdm.support import create_literal,\
                                     create_type
 
 

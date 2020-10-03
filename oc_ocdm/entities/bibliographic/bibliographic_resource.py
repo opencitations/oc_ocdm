@@ -15,18 +15,18 @@
 # SOFTWARE.
 from __future__ import annotations
 
-from rdflib import URIRef
-
 from typing import TYPE_CHECKING, List, Optional
 
-from oc_ocdm.support.support import create_date
+from rdflib import URIRef
+
+from oc_ocdm.support import create_date
 
 if TYPE_CHECKING:
-    from oc_ocdm.entities.bibliographic.bibliographic_reference import BibliographicReference
-    from oc_ocdm.entities.bibliographic.discourse_element import DiscourseElement
-    from oc_ocdm.entities.bibliographic.resource_embodiment import ResourceEmbodiment
-from oc_ocdm.graph_entity import GraphEntity
-from oc_ocdm.entities.bibliographic_entity import BibliographicEntity
+    from oc_ocdm.entities.bibliographic import BibliographicReference
+    from oc_ocdm.entities.bibliographic import DiscourseElement
+    from oc_ocdm.entities.bibliographic import ResourceEmbodiment
+from oc_ocdm import GraphEntity
+from oc_ocdm.entities import BibliographicEntity
 
 """
 Notes about BR:

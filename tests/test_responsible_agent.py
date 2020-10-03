@@ -17,9 +17,9 @@ import unittest
 
 from rdflib import Literal, URIRef
 
-from oc_ocdm.graph_entity import GraphEntity
-from oc_ocdm.graph_set import GraphSet
-from oc_ocdm.counter_handler.filesystem_counter_handler import FilesystemCounterHandler
+from oc_ocdm import GraphEntity
+from oc_ocdm import GraphSet
+from oc_ocdm.counter_handler import FilesystemCounterHandler
 
 
 class TestResponsibleAgent(unittest.TestCase):

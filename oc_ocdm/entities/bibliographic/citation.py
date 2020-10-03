@@ -15,16 +15,16 @@
 # SOFTWARE.
 from __future__ import annotations
 
-from rdflib import URIRef, XSD
-
 from typing import TYPE_CHECKING, Optional, List
 
-from oc_ocdm.support.support import create_date
+from rdflib import URIRef, XSD
+
+from oc_ocdm.support import create_date
 
 if TYPE_CHECKING:
-    from oc_ocdm.entities.bibliographic.bibliographic_resource import BibliographicResource
-from oc_ocdm.graph_entity import GraphEntity
-from oc_ocdm.entities.bibliographic_entity import BibliographicEntity
+    from oc_ocdm.entities.bibliographic import BibliographicResource
+from oc_ocdm import GraphEntity
+from oc_ocdm.entities import BibliographicEntity
 
 """
 Notes about CI:

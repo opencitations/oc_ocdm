@@ -21,23 +21,22 @@ from typing import Dict, List, ClassVar, Tuple, Optional
 
 from rdflib import Graph, Namespace, URIRef
 
-from oc_ocdm.graph_entity import GraphEntity
-from oc_ocdm.counter_handler.counter_handler import CounterHandler
-from oc_ocdm.support.support import get_short_name, \
-                                    get_count, \
-                                    get_prefix
-
-from oc_ocdm.entities.bibliographic.agent_role import AgentRole
-from oc_ocdm.entities.bibliographic.bibliographic_reference import BibliographicReference
-from oc_ocdm.entities.bibliographic.bibliographic_resource import BibliographicResource
-from oc_ocdm.entities.bibliographic.citation import Citation
-from oc_ocdm.entities.bibliographic.discourse_element import DiscourseElement
-from oc_ocdm.entities.identifier import Identifier
-from oc_ocdm.entities.bibliographic.pointer_list import PointerList
-from oc_ocdm.entities.bibliographic.reference_annotation import ReferenceAnnotation
-from oc_ocdm.entities.bibliographic.reference_pointer import ReferencePointer
-from oc_ocdm.entities.bibliographic.resource_embodiment import ResourceEmbodiment
-from oc_ocdm.entities.bibliographic.responsible_agent import ResponsibleAgent
+from oc_ocdm import GraphEntity
+from oc_ocdm.counter_handler import CounterHandler
+from oc_ocdm.entities import Identifier
+from oc_ocdm.entities.bibliographic import AgentRole
+from oc_ocdm.entities.bibliographic import BibliographicReference
+from oc_ocdm.entities.bibliographic import BibliographicResource
+from oc_ocdm.entities.bibliographic import Citation
+from oc_ocdm.entities.bibliographic import DiscourseElement
+from oc_ocdm.entities.bibliographic import PointerList
+from oc_ocdm.entities.bibliographic import ReferenceAnnotation
+from oc_ocdm.entities.bibliographic import ReferencePointer
+from oc_ocdm.entities.bibliographic import ResourceEmbodiment
+from oc_ocdm.entities.bibliographic import ResponsibleAgent
+from oc_ocdm.support import get_short_name, \
+    get_count, \
+    get_prefix
 
 
 class GraphSet(object):

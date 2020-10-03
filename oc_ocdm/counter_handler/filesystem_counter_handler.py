@@ -18,7 +18,7 @@ from shutil import copymode, move
 from tempfile import mkstemp
 from typing import BinaryIO, Tuple, List, Dict
 
-from oc_ocdm.counter_handler.counter_handler import CounterHandler
+from oc_ocdm.counter_handler import CounterHandler
 
 
 class FilesystemCounterHandler(CounterHandler):

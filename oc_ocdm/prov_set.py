@@ -24,11 +24,11 @@ from rdflib import Graph, ConjunctiveGraph, URIRef
 from rdflib.compare import to_isomorphic, graph_diff, IsomorphicGraph
 from rdflib.query import Result
 
-from oc_ocdm.graph_entity import GraphEntity
-from oc_ocdm.graph_set import GraphSet
-from oc_ocdm.prov_entity import ProvEntity
-from oc_ocdm.counter_handler.counter_handler import CounterHandler
-from oc_ocdm.support.support import get_short_name, get_count
+from oc_ocdm import GraphEntity
+from oc_ocdm import GraphSet
+from oc_ocdm import ProvEntity
+from oc_ocdm.counter_handler import CounterHandler
+from oc_ocdm.support import get_short_name, get_count
 
 
 class ProvSet(GraphSet):
