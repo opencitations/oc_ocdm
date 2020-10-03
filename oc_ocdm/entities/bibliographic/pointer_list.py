@@ -41,7 +41,7 @@ class PointerList(BibliographicEntity):
 
     # HAS ELEMENT (ReferencePointer)
     # <self.res> CO:element <rp_res>
-    def contains_element(self, rp_res: ReferencePointer) -> None:  #  new
+    def contains_element(self, rp_res: ReferencePointer) -> None:
         """The in-text reference pointer that is part of the in-text reference pointer list present at
         a particular location within the body of the citing work.
         """

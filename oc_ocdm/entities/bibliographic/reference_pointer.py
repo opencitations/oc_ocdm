@@ -47,7 +47,7 @@ class ReferencePointer(BibliographicEntity):
 
     # HAS NEXT (ReferencePointer)
     # <self.res> OCO:hasNext <rp_res>
-    def has_next_rp(self, rp_res: ReferencePointer) -> None:  # new
+    def has_next_rp(self, rp_res: ReferencePointer) -> None:
         """The following in-text reference pointer, when included within a single in-text reference
         pointer list.
         """
@@ -61,7 +61,6 @@ class ReferencePointer(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.denotes, URIRef(str(be_res))))
 
-    # new
     # HAS ANNOTATION (ReferenceAnnotation)
     # <self.res> OCO:hasAnnotation <an_res>
     def _create_annotation(self, an_res: ReferenceAnnotation) -> None:

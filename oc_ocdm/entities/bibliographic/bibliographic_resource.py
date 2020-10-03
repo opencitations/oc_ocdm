@@ -128,7 +128,7 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS PART (DiscourseElement)
     # <self.res> FRBR:part <de_res>
-    def contains_discourse_element(self, de_res: DiscourseElement) -> None:  #  new
+    def contains_discourse_element(self, de_res: DiscourseElement) -> None:
         """A bibliographic reference within the bibliographic resource, or a discourse element
         wherein the text of the bibliographic resources can be organized.
         """
@@ -139,7 +139,7 @@ class BibliographicResource(BibliographicEntity):
     """
 
     # <de_res> FRBR:part <self.res>
-    def contained_in_discourse_element(self, de_res: DiscourseElement) -> None:  #  new
+    def contained_in_discourse_element(self, de_res: DiscourseElement) -> None:
         """A bibliographic reference within the bibliographic resource, or a discourse element
         wherein the text of the bibliographic resources can be organized.
         """
@@ -172,7 +172,7 @@ class BibliographicResource(BibliographicEntity):
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
     # <self.res> RDF:type <type>
 
-    def create_archival_document(self) -> None:  # new
+    def create_archival_document(self) -> None:
         """The type of the bibliographic resource
         """
         self._create_type(GraphEntity.archival_document)
@@ -300,7 +300,7 @@ class BibliographicResource(BibliographicEntity):
     def create_series(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.series)  # new
+        self._create_type(GraphEntity.series)
 
     def create_expression_collection(self) -> None:
         """The type of the bibliographic resource

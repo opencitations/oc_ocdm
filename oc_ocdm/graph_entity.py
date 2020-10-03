@@ -32,17 +32,17 @@ from oc_ocdm.support.support import create_literal,\
 class GraphEntity(object):
     BIRO: ClassVar[Namespace] = Namespace("http://purl.org/spar/biro/")
     C4O: ClassVar[Namespace] = Namespace("http://purl.org/spar/c4o/")
-    CO: ClassVar[Namespace] = Namespace("http://purl.org/co/")  #  new
+    CO: ClassVar[Namespace] = Namespace("http://purl.org/co/")
     CITO: ClassVar[Namespace] = Namespace("http://purl.org/spar/cito/")
     DATACITE: ClassVar[Namespace] = Namespace("http://purl.org/spar/datacite/")
     DCTERMS: ClassVar[Namespace] = Namespace("http://purl.org/dc/terms/")
-    DEO: ClassVar[Namespace] = Namespace("http://purl.org/spar/deo/")  #  new
+    DEO: ClassVar[Namespace] = Namespace("http://purl.org/spar/deo/")
     DOCO: ClassVar[Namespace] = Namespace("http://purl.org/spar/doco/")
     FABIO: ClassVar[Namespace] = Namespace("http://purl.org/spar/fabio/")
     FOAF: ClassVar[Namespace] = Namespace("http://xmlns.com/foaf/0.1/")
     FRBR: ClassVar[Namespace] = Namespace("http://purl.org/vocab/frbr/core#")
     LITERAL: ClassVar[Namespace] = Namespace("http://www.essepuntato.it/2010/06/literalreification/")
-    OA: ClassVar[Namespace] = Namespace("http://www.w3.org/ns/oa#")  # new
+    OA: ClassVar[Namespace] = Namespace("http://www.w3.org/ns/oa#")
     OCO: ClassVar[Namespace] = Namespace("https://w3id.org/oc/ontology/")
     PRISM: ClassVar[Namespace] = Namespace("http://prismstandard.org/namespaces/basic/2.0/")
     PRO: ClassVar[Namespace] = Namespace("http://purl.org/spar/pro/")
@@ -52,11 +52,11 @@ class GraphEntity(object):
     has_publication_date: ClassVar[URIRef] = PRISM.publicationDate
     bibliographic_reference: ClassVar[URIRef] = BIRO.BibliographicReference
     references: ClassVar[URIRef] = BIRO.references
-    denotes: ClassVar[URIRef] = C4O.denotes  # new
+    denotes: ClassVar[URIRef] = C4O.denotes
     has_content: ClassVar[URIRef] = C4O.hasContent
-    intextref_pointer: ClassVar[URIRef] = C4O.InTextReferencePointer  #  new
-    is_context_of: ClassVar[URIRef] = C4O.isContextOf  # new
-    singleloc_pointer_list: ClassVar[URIRef] = C4O.SingleLocationPointerList  #  new
+    intextref_pointer: ClassVar[URIRef] = C4O.InTextReferencePointer
+    is_context_of: ClassVar[URIRef] = C4O.isContextOf
+    singleloc_pointer_list: ClassVar[URIRef] = C4O.SingleLocationPointerList
     has_element: ClassVar[URIRef] = CO.element
     citation: ClassVar[URIRef] = CITO.Citation
     cites: ClassVar[URIRef] = CITO.cites
@@ -69,9 +69,9 @@ class GraphEntity(object):
     pmid: ClassVar[URIRef] = DATACITE.pmid
     pmcid: ClassVar[URIRef] = DATACITE.pmcid
     orcid: ClassVar[URIRef] = DATACITE.orcid
-    xpath: ClassVar[URIRef] = DATACITE["local-resource-identifier-scheme"]  #  new
-    intrepid: ClassVar[URIRef] = DATACITE["intrepid"]  # new
-    xmlid: ClassVar[URIRef] = DATACITE["local-resource-identifier-scheme"]  #  new
+    xpath: ClassVar[URIRef] = DATACITE["local-resource-identifier-scheme"]
+    intrepid: ClassVar[URIRef] = DATACITE["intrepid"]
+    xmlid: ClassVar[URIRef] = DATACITE["local-resource-identifier-scheme"]
     has_identifier: ClassVar[URIRef] = DATACITE.hasIdentifier
     identifier: ClassVar[URIRef] = DATACITE.Identifier
     isbn: ClassVar[URIRef] = DATACITE.isbn
@@ -79,16 +79,16 @@ class GraphEntity(object):
     url: ClassVar[URIRef] = DATACITE.url
     uses_identifier_scheme: ClassVar[URIRef] = DATACITE.usesIdentifierScheme
     title: ClassVar[URIRef] = DCTERMS["title"]
-    caption: ClassVar[URIRef] = DEO.Caption  #  new
-    discourse_element: ClassVar[URIRef] = DEO.DiscourseElement  #  new
-    footnote: ClassVar[URIRef] = DOCO.Footnote  #  new
-    paragraph: ClassVar[URIRef] = DOCO.Paragraph  #  new
+    caption: ClassVar[URIRef] = DEO.Caption
+    discourse_element: ClassVar[URIRef] = DEO.DiscourseElement
+    footnote: ClassVar[URIRef] = DOCO.Footnote
+    paragraph: ClassVar[URIRef] = DOCO.Paragraph
     part: ClassVar[URIRef] = DOCO.Part
-    section: ClassVar[URIRef] = DOCO.Section  #  new
-    section_title: ClassVar[URIRef] = DOCO.SectionTitle  #  new
-    sentence: ClassVar[URIRef] = DOCO.Sentence  #  new
-    table: ClassVar[URIRef] = DOCO.Table  #  new
-    text_chunk: ClassVar[URIRef] = DOCO.TextChunk  #  new
+    section: ClassVar[URIRef] = DOCO.Section
+    section_title: ClassVar[URIRef] = DOCO.SectionTitle
+    sentence: ClassVar[URIRef] = DOCO.Sentence
+    table: ClassVar[URIRef] = DOCO.Table
+    text_chunk: ClassVar[URIRef] = DOCO.TextChunk
     academic_proceedings: ClassVar[URIRef] = FABIO.AcademicProceedings
     book: ClassVar[URIRef] = FABIO.Book
     book_chapter: ClassVar[URIRef] = FABIO.BookChapter
@@ -117,7 +117,7 @@ class GraphEntity(object):
     embodiment: ClassVar[URIRef] = FRBR.embodiment
     part_of: ClassVar[URIRef] = FRBR.partOf
     contains_reference: ClassVar[URIRef] = FRBR.part
-    contains_de: ClassVar[URIRef] = FRBR.part  # new
+    contains_de: ClassVar[URIRef] = FRBR.part
     has_literal_value: ClassVar[URIRef] = LITERAL.hasLiteralValue
     ending_page: ClassVar[URIRef] = PRISM.endingPage
     starting_page: ClassVar[URIRef] = PRISM.startingPage
@@ -128,14 +128,14 @@ class GraphEntity(object):
     is_document_context_for: ClassVar[URIRef] = PRO.isDocumentContextFor
     role_in_time: ClassVar[URIRef] = PRO.RoleInTime
     with_role: ClassVar[URIRef] = PRO.withRole
-    note: ClassVar[URIRef] = OA.Annotation  #  new
-    has_body: ClassVar[URIRef] = OA.hasBody  # new
-    has_annotation: ClassVar[URIRef] = OCO.hasAnnotation  # new (inverse of OA.hasTarget)
+    note: ClassVar[URIRef] = OA.Annotation
+    has_body: ClassVar[URIRef] = OA.hasBody
+    has_annotation: ClassVar[URIRef] = OCO.hasAnnotation  # inverse of OA.hasTarget
     has_next: ClassVar[URIRef] = OCO.hasNext
-    archival_document: ClassVar[URIRef] = FABIO.ArchivalDocument  # new
-    viaf: ClassVar[URIRef] = DATACITE.viaf  # new
-    crossref: ClassVar[URIRef] = DATACITE.crossref  # new #TODO add to datacite!
-    wikidata: ClassVar[URIRef] = DATACITE.wikidata  # new #TODO add to datacite!
+    archival_document: ClassVar[URIRef] = FABIO.ArchivalDocument
+    viaf: ClassVar[URIRef] = DATACITE.viaf
+    crossref: ClassVar[URIRef] = DATACITE.crossref  # TODO: add to datacite!
+    wikidata: ClassVar[URIRef] = DATACITE.wikidata  # TODO: add to datacite!
     has_edition: ClassVar[URIRef] = PRISM.edition
     relation: ClassVar[URIRef] = DCTERMS.relation
     has_citation_creation_date: ClassVar[URIRef] = CITO.hasCitationCreationDate
@@ -241,4 +241,3 @@ class GraphEntity(object):
         for s, p, o in iterable_of_triples:
             if s == self.res:  # This guarantees that only triples belonging to the resource will be added
                 self.g.add((s, p, o))
-

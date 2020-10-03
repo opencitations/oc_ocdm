@@ -43,17 +43,17 @@ from oc_ocdm.entities.bibliographic.responsible_agent import ResponsibleAgent
 class GraphSet(object):
     # Labels
     labels: ClassVar[Dict[str, str]] = {
-        "an": "annotation",  # new
+        "an": "annotation",
         "ar": "agent role",
         "be": "bibliographic entry",
         "br": "bibliographic resource",
-        "ci": "citation",  # new
-        "de": "discourse element",  # new
+        "ci": "citation",
+        "de": "discourse element",
         "id": "identifier",
-        "pl": "single location pointer list",  # new
+        "pl": "single location pointer list",
         "ra": "responsible agent",
         "re": "resource embodiment",
-        "rp": "in-text reference pointer"  # new
+        "rp": "in-text reference pointer"
     }
 
     def __init__(self, base_iri: str, context_path: str, counter_handler: CounterHandler, n_file_item: int = 1,
@@ -70,23 +70,23 @@ class GraphSet(object):
         self.cur_name: str = "OCDM " + self.__class__.__name__
         self.n_file_item: int = n_file_item
         self.supplier_prefix: str = supplier_prefix
-        self.wanted_label: bool = wanted_label  # new
-        self.forced_type: bool = forced_type  # new
+        self.wanted_label: bool = wanted_label
+        self.forced_type: bool = forced_type
         # Graphs
         # The following structure of URL is quite important for the other classes
         # developed and should not be changed. The only part that can change is the
         # value of the base_iri
-        self.g_an: str = base_iri + "an/"  # new
+        self.g_an: str = base_iri + "an/"
         self.g_ar: str = base_iri + "ar/"
         self.g_be: str = base_iri + "be/"
         self.g_br: str = base_iri + "br/"
-        self.g_ci: str = base_iri + "ci/"  # new
-        self.g_de: str = base_iri + "de/"  #  new
+        self.g_ci: str = base_iri + "ci/"
+        self.g_de: str = base_iri + "de/"
         self.g_id: str = base_iri + "id/"
-        self.g_pl: str = base_iri + "pl/"  # new
+        self.g_pl: str = base_iri + "pl/"
         self.g_ra: str = base_iri + "ra/"
         self.g_re: str = base_iri + "re/"
-        self.g_rp: str = base_iri + "rp/"  # new
+        self.g_rp: str = base_iri + "rp/"
 
         self.counter_handler: CounterHandler = counter_handler
 
@@ -99,7 +99,7 @@ class GraphSet(object):
 
     # Add resources related to bibliographic entities
     def add_an(self, resp_agent: str, source_agent: str = None, source: str = None,
-               res: URIRef = None) -> ReferenceAnnotation:  #  new
+               res: URIRef = None) -> ReferenceAnnotation:
         cur_g, count, label = self._add(graph_url=self.g_an, res=res, short_name="an", list_of_entities=[])
         return ReferenceAnnotation(cur_g, res=res, res_type=GraphEntity.note, short_name="an", resp_agent=resp_agent,
                                    source_agent=source_agent, source=source, count=count,
@@ -115,65 +115,65 @@ class GraphSet(object):
     def add_be(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> BibliographicReference:
         cur_g, count, label = self._add(graph_url=self.g_be, res=res, short_name="be", list_of_entities=[])
-        return BibliographicReference(cur_g, res=res, res_type=GraphEntity.bibliographic_reference, short_name="be", resp_agent=resp_agent,
-                                      source_agent=source_agent, source=source, count=count,
+        return BibliographicReference(cur_g, res=res, res_type=GraphEntity.bibliographic_reference, short_name="be",
+                                      resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                                       label=label, g_set=self, forced_type=self.forced_type)
 
     def add_br(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> BibliographicResource:
         cur_g, count, label = self._add(graph_url=self.g_br, res=res, short_name="br", list_of_entities=[])
-        return BibliographicResource(cur_g, res=res, res_type=GraphEntity.expression, short_name="br", resp_agent=resp_agent,
-                                     source_agent=source_agent, source=source, count=count,
+        return BibliographicResource(cur_g, res=res, res_type=GraphEntity.expression, short_name="br",
+                                     resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                                      label=label, g_set=self, forced_type=self.forced_type)
 
     def add_ci(self, resp_agent: str, citing_res: BibliographicResource, cited_res: BibliographicResource,
                rp_num: str = None, source_agent: str = None, source: str = None,
-               res: URIRef = None) -> Citation:  #  new
+               res: URIRef = None) -> Citation:
         cur_g, count, label = self._add(graph_url=self.g_ci, res=res, short_name="ci", list_of_entities=[])
-        return Citation(cur_g, res=res, res_type=GraphEntity.citation, resp_agent=resp_agent,
-                        source_agent=source_agent, source=source, count=count,
+        return Citation(cur_g, res=res, res_type=GraphEntity.citation, short_name="ci",
+                        resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                         label=None, g_set=self, forced_type=self.forced_type)
 
     def add_de(self, resp_agent: str, source_agent: str = None, source: str = None,
-               res: URIRef = None) -> DiscourseElement:  # new
+               res: URIRef = None) -> DiscourseElement:
         cur_g, count, label = self._add(graph_url=self.g_de, res=res, short_name="de", list_of_entities=[])
-        return DiscourseElement(cur_g, res=res, res_type=GraphEntity.discourse_element, short_name="de", resp_agent=resp_agent,
-                                source_agent=source_agent, source=source, count=count,
+        return DiscourseElement(cur_g, res=res, res_type=GraphEntity.discourse_element, short_name="de",
+                                resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                                 label=label, g_set=self, forced_type=self.forced_type)
 
     def add_id(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> Identifier:
         cur_g, count, label = self._add(graph_url=self.g_id, res=res, short_name="id", list_of_entities=[])
-        return Identifier(cur_g, res=res, res_type=GraphEntity.identifier, short_name="id", resp_agent=resp_agent,
-                          source_agent=source_agent, source=source, count=count,
+        return Identifier(cur_g, res=res, res_type=GraphEntity.identifier, short_name="id",
+                          resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                           label=label, g_set=self, forced_type=self.forced_type)
 
     def add_pl(self, resp_agent: str, source_agent: str = None, source: str = None,
-               res: URIRef = None) -> PointerList:  # new
+               res: URIRef = None) -> PointerList:
         cur_g, count, label = self._add(graph_url=self.g_pl, res=res, short_name="pl", list_of_entities=[])
-        return PointerList(cur_g, res=res, res_type=GraphEntity.singleloc_pointer_list, short_name="pl", resp_agent=resp_agent,
-                           source_agent=source_agent, source=source, count=count,
+        return PointerList(cur_g, res=res, res_type=GraphEntity.singleloc_pointer_list, short_name="pl",
+                           resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                            label=label, g_set=self, forced_type=self.forced_type)
 
     def add_rp(self, resp_agent: str, source_agent: str = None, source: str = None,
-               res: URIRef = None) -> ReferencePointer:  # new
+               res: URIRef = None) -> ReferencePointer:
         cur_g, count, label = self._add(graph_url=self.g_rp, res=res, short_name="rp", list_of_entities=[])
-        return ReferencePointer(cur_g, res=res, res_type=GraphEntity.intextref_pointer, short_name="rp", resp_agent=resp_agent,
-                                source_agent=source_agent, source=source, count=count,
+        return ReferencePointer(cur_g, res=res, res_type=GraphEntity.intextref_pointer, short_name="rp",
+                                resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                                 label=label, g_set=self, forced_type=self.forced_type)
 
     def add_ra(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> ResponsibleAgent:
         cur_g, count, label = self._add(graph_url=self.g_ra, res=res, short_name="ra", list_of_entities=[])
-        return ResponsibleAgent(cur_g, res=res, res_type=GraphEntity.agent, short_name="ra", resp_agent=resp_agent,
-                                source_agent=source_agent, source=source, count=count,
+        return ResponsibleAgent(cur_g, res=res, res_type=GraphEntity.agent, short_name="ra",
+                                resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                                 label=label, g_set=self, forced_type=self.forced_type)
 
     def add_re(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> ResourceEmbodiment:
         cur_g, count, label = self._add(graph_url=self.g_re, res=res, short_name="re", list_of_entities=[])
-        return ResourceEmbodiment(cur_g, res=res, res_type=GraphEntity.manifestation, short_name="re", resp_agent=resp_agent,
-                                  source_agent=source_agent, source=source, count=count,
+        return ResourceEmbodiment(cur_g, res=res, res_type=GraphEntity.manifestation, short_name="re",
+                                  resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                                   label=label, g_set=self, forced_type=self.forced_type)
 
     def _add(self, graph_url: str, res: URIRef, short_name: str,
@@ -227,7 +227,7 @@ class GraphSet(object):
                 count = self.supplier_prefix + \
                         str(self.counter_handler.increment_counter(short_name))
 
-            if self.wanted_label:  # new
+            if self.wanted_label:
                 label = "%s %s%s [%s/%s%s]" % (
                     self.labels[short_name], count, related_to_label,
                     short_name, count, related_to_short_label)
@@ -245,24 +245,24 @@ class GraphSet(object):
         self.r_count += 1
 
     def _set_ns(self, g: Graph) -> None:
-        g.namespace_manager.bind("an", Namespace(self.g_an))  # new
+        g.namespace_manager.bind("an", Namespace(self.g_an))
         g.namespace_manager.bind("ar", Namespace(self.g_ar))
         g.namespace_manager.bind("be", Namespace(self.g_be))
-        g.namespace_manager.bind("ci", Namespace(self.g_ci))  # new
-        g.namespace_manager.bind("de", Namespace(self.g_de))  # new
+        g.namespace_manager.bind("ci", Namespace(self.g_ci))
+        g.namespace_manager.bind("de", Namespace(self.g_de))
         g.namespace_manager.bind("br", Namespace(self.g_br))
         g.namespace_manager.bind("id", Namespace(self.g_id))
-        g.namespace_manager.bind("pl", Namespace(self.g_pl))  # new
+        g.namespace_manager.bind("pl", Namespace(self.g_pl))
         g.namespace_manager.bind("ra", Namespace(self.g_ra))
         g.namespace_manager.bind("re", Namespace(self.g_re))
-        g.namespace_manager.bind("rp", Namespace(self.g_rp))  # new
+        g.namespace_manager.bind("rp", Namespace(self.g_rp))
         g.namespace_manager.bind("biro", GraphEntity.BIRO)
-        g.namespace_manager.bind("co", GraphEntity.CO)  # new
+        g.namespace_manager.bind("co", GraphEntity.CO)
         g.namespace_manager.bind("c4o", GraphEntity.C4O)
         g.namespace_manager.bind("cito", GraphEntity.CITO)
         g.namespace_manager.bind("datacite", GraphEntity.DATACITE)
         g.namespace_manager.bind("dcterms", GraphEntity.DCTERMS)
-        g.namespace_manager.bind("deo", GraphEntity.DEO)  # new
+        g.namespace_manager.bind("deo", GraphEntity.DEO)
         g.namespace_manager.bind("doco", GraphEntity.DOCO)
         g.namespace_manager.bind("fabio", GraphEntity.FABIO)
         g.namespace_manager.bind("foaf", GraphEntity.FOAF)

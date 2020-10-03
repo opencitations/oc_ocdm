@@ -53,7 +53,6 @@ class BibliographicReference(BibliographicEntity):
         """
         return self._create_literal(GraphEntity.has_content, string)
 
-    # new
     # HAS ANNOTATION (ReferenceAnnotation)
     # <self.res> OCO:hasAnnotation <an_res>
     def _create_annotation(self, an_res: ReferenceAnnotation) -> None:

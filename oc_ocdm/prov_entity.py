@@ -57,7 +57,7 @@ class ProvEntity(GraphEntity):
     was_derived_from: ClassVar[URIRef] = PROV.wasDerivedFrom
     had_primary_source: ClassVar[URIRef] = PROV.hadPrimarySource
     was_generated_by: ClassVar[URIRef] = PROV.wasGeneratedBy
-    was_attributed_to: ClassVar[URIRef] = PROV.wasAttributedTo  #  new
+    was_attributed_to: ClassVar[URIRef] = PROV.wasAttributedTo
     was_invalidated_by: ClassVar[URIRef] = PROV.wasInvalidatedBy
     qualified_association: ClassVar[URIRef] = PROV.qualifiedAssociation
     description: ClassVar[URIRef] = GraphEntity.DCTERMS.description
@@ -138,7 +138,6 @@ class ProvEntity(GraphEntity):
 
     # IS ATTRIBUTED TO
     # <self.res> PROV:wasAttributedTo <se_agent>
-    # new
     def has_resp_agent(self, se_agent: str) -> None:
         """The agent responsible for the creation of the current entity snapshot.
         """

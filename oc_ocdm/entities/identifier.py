@@ -62,22 +62,22 @@ class Identifier(GraphEntity):
     def create_url(self, string: str) -> bool:
         return self._associate_identifier_with_scheme(encode_url(string.lower()), GraphEntity.url)
 
-    def create_xpath(self, string: str) -> bool:  #  new
+    def create_xpath(self, string: str) -> bool:
         return self._associate_identifier_with_scheme(string, GraphEntity.xpath)
 
-    def create_intrepid(self, string: str) -> bool:  #  new
+    def create_intrepid(self, string: str) -> bool:
         return self._associate_identifier_with_scheme(string, GraphEntity.intrepid)
 
-    def create_xmlid(self, string: str) -> bool:  #  new
+    def create_xmlid(self, string: str) -> bool:
         return self._associate_identifier_with_scheme(string, GraphEntity.xmlid)
 
-    def create_wikidata(self, string: str) -> bool:  # new
+    def create_wikidata(self, string: str) -> bool:
         return self._associate_identifier_with_scheme(string, GraphEntity.wikidata)
 
-    def create_crossref(self, string: str) -> bool:  # new
+    def create_crossref(self, string: str) -> bool:
         return self._associate_identifier_with_scheme(string, GraphEntity.crossref)
 
-    def create_viaf(self, string: str) -> bool:  # new
+    def create_viaf(self, string: str) -> bool:
         return self._associate_identifier_with_scheme(string, GraphEntity.viaf)
 
     # <self.res> LITERAL:hasLiteralValue "string"
