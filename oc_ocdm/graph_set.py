@@ -57,7 +57,6 @@ class GraphSet(object):
 
     def __init__(self, base_iri: str, context_path: str, counter_handler: CounterHandler,
                  supplier_prefix: str = "", forced_type: bool = False, wanted_label: bool = True) -> None:
-        self.r_count: int = 0
         # A list of rdflib.Graphs, one for subject entity
         self.g: List[Graph] = []
         # The following variable maps a URIRef with the graph in the graph list related to them
@@ -87,9 +86,6 @@ class GraphSet(object):
         self.g_rp: str = base_iri + "rp/"
 
         self.counter_handler: CounterHandler = counter_handler
-
-    def res_count(self) -> int:  # useless?
-        return self.r_count
 
     def get_entity(self, res: URIRef) -> GraphEntity:
         if res in self.res_to_entity:
@@ -191,7 +187,6 @@ class GraphSet(object):
         # This is the case when 'res_or_resp_agent' is actually a string representing the name
         # of the responsible agent. In this case, a new individual will be created.
         else:
-            self._increment()
             related_to_label: str = ""
             related_to_short_label: str = ""
 
@@ -237,9 +232,6 @@ class GraphSet(object):
             if len(cur_g) > 0:
                 result += [cur_g]
         return result
-
-    def _increment(self) -> None:
-        self.r_count += 1
 
     def _set_ns(self, g: Graph) -> None:
         g.namespace_manager.bind("an", Namespace(self.g_an))

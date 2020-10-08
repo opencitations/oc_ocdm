@@ -38,15 +38,6 @@ class TestGraphSet(unittest.TestCase):
         self.counter_handler = FilesystemCounterHandler("./info_dir/")
         self.graph_set = GraphSet("http://test/", "context_base", self.counter_handler, "", wanted_label=False)
 
-    def test_res_count(self):
-        count = 10
-        for i in range(count):
-            self.graph_set.add_ar(self.__class__.__name__)
-        result = self.graph_set.res_count()
-        self.assertIsNotNone(result)
-        self.assertEqual(result, count)
-        self.assertEqual(result, self.graph_set.r_count)
-
     def test_get_entity(self):
         ar = self.graph_set.add_ar(self.__class__.__name__)
         ref = URIRef(str(ar))
@@ -55,114 +46,79 @@ class TestGraphSet(unittest.TestCase):
         self.assertIs(result, ar)
 
     def test_add_an(self):
-        count1 = self.graph_set.r_count
         an = self.graph_set.add_an(self.__class__.__name__)
-        count2 = self.graph_set.r_count
 
         self.assertIsNotNone(an)
-        self.assertEqual(count2, count1+1)
         self.assertIsInstance(an, ReferenceAnnotation)
         self.assertEqual(str(an.g.identifier), self.graph_set.g_an)
 
     def test_add_ar(self):
-        count1 = self.graph_set.r_count
         ar = self.graph_set.add_ar(self.__class__.__name__)
-        count2 = self.graph_set.r_count
 
         self.assertIsNotNone(ar)
-        self.assertEqual(count2, count1 + 1)
         self.assertIsInstance(ar, AgentRole)
         self.assertEqual(str(ar.g.identifier), self.graph_set.g_ar)
 
     def test_add_be(self):
-        count1 = self.graph_set.r_count
         be = self.graph_set.add_be(self.__class__.__name__)
-        count2 = self.graph_set.r_count
 
         self.assertIsNotNone(be)
-        self.assertEqual(count2, count1 + 1)
         self.assertIsInstance(be, BibliographicReference)
         self.assertEqual(str(be.g.identifier), self.graph_set.g_be)
 
     def test_add_br(self):
-        count1 = self.graph_set.r_count
         br = self.graph_set.add_br(self.__class__.__name__)
-        count2 = self.graph_set.r_count
 
         self.assertIsNotNone(br)
-        self.assertEqual(count2, count1 + 1)
         self.assertIsInstance(br, BibliographicResource)
         self.assertEqual(str(br.g.identifier), self.graph_set.g_br)
 
     def test_add_ci(self):
-        br1 = self.graph_set.add_br(self.__class__.__name__)
-        br2 = self.graph_set.add_br(self.__class__.__name__)
-        count1 = self.graph_set.r_count
         ci = self.graph_set.add_ci(self.__class__.__name__)
-        count2 = self.graph_set.r_count
 
         self.assertIsNotNone(ci)
-        self.assertEqual(count2, count1 + 1)
         self.assertIsInstance(ci, Citation)
         self.assertEqual(str(ci.g.identifier), self.graph_set.g_ci)
 
     def test_add_de(self):
-        count1 = self.graph_set.r_count
         de = self.graph_set.add_de(self.__class__.__name__)
-        count2 = self.graph_set.r_count
 
         self.assertIsNotNone(de)
-        self.assertEqual(count2, count1 + 1)
         self.assertIsInstance(de, DiscourseElement)
         self.assertEqual(str(de.g.identifier), self.graph_set.g_de)
 
     def test_add_id(self):
-        count1 = self.graph_set.r_count
         identifier = self.graph_set.add_id(self.__class__.__name__)
-        count2 = self.graph_set.r_count
 
         self.assertIsNotNone(identifier)
-        self.assertEqual(count2, count1 + 1)
         self.assertIsInstance(identifier, Identifier)
         self.assertEqual(str(identifier.g.identifier), self.graph_set.g_id)
 
     def test_add_pl(self):
-        count1 = self.graph_set.r_count
         pl = self.graph_set.add_pl(self.__class__.__name__)
-        count2 = self.graph_set.r_count
 
         self.assertIsNotNone(pl)
-        self.assertEqual(count2, count1 + 1)
         self.assertIsInstance(pl, PointerList)
         self.assertEqual(str(pl.g.identifier), self.graph_set.g_pl)
 
     def test_add_rp(self):
-        count1 = self.graph_set.r_count
         rp = self.graph_set.add_rp(self.__class__.__name__)
-        count2 = self.graph_set.r_count
 
         self.assertIsNotNone(rp)
-        self.assertEqual(count2, count1 + 1)
         self.assertIsInstance(rp, ReferencePointer)
         self.assertEqual(str(rp.g.identifier), self.graph_set.g_rp)
 
     def test_add_ra(self):
-        count1 = self.graph_set.r_count
         ra = self.graph_set.add_ra(self.__class__.__name__)
-        count2 = self.graph_set.r_count
 
         self.assertIsNotNone(ra)
-        self.assertEqual(count2, count1 + 1)
         self.assertIsInstance(ra, ResponsibleAgent)
         self.assertEqual(str(ra.g.identifier), self.graph_set.g_ra)
 
     def test_add_re(self):
-        count1 = self.graph_set.r_count
         re = self.graph_set.add_re(self.__class__.__name__)
-        count2 = self.graph_set.r_count
 
         self.assertIsNotNone(re)
-        self.assertEqual(count2, count1 + 1)
         self.assertIsInstance(re, ResourceEmbodiment)
         self.assertEqual(str(re.g.identifier), self.graph_set.g_re)
 
