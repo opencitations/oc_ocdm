@@ -167,9 +167,7 @@ class GraphEntity(object):
         # If res was not specified, create from scratch the URI reference for this entity,
         # otherwise use the provided one
         if res is None:
-            self.res = \
-                URIRef(str(g.identifier) + (short_name +
-                                            "/" if short_name != "" else "") + count)
+            self.res = self._generate_new_res(g, count, short_name)
         else:
             self.res = res
             existing_ref = True
@@ -195,6 +193,10 @@ class GraphEntity(object):
             # It creates the label
             if label is not None:
                 self.create_label(label)
+
+    @staticmethod
+    def _generate_new_res(g: Graph, count: str, short_name: str = "") -> URIRef:
+        return URIRef(str(g.identifier) + count)
 
     def create_label(self, string: str) -> bool:
         """Creates the RDF triple <self.res> rdfs:label <string>

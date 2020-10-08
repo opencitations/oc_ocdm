@@ -70,9 +70,13 @@ class ProvEntity(GraphEntity):
     def __init__(self, prov_subject: GraphEntity, g: Graph, res: URIRef = None, res_type: URIRef = None,
                  resp_agent: str = None, source_agent: str = None, source: str = None, count: str = None,
                  label: str = None, short_name: str = "", g_set: ProvSet = None) -> None:
-        self.prov_subject: GraphEntity = prov_subject
         super(ProvEntity, self).__init__(
             g, res, res_type, resp_agent, source_agent, source, count, label, short_name, g_set)
+        self.prov_subject: GraphEntity = prov_subject
+
+    @staticmethod
+    def _generate_new_res(g: Graph, count: str, short_name: str = "") -> URIRef:
+        return URIRef(str(g.identifier) + (short_name + "/" if short_name != "" else "") + count)
 
     # HAS CREATION DATE
     # <self.res> PROV:generatedAtTime "string"
