@@ -34,9 +34,6 @@ from oc_ocdm.entities.bibliographic import ReferenceAnnotation
 from oc_ocdm.entities.bibliographic import ReferencePointer
 from oc_ocdm.entities.bibliographic import ResourceEmbodiment
 from oc_ocdm.entities.bibliographic import ResponsibleAgent
-from oc_ocdm.support import get_short_name, \
-    get_count, \
-    get_prefix
 
 
 class GraphSet(object):
@@ -94,83 +91,82 @@ class GraphSet(object):
     # Add resources related to bibliographic entities
     def add_an(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> ReferenceAnnotation:
-        cur_g, count, label = self._add(graph_url=self.g_an, res=res, short_name="an", list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_an, res=res, short_name="an")
         return ReferenceAnnotation(cur_g, res=res, res_type=GraphEntity.note, short_name="an", resp_agent=resp_agent,
                                    source_agent=source_agent, source=source, count=count,
                                    label=label, g_set=self, forced_type=self.forced_type)
 
     def add_ar(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> AgentRole:
-        cur_g, count, label = self._add(graph_url=self.g_ar, res=res, short_name="ar", list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_ar, res=res, short_name="ar")
         return AgentRole(cur_g, res=res, res_type=GraphEntity.role_in_time, short_name="ar", resp_agent=resp_agent,
                          source_agent=source_agent, source=source, count=count,
                          label=label, g_set=self, forced_type=self.forced_type)
 
     def add_be(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> BibliographicReference:
-        cur_g, count, label = self._add(graph_url=self.g_be, res=res, short_name="be", list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_be, res=res, short_name="be")
         return BibliographicReference(cur_g, res=res, res_type=GraphEntity.bibliographic_reference, short_name="be",
                                       resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                                       label=label, g_set=self, forced_type=self.forced_type)
 
     def add_br(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> BibliographicResource:
-        cur_g, count, label = self._add(graph_url=self.g_br, res=res, short_name="br", list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_br, res=res, short_name="br")
         return BibliographicResource(cur_g, res=res, res_type=GraphEntity.expression, short_name="br",
                                      resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                                      label=label, g_set=self, forced_type=self.forced_type)
 
     def add_ci(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> Citation:
-        cur_g, count, label = self._add(graph_url=self.g_ci, res=res, short_name="ci", list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_ci, res=res, short_name="ci")
         return Citation(cur_g, res=res, res_type=GraphEntity.citation, short_name="ci",
                         resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                         label=None, g_set=self, forced_type=self.forced_type)
 
     def add_de(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> DiscourseElement:
-        cur_g, count, label = self._add(graph_url=self.g_de, res=res, short_name="de", list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_de, res=res, short_name="de")
         return DiscourseElement(cur_g, res=res, res_type=GraphEntity.discourse_element, short_name="de",
                                 resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                                 label=label, g_set=self, forced_type=self.forced_type)
 
     def add_id(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> Identifier:
-        cur_g, count, label = self._add(graph_url=self.g_id, res=res, short_name="id", list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_id, res=res, short_name="id")
         return Identifier(cur_g, res=res, res_type=GraphEntity.identifier, short_name="id",
                           resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                           label=label, g_set=self, forced_type=self.forced_type)
 
     def add_pl(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> PointerList:
-        cur_g, count, label = self._add(graph_url=self.g_pl, res=res, short_name="pl", list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_pl, res=res, short_name="pl")
         return PointerList(cur_g, res=res, res_type=GraphEntity.singleloc_pointer_list, short_name="pl",
                            resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                            label=label, g_set=self, forced_type=self.forced_type)
 
     def add_rp(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> ReferencePointer:
-        cur_g, count, label = self._add(graph_url=self.g_rp, res=res, short_name="rp", list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_rp, res=res, short_name="rp")
         return ReferencePointer(cur_g, res=res, res_type=GraphEntity.intextref_pointer, short_name="rp",
                                 resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                                 label=label, g_set=self, forced_type=self.forced_type)
 
     def add_ra(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> ResponsibleAgent:
-        cur_g, count, label = self._add(graph_url=self.g_ra, res=res, short_name="ra", list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_ra, res=res, short_name="ra")
         return ResponsibleAgent(cur_g, res=res, res_type=GraphEntity.agent, short_name="ra",
                                 resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                                 label=label, g_set=self, forced_type=self.forced_type)
 
     def add_re(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None) -> ResourceEmbodiment:
-        cur_g, count, label = self._add(graph_url=self.g_re, res=res, short_name="re", list_of_entities=[])
+        cur_g, count, label = self._add(graph_url=self.g_re, res=res, short_name="re")
         return ResourceEmbodiment(cur_g, res=res, res_type=GraphEntity.manifestation, short_name="re",
                                   resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                                   label=label, g_set=self, forced_type=self.forced_type)
 
-    def _add(self, graph_url: str, res: URIRef, short_name: str,
-             list_of_entities=[]) -> Tuple[Graph, Optional[str], Optional[str]]:
+    def _add(self, graph_url: str, res: URIRef, short_name: str) -> Tuple[Graph, Optional[str], Optional[str]]:
         cur_g: Graph = Graph(identifier=graph_url)
         self._set_ns(cur_g)
         self.g += [cur_g]
@@ -184,47 +180,15 @@ class GraphSet(object):
         # and it is added to the graph set.
         if res is not None:
             return cur_g, count, label
+
         # This is the case when 'res_or_resp_agent' is actually a string representing the name
         # of the responsible agent. In this case, a new individual will be created.
-        else:
-            related_to_label: str = ""
-            related_to_short_label: str = ""
+        count = self.supplier_prefix + str(self.counter_handler.increment_counter(short_name))
 
-            # Note: even if list of entities is actually a list, it seems
-            # that it would be composed by at most one item (e.g. for provenance)
-            if list_of_entities:
-                entity_res: URIRef = URIRef(str(list_of_entities[0]))
-                count = str(self.counter_handler.increment_counter(
-                    get_short_name(entity_res), "se", int(get_count(entity_res))))
-                related_to_label += " related to"
-                related_to_short_label += " ->"
-                for idx, cur_entity in enumerate(list_of_entities):
-                    if idx > 0:
-                        related_to_label += ","
-                        related_to_short_label += ","
-                    cur_short_name = get_short_name(cur_entity)
-                    cur_entity_count = get_count(cur_entity)
-                    cur_entity_prefix = get_prefix(cur_entity)
-                    if cur_short_name == 'ci':
-                        related_to_label += " %s %s" % (
-                            self.labels[cur_short_name], cur_entity_count)
-                        related_to_short_label += " %s/%s" % (
-                            cur_short_name, cur_entity_count)
-                    else:
-                        related_to_label += " %s %s%s" % (
-                            self.labels[cur_short_name], cur_entity_prefix, cur_entity_count)
-                        related_to_short_label += " %s/%s%s" % (
-                            cur_short_name, cur_entity_prefix, cur_entity_count)
-            else:
-                count = self.supplier_prefix + \
-                        str(self.counter_handler.increment_counter(short_name))
+        if self.wanted_label:
+            label = "%s %s [%s/%s]" % (self.labels[short_name], count, short_name, count)
 
-            if self.wanted_label:
-                label = "%s %s%s [%s/%s%s]" % (
-                    self.labels[short_name], count, related_to_label,
-                    short_name, count, related_to_short_label)
-
-            return cur_g, count, label
+        return cur_g, count, label
 
     def graphs(self) -> List[Graph]:
         result = []

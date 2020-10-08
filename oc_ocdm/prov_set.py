@@ -28,7 +28,7 @@ from oc_ocdm import GraphEntity
 from oc_ocdm import GraphSet
 from oc_ocdm import ProvEntity
 from oc_ocdm.counter_handler import CounterHandler
-from oc_ocdm.support import get_short_name, get_count
+from oc_ocdm.support import get_short_name, get_count, get_prefix
 
 
 class ProvSet(GraphSet):
@@ -61,7 +61,13 @@ class ProvSet(GraphSet):
     # Add resources related to provenance information
 
     def add_se(self, resp_agent: str = None, prov_subject: GraphEntity = None, res: URIRef = None) -> ProvEntity:
-        return self._add_prov("se", ProvEntity.entity, res, resp_agent, prov_subject)
+        g_prov: str = str(prov_subject) + "/prov/"
+        list_of_entities: List[GraphEntity] = [] if prov_subject is None else [prov_subject]
+        cur_g, count, label = self._add_prov(graph_url=g_prov, res=res, short_name="se",
+                                        list_of_entities=list_of_entities)
+        return ProvEntity(list_of_entities[0] if list_of_entities else None, cur_g, res=res, res_type=ProvEntity.entity,
+                          short_name="se", resp_agent=resp_agent, source_agent=None, source=None, count=count,
+                          label=label, g_set=self)
 
     def generate_provenance(self, resp_agent: Optional[str], c_time: float = None, do_insert: bool = True,
                             remove_entity: bool = False) -> None:
@@ -178,16 +184,60 @@ class ProvSet(GraphSet):
 
         return query_string + "}", are_citations, are_ids, are_others
 
-    def _add_prov(self, short_name: str, prov_type: URIRef, res: URIRef, resp_agent: str,
-                  prov_subject: GraphEntity = None) -> ProvEntity:
+    def _add_prov(self, graph_url: str, res: URIRef, short_name: str,
+                  list_of_entities=[]) -> Tuple[Graph, Optional[str], Optional[str]]:
+        cur_g: Graph = Graph(identifier=graph_url)
+        self._set_ns(cur_g)
+        self.g += [cur_g]
 
-        g_prov: str = str(prov_subject) + "/prov/"
-        list_of_entities: List[GraphEntity] = [] if prov_subject is None else [prov_subject]
-        cur_g, count, label = self._add(graph_url=g_prov, res=res, short_name=short_name,
-                                        list_of_entities=list_of_entities)
-        return ProvEntity(list_of_entities[0] if list_of_entities else None, cur_g, res=res, res_type=prov_type,
-                          short_name=short_name, resp_agent=resp_agent, source_agent=None, source=None, count=count,
-                          label=label, g_set=self)
+        count: Optional[str] = None
+        label: Optional[str] = None
+
+        # This is the case when 'res_or_resp_agent' is a resource. It allows one to create
+        # the graph entity starting from and existing URIRef, without incrementing anything
+        # at the graph set level. However, a new graph is created and reserved for such resource
+        # and it is added to the graph set.
+        if res is not None:
+            return cur_g, count, label
+
+        # This is the case when 'res_or_resp_agent' is actually a string representing the name
+        # of the responsible agent. In this case, a new individual will be created.
+        related_to_label: str = ""
+        related_to_short_label: str = ""
+        # Note: even if list of entities is actually a list, it seems
+        # that it would be composed by at most one item (e.g. for provenance)
+        if list_of_entities:
+            entity_res: URIRef = URIRef(str(list_of_entities[0]))
+            count = str(self.counter_handler.increment_counter(
+                get_short_name(entity_res), "se", int(get_count(entity_res))))
+            related_to_label += " related to"
+            related_to_short_label += " ->"
+            for idx, cur_entity in enumerate(list_of_entities):
+                if idx > 0:
+                    related_to_label += ","
+                    related_to_short_label += ","
+                cur_short_name = get_short_name(cur_entity)
+                cur_entity_count = get_count(cur_entity)
+                cur_entity_prefix = get_prefix(cur_entity)
+                if cur_short_name == 'ci':
+                    related_to_label += " %s %s" % (
+                        self.labels[cur_short_name], cur_entity_count)
+                    related_to_short_label += " %s/%s" % (
+                        cur_short_name, cur_entity_count)
+                else:
+                    related_to_label += " %s %s%s" % (
+                        self.labels[cur_short_name], cur_entity_prefix, cur_entity_count)
+                    related_to_short_label += " %s/%s%s" % (
+                        cur_short_name, cur_entity_prefix, cur_entity_count)
+        else:
+            count = self.supplier_prefix + str(self.counter_handler.increment_counter(short_name))
+
+        if self.wanted_label:
+            label = "%s %s%s [%s/%s%s]" % (
+                self.labels[short_name], count, related_to_label,
+                short_name, count, related_to_short_label)
+
+        return cur_g, count, label
 
     def _set_ns(self, g: Graph) -> None:
         super(ProvSet, self)._set_ns(g)
