@@ -62,9 +62,9 @@ class ProvSet(GraphSet):
 
     def add_se(self, resp_agent: str = None, prov_subject: GraphEntity = None, res: URIRef = None) -> ProvEntity:
         g_prov: str = str(prov_subject) + "/prov/"
-        list_of_entities: List[GraphEntity] = [] if prov_subject is None else [prov_subject]
+        list_of_entities: Tuple[GraphEntity] = () if prov_subject is None else (prov_subject,)
         cur_g, count, label = self._add_prov(graph_url=g_prov, res=res, short_name="se",
-                                        list_of_entities=list_of_entities)
+                                             list_of_entities=list_of_entities)
         return ProvEntity(list_of_entities[0] if list_of_entities else None, cur_g, res=res, res_type=ProvEntity.entity,
                           short_name="se", resp_agent=resp_agent, source_agent=None, source=None, count=count,
                           label=label, g_set=self)
@@ -185,7 +185,7 @@ class ProvSet(GraphSet):
         return query_string + "}", are_citations, are_ids, are_others
 
     def _add_prov(self, graph_url: str, res: URIRef, short_name: str,
-                  list_of_entities=[]) -> Tuple[Graph, Optional[str], Optional[str]]:
+                  list_of_entities: Tuple[GraphEntity] = ()) -> Tuple[Graph, Optional[str], Optional[str]]:
         cur_g: Graph = Graph(identifier=graph_url)
         self._set_ns(cur_g)
         self.g += [cur_g]
