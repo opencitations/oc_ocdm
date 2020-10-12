@@ -53,7 +53,7 @@ class TestCitation(unittest.TestCase):
             string = "2020-05-25"
             datatype = XSD.date
             result = self.ci.has_citation_creation_date([2020, 5, 25])
-            self.assertTrue(result)
+            self.assertIsNone(result)
 
             triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
                                                                                       normalize=False)
@@ -62,7 +62,7 @@ class TestCitation(unittest.TestCase):
             string = "2020-05"
             datatype = XSD.gYearMonth
             result = self.ci.has_citation_creation_date([2020, 5])
-            self.assertTrue(result)
+            self.assertIsNone(result)
 
             triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
                                                                                       normalize=False)
@@ -71,7 +71,7 @@ class TestCitation(unittest.TestCase):
             string = "2020"
             datatype = XSD.gYear
             result = self.ci.has_citation_creation_date([2020])
-            self.assertTrue(result)
+            self.assertIsNone(result)
 
             triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
                                                                                       normalize=False)
@@ -80,7 +80,7 @@ class TestCitation(unittest.TestCase):
             string = "2020"
             datatype = XSD.gYear
             result = self.ci.has_citation_creation_date([2020, None])
-            self.assertTrue(result)
+            self.assertIsNone(result)
 
             triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
                                                                                       normalize=False)
@@ -89,7 +89,7 @@ class TestCitation(unittest.TestCase):
             string = "2020"
             datatype = XSD.gYear
             result = self.ci.has_citation_creation_date([2020, None, None])
-            self.assertTrue(result)
+            self.assertIsNone(result)
 
             triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
                                                                                       normalize=False)
@@ -97,24 +97,21 @@ class TestCitation(unittest.TestCase):
         with self.subTest("date_list is [None, None, None]"):
             prev_len = len(self.ci.g)
             result = self.ci.has_citation_creation_date([None, None, None])
-            self.assertFalse(result)
-            self.assertIsNotNone(result)
+            self.assertIsNone(result)
 
             after_len = len(self.ci.g)
             self.assertEqual(prev_len, after_len)
         with self.subTest("date_list is empty"):
             prev_len = len(self.ci.g)
             result = self.ci.has_citation_creation_date([])
-            self.assertFalse(result)
-            self.assertIsNotNone(result)
+            self.assertIsNone(result)
 
             after_len = len(self.ci.g)
             self.assertEqual(prev_len, after_len)
         with self.subTest("date_list is None"):
             prev_len = len(self.ci.g)
             result = self.ci.has_citation_creation_date()
-            self.assertFalse(result)
-            self.assertIsNotNone(result)
+            self.assertIsNone(result)
 
             after_len = len(self.ci.g)
             self.assertEqual(prev_len, after_len)
@@ -122,7 +119,7 @@ class TestCitation(unittest.TestCase):
             string = "2020-01-25"
             datatype = XSD.date
             result = self.ci.has_citation_creation_date([2020, 1, 25])
-            self.assertTrue(result)
+            self.assertIsNone(result)
 
             triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
                                                                                       normalize=False)
@@ -131,7 +128,7 @@ class TestCitation(unittest.TestCase):
             string = "2020"
             datatype = XSD.gYear
             result = self.ci.has_citation_creation_date([2020, 1, 1])
-            self.assertTrue(result)
+            self.assertIsNone(result)
 
             triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
                                                                                       normalize=False)
@@ -140,7 +137,7 @@ class TestCitation(unittest.TestCase):
             string = "2020-05-01"
             datatype = XSD.date
             result = self.ci.has_citation_creation_date([2020, 5, 1])
-            self.assertTrue(result)
+            self.assertIsNone(result)
 
             triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
                                                                                       normalize=False)
@@ -150,7 +147,7 @@ class TestCitation(unittest.TestCase):
         duration = "P2Y6M5DT12H35M30S"  # 2 years, 6 months, 5 days, 12 hours, 35 minutes, 30 seconds
         datatype = XSD.duration
         result = self.ci.has_citation_time_span(duration)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.ci.res, GraphEntity.has_citation_time_span, Literal(duration, datatype=datatype,
                                                                                        normalize=False)

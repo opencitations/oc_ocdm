@@ -36,60 +36,57 @@ class Identifier(GraphEntity):
        metadata are themselves given unique corpus identifiers e.g. 'id/0420129'."""
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
-    def create_oci(self, string: str) -> bool:
-        return self._associate_identifier_with_scheme(string, GraphEntity.oci)
+    def create_oci(self, string: str) -> None:
+        self._associate_identifier_with_scheme(string, GraphEntity.oci)
 
-    def create_orcid(self, string: str) -> bool:
-        return self._associate_identifier_with_scheme(string, GraphEntity.orcid)
+    def create_orcid(self, string: str) -> None:
+        self._associate_identifier_with_scheme(string, GraphEntity.orcid)
 
-    def create_doi(self, string: str) -> bool:
-        return self._associate_identifier_with_scheme(string.lower(), GraphEntity.doi)
+    def create_doi(self, string: str) -> None:
+        self._associate_identifier_with_scheme(string.lower(), GraphEntity.doi)
 
-    def create_pmid(self, string: str) -> bool:
-        return self._associate_identifier_with_scheme(string, GraphEntity.pmid)
+    def create_pmid(self, string: str) -> None:
+        self._associate_identifier_with_scheme(string, GraphEntity.pmid)
 
-    def create_pmcid(self, string: str) -> bool:
-        return self._associate_identifier_with_scheme(string, GraphEntity.pmcid)
+    def create_pmcid(self, string: str) -> None:
+        self._associate_identifier_with_scheme(string, GraphEntity.pmcid)
 
-    def create_issn(self, string: str) -> bool:
+    def create_issn(self, string: str) -> None:
         cur_string = re.sub("–", "-", string)
         if cur_string != "0000-0000":
-            return self._associate_identifier_with_scheme(string, GraphEntity.issn)
+            self._associate_identifier_with_scheme(string, GraphEntity.issn)
 
-    def create_isbn(self, string: str) -> bool:
-        return self._associate_identifier_with_scheme(
-            re.sub("–", "-", string), GraphEntity.isbn)
+    def create_isbn(self, string: str) -> None:
+        self._associate_identifier_with_scheme(re.sub("–", "-", string), GraphEntity.isbn)
 
-    def create_url(self, string: str) -> bool:
-        return self._associate_identifier_with_scheme(encode_url(string.lower()), GraphEntity.url)
+    def create_url(self, string: str) -> None:
+        self._associate_identifier_with_scheme(encode_url(string.lower()), GraphEntity.url)
 
-    def create_xpath(self, string: str) -> bool:
-        return self._associate_identifier_with_scheme(string, GraphEntity.xpath)
+    def create_xpath(self, string: str) -> None:
+        self._associate_identifier_with_scheme(string, GraphEntity.xpath)
 
-    def create_intrepid(self, string: str) -> bool:
-        return self._associate_identifier_with_scheme(string, GraphEntity.intrepid)
+    def create_intrepid(self, string: str) -> None:
+        self._associate_identifier_with_scheme(string, GraphEntity.intrepid)
 
-    def create_xmlid(self, string: str) -> bool:
-        return self._associate_identifier_with_scheme(string, GraphEntity.xmlid)
+    def create_xmlid(self, string: str) -> None:
+        self._associate_identifier_with_scheme(string, GraphEntity.xmlid)
 
-    def create_wikidata(self, string: str) -> bool:
-        return self._associate_identifier_with_scheme(string, GraphEntity.wikidata)
+    def create_wikidata(self, string: str) -> None:
+        self._associate_identifier_with_scheme(string, GraphEntity.wikidata)
 
-    def create_crossref(self, string: str) -> bool:
-        return self._associate_identifier_with_scheme(string, GraphEntity.crossref)
+    def create_crossref(self, string: str) -> None:
+        self._associate_identifier_with_scheme(string, GraphEntity.crossref)
 
-    def create_viaf(self, string: str) -> bool:
-        return self._associate_identifier_with_scheme(string, GraphEntity.viaf)
+    def create_viaf(self, string: str) -> None:
+        self._associate_identifier_with_scheme(string, GraphEntity.viaf)
 
     # <self.res> LITERAL:hasLiteralValue "string"
     # <self.res> DATACITE:usesIdentifierScheme <id_type>
-    def _associate_identifier_with_scheme(self, string: str, id_type: URIRef) -> bool:
+    def _associate_identifier_with_scheme(self, string: str, id_type: URIRef) -> None:
         if not is_string_empty(string):
             self.remove_identifier_with_scheme()
             self._create_literal(GraphEntity.has_literal_value, string)
             self.g.add((self.res, GraphEntity.uses_identifier_scheme, id_type))
-            return True
-        return False
 
     def remove_identifier_with_scheme(self) -> None:
         self.g.remove((self.res, GraphEntity.has_literal_value, None))

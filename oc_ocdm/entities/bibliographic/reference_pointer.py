@@ -40,12 +40,12 @@ class ReferencePointer(BibliographicEntity):
 
     # HAS REFERENCE POINTER TEXT
     # <self.res> C4O:hasContent "string"
-    def create_content(self, string: str) -> bool:
+    def create_content(self, string: str) -> None:
         """The literal text of the textual device forming an in-text reference pointer and denoting
         a single bibliographic reference (e.g. “[1]”).
         """
         self.remove_content()
-        return self._create_literal(GraphEntity.has_content, string)
+        self._create_literal(GraphEntity.has_content, string)
 
     def remove_content(self) -> None:
         self.g.remove((self.res, GraphEntity.has_content, None))

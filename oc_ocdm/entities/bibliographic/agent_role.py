@@ -58,28 +58,27 @@ class AgentRole(BibliographicEntity):
                     ar_res.g.remove((ar_res.res, GraphEntity.has_next, None))
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
-    def create_publisher(self, br_res: BibliographicResource) -> bool:
+    def create_publisher(self, br_res: BibliographicResource) -> None:
         """The specific type of role under consideration (e.g. author, editor or publisher).
         """
-        return self._associate_role_with_document(GraphEntity.publisher, br_res)
+        self._associate_role_with_document(GraphEntity.publisher, br_res)
 
-    def create_author(self, br_res: BibliographicResource) -> bool:
+    def create_author(self, br_res: BibliographicResource) -> None:
         """The specific type of role under consideration (e.g. author, editor or publisher).
         """
-        return self._associate_role_with_document(GraphEntity.author, br_res)
+        self._associate_role_with_document(GraphEntity.author, br_res)
 
-    def create_editor(self, br_res: BibliographicResource) -> bool:
+    def create_editor(self, br_res: BibliographicResource) -> None:
         """The specific type of role under consideration (e.g. author, editor or publisher).
         """
-        return self._associate_role_with_document(GraphEntity.editor, br_res)
+        self._associate_role_with_document(GraphEntity.editor, br_res)
 
     # <self.res> PRO:withRole <role_type>
     # <br_res> PRO:isDocumentContextFor <role_type> (BibliographicResource's HAS CONTRIBUTOR)
-    def _associate_role_with_document(self, role_type: URIRef, br_res: BibliographicResource) -> bool:
+    def _associate_role_with_document(self, role_type: URIRef, br_res: BibliographicResource) -> None:
         self.remove_role_and_document()
         self.g.add((self.res, GraphEntity.with_role, role_type))
         br_res.g.add((br_res.res, GraphEntity.is_document_context_for, self.res))
-        return True
 
     def remove_role_and_document(self) -> None:
         if self.g_set is not None:

@@ -42,11 +42,11 @@ class DiscourseElement(BibliographicEntity):
 
     # HAS TITLE
     # <self.res> DCTERMS:title "string"
-    def create_title(self, string: str) -> bool:
+    def create_title(self, string: str) -> None:
         """The title of the discourse element, such as the title of a figure or a section in an article.
         """
         self.remove_title()
-        return self._create_literal(GraphEntity.title, string)
+        self._create_literal(GraphEntity.title, string)
 
     def remove_title(self) -> None:
         self.g.remove((self.res, GraphEntity.title, None))
@@ -116,20 +116,20 @@ class DiscourseElement(BibliographicEntity):
 
     # HAS CONTENT
     # <self.res> C4O:hasContent "string"
-    def create_content(self, string: str) -> bool:
+    def create_content(self, string: str) -> None:
         """The literal document text contained by the discourse element.
         """
         self.remove_content()
-        return self._create_literal(GraphEntity.has_content, string)
+        self._create_literal(GraphEntity.has_content, string)
 
     def remove_content(self) -> None:
         self.g.remove((self.res, GraphEntity.has_content, None))
 
     # HAS NUMBER
     # <self.res> FABIO:hasSequenceIdentifier "string"
-    def create_number(self, string: str) -> bool:
+    def create_number(self, string: str) -> None:
         self.remove_number()
-        return self._create_literal(GraphEntity.has_sequence_identifier, string)
+        self._create_literal(GraphEntity.has_sequence_identifier, string)
 
     def remove_number(self) -> None:
         self.g.remove((self.res, GraphEntity.has_sequence_identifier, None))

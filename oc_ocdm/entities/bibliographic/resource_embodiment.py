@@ -47,7 +47,7 @@ class ResourceEmbodiment(BibliographicEntity):
 
     # HAS FIRST PAGE
     # <self.res> PRISM:startingPage "string"
-    def create_starting_page(self, string: str) -> bool:
+    def create_starting_page(self, string: str) -> None:
         """The first page of the bibliographic resource according to the current embodiment.
         """
         self.remove_starting_page()
@@ -55,14 +55,14 @@ class ResourceEmbodiment(BibliographicEntity):
             page_number = string
         else:
             page_number = re.sub("[-–]+.*$", "", string)
-        return self._create_literal(GraphEntity.starting_page, page_number)
+        self._create_literal(GraphEntity.starting_page, page_number)
 
     def remove_starting_page(self) -> None:
         self.g.remove((self.res, GraphEntity.starting_page, None))
 
     # HAS LAST PAGE
     # <self.res> PRISM:endingPage "string"
-    def create_ending_page(self, string: str) -> bool:
+    def create_ending_page(self, string: str) -> None:
         """The last page of the bibliographic resource according to the current embodiment.
         """
         self.remove_ending_page()
@@ -70,7 +70,7 @@ class ResourceEmbodiment(BibliographicEntity):
             page_number = string
         else:
             page_number = re.sub("^.*[-–]+", "", string)
-        return self._create_literal(GraphEntity.ending_page, page_number)
+        self._create_literal(GraphEntity.ending_page, page_number)
 
     def remove_ending_page(self) -> None:
         self.g.remove((self.res, GraphEntity.ending_page, None))

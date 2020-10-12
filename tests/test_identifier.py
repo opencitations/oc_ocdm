@@ -35,7 +35,7 @@ class TestIdentifier(unittest.TestCase):
     def test_create_orcid(self):
         orcid = "abcdefghi"
         result = self.id.create_orcid(orcid)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.id.res, GraphEntity.has_literal_value, Literal(orcid)
         self.assertIn(triple, self.id.g)
@@ -46,7 +46,7 @@ class TestIdentifier(unittest.TestCase):
     def test_create_doi(self):
         doi = "abcdefghi"
         result = self.id.create_doi(doi)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.id.res, GraphEntity.has_literal_value, Literal(doi)
         self.assertIn(triple, self.id.g)
@@ -57,7 +57,7 @@ class TestIdentifier(unittest.TestCase):
     def test_create_pmid(self):
         pmid = "abcdefghi"
         result = self.id.create_pmid(pmid)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.id.res, GraphEntity.has_literal_value, Literal(pmid)
         self.assertIn(triple, self.id.g)
@@ -68,7 +68,7 @@ class TestIdentifier(unittest.TestCase):
     def test_create_pmcid(self):
         pmcid = "abcdefghi"
         result = self.id.create_pmcid(pmcid)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.id.res, GraphEntity.has_literal_value, Literal(pmcid)
         self.assertIn(triple, self.id.g)
@@ -79,7 +79,7 @@ class TestIdentifier(unittest.TestCase):
     def test_create_issn(self):
         issn = "abcdefghi"
         result = self.id.create_issn(issn)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.id.res, GraphEntity.has_literal_value, Literal(issn)
         self.assertIn(triple, self.id.g)
@@ -90,7 +90,7 @@ class TestIdentifier(unittest.TestCase):
     def test_create_isbn(self):
         isbn = "abcdefghi"
         result = self.id.create_isbn(isbn)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.id.res, GraphEntity.has_literal_value, Literal(isbn)
         self.assertIn(triple, self.id.g)
@@ -101,7 +101,7 @@ class TestIdentifier(unittest.TestCase):
     def test_create_url(self):
         url = "abcdefghi"
         result = self.id.create_url(url)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.id.res, GraphEntity.has_literal_value, Literal(url)
         self.assertIn(triple, self.id.g)
@@ -112,7 +112,7 @@ class TestIdentifier(unittest.TestCase):
     def test_create_xpath(self):
         xpath = "abcdefghi"
         result = self.id.create_xpath(xpath)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.id.res, GraphEntity.has_literal_value, Literal(xpath)
         self.assertIn(triple, self.id.g)
@@ -123,7 +123,7 @@ class TestIdentifier(unittest.TestCase):
     def test_create_intrepid(self):
         intrepid = "abcdefghi"
         result = self.id.create_intrepid(intrepid)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.id.res, GraphEntity.has_literal_value, Literal(intrepid)
         self.assertIn(triple, self.id.g)
@@ -134,7 +134,7 @@ class TestIdentifier(unittest.TestCase):
     def test_create_xmlid(self):
         xmlid = "abcdefghi"
         result = self.id.create_xmlid(xmlid)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.id.res, GraphEntity.has_literal_value, Literal(xmlid)
         self.assertIn(triple, self.id.g)
@@ -145,7 +145,7 @@ class TestIdentifier(unittest.TestCase):
     def test_create_wikidata(self):
         wikidata = "abcdefghi"
         result = self.id.create_wikidata(wikidata)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.id.res, GraphEntity.has_literal_value, Literal(wikidata)
         self.assertIn(triple, self.id.g)
@@ -156,7 +156,7 @@ class TestIdentifier(unittest.TestCase):
     def test_create_crossref(self):
         crossref = "abcdefghi"
         result = self.id.create_crossref(crossref)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.id.res, GraphEntity.has_literal_value, Literal(crossref)
         self.assertIn(triple, self.id.g)
@@ -167,7 +167,7 @@ class TestIdentifier(unittest.TestCase):
     def test_create_viaf(self):
         viaf = "abcdefghi"
         result = self.id.create_viaf(viaf)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.id.res, GraphEntity.has_literal_value, Literal(viaf)
         self.assertIn(triple, self.id.g)

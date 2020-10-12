@@ -36,7 +36,7 @@ class TestResponsibleAgent(unittest.TestCase):
     def test_create_name(self):
         name = "Name"
         result = self.ra.create_name(name)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.ra.res, GraphEntity.name, Literal(name)
         self.assertIn(triple, self.ra.g)
@@ -44,7 +44,7 @@ class TestResponsibleAgent(unittest.TestCase):
     def test_create_given_name(self):
         given_name = "GivenName"
         result = self.ra.create_given_name(given_name)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.ra.res, GraphEntity.given_name, Literal(given_name)
         self.assertIn(triple, self.ra.g)
@@ -52,7 +52,7 @@ class TestResponsibleAgent(unittest.TestCase):
     def test_create_family_name(self):
         family_name = "GivenName"
         result = self.ra.create_family_name(family_name)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.ra.res, GraphEntity.family_name, Literal(family_name)
         self.assertIn(triple, self.ra.g)

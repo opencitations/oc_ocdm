@@ -55,8 +55,6 @@ def create_literal(g, res, p, s, dt=None, nor=True):
     string = s
     if not is_string_empty(string):
         g.add((res, p, Literal(string, datatype=dt, normalize=nor)))
-        return True
-    return False
 
 
 def create_type(g, res, res_type):

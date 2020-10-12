@@ -43,7 +43,7 @@ class TestAgentRole(unittest.TestCase):
 
     def test_create_publisher(self):
         result = self.ar1.create_publisher(self.br)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple1 = self.ar1.res, GraphEntity.with_role, GraphEntity.publisher
         self.assertIn(triple1, self.ar1.g)
@@ -53,7 +53,7 @@ class TestAgentRole(unittest.TestCase):
 
     def test_create_author(self):
         result = self.ar1.create_author(self.br)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple1 = self.ar1.res, GraphEntity.with_role, GraphEntity.author
         self.assertIn(triple1, self.ar1.g)
@@ -63,7 +63,7 @@ class TestAgentRole(unittest.TestCase):
 
     def test_create_editor(self):
         result = self.ar1.create_editor(self.br)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple1 = self.ar1.res, GraphEntity.with_role, GraphEntity.editor
         self.assertIn(triple1, self.ar1.g)

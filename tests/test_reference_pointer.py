@@ -38,7 +38,7 @@ class TestReferencePointer(unittest.TestCase):
     def test_create_content(self):
         content = "Content"
         result = self.rp1.create_content(content)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.rp1.res, GraphEntity.has_content, Literal(content)
         self.assertIn(triple, self.rp1.g)

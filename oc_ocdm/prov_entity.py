@@ -80,20 +80,20 @@ class ProvEntity(GraphEntity):
 
     # HAS CREATION DATE
     # <self.res> PROV:generatedAtTime "string"
-    def create_generation_time(self, string: str) -> bool:
+    def create_generation_time(self, string: str) -> None:
         """The date on which a particular snapshot of a bibliographic entity's metadata was
         created.
         """
-        return self._create_literal(ProvEntity.generated_at_time, string, XSD.dateTime)
+        self._create_literal(ProvEntity.generated_at_time, string, XSD.dateTime)
 
     # HAS INVALIDATION DATE
     # <self.res> PROV:invalidatedAtTime "string"
-    def create_invalidation_time(self, string: str) -> bool:
+    def create_invalidation_time(self, string: str) -> None:
         """The date on which a snapshot of a bibliographic entity's metadata was invalidated due
         to an update (e.g. a correction, or the addition of some metadata that was not specified
         in the previous snapshot), or due to a merger of the entity with another one.
         """
-        return self._create_literal(ProvEntity.invalidated_at_time, string, XSD.dateTime)
+        self._create_literal(ProvEntity.invalidated_at_time, string, XSD.dateTime)
 
     # IS SNAPSHOT OF
     # <self.res> PROV:specializationOf <en_res>
@@ -122,23 +122,23 @@ class ProvEntity(GraphEntity):
 
     # HAS UPDATE ACTION
     # <self.res> OCO:hasUpdateQuery "string"
-    def create_update_query(self, string: str) -> bool:
+    def create_update_query(self, string: str) -> None:
         """The UPDATE SPARQL query that specifies which data, associated to the bibliographic
         entity in consideration, have been modified (e.g. for correcting a mistake) in the
         current snapshot starting from those associated to the previous snapshot of the entity.
         """
-        return self._create_literal(ProvEntity.has_update_query, string)
+        self._create_literal(ProvEntity.has_update_query, string)
 
     # HAS DESCRIPTION
     # <self.res> DCTERM:description "string"
-    def create_description(self, string: str) -> bool:
+    def create_description(self, string: str) -> None:
         """A textual description of the events that have resulted in the current snapshot (e.g. the
         creation of the initial snapshot, the creation of a new snapshot following the
         modification of the entity to which the metadata relate, or the creation of a new
         snapshot following the merger with another entity of the entity to which the previous
         snapshot related).
         """
-        return self._create_literal(ProvEntity.description, string)
+        self._create_literal(ProvEntity.description, string)
 
     # IS ATTRIBUTED TO
     # <self.res> PROV:wasAttributedTo <se_agent>

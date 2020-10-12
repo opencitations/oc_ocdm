@@ -36,7 +36,7 @@ class TestBibliographicReference(unittest.TestCase):
     def test_create_content(self):
         content = "Content"
         result = self.be.create_content(content)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.be.res, GraphEntity.has_content, Literal(content)
         self.assertIn(triple, self.be.g)

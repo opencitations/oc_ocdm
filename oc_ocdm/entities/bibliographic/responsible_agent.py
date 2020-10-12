@@ -38,34 +38,34 @@ class ResponsibleAgent(BibliographicEntity):
 
     # HAS NAME STRING
     # <self.res> FOAF:name "string"
-    def create_name(self, string: str) -> bool:
+    def create_name(self, string: str) -> None:
         """The name of an agent (for people, usually in the format: given name followed by family
         name, separated by a space).
         """
         self.remove_name()
-        return self._create_literal(GraphEntity.name, string)
+        self._create_literal(GraphEntity.name, string)
 
     def remove_name(self) -> None:
         self.g.remove((self.g, GraphEntity.name, None))
 
     # HAS GIVEN NAME
     # <self.res> FOAF:givenName "string"
-    def create_given_name(self, string: str) -> bool:
+    def create_given_name(self, string: str) -> None:
         """The given name of an agent, if a person.
         """
         self.remove_given_name()
-        return self._create_literal(GraphEntity.given_name, string)
+        self._create_literal(GraphEntity.given_name, string)
 
     def remove_given_name(self) -> None:
         self.g.remove((self.g, GraphEntity.given_name, None))
 
     # HAS FAMILY NAME
     # <self.res> FOAF:familyName "string"
-    def create_family_name(self, string: str) -> bool:
+    def create_family_name(self, string: str) -> None:
         """The family name of an agent, if a person.
         """
         self.remove_family_name()
-        return self._create_literal(GraphEntity.family_name, string)
+        self._create_literal(GraphEntity.family_name, string)
 
     def remove_family_name(self) -> None:
         self.g.remove((self.g, GraphEntity.family_name, None))

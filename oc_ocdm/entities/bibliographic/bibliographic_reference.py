@@ -42,7 +42,7 @@ class BibliographicReference(BibliographicEntity):
 
     # HAS BIBLIOGRAPHIC REFERENCE TEXT
     # <self.res> C4O:hasContent "string"
-    def create_content(self, string: str) -> bool:
+    def create_content(self, string: str) -> None:
         """The literal text of a bibliographic reference occurring in the reference list (or
         elsewhere) within a bibliographic resource, that references another bibliographic
         resource. The reference text should be recorded “as given” in the citing bibliographic
@@ -54,7 +54,7 @@ class BibliographicReference(BibliographicEntity):
         or as a block of XML.
         """
         self.remove_content()
-        return self._create_literal(GraphEntity.has_content, string)
+        self._create_literal(GraphEntity.has_content, string)
 
     def remove_content(self) -> None:
         self.g.remove((self.res, GraphEntity.has_content, None))

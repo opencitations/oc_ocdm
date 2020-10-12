@@ -202,18 +202,16 @@ class GraphEntity(object):
     def remove_entity(self):
         self.g.remove((None, None, None))
 
-    def create_label(self, string: str) -> bool:
+    def create_label(self, string: str) -> None:
         """Creates the RDF triple <self.res> rdfs:label <string>
         inside the graph self.g
 
         :param string: The string to be added as a label for this entity
         :type string: str
-        :return: The outcome of the operation
-        :rtype: bool
         """
-        return self._create_literal(RDFS.label, string)
+        self._create_literal(RDFS.label, string)
 
-    def _create_literal(self, p: URIRef, s: str, dt: URIRef = None, nor: bool = True) -> bool:
+    def _create_literal(self, p: URIRef, s: str, dt: URIRef = None, nor: bool = True) -> None:
         """Creates an RDF triple with a literal object inside the graph self.g
 
         :param p: The predicate
@@ -224,10 +222,8 @@ class GraphEntity(object):
         :type dt: URIRef, optional
         :param nor: Whether to normalize the graph or not
         :type nor: bool, optional
-        :return: The outcome of the operation
-        :rtype: bool
         """
-        return create_literal(self.g, self.res, p, s, dt, nor)
+        create_literal(self.g, self.res, p, s, dt, nor)
 
     def _create_type(self, res_type: URIRef) -> None:
         """Creates the RDF triple <self.res> rdf:type <res_type>

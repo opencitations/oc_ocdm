@@ -36,7 +36,7 @@ class TestPointerList(unittest.TestCase):
     def test_create_content(self):
         content = "Content"
         result = self.pl.create_content(content)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.pl.res, GraphEntity.has_content, Literal(content)
         self.assertIn(triple, self.pl.g)

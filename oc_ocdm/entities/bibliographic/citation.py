@@ -67,7 +67,7 @@ class Citation(BibliographicEntity):
 
     # HAS CITATION CREATION DATE
     # <self.res> CITO:hasCitationCreationDate "string"
-    def has_citation_creation_date(self, date_list: List[Optional[int]] = None) -> bool:
+    def has_citation_creation_date(self, date_list: List[Optional[int]] = None) -> None:
         """The date on which the citation was created. This has the same numerical value
         as the publication date of the citing bibliographic resource, but is a property
         of the citation itself. When combined with the citation time span, it permits
@@ -76,20 +76,19 @@ class Citation(BibliographicEntity):
         cur_type, string = create_date(date_list)
         if cur_type is not None and string is not None:
             self.remove_creation_date()
-            return self._create_literal(GraphEntity.has_citation_creation_date, string, cur_type, False)
-        return False  # Added by @iosonopersia
+            self._create_literal(GraphEntity.has_citation_creation_date, string, cur_type, False)
 
     def remove_creation_date(self) -> None:
         self.g.remove((self.res, GraphEntity.has_citation_creation_date, None))
 
     # HAS CITATION TIME SPAN
     # <self.res> CITO:hasCitationTimeSpan "string"
-    def has_citation_time_span(self, string: str) -> bool:
+    def has_citation_time_span(self, string: str) -> None:
         """The date interval between the publication date of the cited bibliographic resource and
         the publication date of the citing bibliographic resource.
         """
         self.remove_time_span()
-        return self._create_literal(GraphEntity.has_citation_time_span, string, XSD.duration, False)
+        self._create_literal(GraphEntity.has_citation_time_span, string, XSD.duration, False)
 
     def remove_time_span(self) -> None:
         self.g.remove((self.res, GraphEntity.has_citation_time_span, None))

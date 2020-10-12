@@ -46,22 +46,22 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS TITLE
     # <self.res> DCTERMS:title "string"
-    def create_title(self, string: str) -> bool:
+    def create_title(self, string: str) -> None:
         """The title of the bibliographic resource.
         """
         self.remove_title()
-        return self._create_literal(GraphEntity.title, string)
+        self._create_literal(GraphEntity.title, string)
 
     def remove_title(self) -> None:
         self.g.remove((self.res, GraphEntity.title, None))
 
     # HAS SUBTITLE
     # <self.res> FABIO:hasSubtitle "string"
-    def create_subtitle(self, string: str) -> bool:
+    def create_subtitle(self, string: str) -> None:
         """The subtitle of the bibliographic resource.
         """
         self.remove_subtitle()
-        return self._create_literal(GraphEntity.has_subtitle, string)
+        self._create_literal(GraphEntity.has_subtitle, string)
 
     def remove_subtitle(self) -> None:
         self.g.remove((self.res, GraphEntity.has_subtitle, None))
@@ -108,14 +108,13 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS PUBLICATION DATE
     # <self.res> PRISM:publicationDate "string"
-    def create_pub_date(self, date_list: List[Optional[int]] = None) -> bool:
+    def create_pub_date(self, date_list: List[Optional[int]] = None) -> None:
         """The date of publication of the bibliographic resource.
         """
         cur_type, string = create_date(date_list)
         if cur_type is not None and string is not None:
             self.remove_pub_date()
-            return self._create_literal(GraphEntity.has_publication_date, string, cur_type, False)
-        return False  # Added by @iosonopersia
+            self._create_literal(GraphEntity.has_publication_date, string, cur_type, False)
 
     def remove_pub_date(self) -> None:
         self.g.remove((self.res, GraphEntity.has_publication_date, None))
@@ -136,26 +135,26 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS NUMBER
     # <self.res> FABIO:hasSequenceIdentifier "string"
-    def create_number(self, string: str) -> bool:
+    def create_number(self, string: str) -> None:
         """A literal (for example a number or a letter) that identifies the sequence position of the
         bibliographic resource as a particular item within a larger collection (e.g. an article
         number within a journal issue, a volume number of a journal, a chapter number within
         a book).
         """
         self.remove_number()
-        return self._create_literal(GraphEntity.has_sequence_identifier, string)
+        self._create_literal(GraphEntity.has_sequence_identifier, string)
 
     def remove_number(self) -> None:
         self.g.remove((self.res, GraphEntity.has_sequence_identifier, None))
 
     # HAS EDITION
     # <self.res> PRISM:edition "string"
-    def has_edition(self, string: str) -> bool:
+    def has_edition(self, string: str) -> None:
         """An identifier for one of several alternative editions of a particular bibliographic
         resource.
         """
         self.remove_edition()
-        return self._create_literal(GraphEntity.has_edition, string)
+        self._create_literal(GraphEntity.has_edition, string)
 
     def remove_edition(self) -> None:
         self.g.remove((self.res, GraphEntity.has_edition, None))

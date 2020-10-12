@@ -38,7 +38,7 @@ class TestDiscourseElement(unittest.TestCase):
     def test_create_title(self):
         title = "DiscourseElement"
         result = self.de1.create_title(title)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.de1.res, GraphEntity.title, Literal(title)
         self.assertIn(triple, self.de1.g)
@@ -74,7 +74,7 @@ class TestDiscourseElement(unittest.TestCase):
     def test_create_content(self):
         content = "Content"
         result = self.de1.create_content(content)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
         triple = self.de1.res, GraphEntity.has_content, Literal(content)
         self.assertIn(triple, self.de1.g)
