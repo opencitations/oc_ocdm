@@ -51,7 +51,7 @@ class PointerList(BibliographicEntity):
         """The in-text reference pointer that is part of the in-text reference pointer list present at
         a particular location within the body of the citing work.
         """
-        self.g.add((self.res, GraphEntity.has_element, URIRef(str(rp_res))))
+        self.g.add((self.res, GraphEntity.has_element, rp_res.res))
 
     def remove_contained_element(self, rp_res: ReferencePointer = None) -> None:
         if rp_res is not None:

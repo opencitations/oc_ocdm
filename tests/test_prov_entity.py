@@ -48,7 +48,7 @@ class TestProvEntity(unittest.TestCase):
         result = self.se.create_generation_time(time)
         self.assertTrue(result)
 
-        triple = URIRef(str(self.se)), ProvEntity.generated_at_time, Literal(time, datatype=datatype,
+        triple = self.se.res, ProvEntity.generated_at_time, Literal(time, datatype=datatype,
                                                                              normalize=False)
         self.assertIn(triple, self.se.g)
 
@@ -58,7 +58,7 @@ class TestProvEntity(unittest.TestCase):
         result = self.se.create_invalidation_time(time)
         self.assertTrue(result)
 
-        triple = URIRef(str(self.se)), ProvEntity.invalidated_at_time, Literal(time, datatype=datatype,
+        triple = self.se.res, ProvEntity.invalidated_at_time, Literal(time, datatype=datatype,
                                                                                normalize=False)
         self.assertIn(triple, self.se.g)
 
@@ -67,14 +67,14 @@ class TestProvEntity(unittest.TestCase):
         result = self.se.snapshot_of(self.prov_subject)
         self.assertIsNone(result)
 
-        triple = URIRef(str(self.se)), ProvEntity.specialization_of, URIRef(str(self.prov_subject))
+        triple = self.se.res, ProvEntity.specialization_of, self.prov_subject.res
         self.assertIn(triple, self.se.g)
 
     def test_derives_from(self):
         result = self.se.derives_from(self.prev_se)
         self.assertIsNone(result)
 
-        triple = URIRef(str(self.se)), ProvEntity.was_derived_from, URIRef(str(self.prev_se))
+        triple = self.se.res, ProvEntity.was_derived_from, self.prev_se.res
         self.assertIn(triple, self.se.g)
 
     def test_has_primary_source(self):
@@ -82,7 +82,7 @@ class TestProvEntity(unittest.TestCase):
         result = self.se.has_primary_source(primary_source)
         self.assertIsNone(result)
 
-        triple = URIRef(str(self.se)), ProvEntity.had_primary_source, primary_source
+        triple = self.se.res, ProvEntity.had_primary_source, primary_source
         self.assertIn(triple, self.se.g)
 
     def test_create_update_query(self):
@@ -90,7 +90,7 @@ class TestProvEntity(unittest.TestCase):
         result = self.se.create_update_query(update_query)
         self.assertTrue(result)
 
-        triple = URIRef(str(self.se)), ProvEntity.has_update_query, Literal(update_query)
+        triple = self.se.res, ProvEntity.has_update_query, Literal(update_query)
         self.assertIn(triple, self.se.g)
 
     def test_create_description(self):
@@ -98,7 +98,7 @@ class TestProvEntity(unittest.TestCase):
         result = self.se.create_description(description)
         self.assertTrue(result)
 
-        triple = URIRef(str(self.se)), ProvEntity.description, Literal(description)
+        triple = self.se.res, ProvEntity.description, Literal(description)
         self.assertIn(triple, self.se.g)
 
     def test_has_resp_agent(self):
@@ -106,28 +106,28 @@ class TestProvEntity(unittest.TestCase):
         result = self.se.has_resp_agent(ra)
         self.assertIsNone(result)
 
-        triple = URIRef(str(self.se)), ProvEntity.was_attributed_to, ra
+        triple = self.se.res, ProvEntity.was_attributed_to, ra
         self.assertIn(triple, self.se.g)
 
     def test_create_creation_activity(self):
         result = self.se.create_creation_activity()
         self.assertIsNone(result)
 
-        triple = URIRef(str(self.se)), RDF.type, ProvEntity.create
+        triple = self.se.res, RDF.type, ProvEntity.create
         self.assertIn(triple, self.se.g)
 
     def test_create_update_activity(self):
         result = self.se.create_update_activity()
         self.assertIsNone(result)
 
-        triple = URIRef(str(self.se)), RDF.type, ProvEntity.modify
+        triple = self.se.res, RDF.type, ProvEntity.modify
         self.assertIn(triple, self.se.g)
 
     def test_create_merging_activity(self):
         result = self.se.create_merging_activity()
         self.assertIsNone(result)
 
-        triple = URIRef(str(self.se)), RDF.type, ProvEntity.replace
+        triple = self.se.res, RDF.type, ProvEntity.replace
         self.assertIn(triple, self.se.g)
 
 

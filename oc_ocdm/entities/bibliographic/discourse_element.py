@@ -58,7 +58,7 @@ class DiscourseElement(BibliographicEntity):
         """The discourse element hierarchically nested within the parent element, such as a
         sentence within a paragraph, or a paragraph within a section.
         """
-        self.g.add((self.res, GraphEntity.contains_de, URIRef(str(de_res))))
+        self.g.add((self.res, GraphEntity.contains_de, de_res.res))
 
     def remove_contained_de(self, de_res: DiscourseElement = None) -> None:
         if de_res is not None:
@@ -74,7 +74,7 @@ class DiscourseElement(BibliographicEntity):
         """The discourse element hierarchically nested within the parent element, such as a
         sentence within a paragraph, or a paragraph within a section.
         """
-        self.g.add((URIRef(str(de_res)), GraphEntity.contains_de, self.res))
+        self.g.add((de_res.res, GraphEntity.contains_de, self.res))
 
     # HAS NEXT (DiscourseElement)
     # <self.res> OCO:hasNext <de_res>
@@ -82,7 +82,7 @@ class DiscourseElement(BibliographicEntity):
         """The following discourse element that includes at least one in-text reference pointer.
         """
         self.remove_next_de()
-        self.g.add((self.res, GraphEntity.has_next, URIRef(str(de_res))))
+        self.g.add((self.res, GraphEntity.has_next, de_res.res))
 
     def remove_next_de(self) -> None:
         self.g.remove((self.res, GraphEntity.has_next, None))
@@ -95,7 +95,7 @@ class DiscourseElement(BibliographicEntity):
         """Provides the textual and semantic context of the in-text reference pointer or list of
         in-text reference pointers that appears within the discourse element.
         """
-        self.g.add((self.res, GraphEntity.is_context_of, URIRef(str(rp_or_pl_res))))
+        self.g.add((self.res, GraphEntity.is_context_of, rp_or_pl_res.res))
 
     def remove_context_of_rp_or_pl(self, rp_or_pl_res: Union[ReferencePointer, PointerList] = None) -> None:
         if rp_or_pl_res is not None:

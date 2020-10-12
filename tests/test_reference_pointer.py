@@ -40,28 +40,28 @@ class TestReferencePointer(unittest.TestCase):
         result = self.rp1.create_content(content)
         self.assertTrue(result)
 
-        triple = URIRef(str(self.rp1)), GraphEntity.has_content, Literal(content)
+        triple = self.rp1.res, GraphEntity.has_content, Literal(content)
         self.assertIn(triple, self.rp1.g)
 
     def test_has_next_rp(self):
         result = self.rp1.has_next_rp(self.rp2)
         self.assertIsNone(result)
 
-        triple = URIRef(str(self.rp1)), GraphEntity.has_next, URIRef(str(self.rp2))
+        triple = self.rp1.res, GraphEntity.has_next, self.rp2.res
         self.assertIn(triple, self.rp1.g)
 
     def test_denotes_be(self):
         result = self.rp1.denotes_be(self.be)
         self.assertIsNone(result)
 
-        triple = URIRef(str(self.rp1)), GraphEntity.denotes, URIRef(str(self.be))
+        triple = self.rp1.res, GraphEntity.denotes, self.be.res
         self.assertIn(triple, self.rp1.g)
 
     def test_has_annotation(self):
         result = self.rp1._create_annotation(self.an)
         self.assertIsNone(result)
 
-        triple = URIRef(str(self.rp1)), GraphEntity.has_annotation, URIRef(str(self.an))
+        triple = self.rp1.res, GraphEntity.has_annotation, self.an.res
         self.assertIn(triple, self.rp1.g)
 
 

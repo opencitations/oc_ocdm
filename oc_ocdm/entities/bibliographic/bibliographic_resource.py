@@ -72,7 +72,7 @@ class BibliographicResource(BibliographicEntity):
 
     # IS PART OF (BibliographicResource)
      def is_part_of(self, br_res):
-        self.g.add((self.res, GraphEntity.part_of, URIRef(str(br_res))))
+        self.g.add((self.res, GraphEntity.part_of, br_res.res))
     """
     # IS PART OF (BibliographicResource)
     # <br_res> FRBR:partOf <self.res>
@@ -80,7 +80,7 @@ class BibliographicResource(BibliographicEntity):
         """The corpus identifier of the bibliographic resource (e.g. issue, volume, journal,
         conference proceedings) that contains the subject bibliographic resource.
         """
-        br_res.g.add((URIRef(str(br_res)), GraphEntity.part_of, self.res))
+        br_res.g.add((br_res.res, GraphEntity.part_of, self.res))
 
     def remove_part(self, br_res: BibliographicResource = None) -> None:
         if br_res is not None:
@@ -98,7 +98,7 @@ class BibliographicResource(BibliographicEntity):
         """The corpus identifier of the bibliographic resource cited by the subject bibliographic
         resource.
         """
-        self.g.add((self.res, GraphEntity.cites, URIRef(str(br_res))))
+        self.g.add((self.res, GraphEntity.cites, br_res.res))
 
     def remove_citation(self, br_res: BibliographicResource = None) -> None:
         if br_res is not None:
@@ -126,7 +126,7 @@ class BibliographicResource(BibliographicEntity):
         """The corpus identifier of the resource embodiment defining the format in which the
         bibliographic resource has been embodied, which can be either print or digital.
         """
-        self.g.add((self.res, GraphEntity.embodiment, URIRef(str(re_res))))
+        self.g.add((self.res, GraphEntity.embodiment, re_res.res))
 
     def remove_format(self, re_res: ResourceEmbodiment = None):
         if re_res is not None:
@@ -166,7 +166,7 @@ class BibliographicResource(BibliographicEntity):
         """A bibliographic reference within the bibliographic resource, or a discourse element
         wherein the text of the bibliographic resources can be organized.
         """
-        self.g.add((self.res, GraphEntity.contains_reference, URIRef(str(be_res))))
+        self.g.add((self.res, GraphEntity.contains_reference, be_res.res))
 
     def remove_in_reference_list(self, be_res: BibliographicReference = None) -> None:
         if be_res is not None:
@@ -180,7 +180,7 @@ class BibliographicResource(BibliographicEntity):
         """A bibliographic reference within the bibliographic resource, or a discourse element
         wherein the text of the bibliographic resources can be organized.
         """
-        self.g.add((self.res, GraphEntity.contains_de, URIRef(str(de_res))))
+        self.g.add((self.res, GraphEntity.contains_de, de_res.res))
 
     def remove_discourse_element(self, de_res: DiscourseElement = None) -> None:
         if de_res is not None:
@@ -197,7 +197,7 @@ class BibliographicResource(BibliographicEntity):
         """A bibliographic reference within the bibliographic resource, or a discourse element
         wherein the text of the bibliographic resources can be organized.
         """
-        self.g.add((URIRef(str(de_res)), GraphEntity.contains_de, self.res))
+        self.g.add((de_res.res, GraphEntity.contains_de, self.res))
 
     """
     AAA: this should have inverse logic and it should belong to BibliographicReference class!!!
@@ -206,13 +206,13 @@ class BibliographicResource(BibliographicEntity):
     class BibliographicReference:
         # REFERENCES (BibliographicResource)
         def has_reference(self, br_res: BibliographicResource):
-            self.g.add((self.res, GraphEntity.references, URIRef(str(br_res))))
+            self.g.add((self.res, GraphEntity.references, br_res.res))
     """
     # <be_res> BIRO:references <self.res>
     def has_reference(self, be_res: BibliographicReference) -> None:
         """The bibliographic reference that cites this bibliographic resource.
         """
-        be_res.g.add((URIRef(str(be_res)), GraphEntity.references, self.res))
+        be_res.g.add((be_res.res, GraphEntity.references, self.res))
 
     def remove_reference(self, be_res: BibliographicReference = None) -> None:
         if be_res is not None:

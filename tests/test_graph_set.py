@@ -40,7 +40,7 @@ class TestGraphSet(unittest.TestCase):
 
     def test_get_entity(self):
         ar = self.graph_set.add_ar(self.__class__.__name__)
-        ref = URIRef(str(ar))
+        ref = ar.res
         result = self.graph_set.get_entity(ref)
         self.assertIsNotNone(result)
         self.assertIs(result, ar)

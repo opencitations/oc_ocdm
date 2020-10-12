@@ -40,7 +40,7 @@ class BibliographicEntity(GraphEntity):
         curation (format: [entity short name]/[local identifier]), other external third-party
         identifiers can be specified through this attribute (e.g. DOI, ORCID, PubMedID).
         """
-        self.g.add((self.res, GraphEntity.has_identifier, URIRef(str(id_res))))
+        self.g.add((self.res, GraphEntity.has_identifier, id_res.res))
 
     def remove_id(self, id: Identifier = None) -> None:
         if id is not None:

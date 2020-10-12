@@ -65,7 +65,7 @@ class BibliographicReference(BibliographicEntity):
         """An annotation characterizing the related citation, in terms of its citation function (the
         reason for that citation).
         """
-        self.g.add((self.res, GraphEntity.has_annotation, URIRef(str(an_res))))
+        self.g.add((self.res, GraphEntity.has_annotation, an_res.res))
 
     def remove_annotation(self, an_res: ReferenceAnnotation = None) -> None:
         if an_res is not None:

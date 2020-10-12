@@ -38,37 +38,37 @@ class TestAgentRole(unittest.TestCase):
         result = self.ar2.follows(self.ar1)
         self.assertIsNone(result)
 
-        triple = URIRef(str(self.ar1)), GraphEntity.has_next, URIRef(str(self.ar2))
+        triple = self.ar1.res, GraphEntity.has_next, self.ar2.res
         self.assertIn(triple, self.ar1.g)
 
     def test_create_publisher(self):
         result = self.ar1.create_publisher(self.br)
         self.assertTrue(result)
 
-        triple1 = URIRef(str(self.ar1)), GraphEntity.with_role, GraphEntity.publisher
+        triple1 = self.ar1.res, GraphEntity.with_role, GraphEntity.publisher
         self.assertIn(triple1, self.ar1.g)
 
-        triple2 = URIRef(str(self.br)), GraphEntity.is_document_context_for, URIRef(str(self.ar1))
+        triple2 = self.br.res, GraphEntity.is_document_context_for, self.ar1.res
         self.assertIn(triple2, self.br.g)
 
     def test_create_author(self):
         result = self.ar1.create_author(self.br)
         self.assertTrue(result)
 
-        triple1 = URIRef(str(self.ar1)), GraphEntity.with_role, GraphEntity.author
+        triple1 = self.ar1.res, GraphEntity.with_role, GraphEntity.author
         self.assertIn(triple1, self.ar1.g)
 
-        triple2 = URIRef(str(self.br)), GraphEntity.is_document_context_for, URIRef(str(self.ar1))
+        triple2 = self.br.res, GraphEntity.is_document_context_for, self.ar1.res
         self.assertIn(triple2, self.br.g)
 
     def test_create_editor(self):
         result = self.ar1.create_editor(self.br)
         self.assertTrue(result)
 
-        triple1 = URIRef(str(self.ar1)), GraphEntity.with_role, GraphEntity.editor
+        triple1 = self.ar1.res, GraphEntity.with_role, GraphEntity.editor
         self.assertIn(triple1, self.ar1.g)
 
-        triple2 = URIRef(str(self.br)), GraphEntity.is_document_context_for, URIRef(str(self.ar1))
+        triple2 = self.br.res, GraphEntity.is_document_context_for, self.ar1.res
         self.assertIn(triple2, self.br.g)
 
 

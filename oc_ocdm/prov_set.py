@@ -207,7 +207,7 @@ class ProvSet(GraphSet):
         # Note: even if list of entities is actually a list, it seems
         # that it would be composed by at most one item (e.g. for provenance)
         if list_of_entities:
-            entity_res: URIRef = URIRef(str(list_of_entities[0]))
+            entity_res: URIRef = list_of_entities[0].res
             count = str(self.counter_handler.increment_counter(
                 get_short_name(entity_res), "se", int(get_count(entity_res))))
             related_to_label += " related to"

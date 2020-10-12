@@ -47,7 +47,7 @@ class ReferenceAnnotation(BibliographicEntity):
         reference or to an in-text reference pointer that denotes such a bibliographic reference.
         """
         self.remove_body_annotation()
-        self.g.add((self.res, GraphEntity.has_body, URIRef(str(ci_res))))
+        self.g.add((self.res, GraphEntity.has_body, ci_res.res))
 
     def remove_body_annotation(self) -> None:
         self.g.remove((self.res, GraphEntity.has_body, None))

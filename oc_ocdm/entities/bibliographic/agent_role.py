@@ -42,14 +42,14 @@ class AgentRole(BibliographicEntity):
 
     # HAS NEXT (AgentRole)
     def has_next(self, ar_res: AgentRole) -> None:
-        self.g.add((self.res, GraphEntity.has_next, URIRef(str(ar_res))))
+        self.g.add((self.res, GraphEntity.has_next, ar_res.res))
     """
     def follows(self, ar_res: AgentRole) -> None:
         """The previous role in a sequence of agent roles of the same type associated with the
         same bibliographic resource (so as to define, for instance, an ordered list of authors).
         """
         self.remove_follows()
-        ar_res.g.add((URIRef(str(ar_res)), GraphEntity.has_next, self.res))
+        ar_res.g.add((ar_res.res, GraphEntity.has_next, self.res))
 
     def remove_follows(self) -> None:
         if self.g_set is not None:
@@ -78,7 +78,7 @@ class AgentRole(BibliographicEntity):
     def _associate_role_with_document(self, role_type: URIRef, br_res: BibliographicResource) -> bool:
         self.remove_role_and_document()
         self.g.add((self.res, GraphEntity.with_role, role_type))
-        br_res.g.add((URIRef(str(br_res)), GraphEntity.is_document_context_for, self.res))
+        br_res.g.add((br_res.res, GraphEntity.is_document_context_for, self.res))
         return True
 
     def remove_role_and_document(self) -> None:

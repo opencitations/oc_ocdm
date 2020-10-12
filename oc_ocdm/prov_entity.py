@@ -101,7 +101,7 @@ class ProvEntity(GraphEntity):
         """This property is used to link a snapshot of entity metadata to the bibliographic entity
         to which the snapshot refers.
         """
-        self.g.add((self.res, ProvEntity.specialization_of, URIRef(str(en_res))))
+        self.g.add((self.res, ProvEntity.specialization_of, en_res.res))
 
     # IS DERIVED FROM
     # <self.res> PROV:wasDerivedFrom <se_res>
@@ -109,7 +109,7 @@ class ProvEntity(GraphEntity):
         """This property is used to identify the immediately previous snapshot of entity metadata
         associated with the same bibliographic entity.
         """
-        self.g.add((self.res, ProvEntity.was_derived_from, URIRef(str(se_res))))
+        self.g.add((self.res, ProvEntity.was_derived_from, se_res.res))
 
     # HAS PRIMARY SOURCE
     # <self.res> PROV:hadPrimarySource <any_res>
@@ -162,16 +162,16 @@ class ProvEntity(GraphEntity):
     # +++++++++++++++++++++++++ UNDOCUMENTED ++++++++++++++++++++++++++
 
     def generates(self, se_res: ProvEntity) -> None:
-        se_res.g.add((URIRef(str(se_res)), ProvEntity.was_generated_by, self.res))
+        se_res.g.add((se_res.res, ProvEntity.was_generated_by, self.res))
 
     def invalidates(self, se_res: ProvEntity) -> None:
-        se_res.g.add((URIRef(str(se_res)), ProvEntity.was_invalidated_by, self.res))
+        se_res.g.add((se_res.res, ProvEntity.was_invalidated_by, self.res))
 
     def involves_agent_with_role(self, cr_res: URIRef) -> None:
-        self.g.add((self.res, ProvEntity.qualified_association, URIRef(str(cr_res))))
+        self.g.add((self.res, ProvEntity.qualified_association, cr_res))
 
     def has_role_type(self, any_res: URIRef) -> None:
-        self.g.add((self.res, ProvEntity.had_role, URIRef(str(any_res))))
+        self.g.add((self.res, ProvEntity.had_role, any_res))
 
     def has_role_in(self, ca_res: ResponsibleAgent) -> None:
-        ca_res.g.add((URIRef(str(ca_res)), ProvEntity.associated_agent, self.res))
+        ca_res.g.add((ca_res.res, ProvEntity.associated_agent, self.res))

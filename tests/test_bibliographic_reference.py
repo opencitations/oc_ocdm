@@ -38,14 +38,14 @@ class TestBibliographicReference(unittest.TestCase):
         result = self.be.create_content(content)
         self.assertTrue(result)
 
-        triple = URIRef(str(self.be)), GraphEntity.has_content, Literal(content)
+        triple = self.be.res, GraphEntity.has_content, Literal(content)
         self.assertIn(triple, self.be.g)
 
     def test_create_annotation(self):
         result = self.be._create_annotation(self.an)
         self.assertIsNone(result)
 
-        triple = URIRef(str(self.be)), GraphEntity.has_annotation, URIRef(str(self.an))
+        triple = self.be.res, GraphEntity.has_annotation, self.an.res
         self.assertIn(triple, self.be.g)
 
 

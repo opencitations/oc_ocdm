@@ -37,7 +37,7 @@ class TestBibliographicEntity(unittest.TestCase):
         result = self.entity.has_id(self.identifier)
         self.assertIsNone(result)
 
-        triple = URIRef(str(self.entity)), GraphEntity.has_identifier, URIRef(str(self.identifier))
+        triple = self.entity.res, GraphEntity.has_identifier, self.identifier.res
         self.assertIn(triple, self.entity.g)
 
 

@@ -77,12 +77,12 @@ class ResponsibleAgent(BibliographicEntity):
     class AgentRole:
         # IS HELD BY (ResponsibleAgent)
         def is_held_by(self, ra_res: URIRef):
-            self.g.add((self.res, GraphEntity.is_held_by, URIRef(str(ar_res))))
+            self.g.add((self.res, GraphEntity.is_held_by, ar_res.res))
     """
     def has_role(self, ar_res: AgentRole):
         """[AgentRole] The agent holding this role with respect to a particular bibliographic resource.
         """
-        ar_res.g.add((URIRef(str(ar_res)), GraphEntity.is_held_by, self.res))
+        ar_res.g.add((ar_res.res, GraphEntity.is_held_by, self.res))
 
     def remove_role(self, ar_res: AgentRole = None) -> None:
         if ar_res is not None:

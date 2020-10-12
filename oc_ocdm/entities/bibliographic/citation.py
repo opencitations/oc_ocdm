@@ -53,8 +53,8 @@ class Citation(BibliographicEntity):
         """
         self.remove_citing_entity()
         self.remove_cited_entity()
-        self.g.add((self.res, GraphEntity.has_citing_entity, URIRef(str(citing_res))))
-        self.g.add((self.res, GraphEntity.has_cited_entity, URIRef(str(cited_res))))
+        self.g.add((self.res, GraphEntity.has_citing_entity, citing_res.res))
+        self.g.add((self.res, GraphEntity.has_cited_entity, cited_res.res))
 
     def remove_citing_entity(self) -> None:
         self.g.remove((self.res, GraphEntity.has_citing_entity, None))
@@ -105,7 +105,7 @@ class Citation(BibliographicEntity):
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
     # <self.res> RDF:type <type>
 
-    def create_self_citation(self) -> None:  # new
+    def create_self_citation(self) -> None:
         self._create_type(GraphEntity.self_citation)
 
     def create_affiliation_self_citation(self) -> None:

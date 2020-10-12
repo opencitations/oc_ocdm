@@ -39,7 +39,7 @@ class TestReferenceAnnotation(unittest.TestCase):
         result = self.an._create_body_annotation(self.ci)
         self.assertIsNone(result)
 
-        triple = URIRef(str(self.an)), GraphEntity.has_body, URIRef(str(self.ci))
+        triple = self.an.res, GraphEntity.has_body, self.ci.res
         self.assertIn(triple, self.an.g)
 
 

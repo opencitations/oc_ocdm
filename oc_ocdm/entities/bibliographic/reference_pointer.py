@@ -57,7 +57,7 @@ class ReferencePointer(BibliographicEntity):
         pointer list.
         """
         self.remove_next_rp()
-        self.g.add((self.res, GraphEntity.has_next, URIRef(str(rp_res))))
+        self.g.add((self.res, GraphEntity.has_next, rp_res.res))
 
     def remove_next_rp(self) -> None:
         self.g.remove((self.res, GraphEntity.has_next, None))
@@ -69,7 +69,7 @@ class ReferencePointer(BibliographicEntity):
         the in-text reference pointer.
         """
         self.remove_be()
-        self.g.add((self.res, GraphEntity.denotes, URIRef(str(be_res))))
+        self.g.add((self.res, GraphEntity.denotes, be_res.res))
 
     def remove_be(self) -> None:
         self.g.remove((self.res, GraphEntity.denotes, None))
@@ -81,7 +81,7 @@ class ReferencePointer(BibliographicEntity):
         in terms of its citation function (the reason for that citation) specific to the textual
         location of that in-text reference pointer within the citing entity.
         """
-        self.g.add((self.res, GraphEntity.has_annotation, URIRef(str(an_res))))
+        self.g.add((self.res, GraphEntity.has_annotation, an_res.res))
 
     def remove_annotation(self, an_res: ReferenceAnnotation = None) -> None:
         if an_res is not None:

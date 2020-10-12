@@ -36,7 +36,7 @@ class TestProvSet(unittest.TestCase):
 
     def test_retrieve_last_snapshot(self):
         br = self.prov_subj_graph_set.add_br(self.__class__.__name__)
-        br_res = URIRef(str(br))
+        br_res = br.res
         result = self.prov_set._retrieve_last_snapshot(br_res)
         self.assertIsNone(result)
 

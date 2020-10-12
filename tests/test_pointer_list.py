@@ -38,14 +38,14 @@ class TestPointerList(unittest.TestCase):
         result = self.pl.create_content(content)
         self.assertTrue(result)
 
-        triple = URIRef(str(self.pl)), GraphEntity.has_content, Literal(content)
+        triple = self.pl.res, GraphEntity.has_content, Literal(content)
         self.assertIn(triple, self.pl.g)
 
     def test_contains_element(self):
         result = self.pl.contains_element(self.rp)
         self.assertIsNone(result)
 
-        triple = URIRef(str(self.pl)), GraphEntity.has_element, URIRef(str(self.rp))
+        triple = self.pl.res, GraphEntity.has_element, self.rp.res
         self.assertIn(triple, self.pl.g)
 
 
