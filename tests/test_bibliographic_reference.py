@@ -42,7 +42,7 @@ class TestBibliographicReference(unittest.TestCase):
         self.assertIn(triple, self.be.g)
 
     def test_create_annotation(self):
-        result = self.be._create_annotation(self.an)
+        result = self.be.create_annotation(self.an)
         self.assertIsNone(result)
 
         triple = self.be.res, GraphEntity.has_annotation, self.an.res

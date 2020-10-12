@@ -76,7 +76,7 @@ class ReferencePointer(BibliographicEntity):
 
     # HAS ANNOTATION (ReferenceAnnotation)
     # <self.res> OCO:hasAnnotation <an_res>
-    def _create_annotation(self, an_res: ReferenceAnnotation) -> None:
+    def create_annotation(self, an_res: ReferenceAnnotation) -> None:
         """An annotation characterizing the citation to which the in-text reference pointer relates
         in terms of its citation function (the reason for that citation) specific to the textual
         location of that in-text reference pointer within the citing entity.

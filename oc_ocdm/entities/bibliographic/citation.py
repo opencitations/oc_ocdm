@@ -44,20 +44,23 @@ class Citation(BibliographicEntity):
        Locator (URL), to the cited bibliographic resource on the World Wide Web."""
 
     # HAS CITING DOCUMENT (BibliographicResource)
-    # HAS CITED DOCUMENT (BibliographicResource)
     # <self.res> CITO:hasCitingEntity <citing_res>
-    # <self.res> CITO:hasCitedEntity <cited_res>
-    def _create_citation(self, citing_res: BibliographicResource, cited_res: BibliographicResource) -> None:
-        """The bibliographic resource which acts as the source for the citation and the
-        bibliographic resource which acts as the target for the citation.
+    def create_citing_entity(self, citing_res: BibliographicResource) -> None:
+        """The bibliographic resource which acts as the source for the citation.
         """
         self.remove_citing_entity()
-        self.remove_cited_entity()
         self.g.add((self.res, GraphEntity.has_citing_entity, citing_res.res))
-        self.g.add((self.res, GraphEntity.has_cited_entity, cited_res.res))
 
     def remove_citing_entity(self) -> None:
         self.g.remove((self.res, GraphEntity.has_citing_entity, None))
+
+    # HAS CITED DOCUMENT (BibliographicResource)
+    # <self.res> CITO:hasCitedEntity <cited_res>
+    def create_cited_entity(self, cited_res: BibliographicResource) -> None:
+        """ The bibliographic resource which acts as the target for the citation.
+        """
+        self.remove_cited_entity()
+        self.g.add((self.res, GraphEntity.has_cited_entity, cited_res.res))
 
     def remove_cited_entity(self) -> None:
         self.g.remove((self.res, GraphEntity.has_cited_entity, None))

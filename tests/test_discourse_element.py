@@ -57,14 +57,15 @@ class TestDiscourseElement(unittest.TestCase):
         triple = self.de1.res, GraphEntity.has_next, self.de2.res
         self.assertIn(triple, self.de1.g)
 
-    def test_is_context_of_rp_or_pl(self):
-        result = self.de1.is_context_of_rp_or_pl(self.rp)
+    def test_is_context_of_rp(self):
+        result = self.de1.is_context_of_rp(self.rp)
         self.assertIsNone(result)
 
         triple = self.de1.res, GraphEntity.is_context_of, self.rp.res
         self.assertIn(triple, self.de1.g)
 
-        result = self.de1.is_context_of_rp_or_pl(self.pl)
+    def test_is_context_of_pl(self):
+        result = self.de1.is_context_of_pl(self.pl)
         self.assertIsNone(result)
 
         triple = self.de1.res, GraphEntity.is_context_of, self.pl.res

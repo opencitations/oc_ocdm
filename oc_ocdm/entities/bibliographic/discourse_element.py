@@ -16,7 +16,6 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-from typing import Union
 
 from rdflib import URIRef, RDF
 
@@ -87,19 +86,31 @@ class DiscourseElement(BibliographicEntity):
     def remove_next_de(self) -> None:
         self.g.remove((self.res, GraphEntity.has_next, None))
 
-    # IS CONTEXT OF (ReferencePointer or PointerList)
-    # <self.res> C4O:isContextOf <de_res>
-    # TODO: Invece di usare typings.Union si potrebbero creare due metodi diversi
-    #       (uno per ReferencePointer e uno per PointerList), ovvero is_context_of_rp e is_context_of_pl
-    def is_context_of_rp_or_pl(self, rp_or_pl_res: Union[ReferencePointer, PointerList]) -> None:
-        """Provides the textual and semantic context of the in-text reference pointer or list of
+    # IS CONTEXT OF (ReferencePointer)
+    # <self.res> C4O:isContextOf <rp_res>
+    def is_context_of_rp(self, rp_res: ReferencePointer) -> None:
+        """Provides the textual and semantic context of the in-text reference pointer
+        that appears within the discourse element.
+        """
+        self.g.add((self.res, GraphEntity.is_context_of, rp_res.res))
+
+    def remove_context_of_rp(self, rp_res: ReferencePointer = None) -> None:
+        if rp_res is not None:
+            self.g.remove((self.res, GraphEntity.is_context_of, rp_res.res))
+        else:
+            self.g.remove((self.res, GraphEntity.is_context_of, None))
+
+    # IS CONTEXT OF (PointerList)
+    # <self.res> C4O:isContextOf <pl_res>
+    def is_context_of_pl(self, pl_res: PointerList) -> None:
+        """Provides the textual and semantic context of the list of
         in-text reference pointers that appears within the discourse element.
         """
-        self.g.add((self.res, GraphEntity.is_context_of, rp_or_pl_res.res))
+        self.g.add((self.res, GraphEntity.is_context_of, pl_res.res))
 
-    def remove_context_of_rp_or_pl(self, rp_or_pl_res: Union[ReferencePointer, PointerList] = None) -> None:
-        if rp_or_pl_res is not None:
-            self.g.remove((self.res, GraphEntity.is_context_of, rp_or_pl_res.res))
+    def remove_context_of_pl(self, pl_res: PointerList = None) -> None:
+        if pl_res is not None:
+            self.g.remove((self.res, GraphEntity.is_context_of, pl_res.res))
         else:
             self.g.remove((self.res, GraphEntity.is_context_of, None))
 

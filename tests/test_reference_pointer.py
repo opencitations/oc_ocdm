@@ -58,7 +58,7 @@ class TestReferencePointer(unittest.TestCase):
         self.assertIn(triple, self.rp1.g)
 
     def test_has_annotation(self):
-        result = self.rp1._create_annotation(self.an)
+        result = self.rp1.create_annotation(self.an)
         self.assertIsNone(result)
 
         triple = self.rp1.res, GraphEntity.has_annotation, self.an.res

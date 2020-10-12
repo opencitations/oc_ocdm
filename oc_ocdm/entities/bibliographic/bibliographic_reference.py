@@ -61,7 +61,7 @@ class BibliographicReference(BibliographicEntity):
 
     # HAS ANNOTATION (ReferenceAnnotation)
     # <self.res> OCO:hasAnnotation <an_res>
-    def _create_annotation(self, an_res: ReferenceAnnotation) -> None:
+    def create_annotation(self, an_res: ReferenceAnnotation) -> None:
         """An annotation characterizing the related citation, in terms of its citation function (the
         reason for that citation).
         """
