@@ -198,6 +198,9 @@ class GraphEntity(object):
     def _generate_new_res(g: Graph, count: str, short_name: str = "") -> URIRef:
         return URIRef(str(g.identifier) + count)
 
+    def remove_entity(self):
+        self.g.remove((None, None, None))
+
     def create_label(self, string: str) -> bool:
         """Creates the RDF triple <self.res> rdfs:label <string>
         inside the graph self.g
