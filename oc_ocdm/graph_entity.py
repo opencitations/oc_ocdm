@@ -161,6 +161,7 @@ class GraphEntity(object):
         self.source_agent: str = source_agent
         self.source: str = source
         self.short_name: str = short_name
+        self.g_set: GraphSet = g_set
 
         existing_ref: bool = False
 
