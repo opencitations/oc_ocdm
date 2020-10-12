@@ -229,3 +229,91 @@ class GraphSet(object):
     @staticmethod
     def get_graph_iri(g: Graph) -> str:
         return str(g.identifier)
+
+    def get_an(self) -> Tuple[ReferenceAnnotation]:
+        result: Tuple[ReferenceAnnotation] = tuple()
+        for ref in self.res_to_entity:
+            entity: GraphEntity = self.res_to_entity[ref]
+            if isinstance(entity, ReferenceAnnotation):
+                result += (entity, )
+        return result
+
+    def get_ar(self) -> Tuple[AgentRole]:
+        result: Tuple[AgentRole] = tuple()
+        for ref in self.res_to_entity:
+            entity: GraphEntity = self.res_to_entity[ref]
+            if isinstance(entity, AgentRole):
+                result += (entity, )
+        return result
+
+    def get_be(self) -> Tuple[BibliographicReference]:
+        result: Tuple[BibliographicReference] = tuple()
+        for ref in self.res_to_entity:
+            entity: GraphEntity = self.res_to_entity[ref]
+            if isinstance(entity, BibliographicReference):
+                result += (entity, )
+        return result
+
+    def get_br(self) -> Tuple[BibliographicResource]:
+        result: Tuple[BibliographicResource] = tuple()
+        for ref in self.res_to_entity:
+            entity: GraphEntity = self.res_to_entity[ref]
+            if isinstance(entity, BibliographicResource):
+                result += (entity, )
+        return result
+
+    def get_ci(self) -> Tuple[Citation]:
+        result: Tuple[Citation] = tuple()
+        for ref in self.res_to_entity:
+            entity: GraphEntity = self.res_to_entity[ref]
+            if isinstance(entity, Citation):
+                result += (entity, )
+        return result
+
+    def get_de(self) -> Tuple[DiscourseElement]:
+        result: Tuple[DiscourseElement] = tuple()
+        for ref in self.res_to_entity:
+            entity: GraphEntity = self.res_to_entity[ref]
+            if isinstance(entity, DiscourseElement):
+                result += (entity, )
+        return result
+
+    def get_id(self) -> Tuple[Identifier]:
+        result: Tuple[Identifier] = tuple()
+        for ref in self.res_to_entity:
+            entity: GraphEntity = self.res_to_entity[ref]
+            if isinstance(entity, Identifier):
+                result += (entity, )
+        return result
+
+    def get_pl(self) -> Tuple[PointerList]:
+        result: Tuple[PointerList] = tuple()
+        for ref in self.res_to_entity:
+            entity: GraphEntity = self.res_to_entity[ref]
+            if isinstance(entity, PointerList):
+                result += (entity, )
+        return result
+
+    def get_rp(self) -> Tuple[ReferencePointer]:
+        result: Tuple[ReferencePointer] = tuple()
+        for ref in self.res_to_entity:
+            entity: GraphEntity = self.res_to_entity[ref]
+            if isinstance(entity, ReferencePointer):
+                result += (entity, )
+        return result
+
+    def get_ra(self) -> Tuple[ResponsibleAgent]:
+        result: Tuple[ResponsibleAgent] = tuple()
+        for ref in self.res_to_entity:
+            entity: GraphEntity = self.res_to_entity[ref]
+            if isinstance(entity, ResponsibleAgent):
+                result += (entity, )
+        return result
+
+    def get_re(self) -> Tuple[ResourceEmbodiment]:
+        result: Tuple[ResourceEmbodiment] = tuple()
+        for ref in self.res_to_entity:
+            entity: GraphEntity = self.res_to_entity[ref]
+            if isinstance(entity, ResourceEmbodiment):
+                result += (entity, )
+        return result
