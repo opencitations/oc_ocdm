@@ -18,7 +18,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from typing import Union
 
-from rdflib import URIRef
+from rdflib import URIRef, RDF
 
 if TYPE_CHECKING:
     from oc_ocdm.entities.bibliographic import ReferencePointer
@@ -46,8 +46,12 @@ class DiscourseElement(BibliographicEntity):
     def create_title(self, string: str) -> bool:
         """The title of the discourse element, such as the title of a figure or a section in an article.
         """
+        self.remove_title()
         return self._create_literal(GraphEntity.title, string)
 
+    def remove_title(self) -> None:
+        self.g.remove((self.res, GraphEntity.title, None))
+    
     # HAS PART (DiscourseElement)
     # <self.res> FRBR:part <de_res>
     def contains_discourse_element(self, de_res: DiscourseElement) -> None:
@@ -55,6 +59,12 @@ class DiscourseElement(BibliographicEntity):
         sentence within a paragraph, or a paragraph within a section.
         """
         self.g.add((self.res, GraphEntity.contains_de, URIRef(str(de_res))))
+
+    def remove_contained_de(self, de_res: DiscourseElement = None) -> None:
+        if de_res is not None:
+            self.g.remove((self.res, GraphEntity.contains_de, de_res.res))
+        else:
+            self.g.remove((self.res, GraphEntity.contains_de, None))
 
     """
          HAS PART (DiscourseElement) with inverted logic (IS PART OF)
@@ -71,7 +81,11 @@ class DiscourseElement(BibliographicEntity):
     def has_next_de(self, de_res: DiscourseElement) -> None:
         """The following discourse element that includes at least one in-text reference pointer.
         """
+        self.remove_next_de()
         self.g.add((self.res, GraphEntity.has_next, URIRef(str(de_res))))
+
+    def remove_next_de(self) -> None:
+        self.g.remove((self.res, GraphEntity.has_next, None))
 
     # IS CONTEXT OF (ReferencePointer or PointerList)
     # <self.res> C4O:isContextOf <de_res>
@@ -83,18 +97,32 @@ class DiscourseElement(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.is_context_of, URIRef(str(rp_or_pl_res))))
 
+    def remove_context_of_rp_or_pl(self, rp_or_pl_res: Union[ReferencePointer, PointerList] = None) -> None:
+        if rp_or_pl_res is not None:
+            self.g.remove((self.res, GraphEntity.is_context_of, rp_or_pl_res.res))
+        else:
+            self.g.remove((self.res, GraphEntity.is_context_of, None))
+
     # HAS CONTENT
     # <self.res> C4O:hasContent "string"
     def create_content(self, string: str) -> bool:
         """The literal document text contained by the discourse element.
         """
+        self.remove_content()
         return self._create_literal(GraphEntity.has_content, string)
+
+    def remove_content(self) -> None:
+        self.g.remove((self.res, GraphEntity.has_content, None))
 
     # HAS NUMBER
     # <self.res> FABIO:hasSequenceIdentifier "string"
     def create_number(self, string: str) -> bool:
+        self.remove_number()
         return self._create_literal(GraphEntity.has_sequence_identifier, string)
-    
+
+    def remove_number(self) -> None:
+        self.g.remove((self.res, GraphEntity.has_sequence_identifier, None))
+
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
     # <self.res> RDF:type <type>
 
@@ -154,3 +182,9 @@ class DiscourseElement(BibliographicEntity):
         “acknowledgements”, “reference list” or “figure”.
         """
         self._create_type(GraphEntity.caption)
+
+    def remove_type(self, type_ref: URIRef = None) -> None:
+        if type_ref is not None:
+            self.g.remove((self.res, RDF.type, type_ref))
+        else:
+            self.g.remove((self.res, RDF.type, None))

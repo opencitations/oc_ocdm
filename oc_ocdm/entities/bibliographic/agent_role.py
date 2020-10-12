@@ -48,7 +48,14 @@ class AgentRole(BibliographicEntity):
         """The previous role in a sequence of agent roles of the same type associated with the
         same bibliographic resource (so as to define, for instance, an ordered list of authors).
         """
+        self.remove_follows()
         ar_res.g.add((URIRef(str(ar_res)), GraphEntity.has_next, self.res))
+
+    def remove_follows(self) -> None:
+        if self.g_set is not None:
+            for ar_res in self.g_set.get_ar():
+                if (ar_res.res, GraphEntity.has_next, self.res) in ar_res.g:
+                    ar_res.g.remove((ar_res.res, GraphEntity.has_next, None))
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
     def create_publisher(self, br_res: BibliographicResource) -> bool:
@@ -69,6 +76,14 @@ class AgentRole(BibliographicEntity):
     # <self.res> PRO:withRole <role_type>
     # <br_res> PRO:isDocumentContextFor <role_type> (BibliographicResource's HAS CONTRIBUTOR)
     def _associate_role_with_document(self, role_type: URIRef, br_res: BibliographicResource) -> bool:
+        self.remove_role_and_document()
         self.g.add((self.res, GraphEntity.with_role, role_type))
         br_res.g.add((URIRef(str(br_res)), GraphEntity.is_document_context_for, self.res))
         return True
+
+    def remove_role_and_document(self) -> None:
+        if self.g_set is not None:
+            for br_res in self.g_set.get_br():
+                if (br_res.res, GraphEntity.is_document_context_for, self.res) in br_res.g:
+                    br_res.g.remove((br_res.res, GraphEntity.is_document_context_for, None))
+        self.g.remove((self.res, GraphEntity.with_role, None))

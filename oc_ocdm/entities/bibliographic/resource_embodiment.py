@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import re
 
-from rdflib import URIRef
+from rdflib import URIRef, RDF
 
 from oc_ocdm import GraphEntity
 from oc_ocdm.entities import BibliographicEntity
@@ -39,36 +39,52 @@ class ResourceEmbodiment(BibliographicEntity):
     def has_media_type(self, thing_ref: URIRef) -> None:
         """It allows one to specify the IANA media type of the embodiment.
         """
+        self.remove_media_type()
         self.g.add((self.res, GraphEntity.has_format, thing_ref))
+
+    def remove_media_type(self) -> None:
+        self.g.remove((self.res, GraphEntity.has_format, None))
 
     # HAS FIRST PAGE
     # <self.res> PRISM:startingPage "string"
     def create_starting_page(self, string: str) -> bool:
         """The first page of the bibliographic resource according to the current embodiment.
         """
+        self.remove_starting_page()
         if re.search("[-–]+", string) is None:
             page_number = string
         else:
             page_number = re.sub("[-–]+.*$", "", string)
         return self._create_literal(GraphEntity.starting_page, page_number)
 
+    def remove_starting_page(self) -> None:
+        self.g.remove((self.res, GraphEntity.starting_page, None))
+
     # HAS LAST PAGE
     # <self.res> PRISM:endingPage "string"
     def create_ending_page(self, string: str) -> bool:
         """The last page of the bibliographic resource according to the current embodiment.
         """
+        self.remove_ending_page()
         if re.search("[-–]+", string) is None:
             page_number = string
         else:
             page_number = re.sub("^.*[-–]+", "", string)
         return self._create_literal(GraphEntity.ending_page, page_number)
 
+    def remove_ending_page(self) -> None:
+        self.g.remove((self.res, GraphEntity.ending_page, None))
+
     # HAS URL
     # <self.res> FRBR:exemplar <thing_ref>
     def has_url(self, thing_ref: URIRef) -> None:
         """The URL at which the embodiment of the bibliographic resource is available.
         """
+        self.remove_url()
         self.g.add((self.res, GraphEntity.has_url, thing_ref))
+
+    def remove_url(self) -> None:
+        self.g.remove((self.res, GraphEntity.has_url, None))
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
     # <self.res> RDF:type <type>
@@ -82,3 +98,9 @@ class ResourceEmbodiment(BibliographicEntity):
         """It identifies the particular type of the embodiment, either digital or print.
         """
         self._create_type(GraphEntity.print_object)
+
+    def remove_type(self, type_ref: URIRef = None) -> None:
+        if type_ref is not None:
+            self.g.remove((self.res, RDF.type, type_ref))
+        else:
+            self.g.remove((self.res, RDF.type, None))

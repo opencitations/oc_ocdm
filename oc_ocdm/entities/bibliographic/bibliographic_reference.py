@@ -53,7 +53,11 @@ class BibliographicReference(BibliographicEntity):
         it has been made available. For instance, the reference text can be either as plain text
         or as a block of XML.
         """
+        self.remove_content()
         return self._create_literal(GraphEntity.has_content, string)
+
+    def remove_content(self) -> None:
+        self.g.remove((self.res, GraphEntity.has_content, None))
 
     # HAS ANNOTATION (ReferenceAnnotation)
     # <self.res> OCO:hasAnnotation <an_res>
@@ -62,3 +66,9 @@ class BibliographicReference(BibliographicEntity):
         reason for that citation).
         """
         self.g.add((self.res, GraphEntity.has_annotation, URIRef(str(an_res))))
+
+    def remove_annotation(self, an_res: ReferenceAnnotation = None) -> None:
+        if an_res is not None:
+            self.g.remove((self.res, GraphEntity.has_annotation, an_res.res))
+        else:
+            self.g.remove((self.res, GraphEntity.has_annotation, None))

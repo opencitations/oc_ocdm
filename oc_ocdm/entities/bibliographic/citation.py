@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional, List
 
-from rdflib import URIRef, XSD
+from rdflib import URIRef, XSD, RDF
 
 from oc_ocdm.support import create_date
 
@@ -51,8 +51,16 @@ class Citation(BibliographicEntity):
         """The bibliographic resource which acts as the source for the citation and the
         bibliographic resource which acts as the target for the citation.
         """
+        self.remove_citing_entity()
+        self.remove_cited_entity()
         self.g.add((self.res, GraphEntity.has_citing_entity, URIRef(str(citing_res))))
         self.g.add((self.res, GraphEntity.has_cited_entity, URIRef(str(cited_res))))
+
+    def remove_citing_entity(self) -> None:
+        self.g.remove((self.res, GraphEntity.has_citing_entity, None))
+
+    def remove_cited_entity(self) -> None:
+        self.g.remove((self.res, GraphEntity.has_cited_entity, None))
 
     # HAS CITATION CREATION DATE
     # <self.res> CITO:hasCitationCreationDate "string"
@@ -64,8 +72,12 @@ class Citation(BibliographicEntity):
         """
         cur_type, string = create_date(date_list)
         if cur_type is not None and string is not None:
+            self.remove_creation_date()
             return self._create_literal(GraphEntity.has_citation_creation_date, string, cur_type, False)
         return False  # Added by @iosonopersia
+
+    def remove_creation_date(self) -> None:
+        self.g.remove((self.res, GraphEntity.has_citation_creation_date, None))
 
     # HAS CITATION TIME SPAN
     # <self.res> CITO:hasCitationTimeSpan "string"
@@ -73,14 +85,22 @@ class Citation(BibliographicEntity):
         """The date interval between the publication date of the cited bibliographic resource and
         the publication date of the citing bibliographic resource.
         """
+        self.remove_time_span()
         return self._create_literal(GraphEntity.has_citation_time_span, string, XSD.duration, False)
+
+    def remove_time_span(self) -> None:
+        self.g.remove((self.res, GraphEntity.has_citation_time_span, None))
 
     # HAS CITATION CHARACTERIZATION
     # <self.res> CITO:hasCitationCharacterization <thing_ref>
     def has_citation_characterization(self, thing_ref: URIRef) -> None:
         """The citation function characterizing the purpose of the citation.
         """
+        self.remove_characterization()
         self.g.add((self.res, GraphEntity.citation_characterisation, thing_ref))
+
+    def remove_characterization(self) -> None:
+        self.g.remove((self.res, GraphEntity.citation_characterisation, None))
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
     # <self.res> RDF:type <type>
@@ -108,3 +128,9 @@ class Citation(BibliographicEntity):
 
     def create_distant_citation(self) -> None:
         self._create_type(GraphEntity.distant_citation)
+
+    def remove_type(self, type_ref: URIRef = None) -> None:
+        if type_ref is not None:
+            self.g.remove((self.res, RDF.type, type_ref))
+        else:
+            self.g.remove((self.res, RDF.type, None))

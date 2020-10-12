@@ -39,7 +39,11 @@ class PointerList(BibliographicEntity):
     # HAS POINTER LIST TEXT
     # <self.res> C4O:hasContent "string"
     def create_content(self, string: str) -> bool:
+        self.remove_content()
         return self._create_literal(GraphEntity.has_content, string)
+
+    def remove_content(self) -> None:
+        self.g.remove((self.res, GraphEntity.has_content, None))
 
     # HAS ELEMENT (ReferencePointer)
     # <self.res> CO:element <rp_res>
@@ -48,3 +52,9 @@ class PointerList(BibliographicEntity):
         a particular location within the body of the citing work.
         """
         self.g.add((self.res, GraphEntity.has_element, URIRef(str(rp_res))))
+
+    def remove_contained_element(self, rp_res: ReferencePointer = None) -> None:
+        if rp_res is not None:
+            self.g.remove((self.res, GraphEntity.has_element, rp_res.res))
+        else:
+            self.g.remove((self.res, GraphEntity.has_element, None))

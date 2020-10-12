@@ -42,21 +42,33 @@ class ResponsibleAgent(BibliographicEntity):
         """The name of an agent (for people, usually in the format: given name followed by family
         name, separated by a space).
         """
+        self.remove_name()
         return self._create_literal(GraphEntity.name, string)
+
+    def remove_name(self) -> None:
+        self.g.remove((self.g, GraphEntity.name, None))
 
     # HAS GIVEN NAME
     # <self.res> FOAF:givenName "string"
     def create_given_name(self, string: str) -> bool:
         """The given name of an agent, if a person.
         """
+        self.remove_given_name()
         return self._create_literal(GraphEntity.given_name, string)
+
+    def remove_given_name(self) -> None:
+        self.g.remove((self.g, GraphEntity.given_name, None))
 
     # HAS FAMILY NAME
     # <self.res> FOAF:familyName "string"
     def create_family_name(self, string: str) -> bool:
         """The family name of an agent, if a person.
         """
+        self.remove_family_name()
         return self._create_literal(GraphEntity.family_name, string)
+
+    def remove_family_name(self) -> None:
+        self.g.remove((self.g, GraphEntity.family_name, None))
 
     """
     AAA: this should have inverse logic and it should belong to AgentRole class!!!
@@ -72,6 +84,16 @@ class ResponsibleAgent(BibliographicEntity):
         """
         ar_res.g.add((URIRef(str(ar_res)), GraphEntity.is_held_by, self.res))
 
+    def remove_role(self, ar_res: AgentRole = None) -> None:
+        if ar_res is not None:
+            if (ar_res.res, GraphEntity.is_held_by, self.res) in ar_res.g:
+                ar_res.g.remove((ar_res.res, GraphEntity.is_held_by, None))
+        else:
+            if self.g_set is not None:
+                for ar_res in self.g_set.get_ar():
+                    if (ar_res.res, GraphEntity.is_held_by, self.res) in ar_res.g:
+                        ar_res.g.remove((ar_res.res, GraphEntity.is_held_by, None))
+
     # HAS RELATED AGENT
     # <self.res> DCTERMS:relation <thing_ref>
     def has_related_agent(self, thing_ref: URIRef) -> None:
@@ -79,3 +101,9 @@ class ResponsibleAgent(BibliographicEntity):
         (e.g. for inter-linking purposes).
         """
         self.g.add((self.res, GraphEntity.relation, thing_ref))
+
+    def remove_related_agent(self, thing_ref: URIRef = None) -> None:
+        if thing_ref is not None:
+            self.g.remove((self.res, GraphEntity.relation, thing_ref))
+        else:
+            self.g.remove((self.res, GraphEntity.relation, None))

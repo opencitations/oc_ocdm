@@ -85,7 +85,12 @@ class Identifier(GraphEntity):
     # <self.res> DATACITE:usesIdentifierScheme <id_type>
     def _associate_identifier_with_scheme(self, string: str, id_type: URIRef) -> bool:
         if not is_string_empty(string):
+            self.remove_identifier_with_scheme()
             self._create_literal(GraphEntity.has_literal_value, string)
             self.g.add((self.res, GraphEntity.uses_identifier_scheme, id_type))
             return True
         return False
+
+    def remove_identifier_with_scheme(self) -> None:
+        self.g.remove((self.res, GraphEntity.has_literal_value, None))
+        self.g.remove((self.res, GraphEntity.uses_identifier_scheme, None))

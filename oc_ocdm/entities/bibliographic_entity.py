@@ -41,3 +41,9 @@ class BibliographicEntity(GraphEntity):
         identifiers can be specified through this attribute (e.g. DOI, ORCID, PubMedID).
         """
         self.g.add((self.res, GraphEntity.has_identifier, URIRef(str(id_res))))
+
+    def remove_id(self, id: Identifier = None) -> None:
+        if id is not None:
+            self.g.remove((self.res, GraphEntity.has_identifier, id.res))
+        else:
+            self.g.remove((self.res, GraphEntity.has_identifier, None))

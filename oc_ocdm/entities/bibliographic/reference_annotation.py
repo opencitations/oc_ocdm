@@ -46,4 +46,8 @@ class ReferenceAnnotation(BibliographicEntity):
         """The citation to which the annotation relates, that is relevant either to a bibliographic
         reference or to an in-text reference pointer that denotes such a bibliographic reference.
         """
+        self.remove_body_annotation()
         self.g.add((self.res, GraphEntity.has_body, URIRef(str(ci_res))))
+
+    def remove_body_annotation(self) -> None:
+        self.g.remove((self.res, GraphEntity.has_body, None))
