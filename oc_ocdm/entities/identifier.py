@@ -16,8 +16,10 @@
 from __future__ import annotations
 
 import re
+from typing import TYPE_CHECKING
 
-from rdflib import URIRef
+if TYPE_CHECKING:
+    from rdflib import URIRef
 
 from oc_ocdm import GraphEntity
 from oc_ocdm.decorators import accepts_only

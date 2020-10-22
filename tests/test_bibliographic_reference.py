@@ -15,7 +15,7 @@
 # SOFTWARE.
 import unittest
 
-from rdflib import URIRef, Literal
+from rdflib import Literal
 
 from oc_ocdm import GraphEntity
 from oc_ocdm import GraphSet

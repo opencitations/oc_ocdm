@@ -15,14 +15,16 @@
 # SOFTWARE.
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
 
-from rdflib import URIRef, RDF
+from rdflib import RDF
 
 from oc_ocdm.decorators import accepts_only
 from oc_ocdm.support import create_date
 
 if TYPE_CHECKING:
+    from typing import List, Optional
+    from rdflib import URIRef
     from oc_ocdm.entities.bibliographic import BibliographicReference
     from oc_ocdm.entities.bibliographic import DiscourseElement
     from oc_ocdm.entities.bibliographic import ResourceEmbodiment

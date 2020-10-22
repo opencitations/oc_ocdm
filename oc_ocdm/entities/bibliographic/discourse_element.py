@@ -17,11 +17,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from rdflib import URIRef, RDF
+from rdflib import RDF
 
 from oc_ocdm.decorators import accepts_only
 
 if TYPE_CHECKING:
+    from rdflib import URIRef
     from oc_ocdm.entities.bibliographic import ReferencePointer
     from oc_ocdm.entities.bibliographic import PointerList
 from oc_ocdm import GraphEntity

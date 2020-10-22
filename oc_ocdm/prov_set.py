@@ -18,7 +18,7 @@ from __future__ import annotations
 __author__ = 'essepuntato'
 
 from datetime import datetime
-from typing import Optional, Tuple, List, Set
+from typing import Optional, Tuple, Set
 
 from rdflib import Graph, ConjunctiveGraph, URIRef
 from rdflib.compare import to_isomorphic, graph_diff, IsomorphicGraph

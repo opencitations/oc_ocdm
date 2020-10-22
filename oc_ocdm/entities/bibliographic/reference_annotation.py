@@ -17,8 +17,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from rdflib import URIRef
-
 from oc_ocdm.decorators import accepts_only
 
 if TYPE_CHECKING:

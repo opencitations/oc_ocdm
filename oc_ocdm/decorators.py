@@ -16,7 +16,10 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import Callable, Any
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Callable, Any
 from rdflib import URIRef
 from oc_ocdm import GraphEntity
 

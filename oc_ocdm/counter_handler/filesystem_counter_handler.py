@@ -13,10 +13,15 @@
 # DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
+from __future__ import annotations
+
 import os
 from shutil import copymode, move
 from tempfile import mkstemp
-from typing import BinaryIO, Tuple, List, Dict
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import BinaryIO, Tuple, List, Dict
 
 from oc_ocdm.counter_handler import CounterHandler
 

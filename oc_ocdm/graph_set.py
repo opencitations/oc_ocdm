@@ -17,7 +17,10 @@ from __future__ import annotations
 
 __author__ = 'essepuntato'
 
-from typing import Dict, List, ClassVar, Tuple, Optional
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Dict, List, ClassVar, Tuple, Optional
 
 from rdflib import Graph, Namespace, URIRef
 
