@@ -19,6 +19,8 @@ from typing import TYPE_CHECKING
 
 from rdflib import URIRef
 
+from oc_ocdm.decorators import accepts_only
+
 if TYPE_CHECKING:
     from oc_ocdm.entities.bibliographic import Citation
 from oc_ocdm import GraphEntity
@@ -42,6 +44,7 @@ class ReferenceAnnotation(BibliographicEntity):
 
     # HAS CITATION (Citation)
     # <self.res> OA:hasBody <ci_res>
+    @accepts_only('ci')
     def create_body_annotation(self, ci_res: Citation) -> None:
         """The citation to which the annotation relates, that is relevant either to a bibliographic
         reference or to an in-text reference pointer that denotes such a bibliographic reference.

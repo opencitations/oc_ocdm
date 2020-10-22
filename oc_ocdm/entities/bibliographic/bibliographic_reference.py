@@ -19,6 +19,8 @@ from typing import TYPE_CHECKING
 
 from rdflib import URIRef
 
+from oc_ocdm.decorators import accepts_only
+
 if TYPE_CHECKING:
     from oc_ocdm.entities.bibliographic import ReferenceAnnotation
 from oc_ocdm import GraphEntity
@@ -42,6 +44,7 @@ class BibliographicReference(BibliographicEntity):
 
     # HAS BIBLIOGRAPHIC REFERENCE TEXT
     # <self.res> C4O:hasContent "string"
+    @accepts_only('literal')
     def create_content(self, string: str) -> None:
         """The literal text of a bibliographic reference occurring in the reference list (or
         elsewhere) within a bibliographic resource, that references another bibliographic
@@ -61,12 +64,14 @@ class BibliographicReference(BibliographicEntity):
 
     # HAS ANNOTATION (ReferenceAnnotation)
     # <self.res> OCO:hasAnnotation <an_res>
+    @accepts_only('an')
     def create_annotation(self, an_res: ReferenceAnnotation) -> None:
         """An annotation characterizing the related citation, in terms of its citation function (the
         reason for that citation).
         """
         self.g.add((self.res, GraphEntity.has_annotation, an_res.res))
 
+    @accepts_only('an')
     def remove_annotation(self, an_res: ReferenceAnnotation = None) -> None:
         if an_res is not None:
             self.g.remove((self.res, GraphEntity.has_annotation, an_res.res))

@@ -19,6 +19,8 @@ from typing import TYPE_CHECKING
 
 from rdflib import URIRef
 
+from oc_ocdm.decorators import accepts_only
+
 if TYPE_CHECKING:
     from oc_ocdm.entities import AgentRole
 from oc_ocdm import GraphEntity
@@ -38,6 +40,7 @@ class ResponsibleAgent(BibliographicEntity):
 
     # HAS NAME STRING
     # <self.res> FOAF:name "string"
+    @accepts_only('literal')
     def create_name(self, string: str) -> None:
         """The name of an agent (for people, usually in the format: given name followed by family
         name, separated by a space).
@@ -50,6 +53,7 @@ class ResponsibleAgent(BibliographicEntity):
 
     # HAS GIVEN NAME
     # <self.res> FOAF:givenName "string"
+    @accepts_only('literal')
     def create_given_name(self, string: str) -> None:
         """The given name of an agent, if a person.
         """
@@ -61,6 +65,7 @@ class ResponsibleAgent(BibliographicEntity):
 
     # HAS FAMILY NAME
     # <self.res> FOAF:familyName "string"
+    @accepts_only('literal')
     def create_family_name(self, string: str) -> None:
         """The family name of an agent, if a person.
         """
@@ -79,11 +84,13 @@ class ResponsibleAgent(BibliographicEntity):
         def is_held_by(self, ra_res: URIRef):
             self.g.add((self.res, GraphEntity.is_held_by, ar_res.res))
     """
+    @accepts_only('ar')
     def has_role(self, ar_res: AgentRole):
         """[AgentRole] The agent holding this role with respect to a particular bibliographic resource.
         """
         ar_res.g.add((ar_res.res, GraphEntity.is_held_by, self.res))
 
+    @accepts_only('ar')
     def remove_role(self, ar_res: AgentRole = None) -> None:
         if ar_res is not None:
             if (ar_res.res, GraphEntity.is_held_by, self.res) in ar_res.g:
@@ -96,12 +103,14 @@ class ResponsibleAgent(BibliographicEntity):
 
     # HAS RELATED AGENT
     # <self.res> DCTERMS:relation <thing_ref>
+    @accepts_only('thing')
     def has_related_agent(self, thing_ref: URIRef) -> None:
         """An external agent that/who is related in some relevant way with this responsible agent
         (e.g. for inter-linking purposes).
         """
         self.g.add((self.res, GraphEntity.relation, thing_ref))
 
+    @accepts_only('thing')
     def remove_related_agent(self, thing_ref: URIRef = None) -> None:
         if thing_ref is not None:
             self.g.remove((self.res, GraphEntity.relation, thing_ref))

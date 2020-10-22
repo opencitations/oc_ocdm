@@ -22,6 +22,8 @@ from typing import TYPE_CHECKING, ClassVar
 from rdflib import Namespace, URIRef, Graph
 from rdflib.namespace import XSD
 
+from oc_ocdm.decorators import accepts_only
+
 if TYPE_CHECKING:
     from oc_ocdm import ProvSet
     from oc_ocdm.entities.bibliographic import ResponsibleAgent
@@ -80,6 +82,7 @@ class ProvEntity(GraphEntity):
 
     # HAS CREATION DATE
     # <self.res> PROV:generatedAtTime "string"
+    @accepts_only('literal')
     def create_generation_time(self, string: str) -> None:
         """The date on which a particular snapshot of a bibliographic entity's metadata was
         created.
@@ -88,6 +91,7 @@ class ProvEntity(GraphEntity):
 
     # HAS INVALIDATION DATE
     # <self.res> PROV:invalidatedAtTime "string"
+    @accepts_only('literal')
     def create_invalidation_time(self, string: str) -> None:
         """The date on which a snapshot of a bibliographic entity's metadata was invalidated due
         to an update (e.g. a correction, or the addition of some metadata that was not specified
@@ -105,6 +109,7 @@ class ProvEntity(GraphEntity):
 
     # IS DERIVED FROM
     # <self.res> PROV:wasDerivedFrom <se_res>
+    @accepts_only('se')
     def derives_from(self, se_res: ProvEntity) -> None:
         """This property is used to identify the immediately previous snapshot of entity metadata
         associated with the same bibliographic entity.
@@ -113,15 +118,17 @@ class ProvEntity(GraphEntity):
 
     # HAS PRIMARY SOURCE
     # <self.res> PROV:hadPrimarySource <any_res>
-    def has_primary_source(self, any_res: str) -> None:
+    @accepts_only('thing')
+    def has_primary_source(self, any_res: URIRef) -> None:
         """This property is used to identify the primary source from which the metadata
         described in the snapshot are derived (e.g. Crossref, as the result of querying the
         CrossRef API).
         """
-        self.g.add((self.res, ProvEntity.had_primary_source, URIRef(str(any_res))))
+        self.g.add((self.res, ProvEntity.had_primary_source, any_res))
 
     # HAS UPDATE ACTION
     # <self.res> OCO:hasUpdateQuery "string"
+    @accepts_only('literal')
     def create_update_query(self, string: str) -> None:
         """The UPDATE SPARQL query that specifies which data, associated to the bibliographic
         entity in consideration, have been modified (e.g. for correcting a mistake) in the
@@ -131,6 +138,7 @@ class ProvEntity(GraphEntity):
 
     # HAS DESCRIPTION
     # <self.res> DCTERM:description "string"
+    @accepts_only('literal')
     def create_description(self, string: str) -> None:
         """A textual description of the events that have resulted in the current snapshot (e.g. the
         creation of the initial snapshot, the creation of a new snapshot following the
@@ -142,10 +150,11 @@ class ProvEntity(GraphEntity):
 
     # IS ATTRIBUTED TO
     # <self.res> PROV:wasAttributedTo <se_agent>
-    def has_resp_agent(self, se_agent: str) -> None:
+    @accepts_only('thing')
+    def has_resp_agent(self, se_agent: URIRef) -> None:
         """The agent responsible for the creation of the current entity snapshot.
         """
-        self.g.add((self.res, ProvEntity.was_attributed_to, URIRef(str(se_agent))))
+        self.g.add((self.res, ProvEntity.was_attributed_to, se_agent))
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
     # <self.res> RDF:type <type>
@@ -161,17 +170,22 @@ class ProvEntity(GraphEntity):
 
     # +++++++++++++++++++++++++ UNDOCUMENTED ++++++++++++++++++++++++++
 
+    @accepts_only('se')
     def generates(self, se_res: ProvEntity) -> None:
         se_res.g.add((se_res.res, ProvEntity.was_generated_by, self.res))
 
+    @accepts_only('se')
     def invalidates(self, se_res: ProvEntity) -> None:
         se_res.g.add((se_res.res, ProvEntity.was_invalidated_by, self.res))
 
+    @accepts_only('thing')
     def involves_agent_with_role(self, cr_res: URIRef) -> None:
         self.g.add((self.res, ProvEntity.qualified_association, cr_res))
 
+    @accepts_only('thing')
     def has_role_type(self, any_res: URIRef) -> None:
         self.g.add((self.res, ProvEntity.had_role, any_res))
 
+    @accepts_only('ra')
     def has_role_in(self, ca_res: ResponsibleAgent) -> None:
         ca_res.g.add((ca_res.res, ProvEntity.associated_agent, self.res))

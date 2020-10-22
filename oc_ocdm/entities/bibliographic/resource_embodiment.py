@@ -20,6 +20,7 @@ import re
 from rdflib import URIRef, RDF
 
 from oc_ocdm import GraphEntity
+from oc_ocdm.decorators import accepts_only
 from oc_ocdm.entities import BibliographicEntity
 
 """
@@ -36,6 +37,7 @@ class ResourceEmbodiment(BibliographicEntity):
 
     # HAS FORMAT
     # <self.res> DCTERMS:format <thing_ref>
+    @accepts_only('thing')
     def has_media_type(self, thing_ref: URIRef) -> None:
         """It allows one to specify the IANA media type of the embodiment.
         """
@@ -47,6 +49,7 @@ class ResourceEmbodiment(BibliographicEntity):
 
     # HAS FIRST PAGE
     # <self.res> PRISM:startingPage "string"
+    @accepts_only('literal')
     def create_starting_page(self, string: str) -> None:
         """The first page of the bibliographic resource according to the current embodiment.
         """
@@ -62,6 +65,7 @@ class ResourceEmbodiment(BibliographicEntity):
 
     # HAS LAST PAGE
     # <self.res> PRISM:endingPage "string"
+    @accepts_only('literal')
     def create_ending_page(self, string: str) -> None:
         """The last page of the bibliographic resource according to the current embodiment.
         """
@@ -77,6 +81,7 @@ class ResourceEmbodiment(BibliographicEntity):
 
     # HAS URL
     # <self.res> FRBR:exemplar <thing_ref>
+    @accepts_only('thing')
     def has_url(self, thing_ref: URIRef) -> None:
         """The URL at which the embodiment of the bibliographic resource is available.
         """
@@ -99,6 +104,7 @@ class ResourceEmbodiment(BibliographicEntity):
         """
         self._create_type(GraphEntity.print_object)
 
+    @accepts_only('thing')
     def remove_type(self, type_ref: URIRef = None) -> None:
         if type_ref is not None:
             self.g.remove((self.res, RDF.type, type_ref))

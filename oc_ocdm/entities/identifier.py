@@ -20,6 +20,7 @@ import re
 from rdflib import URIRef
 
 from oc_ocdm import GraphEntity
+from oc_ocdm.decorators import accepts_only
 from oc_ocdm.support import is_string_empty, encode_url
 
 """
@@ -36,47 +37,61 @@ class Identifier(GraphEntity):
        metadata are themselves given unique corpus identifiers e.g. 'id/0420129'."""
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
+    @accepts_only('literal')
     def create_oci(self, string: str) -> None:
         self._associate_identifier_with_scheme(string, GraphEntity.oci)
 
+    @accepts_only('literal')
     def create_orcid(self, string: str) -> None:
         self._associate_identifier_with_scheme(string, GraphEntity.orcid)
 
+    @accepts_only('literal')
     def create_doi(self, string: str) -> None:
         self._associate_identifier_with_scheme(string.lower(), GraphEntity.doi)
 
+    @accepts_only('literal')
     def create_pmid(self, string: str) -> None:
         self._associate_identifier_with_scheme(string, GraphEntity.pmid)
 
+    @accepts_only('literal')
     def create_pmcid(self, string: str) -> None:
         self._associate_identifier_with_scheme(string, GraphEntity.pmcid)
 
+    @accepts_only('literal')
     def create_issn(self, string: str) -> None:
         cur_string = re.sub("–", "-", string)
         if cur_string != "0000-0000":
             self._associate_identifier_with_scheme(string, GraphEntity.issn)
 
+    @accepts_only('literal')
     def create_isbn(self, string: str) -> None:
         self._associate_identifier_with_scheme(re.sub("–", "-", string), GraphEntity.isbn)
 
+    @accepts_only('literal')
     def create_url(self, string: str) -> None:
         self._associate_identifier_with_scheme(encode_url(string.lower()), GraphEntity.url)
 
+    @accepts_only('literal')
     def create_xpath(self, string: str) -> None:
         self._associate_identifier_with_scheme(string, GraphEntity.xpath)
 
+    @accepts_only('literal')
     def create_intrepid(self, string: str) -> None:
         self._associate_identifier_with_scheme(string, GraphEntity.intrepid)
 
+    @accepts_only('literal')
     def create_xmlid(self, string: str) -> None:
         self._associate_identifier_with_scheme(string, GraphEntity.xmlid)
 
+    @accepts_only('literal')
     def create_wikidata(self, string: str) -> None:
         self._associate_identifier_with_scheme(string, GraphEntity.wikidata)
 
+    @accepts_only('literal')
     def create_crossref(self, string: str) -> None:
         self._associate_identifier_with_scheme(string, GraphEntity.crossref)
 
+    @accepts_only('literal')
     def create_viaf(self, string: str) -> None:
         self._associate_identifier_with_scheme(string, GraphEntity.viaf)
 

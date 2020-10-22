@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, List, Optional
 
 from rdflib import URIRef, RDF
 
+from oc_ocdm.decorators import accepts_only
 from oc_ocdm.support import create_date
 
 if TYPE_CHECKING:
@@ -46,6 +47,7 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS TITLE
     # <self.res> DCTERMS:title "string"
+    @accepts_only('literal')
     def create_title(self, string: str) -> None:
         """The title of the bibliographic resource.
         """
@@ -57,6 +59,7 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS SUBTITLE
     # <self.res> FABIO:hasSubtitle "string"
+    @accepts_only('literal')
     def create_subtitle(self, string: str) -> None:
         """The subtitle of the bibliographic resource.
         """
@@ -76,12 +79,14 @@ class BibliographicResource(BibliographicEntity):
     """
     # IS PART OF (BibliographicResource)
     # <br_res> FRBR:partOf <self.res>
+    @accepts_only('br')
     def has_part(self, br_res: BibliographicResource) -> None:
         """The corpus identifier of the bibliographic resource (e.g. issue, volume, journal,
         conference proceedings) that contains the subject bibliographic resource.
         """
         br_res.g.add((br_res.res, GraphEntity.part_of, self.res))
 
+    @accepts_only('br')
     def remove_part(self, br_res: BibliographicResource = None) -> None:
         if br_res is not None:
             if (br_res.res, GraphEntity.part_of, self.res) in br_res.g:
@@ -94,12 +99,14 @@ class BibliographicResource(BibliographicEntity):
 
     # CITES (BibliographicResource)
     # <self.res> CITO:cites <br_res>
+    @accepts_only('br')
     def has_citation(self, br_res: BibliographicResource) -> None:
         """The corpus identifier of the bibliographic resource cited by the subject bibliographic
         resource.
         """
         self.g.add((self.res, GraphEntity.cites, br_res.res))
 
+    @accepts_only('br')
     def remove_citation(self, br_res: BibliographicResource = None) -> None:
         if br_res is not None:
             self.g.remove((self.res, GraphEntity.cites, br_res.res))
@@ -108,6 +115,7 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS PUBLICATION DATE
     # <self.res> PRISM:publicationDate "string"
+    @accepts_only('date')
     def create_pub_date(self, date_list: List[Optional[int]] = None) -> None:
         """The date of publication of the bibliographic resource.
         """
@@ -121,12 +129,14 @@ class BibliographicResource(BibliographicEntity):
 
     # IS EMBODIED AS (ResourceEmbodiment)
     # <self.res> FRBR:embodiment <re_res>
+    @accepts_only('re')
     def has_format(self, re_res: ResourceEmbodiment) -> None:
         """The corpus identifier of the resource embodiment defining the format in which the
         bibliographic resource has been embodied, which can be either print or digital.
         """
         self.g.add((self.res, GraphEntity.embodiment, re_res.res))
 
+    @accepts_only('re')
     def remove_format(self, re_res: ResourceEmbodiment = None):
         if re_res is not None:
             self.g.remove((self.res, GraphEntity.embodiment, re_res.res))
@@ -135,6 +145,7 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS NUMBER
     # <self.res> FABIO:hasSequenceIdentifier "string"
+    @accepts_only('literal')
     def create_number(self, string: str) -> None:
         """A literal (for example a number or a letter) that identifies the sequence position of the
         bibliographic resource as a particular item within a larger collection (e.g. an article
@@ -149,6 +160,7 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS EDITION
     # <self.res> PRISM:edition "string"
+    @accepts_only('literal')
     def has_edition(self, string: str) -> None:
         """An identifier for one of several alternative editions of a particular bibliographic
         resource.
@@ -161,12 +173,14 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS PART (BibliographicReference)
     # <self.res> FRBR:part <be_res>
+    @accepts_only('be')
     def contains_in_reference_list(self, be_res: BibliographicReference) -> None:
         """A bibliographic reference within the bibliographic resource, or a discourse element
         wherein the text of the bibliographic resources can be organized.
         """
         self.g.add((self.res, GraphEntity.contains_reference, be_res.res))
 
+    @accepts_only('be')
     def remove_in_reference_list(self, be_res: BibliographicReference = None) -> None:
         if be_res is not None:
             self.g.remove((self.res, GraphEntity.contains_reference, be_res.res))
@@ -175,12 +189,14 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS PART (DiscourseElement)
     # <self.res> FRBR:part <de_res>
+    @accepts_only('de')
     def contains_discourse_element(self, de_res: DiscourseElement) -> None:
         """A bibliographic reference within the bibliographic resource, or a discourse element
         wherein the text of the bibliographic resources can be organized.
         """
         self.g.add((self.res, GraphEntity.contains_de, de_res.res))
 
+    @accepts_only('de')
     def remove_discourse_element(self, de_res: DiscourseElement = None) -> None:
         if de_res is not None:
             self.g.remove((self.res, GraphEntity.contains_de, de_res.res))
@@ -190,8 +206,8 @@ class BibliographicResource(BibliographicEntity):
     """
         HAS PART (DiscourseElement) with inverted logic (IS PART OF)
     """
-
     # <de_res> FRBR:part <self.res>
+    @accepts_only('de')
     def contained_in_discourse_element(self, de_res: DiscourseElement) -> None:
         """A bibliographic reference within the bibliographic resource, or a discourse element
         wherein the text of the bibliographic resources can be organized.
@@ -208,11 +224,13 @@ class BibliographicResource(BibliographicEntity):
             self.g.add((self.res, GraphEntity.references, br_res.res))
     """
     # <be_res> BIRO:references <self.res>
+    @accepts_only('be')
     def has_reference(self, be_res: BibliographicReference) -> None:
         """The bibliographic reference that cites this bibliographic resource.
         """
         be_res.g.add((be_res.res, GraphEntity.references, self.res))
 
+    @accepts_only('be')
     def remove_reference(self, be_res: BibliographicReference = None) -> None:
         if be_res is not None:
             if (be_res.res, GraphEntity.references, self.res) in be_res.g:
@@ -225,6 +243,7 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS RELATED DOCUMENT
     # <self.res> DCTERMS:relation <thing_ref>
+    @accepts_only('thing')
     def has_related_document(self, thing_ref: URIRef) -> None:
         """A document external to the Corpus, that is related to the bibliographic resource (such
         as a version of the bibliographic resource – for example a preprint – recorded in an
@@ -232,6 +251,7 @@ class BibliographicResource(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.relation, thing_ref))
 
+    @accepts_only('thing')
     def remove_related_document(self, thing_ref: URIRef = None) -> None:
         if thing_ref is not None:
             self.g.remove((self.res, GraphEntity.relation, thing_ref))
@@ -381,6 +401,7 @@ class BibliographicResource(BibliographicEntity):
         """
         self._create_type(GraphEntity.expression)
 
+    @accepts_only('thing')
     def remove_type(self, type_ref: URIRef = None) -> None:
         if type_ref is not None:
             self.g.remove((self.res, RDF.type, type_ref))

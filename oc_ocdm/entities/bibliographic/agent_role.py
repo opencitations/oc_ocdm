@@ -19,6 +19,8 @@ from typing import TYPE_CHECKING
 
 from rdflib import URIRef
 
+from oc_ocdm.decorators import accepts_only
+
 if TYPE_CHECKING:
     from oc_ocdm.entities.bibliographic import BibliographicResource
 from oc_ocdm import GraphEntity
@@ -44,6 +46,7 @@ class AgentRole(BibliographicEntity):
     def has_next(self, ar_res: AgentRole) -> None:
         self.g.add((self.res, GraphEntity.has_next, ar_res.res))
     """
+    @accepts_only('ar')
     def follows(self, ar_res: AgentRole) -> None:
         """The previous role in a sequence of agent roles of the same type associated with the
         same bibliographic resource (so as to define, for instance, an ordered list of authors).
@@ -58,16 +61,19 @@ class AgentRole(BibliographicEntity):
                     ar_res.g.remove((ar_res.res, GraphEntity.has_next, None))
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
+    @accepts_only('br')
     def create_publisher(self, br_res: BibliographicResource) -> None:
         """The specific type of role under consideration (e.g. author, editor or publisher).
         """
         self._associate_role_with_document(GraphEntity.publisher, br_res)
 
+    @accepts_only('br')
     def create_author(self, br_res: BibliographicResource) -> None:
         """The specific type of role under consideration (e.g. author, editor or publisher).
         """
         self._associate_role_with_document(GraphEntity.author, br_res)
 
+    @accepts_only('br')
     def create_editor(self, br_res: BibliographicResource) -> None:
         """The specific type of role under consideration (e.g. author, editor or publisher).
         """

@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, Optional, List
 
 from rdflib import URIRef, XSD, RDF
 
+from oc_ocdm.decorators import accepts_only
 from oc_ocdm.support import create_date
 
 if TYPE_CHECKING:
@@ -45,6 +46,7 @@ class Citation(BibliographicEntity):
 
     # HAS CITING DOCUMENT (BibliographicResource)
     # <self.res> CITO:hasCitingEntity <citing_res>
+    @accepts_only('br')
     def create_citing_entity(self, citing_res: BibliographicResource) -> None:
         """The bibliographic resource which acts as the source for the citation.
         """
@@ -56,6 +58,7 @@ class Citation(BibliographicEntity):
 
     # HAS CITED DOCUMENT (BibliographicResource)
     # <self.res> CITO:hasCitedEntity <cited_res>
+    @accepts_only('br')
     def create_cited_entity(self, cited_res: BibliographicResource) -> None:
         """ The bibliographic resource which acts as the target for the citation.
         """
@@ -67,6 +70,7 @@ class Citation(BibliographicEntity):
 
     # HAS CITATION CREATION DATE
     # <self.res> CITO:hasCitationCreationDate "string"
+    @accepts_only('date')
     def has_citation_creation_date(self, date_list: List[Optional[int]] = None) -> None:
         """The date on which the citation was created. This has the same numerical value
         as the publication date of the citing bibliographic resource, but is a property
@@ -83,6 +87,7 @@ class Citation(BibliographicEntity):
 
     # HAS CITATION TIME SPAN
     # <self.res> CITO:hasCitationTimeSpan "string"
+    @accepts_only('literal')
     def has_citation_time_span(self, string: str) -> None:
         """The date interval between the publication date of the cited bibliographic resource and
         the publication date of the citing bibliographic resource.
@@ -95,6 +100,7 @@ class Citation(BibliographicEntity):
 
     # HAS CITATION CHARACTERIZATION
     # <self.res> CITO:hasCitationCharacterization <thing_ref>
+    @accepts_only('thing')
     def has_citation_characterization(self, thing_ref: URIRef) -> None:
         """The citation function characterizing the purpose of the citation.
         """
@@ -131,6 +137,7 @@ class Citation(BibliographicEntity):
     def create_distant_citation(self) -> None:
         self._create_type(GraphEntity.distant_citation)
 
+    @accepts_only('thing')
     def remove_type(self, type_ref: URIRef = None) -> None:
         if type_ref is not None:
             self.g.remove((self.res, RDF.type, type_ref))

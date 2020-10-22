@@ -19,6 +19,8 @@ from typing import TYPE_CHECKING
 
 from rdflib import URIRef
 
+from oc_ocdm.decorators import accepts_only
+
 if TYPE_CHECKING:
     from oc_ocdm.entities.bibliographic import ReferencePointer
 from oc_ocdm import GraphEntity
@@ -38,6 +40,7 @@ class PointerList(BibliographicEntity):
 
     # HAS POINTER LIST TEXT
     # <self.res> C4O:hasContent "string"
+    @accepts_only('literal')
     def create_content(self, string: str) -> None:
         self.remove_content()
         self._create_literal(GraphEntity.has_content, string)
@@ -47,12 +50,14 @@ class PointerList(BibliographicEntity):
 
     # HAS ELEMENT (ReferencePointer)
     # <self.res> CO:element <rp_res>
+    @accepts_only('rp')
     def contains_element(self, rp_res: ReferencePointer) -> None:
         """The in-text reference pointer that is part of the in-text reference pointer list present at
         a particular location within the body of the citing work.
         """
         self.g.add((self.res, GraphEntity.has_element, rp_res.res))
 
+    @accepts_only('rp')
     def remove_contained_element(self, rp_res: ReferencePointer = None) -> None:
         if rp_res is not None:
             self.g.remove((self.res, GraphEntity.has_element, rp_res.res))

@@ -19,6 +19,8 @@ from typing import TYPE_CHECKING
 
 from rdflib import URIRef
 
+from oc_ocdm.decorators import accepts_only
+
 if TYPE_CHECKING:
     from oc_ocdm.entities import Identifier
 from oc_ocdm import GraphEntity
@@ -35,6 +37,7 @@ class BibliographicEntity(GraphEntity):
 
     # HAS IDENTIFIER
     # <self.res> DATACITE:hasIdentifier <id_res>
+    @accepts_only('id')
     def has_id(self, id_res: Identifier) -> None:
         """In addition to the internal dataset identifier assigned to the entity upon initial
         curation (format: [entity short name]/[local identifier]), other external third-party
@@ -42,6 +45,7 @@ class BibliographicEntity(GraphEntity):
         """
         self.g.add((self.res, GraphEntity.has_identifier, id_res.res))
 
+    @accepts_only('id')
     def remove_id(self, id: Identifier = None) -> None:
         if id is not None:
             self.g.remove((self.res, GraphEntity.has_identifier, id.res))

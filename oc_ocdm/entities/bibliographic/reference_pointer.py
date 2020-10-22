@@ -19,6 +19,8 @@ from typing import TYPE_CHECKING
 
 from rdflib import URIRef
 
+from oc_ocdm.decorators import accepts_only
+
 if TYPE_CHECKING:
     from oc_ocdm.entities.bibliographic import BibliographicReference
     from oc_ocdm.entities.bibliographic import ReferenceAnnotation
@@ -40,6 +42,7 @@ class ReferencePointer(BibliographicEntity):
 
     # HAS REFERENCE POINTER TEXT
     # <self.res> C4O:hasContent "string"
+    @accepts_only('literal')
     def create_content(self, string: str) -> None:
         """The literal text of the textual device forming an in-text reference pointer and denoting
         a single bibliographic reference (e.g. “[1]”).
@@ -52,6 +55,7 @@ class ReferencePointer(BibliographicEntity):
 
     # HAS NEXT (ReferencePointer)
     # <self.res> OCO:hasNext <rp_res>
+    @accepts_only('rp')
     def has_next_rp(self, rp_res: ReferencePointer) -> None:
         """The following in-text reference pointer, when included within a single in-text reference
         pointer list.
@@ -64,6 +68,7 @@ class ReferencePointer(BibliographicEntity):
 
     # DENOTES (BibliographicReference)
     # <self.res> C4O:denotes <be_res>
+    @accepts_only('be')
     def denotes_be(self, be_res: BibliographicReference) -> None:
         """The bibliographic reference included in the list of bibliographic references, denoted by
         the in-text reference pointer.
@@ -76,6 +81,7 @@ class ReferencePointer(BibliographicEntity):
 
     # HAS ANNOTATION (ReferenceAnnotation)
     # <self.res> OCO:hasAnnotation <an_res>
+    @accepts_only('an')
     def create_annotation(self, an_res: ReferenceAnnotation) -> None:
         """An annotation characterizing the citation to which the in-text reference pointer relates
         in terms of its citation function (the reason for that citation) specific to the textual
@@ -83,6 +89,7 @@ class ReferencePointer(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.has_annotation, an_res.res))
 
+    @accepts_only('an')
     def remove_annotation(self, an_res: ReferenceAnnotation = None) -> None:
         if an_res is not None:
             self.g.remove((self.res, GraphEntity.has_annotation, an_res.res))
