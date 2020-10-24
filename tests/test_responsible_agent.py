@@ -33,25 +33,25 @@ class TestResponsibleAgent(unittest.TestCase):
         self.ra = self.graph_set.add_ra(self.__class__.__name__)
         self.ar = self.graph_set.add_ar(self.__class__.__name__)
 
-    def test_create_name(self):
+    def test_has_name(self):
         name = "Name"
-        result = self.ra.create_name(name)
+        result = self.ra.has_name(name)
         self.assertIsNone(result)
 
         triple = self.ra.res, GraphEntity.name, Literal(name)
         self.assertIn(triple, self.ra.g)
 
-    def test_create_given_name(self):
+    def test_has_given_name(self):
         given_name = "GivenName"
-        result = self.ra.create_given_name(given_name)
+        result = self.ra.has_given_name(given_name)
         self.assertIsNone(result)
 
         triple = self.ra.res, GraphEntity.given_name, Literal(given_name)
         self.assertIn(triple, self.ra.g)
 
-    def test_create_family_name(self):
+    def test_has_family_name(self):
         family_name = "GivenName"
-        result = self.ra.create_family_name(family_name)
+        result = self.ra.has_family_name(family_name)
         self.assertIsNone(result)
 
         triple = self.ra.res, GraphEntity.family_name, Literal(family_name)

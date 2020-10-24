@@ -40,7 +40,7 @@ class ResponsibleAgent(BibliographicEntity):
     # HAS NAME STRING
     # <self.res> FOAF:name "string"
     @accepts_only('literal')
-    def create_name(self, string: str) -> None:
+    def has_name(self, string: str) -> None:
         """The name of an agent (for people, usually in the format: given name followed by family
         name, separated by a space).
         """
@@ -53,7 +53,7 @@ class ResponsibleAgent(BibliographicEntity):
     # HAS GIVEN NAME
     # <self.res> FOAF:givenName "string"
     @accepts_only('literal')
-    def create_given_name(self, string: str) -> None:
+    def has_given_name(self, string: str) -> None:
         """The given name of an agent, if a person.
         """
         self.remove_given_name()
@@ -65,7 +65,7 @@ class ResponsibleAgent(BibliographicEntity):
     # HAS FAMILY NAME
     # <self.res> FOAF:familyName "string"
     @accepts_only('literal')
-    def create_family_name(self, string: str) -> None:
+    def has_family_name(self, string: str) -> None:
         """The family name of an agent, if a person.
         """
         self.remove_family_name()

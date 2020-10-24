@@ -36,17 +36,17 @@ class TestBibliographicResource(unittest.TestCase):
         self.be = self.graph_set.add_be(self.__class__.__name__)
         self.de = self.graph_set.add_de(self.__class__.__name__)
 
-    def test_create_title(self):
+    def test_has_title(self):
         title = "Resource"
-        result = self.br1.create_title(title)
+        result = self.br1.has_title(title)
         self.assertIsNone(result)
 
         triple = self.br1.res, GraphEntity.title, Literal(title)
         self.assertIn(triple, self.br1.g)
 
-    def test_create_subtitle(self):
+    def test_has_subtitle(self):
         subtitle = "Resource"
-        result = self.br1.create_subtitle(subtitle)
+        result = self.br1.has_subtitle(subtitle)
         self.assertIsNone(result)
 
         triple = self.br1.res, GraphEntity.has_subtitle, Literal(subtitle)
@@ -66,11 +66,11 @@ class TestBibliographicResource(unittest.TestCase):
         triple = self.br1.res, GraphEntity.cites, self.br2.res
         self.assertIn(triple, self.br1.g)
 
-    def test_create_pub_date(self):
+    def test_has_pub_date(self):
         with self.subTest("date_list is [int, int, int]"):
             string = "2020-05-25"
             datatype = XSD.date
-            result = self.br1.create_pub_date([2020, 5, 25])
+            result = self.br1.has_pub_date([2020, 5, 25])
             self.assertIsNone(result)
 
             triple = self.br1.res, GraphEntity.has_publication_date, Literal(string, datatype=datatype,
@@ -79,7 +79,7 @@ class TestBibliographicResource(unittest.TestCase):
         with self.subTest("date_list is [int, int]"):
             string = "2020-05"
             datatype = XSD.gYearMonth
-            result = self.br1.create_pub_date([2020, 5])
+            result = self.br1.has_pub_date([2020, 5])
             self.assertIsNone(result)
 
             triple = self.br1.res, GraphEntity.has_publication_date, Literal(string, datatype=datatype,
@@ -88,7 +88,7 @@ class TestBibliographicResource(unittest.TestCase):
         with self.subTest("date_list is [int]"):
             string = "2020"
             datatype = XSD.gYear
-            result = self.br1.create_pub_date([2020])
+            result = self.br1.has_pub_date([2020])
             self.assertIsNone(result)
 
             triple = self.br1.res, GraphEntity.has_publication_date, Literal(string, datatype=datatype,
@@ -97,7 +97,7 @@ class TestBibliographicResource(unittest.TestCase):
         with self.subTest("date_list is [int, None]"):
             string = "2020"
             datatype = XSD.gYear
-            result = self.br1.create_pub_date([2020, None])
+            result = self.br1.has_pub_date([2020, None])
             self.assertIsNone(result)
 
             triple = self.br1.res, GraphEntity.has_publication_date, Literal(string, datatype=datatype,
@@ -106,7 +106,7 @@ class TestBibliographicResource(unittest.TestCase):
         with self.subTest("date_list is [int, None, None]"):
             string = "2020"
             datatype = XSD.gYear
-            result = self.br1.create_pub_date([2020, None, None])
+            result = self.br1.has_pub_date([2020, None, None])
             self.assertIsNone(result)
 
             triple = self.br1.res, GraphEntity.has_publication_date, Literal(string, datatype=datatype,
@@ -114,21 +114,21 @@ class TestBibliographicResource(unittest.TestCase):
             self.assertIn(triple, self.br1.g)
         with self.subTest("date_list is [None, None, None]"):
             prev_len = len(self.br1.g)
-            result = self.br1.create_pub_date([None, None, None])
+            result = self.br1.has_pub_date([None, None, None])
             self.assertIsNone(result)
 
             after_len = len(self.br1.g)
             self.assertEqual(prev_len, after_len)
         with self.subTest("date_list is empty"):
             prev_len = len(self.br1.g)
-            result = self.br1.create_pub_date([])
+            result = self.br1.has_pub_date([])
             self.assertIsNone(result)
 
             after_len = len(self.br1.g)
             self.assertEqual(prev_len, after_len)
         with self.subTest("date_list is None"):
             prev_len = len(self.br1.g)
-            result = self.br1.create_pub_date()
+            result = self.br1.has_pub_date()
             self.assertIsNone(result)
 
             after_len = len(self.br1.g)
@@ -136,7 +136,7 @@ class TestBibliographicResource(unittest.TestCase):
         with self.subTest("date_list is [int, 1, int]"):
             string = "2020-01-25"
             datatype = XSD.date
-            result = self.br1.create_pub_date([2020, 1, 25])
+            result = self.br1.has_pub_date([2020, 1, 25])
             self.assertIsNone(result)
 
             triple = self.br1.res, GraphEntity.has_publication_date, Literal(string, datatype=datatype,
@@ -145,7 +145,7 @@ class TestBibliographicResource(unittest.TestCase):
         with self.subTest("date_list is [int, 1, 1]"):
             string = "2020"
             datatype = XSD.gYear
-            result = self.br1.create_pub_date([2020, 1, 1])
+            result = self.br1.has_pub_date([2020, 1, 1])
             self.assertIsNone(result)
 
             triple = self.br1.res, GraphEntity.has_publication_date, Literal(string, datatype=datatype,
@@ -154,7 +154,7 @@ class TestBibliographicResource(unittest.TestCase):
         with self.subTest("date_list is [int, 5, 1]"):
             string = "2020-05-01"
             datatype = XSD.date
-            result = self.br1.create_pub_date([2020, 5, 1])
+            result = self.br1.has_pub_date([2020, 5, 1])
             self.assertIsNone(result)
 
             triple = self.br1.res, GraphEntity.has_publication_date, Literal(string, datatype=datatype,
@@ -170,7 +170,7 @@ class TestBibliographicResource(unittest.TestCase):
 
     def test_create_number(self):
         number = "1234"
-        result = self.br1.create_number(number)
+        result = self.br1.has_number(number)
         self.assertIsNone(result)
 
         triple = self.br1.res, GraphEntity.has_sequence_identifier, Literal(number)

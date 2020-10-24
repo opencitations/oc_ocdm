@@ -46,7 +46,7 @@ class DiscourseElement(BibliographicEntity):
     # HAS TITLE
     # <self.res> DCTERMS:title "string"
     @accepts_only('literal')
-    def create_title(self, string: str) -> None:
+    def has_title(self, string: str) -> None:
         """The title of the discourse element, such as the title of a figure or a section in an article.
         """
         self.remove_title()
@@ -129,7 +129,7 @@ class DiscourseElement(BibliographicEntity):
     # HAS CONTENT
     # <self.res> C4O:hasContent "string"
     @accepts_only('literal')
-    def create_content(self, string: str) -> None:
+    def has_content(self, string: str) -> None:
         """The literal document text contained by the discourse element.
         """
         self.remove_content()
@@ -141,7 +141,7 @@ class DiscourseElement(BibliographicEntity):
     # HAS NUMBER
     # <self.res> FABIO:hasSequenceIdentifier "string"
     @accepts_only('literal')
-    def create_number(self, string: str) -> None:
+    def has_number(self, string: str) -> None:
         self.remove_number()
         self._create_literal(GraphEntity.has_sequence_identifier, string)
 

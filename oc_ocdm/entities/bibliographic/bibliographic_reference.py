@@ -43,7 +43,7 @@ class BibliographicReference(BibliographicEntity):
     # HAS BIBLIOGRAPHIC REFERENCE TEXT
     # <self.res> C4O:hasContent "string"
     @accepts_only('literal')
-    def create_content(self, string: str) -> None:
+    def has_content(self, string: str) -> None:
         """The literal text of a bibliographic reference occurring in the reference list (or
         elsewhere) within a bibliographic resource, that references another bibliographic
         resource. The reference text should be recorded “as given” in the citing bibliographic
@@ -63,7 +63,7 @@ class BibliographicReference(BibliographicEntity):
     # HAS ANNOTATION (ReferenceAnnotation)
     # <self.res> OCO:hasAnnotation <an_res>
     @accepts_only('an')
-    def create_annotation(self, an_res: ReferenceAnnotation) -> None:
+    def has_annotation(self, an_res: ReferenceAnnotation) -> None:
         """An annotation characterizing the related citation, in terms of its citation function (the
         reason for that citation).
         """

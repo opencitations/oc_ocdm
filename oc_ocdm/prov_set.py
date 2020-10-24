@@ -91,14 +91,14 @@ class ProvSet(GraphSet):
             # Snapshot
             cur_snapshot: ProvEntity = self.add_se(resp_agent, cur_subj)
             cur_snapshot.snapshot_of(cur_subj)
-            cur_snapshot.create_generation_time(cur_time)
+            cur_snapshot.has_generation_time(cur_time)
             if cur_subj.source is not None:
-                cur_snapshot.has_primary_source(cur_subj.source)
-            cur_snapshot.has_resp_agent(resp_agent)
+                cur_snapshot.has_primary_source(URIRef(cur_subj.source))
+            cur_snapshot.has_resp_agent(URIRef(resp_agent))
 
             # Old snapshot
             if last_snapshot is None and do_insert:  # Create a new entity
-                cur_snapshot.create_description("The entity '%s' has been created." % str(cur_subj.res))
+                cur_snapshot.has_description("The entity '%s' has been created." % str(cur_subj.res))
             else:
                 if self._are_added_triples(cur_subj):  # if diff != 0:
                     if do_insert:
@@ -113,8 +113,8 @@ class ProvSet(GraphSet):
                             update_description: str = "Some data of the entity '%s' have been removed. " \
                                                       % str(cur_subj.res)
 
-                    cur_snapshot.create_description(update_description)
-                    cur_snapshot.create_update_query(update_query_data)
+                    cur_snapshot.has_description(update_description)
+                    cur_snapshot.has_update_action(update_query_data)
 
                 # Note: due to previous processing errors, it would be possible that no snapshot has been created
                 # in the past for an entity, even if the entity actually exists. In this case, since we have to modify
@@ -123,13 +123,13 @@ class ProvSet(GraphSet):
                 # missing snapshot situation cannot happen.
                 if last_snapshot is not None:
                     cur_snapshot.derives_from(last_snapshot)
-                    last_snapshot.create_invalidation_time(cur_time)
+                    last_snapshot.has_invalidation_time(cur_time)
                     cur_snapshot.invalidates(last_snapshot)
 
                 # Invalidate the new snapshot if the entity has been removed
                 if remove_entity:
                     cur_snapshot.invalidates(cur_snapshot)
-                    cur_snapshot.create_invalidation_time(cur_time)
+                    cur_snapshot.has_invalidation_time(cur_time)
 
     @staticmethod
     def _create_insert_query(cur_subj_g: Graph) -> Tuple[str, bool, bool, bool]:

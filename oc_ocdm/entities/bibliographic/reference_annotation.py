@@ -43,7 +43,7 @@ class ReferenceAnnotation(BibliographicEntity):
     # HAS CITATION (Citation)
     # <self.res> OA:hasBody <ci_res>
     @accepts_only('ci')
-    def create_body_annotation(self, ci_res: Citation) -> None:
+    def has_body_annotation(self, ci_res: Citation) -> None:
         """The citation to which the annotation relates, that is relevant either to a bibliographic
         reference or to an in-text reference pointer that denotes such a bibliographic reference.
         """

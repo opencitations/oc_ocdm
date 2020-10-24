@@ -45,7 +45,7 @@ class TestProvEntity(unittest.TestCase):
     def test_create_generation_time(self):
         time = "2001-10-26T21:32:52"
         datatype=XSD.dateTime
-        result = self.se.create_generation_time(time)
+        result = self.se.has_generation_time(time)
         self.assertIsNone(result)
 
         triple = self.se.res, ProvEntity.generated_at_time, Literal(time, datatype=datatype,
@@ -55,7 +55,7 @@ class TestProvEntity(unittest.TestCase):
     def test_create_invalidation_time(self):
         time = "2001-10-26T21:32:52"
         datatype=XSD.dateTime
-        result = self.se.create_invalidation_time(time)
+        result = self.se.has_invalidation_time(time)
         self.assertIsNone(result)
 
         triple = self.se.res, ProvEntity.invalidated_at_time, Literal(time, datatype=datatype,
@@ -87,7 +87,7 @@ class TestProvEntity(unittest.TestCase):
 
     def test_create_update_query(self):
         update_query = "DELETE {} INSERT {}"
-        result = self.se.create_update_query(update_query)
+        result = self.se.has_update_action(update_query)
         self.assertIsNone(result)
 
         triple = self.se.res, ProvEntity.has_update_query, Literal(update_query)
@@ -95,7 +95,7 @@ class TestProvEntity(unittest.TestCase):
 
     def test_create_description(self):
         description = "Description"
-        result = self.se.create_description(description)
+        result = self.se.has_description(description)
         self.assertIsNone(result)
 
         triple = self.se.res, ProvEntity.description, Literal(description)

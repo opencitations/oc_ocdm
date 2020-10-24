@@ -49,7 +49,7 @@ class Citation(BibliographicEntity):
     # HAS CITING DOCUMENT (BibliographicResource)
     # <self.res> CITO:hasCitingEntity <citing_res>
     @accepts_only('br')
-    def create_citing_entity(self, citing_res: BibliographicResource) -> None:
+    def has_citing_entity(self, citing_res: BibliographicResource) -> None:
         """The bibliographic resource which acts as the source for the citation.
         """
         self.remove_citing_entity()
@@ -61,7 +61,7 @@ class Citation(BibliographicEntity):
     # HAS CITED DOCUMENT (BibliographicResource)
     # <self.res> CITO:hasCitedEntity <cited_res>
     @accepts_only('br')
-    def create_cited_entity(self, cited_res: BibliographicResource) -> None:
+    def has_cited_entity(self, cited_res: BibliographicResource) -> None:
         """ The bibliographic resource which acts as the target for the citation.
         """
         self.remove_cited_entity()

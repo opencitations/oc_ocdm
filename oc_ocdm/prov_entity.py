@@ -83,7 +83,7 @@ class ProvEntity(GraphEntity):
     # HAS CREATION DATE
     # <self.res> PROV:generatedAtTime "string"
     @accepts_only('literal')
-    def create_generation_time(self, string: str) -> None:
+    def has_generation_time(self, string: str) -> None:
         """The date on which a particular snapshot of a bibliographic entity's metadata was
         created.
         """
@@ -92,7 +92,7 @@ class ProvEntity(GraphEntity):
     # HAS INVALIDATION DATE
     # <self.res> PROV:invalidatedAtTime "string"
     @accepts_only('literal')
-    def create_invalidation_time(self, string: str) -> None:
+    def has_invalidation_time(self, string: str) -> None:
         """The date on which a snapshot of a bibliographic entity's metadata was invalidated due
         to an update (e.g. a correction, or the addition of some metadata that was not specified
         in the previous snapshot), or due to a merger of the entity with another one.
@@ -129,7 +129,7 @@ class ProvEntity(GraphEntity):
     # HAS UPDATE ACTION
     # <self.res> OCO:hasUpdateQuery "string"
     @accepts_only('literal')
-    def create_update_query(self, string: str) -> None:
+    def has_update_action(self, string: str) -> None:
         """The UPDATE SPARQL query that specifies which data, associated to the bibliographic
         entity in consideration, have been modified (e.g. for correcting a mistake) in the
         current snapshot starting from those associated to the previous snapshot of the entity.
@@ -139,7 +139,7 @@ class ProvEntity(GraphEntity):
     # HAS DESCRIPTION
     # <self.res> DCTERM:description "string"
     @accepts_only('literal')
-    def create_description(self, string: str) -> None:
+    def has_description(self, string: str) -> None:
         """A textual description of the events that have resulted in the current snapshot (e.g. the
         creation of the initial snapshot, the creation of a new snapshot following the
         modification of the entity to which the metadata relate, or the creation of a new

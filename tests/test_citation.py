@@ -34,15 +34,15 @@ class TestCitation(unittest.TestCase):
         self.br2 = self.graph_set.add_br(self.__class__.__name__)
         self.ci = self.graph_set.add_ci(self.__class__.__name__)
 
-    def test_create_citing_entity(self):
-        result = self.ci.create_citing_entity(self.br1)
+    def test_has_citing_entity(self):
+        result = self.ci.has_citing_entity(self.br1)
         self.assertIsNone(result)
 
         triple = self.ci.res, GraphEntity.has_citing_entity, self.br1.res
         self.assertIn(triple, self.ci.g)
 
     def test_create_cited_entity(self):
-        result = self.ci.create_cited_entity(self.br2)
+        result = self.ci.has_cited_entity(self.br2)
         self.assertIsNone(result)
 
         triple = self.ci.res, GraphEntity.has_cited_entity, self.br2.res

@@ -41,7 +41,7 @@ class ReferencePointer(BibliographicEntity):
     # HAS REFERENCE POINTER TEXT
     # <self.res> C4O:hasContent "string"
     @accepts_only('literal')
-    def create_content(self, string: str) -> None:
+    def has_content(self, string: str) -> None:
         """The literal text of the textual device forming an in-text reference pointer and denoting
         a single bibliographic reference (e.g. “[1]”).
         """
@@ -80,7 +80,7 @@ class ReferencePointer(BibliographicEntity):
     # HAS ANNOTATION (ReferenceAnnotation)
     # <self.res> OCO:hasAnnotation <an_res>
     @accepts_only('an')
-    def create_annotation(self, an_res: ReferenceAnnotation) -> None:
+    def has_annotation(self, an_res: ReferenceAnnotation) -> None:
         """An annotation characterizing the citation to which the in-text reference pointer relates
         in terms of its citation function (the reason for that citation) specific to the textual
         location of that in-text reference pointer within the citing entity.

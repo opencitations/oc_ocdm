@@ -54,7 +54,7 @@ class ResourceEmbodiment(BibliographicEntity):
     # HAS FIRST PAGE
     # <self.res> PRISM:startingPage "string"
     @accepts_only('literal')
-    def create_starting_page(self, string: str) -> None:
+    def has_starting_page(self, string: str) -> None:
         """The first page of the bibliographic resource according to the current embodiment.
         """
         self.remove_starting_page()
@@ -70,7 +70,7 @@ class ResourceEmbodiment(BibliographicEntity):
     # HAS LAST PAGE
     # <self.res> PRISM:endingPage "string"
     @accepts_only('literal')
-    def create_ending_page(self, string: str) -> None:
+    def has_ending_page(self, string: str) -> None:
         """The last page of the bibliographic resource according to the current embodiment.
         """
         self.remove_ending_page()

@@ -39,7 +39,7 @@ class PointerList(BibliographicEntity):
     # HAS POINTER LIST TEXT
     # <self.res> C4O:hasContent "string"
     @accepts_only('literal')
-    def create_content(self, string: str) -> None:
+    def has_content(self, string: str) -> None:
         self.remove_content()
         self._create_literal(GraphEntity.has_content, string)
 

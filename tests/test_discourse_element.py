@@ -35,9 +35,9 @@ class TestDiscourseElement(unittest.TestCase):
         self.de1 = self.graph_set.add_de(self.__class__.__name__)
         self.de2 = self.graph_set.add_de(self.__class__.__name__)
 
-    def test_create_title(self):
+    def test_has_title(self):
         title = "DiscourseElement"
-        result = self.de1.create_title(title)
+        result = self.de1.has_title(title)
         self.assertIsNone(result)
 
         triple = self.de1.res, GraphEntity.title, Literal(title)
@@ -71,9 +71,9 @@ class TestDiscourseElement(unittest.TestCase):
         triple = self.de1.res, GraphEntity.is_context_of, self.pl.res
         self.assertIn(triple, self.de1.g)
 
-    def test_create_content(self):
+    def test_has_content(self):
         content = "Content"
-        result = self.de1.create_content(content)
+        result = self.de1.has_content(content)
         self.assertIsNone(result)
 
         triple = self.de1.res, GraphEntity.has_content, Literal(content)

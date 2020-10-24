@@ -35,9 +35,9 @@ class TestReferencePointer(unittest.TestCase):
         self.rp2 = self.graph_set.add_rp(self.__class__.__name__)
         self.be = self.graph_set.add_be(self.__class__.__name__)
 
-    def test_create_content(self):
+    def test_has_content(self):
         content = "Content"
-        result = self.rp1.create_content(content)
+        result = self.rp1.has_content(content)
         self.assertIsNone(result)
 
         triple = self.rp1.res, GraphEntity.has_content, Literal(content)
@@ -58,7 +58,7 @@ class TestReferencePointer(unittest.TestCase):
         self.assertIn(triple, self.rp1.g)
 
     def test_has_annotation(self):
-        result = self.rp1.create_annotation(self.an)
+        result = self.rp1.has_annotation(self.an)
         self.assertIsNone(result)
 
         triple = self.rp1.res, GraphEntity.has_annotation, self.an.res

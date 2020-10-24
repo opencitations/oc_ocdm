@@ -33,9 +33,9 @@ class TestPointerList(unittest.TestCase):
         self.rp = self.graph_set.add_rp(self.__class__.__name__)
         self.pl = self.graph_set.add_pl(self.__class__.__name__)
 
-    def test_create_content(self):
+    def test_has_content(self):
         content = "Content"
-        result = self.pl.create_content(content)
+        result = self.pl.has_content(content)
         self.assertIsNone(result)
 
         triple = self.pl.res, GraphEntity.has_content, Literal(content)

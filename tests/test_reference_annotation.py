@@ -33,8 +33,8 @@ class TestReferenceAnnotation(unittest.TestCase):
         self.br2 = self.graph_set.add_br(self.__class__.__name__)
         self.ci = self.graph_set.add_ci(self.__class__.__name__)
 
-    def test_create_body_annotation(self):
-        result = self.an.create_body_annotation(self.ci)
+    def test_has_body_annotation(self):
+        result = self.an.has_body_annotation(self.ci)
         self.assertIsNone(result)
 
         triple = self.an.res, GraphEntity.has_body, self.ci.res

@@ -40,17 +40,17 @@ class TestResourceEmbodiment(unittest.TestCase):
         triple = self.re.res, GraphEntity.has_format, media_type
         self.assertIn(triple, self.re.g)
 
-    def test_create_starting_page(self):
+    def test_has_starting_page(self):
         starting_page = "15"
-        result = self.re.create_starting_page(starting_page)
+        result = self.re.has_starting_page(starting_page)
         self.assertIsNone(result)
 
         triple = self.re.res, GraphEntity.starting_page, Literal(starting_page)
         self.assertIn(triple, self.re.g)
 
-    def test_create_ending_page(self):
+    def test_has_ending_page(self):
         ending_page = "288"
-        result = self.re.create_ending_page(ending_page)
+        result = self.re.has_ending_page(ending_page)
         self.assertIsNone(result)
 
         triple = self.re.res, GraphEntity.ending_page, Literal(ending_page)
