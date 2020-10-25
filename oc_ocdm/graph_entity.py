@@ -22,6 +22,8 @@ from typing import TYPE_CHECKING
 from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import RDFS
 
+from oc_ocdm.entity_flags import EntityFlags
+
 if TYPE_CHECKING:
     from typing import ClassVar
     from oc_ocdm import GraphSet
@@ -162,16 +164,15 @@ class GraphEntity(object):
         self.source: str = source
         self.short_name: str = short_name
         self.g_set: GraphSet = g_set
-
-        existing_ref: bool = False
+        self.flags: EntityFlags = EntityFlags()
 
         # If res was not specified, create from scratch the URI reference for this entity,
         # otherwise use the provided one
         if res is None:
             self.res = self._generate_new_res(g, count, short_name)
+            self.flags.is_a_new_entity = True
         else:
             self.res = res
-            existing_ref = True
 
         if g_set is not None:
             if self.res in g_set.entity_g:
@@ -188,7 +189,7 @@ class GraphEntity(object):
 
         # If this object represents a new entity in the dataset,
         # add all the additional information to it
-        if not existing_ref or forced_type:
+        if self.flags.is_a_new_entity or forced_type:
             self._create_type(res_type)
 
             # It creates the label
