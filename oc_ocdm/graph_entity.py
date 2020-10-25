@@ -200,7 +200,7 @@ class GraphEntity(object):
     def _generate_new_res(g: Graph, count: str, short_name: str = "") -> URIRef:
         return URIRef(str(g.identifier) + count)
 
-    def remove_entity(self):
+    def remove_every_triple(self) -> None:
         self.g.remove((None, None, None))
 
     def create_label(self, string: str) -> None:
