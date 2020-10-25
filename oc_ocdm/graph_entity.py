@@ -203,6 +203,9 @@ class GraphEntity(object):
     def remove_every_triple(self) -> None:
         self.g.remove((None, None, None))
 
+    def mark_as_to_be_deleted(self, to_be_deleted: bool = True) -> None:
+        self.flags.to_be_deleted = to_be_deleted
+
     def create_label(self, string: str) -> None:
         """Creates the RDF triple <self.res> rdfs:label <string>
         inside the graph self.g
