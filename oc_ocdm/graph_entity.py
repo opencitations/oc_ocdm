@@ -157,7 +157,8 @@ class GraphEntity(object):
 
     def __init__(self, g: Graph, res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
                  source_agent: str = None, source: str = None, count: str = None, label: str = None,
-                 short_name: str = "", g_set: GraphSet = None, forced_type: bool = False) -> None:
+                 short_name: str = "", g_set: GraphSet = None, forced_type: bool = False,
+                 preexisting_graph: Graph = None) -> None:
         self.cur_name: str = "SPACIN " + self.__class__.__name__
         self.resp_agent: str = resp_agent
         self.source_agent: str = source_agent
@@ -165,6 +166,7 @@ class GraphEntity(object):
         self.short_name: str = short_name
         self.g_set: GraphSet = g_set
         self.flags: EntityFlags = EntityFlags()
+        self.preexisting_graph: Graph = Graph(identifier=g.identifier)
 
         # If res was not specified, create from scratch the URI reference for this entity,
         # otherwise use the provided one
@@ -186,6 +188,21 @@ class GraphEntity(object):
             # If not already done, register this GraphEntity instance inside the GraphSet
             if self.res not in g_set.res_to_entity:
                 g_set.res_to_entity[self.res] = self
+
+        if preexisting_graph is not None:
+            # Triples inside self.g are entirely replaced by triples from preexisting_graph.
+            # This has maximum priority with respect to every other self.g initializations.
+            # It's fundamental that the preexisting graph gets passed as an argument of the constructor:
+            # allowing the user to set this value later through a method would mean that the user could
+            # set the preexisting graph AFTER having modified self.g (which would not make sense).
+            self.g.remove((None, None, None))
+            for p, o in preexisting_graph.predicate_objects(self.res):
+                self.g.add((self.res, p, o))
+                self.preexisting_graph.add((self.res, p, o))
+            self.flags.preexisting_graph_was_loaded = True
+            # Since we didn't change the object reference of self.g,
+            # we don't have to update the reference inside g_set.entity_g:
+            # g_set.entity_g[self.res] = self.g
 
         # If this object represents a new entity in the dataset,
         # add all the additional information to it
