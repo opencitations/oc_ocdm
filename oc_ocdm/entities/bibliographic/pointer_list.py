@@ -24,12 +24,6 @@ if TYPE_CHECKING:
 from oc_ocdm import GraphEntity
 from oc_ocdm.entities import BibliographicEntity
 
-"""
-Notes about PL:
-
-    Chill down, everything seems OK here!
-"""
-
 
 class PointerList(BibliographicEntity):
     """Pointer list (short: pl): a textual device (e.g. '[1, 2, 3]' or '[4-9]') which includes a

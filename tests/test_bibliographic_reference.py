@@ -31,6 +31,7 @@ class TestBibliographicReference(unittest.TestCase):
     def setUp(self):
         self.graph_set.g = []
         self.be = self.graph_set.add_be(self.__class__.__name__)
+        self.br = self.graph_set.add_br(self.__class__.__name__)
         self.an = self.graph_set.add_an(self.__class__.__name__)
 
     def test_has_content(self):
@@ -46,6 +47,13 @@ class TestBibliographicReference(unittest.TestCase):
         self.assertIsNone(result)
 
         triple = self.be.res, GraphEntity.has_annotation, self.an.res
+        self.assertIn(triple, self.be.g)
+
+    def test_references(self):
+        result = self.be.references_br(self.br)
+        self.assertIsNone(result)
+
+        triple = self.be.res, GraphEntity.references, self.br.res
         self.assertIn(triple, self.be.g)
 
 

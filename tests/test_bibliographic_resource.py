@@ -35,6 +35,7 @@ class TestBibliographicResource(unittest.TestCase):
         self.re = self.graph_set.add_re(self.__class__.__name__)
         self.be = self.graph_set.add_be(self.__class__.__name__)
         self.de = self.graph_set.add_de(self.__class__.__name__)
+        self.ar = self.graph_set.add_ar(self.__class__.__name__)
 
     def test_has_title(self):
         title = "Resource"
@@ -52,12 +53,12 @@ class TestBibliographicResource(unittest.TestCase):
         triple = self.br1.res, GraphEntity.has_subtitle, Literal(subtitle)
         self.assertIn(triple, self.br1.g)
 
-    def test_has_part(self):
-        result = self.br1.has_part(self.br2)
+    def test_is_part_of(self):
+        result = self.br1.is_part_of(self.br2)
         self.assertIsNone(result)
 
-        triple = self.br2.res, GraphEntity.part_of, self.br1.res
-        self.assertIn(triple, self.br2.g)
+        triple = self.br1.res, GraphEntity.part_of, self.br2.res
+        self.assertIn(triple, self.br1.g)
 
     def test_has_citation(self):
         result = self.br1.has_citation(self.br2)
@@ -198,12 +199,12 @@ class TestBibliographicResource(unittest.TestCase):
         triple = self.br1.res, GraphEntity.contains_de, self.de.res
         self.assertIn(triple, self.br1.g)
 
-    def test_has_reference(self):
-        result = self.br1.has_reference(self.be)
+    def test_has_contributor(self):
+        result = self.br1.has_contributor(self.ar)
         self.assertIsNone(result)
 
-        triple = self.be.res, GraphEntity.references, self.br1.res
-        self.assertIn(triple, self.be.g)
+        triple = self.br1.res, GraphEntity.is_document_context_for, self.ar.res
+        self.assertIn(triple, self.br1.g)
 
     def test_has_related_document(self):
         document = URIRef("http://test/document")

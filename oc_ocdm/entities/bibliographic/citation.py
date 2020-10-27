@@ -29,12 +29,6 @@ if TYPE_CHECKING:
 from oc_ocdm import GraphEntity
 from oc_ocdm.entities import BibliographicEntity
 
-"""
-Notes about CI:
-    
-    Chill down, everything seems OK here!
-"""
-
 
 class Citation(BibliographicEntity):
     """Citation (short: ci): a permanent conceptual directional link from the citing

@@ -25,12 +25,6 @@ if TYPE_CHECKING:
 from oc_ocdm import GraphEntity
 from oc_ocdm.entities import BibliographicEntity
 
-"""
-Notes about RP:
-
-    Chill down, everything seems OK here!
-"""
-
 
 class ReferencePointer(BibliographicEntity):
     """Reference pointer (long: in-text reference pointer; short: rp): a textual device (e.g.

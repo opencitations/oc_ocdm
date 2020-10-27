@@ -57,13 +57,6 @@ class TestResponsibleAgent(unittest.TestCase):
         triple = self.ra.res, GraphEntity.family_name, Literal(family_name)
         self.assertIn(triple, self.ra.g)
 
-    def test_has_role(self):
-        result = self.ra.has_role(self.ar)
-        self.assertIsNone(result)
-
-        triple = self.ar.res, GraphEntity.is_held_by, self.ra.res
-        self.assertIn(triple, self.ar.g)
-
     def test_has_related_agent(self):
         related_agent = URIRef("http://test/RelatedAgent")
         result = self.ra.has_related_agent(related_agent)

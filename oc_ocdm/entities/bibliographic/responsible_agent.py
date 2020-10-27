@@ -21,15 +21,8 @@ from oc_ocdm.decorators import accepts_only
 
 if TYPE_CHECKING:
     from rdflib import URIRef
-    from oc_ocdm.entities.bibliographic import AgentRole
 from oc_ocdm import GraphEntity
 from oc_ocdm.entities import BibliographicEntity
-
-"""
-Notes about RA:
-
-    Chill down, everything seems OK here!
-"""
 
 
 class ResponsibleAgent(BibliographicEntity):
@@ -73,32 +66,6 @@ class ResponsibleAgent(BibliographicEntity):
 
     def remove_family_name(self) -> None:
         self.g.remove((self.g, GraphEntity.family_name, None))
-
-    """
-    AAA: this should have inverse logic and it should belong to AgentRole class!!!
-    See below:
-    
-    class AgentRole:
-        # IS HELD BY (ResponsibleAgent)
-        def is_held_by(self, ra_res: URIRef):
-            self.g.add((self.res, GraphEntity.is_held_by, ar_res.res))
-    """
-    @accepts_only('ar')
-    def has_role(self, ar_res: AgentRole):
-        """[AgentRole] The agent holding this role with respect to a particular bibliographic resource.
-        """
-        ar_res.g.add((ar_res.res, GraphEntity.is_held_by, self.res))
-
-    @accepts_only('ar')
-    def remove_role(self, ar_res: AgentRole = None) -> None:
-        if ar_res is not None:
-            if (ar_res.res, GraphEntity.is_held_by, self.res) in ar_res.g:
-                ar_res.g.remove((ar_res.res, GraphEntity.is_held_by, None))
-        else:
-            if self.g_set is not None:
-                for ar_res in self.g_set.get_ar():
-                    if (ar_res.res, GraphEntity.is_held_by, self.res) in ar_res.g:
-                        ar_res.g.remove((ar_res.res, GraphEntity.is_held_by, None))
 
     # HAS RELATED AGENT
     # <self.res> DCTERMS:relation <thing_ref>

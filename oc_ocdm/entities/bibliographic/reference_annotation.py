@@ -24,12 +24,6 @@ if TYPE_CHECKING:
 from oc_ocdm import GraphEntity
 from oc_ocdm.entities import BibliographicEntity
 
-"""
-Notes about AN:
-
-    Chill down, everything seems OK here!
-"""
-
 
 class ReferenceAnnotation(BibliographicEntity):
     """Reference annotation (short: an): an annotation, attached either to an in-text

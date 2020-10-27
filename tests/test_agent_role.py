@@ -30,44 +30,43 @@ class TestAgentRole(unittest.TestCase):
         self.graph_set.g = []
         self.ar1 = self.graph_set.add_ar(self.__class__.__name__)
         self.ar2 = self.graph_set.add_ar(self.__class__.__name__)
+        self.ra = self.graph_set.add_ra(self.__class__.__name__)
         self.br = self.graph_set.add_br(self.__class__.__name__)
 
-    def test_follows(self):
-        result = self.ar2.follows(self.ar1)
+    def test_has_next(self):
+        result = self.ar1.has_next(self.ar2)
         self.assertIsNone(result)
 
         triple = self.ar1.res, GraphEntity.has_next, self.ar2.res
         self.assertIn(triple, self.ar1.g)
 
-    def test_create_publisher(self):
-        result = self.ar1.create_publisher(self.br)
+    def test_is_held_by(self):
+        result = self.ar1.is_held_by(self.ra)
         self.assertIsNone(result)
 
-        triple1 = self.ar1.res, GraphEntity.with_role, GraphEntity.publisher
-        self.assertIn(triple1, self.ar1.g)
+        triple = self.ar1.res, GraphEntity.is_held_by, self.ra.res
+        self.assertIn(triple, self.ar1.g)
 
-        triple2 = self.br.res, GraphEntity.is_document_context_for, self.ar1.res
-        self.assertIn(triple2, self.br.g)
+    def test_create_publisher(self):
+        result = self.ar1.create_publisher()
+        self.assertIsNone(result)
+
+        triple = self.ar1.res, GraphEntity.with_role, GraphEntity.publisher
+        self.assertIn(triple, self.ar1.g)
 
     def test_create_author(self):
-        result = self.ar1.create_author(self.br)
+        result = self.ar1.create_author()
         self.assertIsNone(result)
 
-        triple1 = self.ar1.res, GraphEntity.with_role, GraphEntity.author
-        self.assertIn(triple1, self.ar1.g)
-
-        triple2 = self.br.res, GraphEntity.is_document_context_for, self.ar1.res
-        self.assertIn(triple2, self.br.g)
+        triple = self.ar1.res, GraphEntity.with_role, GraphEntity.author
+        self.assertIn(triple, self.ar1.g)
 
     def test_create_editor(self):
-        result = self.ar1.create_editor(self.br)
+        result = self.ar1.create_editor()
         self.assertIsNone(result)
 
-        triple1 = self.ar1.res, GraphEntity.with_role, GraphEntity.editor
-        self.assertIn(triple1, self.ar1.g)
-
-        triple2 = self.br.res, GraphEntity.is_document_context_for, self.ar1.res
-        self.assertIn(triple2, self.br.g)
+        triple = self.ar1.res, GraphEntity.with_role, GraphEntity.editor
+        self.assertIn(triple, self.ar1.g)
 
 
 if __name__ == '__main__':
