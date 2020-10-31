@@ -20,6 +20,8 @@ from typing import TYPE_CHECKING
 from oc_ocdm.decorators import accepts_only
 
 if TYPE_CHECKING:
+    from typing import Optional, List
+    from rdflib import URIRef
     from oc_ocdm.entities.bibliographic import ReferenceAnnotation, BibliographicResource
 from oc_ocdm import GraphEntity
 from oc_ocdm.entities import BibliographicEntity
@@ -33,7 +35,9 @@ class BibliographicReference(BibliographicEntity):
     """
 
     # HAS BIBLIOGRAPHIC REFERENCE TEXT
-    # <self.res> C4O:hasContent "string"
+    def get_content(self) -> Optional[str]:
+        return self._get_literal(GraphEntity.has_content)
+
     @accepts_only('literal')
     def has_content(self, string: str) -> None:
         """The literal text of a bibliographic reference occurring in the reference list (or
@@ -53,7 +57,13 @@ class BibliographicReference(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.has_content, None))
 
     # HAS ANNOTATION (ReferenceAnnotation)
-    # <self.res> OCO:hasAnnotation <an_res>
+    def get_annotations(self) -> List[ReferenceAnnotation]:
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.has_annotation)
+        result: List[ReferenceAnnotation] = []
+        for uri in uri_list:
+            result.append(self.g_set.add_an(self.resp_agent, self.source_agent, self.source, uri))
+        return result
+
     @accepts_only('an')
     def has_annotation(self, an_res: ReferenceAnnotation) -> None:
         """An annotation characterizing the related citation, in terms of its citation function (the
@@ -69,7 +79,11 @@ class BibliographicReference(BibliographicEntity):
             self.g.remove((self.res, GraphEntity.has_annotation, None))
 
     # REFERENCES (BibliographicResource)
-    # <self.res> BIRO:references <br_res>
+    def get_referenced_br(self) -> Optional[BibliographicResource]:
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.references)
+        if uri is not None:
+            return self.g_set.add_br(self.resp_agent, self.source_agent, self.source, uri)
+
     @accepts_only('br')
     def references_br(self, br_res: BibliographicResource) -> None:
         """The bibliographic reference that cites this bibliographic resource.

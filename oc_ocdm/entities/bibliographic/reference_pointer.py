@@ -20,6 +20,8 @@ from typing import TYPE_CHECKING
 from oc_ocdm.decorators import accepts_only
 
 if TYPE_CHECKING:
+    from typing import Optional, List
+    from rdflib import URIRef
     from oc_ocdm.entities.bibliographic import BibliographicReference
     from oc_ocdm.entities.bibliographic import ReferenceAnnotation
 from oc_ocdm import GraphEntity
@@ -33,7 +35,9 @@ class ReferencePointer(BibliographicEntity):
        reference can be denoted in the text by one or more in-text reference pointers."""
 
     # HAS REFERENCE POINTER TEXT
-    # <self.res> C4O:hasContent "string"
+    def get_content(self) -> Optional[str]:
+        return self._get_literal(GraphEntity.has_content)
+
     @accepts_only('literal')
     def has_content(self, string: str) -> None:
         """The literal text of the textual device forming an in-text reference pointer and denoting
@@ -46,7 +50,11 @@ class ReferencePointer(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.has_content, None))
 
     # HAS NEXT (ReferencePointer)
-    # <self.res> OCO:hasNext <rp_res>
+    def get_next_rp(self) -> Optional[ReferencePointer]:
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.has_next)
+        if uri is not None:
+            return self.g_set.add_rp(self.resp_agent, self.source_agent, self.source, uri)
+
     @accepts_only('rp')
     def has_next_rp(self, rp_res: ReferencePointer) -> None:
         """The following in-text reference pointer, when included within a single in-text reference
@@ -59,7 +67,11 @@ class ReferencePointer(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.has_next, None))
 
     # DENOTES (BibliographicReference)
-    # <self.res> C4O:denotes <be_res>
+    def get_denoted_be(self) -> Optional[BibliographicReference]:
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.denotes)
+        if uri is not None:
+            return self.g_set.add_be(self.resp_agent, self.source_agent, self.source, uri)
+
     @accepts_only('be')
     def denotes_be(self, be_res: BibliographicReference) -> None:
         """The bibliographic reference included in the list of bibliographic references, denoted by
@@ -72,7 +84,13 @@ class ReferencePointer(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.denotes, None))
 
     # HAS ANNOTATION (ReferenceAnnotation)
-    # <self.res> OCO:hasAnnotation <an_res>
+    def get_annotations(self) -> List[ReferenceAnnotation]:
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.has_annotation)
+        result: List[ReferenceAnnotation] = []
+        for uri in uri_list:
+            result.append(self.g_set.add_an(self.resp_agent, self.source_agent, self.source, uri))
+        return result
+
     @accepts_only('an')
     def has_annotation(self, an_res: ReferenceAnnotation) -> None:
         """An annotation characterizing the citation to which the in-text reference pointer relates

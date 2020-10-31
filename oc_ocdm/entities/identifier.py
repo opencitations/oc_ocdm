@@ -19,6 +19,7 @@ import re
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from typing import Optional
     from rdflib import URIRef
 
 from oc_ocdm import GraphEntity
@@ -38,7 +39,14 @@ class Identifier(GraphEntity):
        Citation Identifier) associated with the bibliographic entity. Members of this class of
        metadata are themselves given unique corpus identifiers e.g. 'id/0420129'."""
 
-    # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
+    # HAS LITERAL VALUE and HAS SCHEME
+    def get_literal_value(self) -> Optional[str]:
+        return self._get_literal(GraphEntity.has_literal_value)
+
+    def get_scheme(self) -> Optional[URIRef]:
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.uses_identifier_scheme)
+        return uri
+
     @accepts_only('literal')
     def create_oci(self, string: str) -> None:
         self._associate_identifier_with_scheme(string, GraphEntity.oci)
@@ -97,8 +105,6 @@ class Identifier(GraphEntity):
     def create_viaf(self, string: str) -> None:
         self._associate_identifier_with_scheme(string, GraphEntity.viaf)
 
-    # <self.res> LITERAL:hasLiteralValue "string"
-    # <self.res> DATACITE:usesIdentifierScheme <id_type>
     def _associate_identifier_with_scheme(self, string: str, id_type: URIRef) -> None:
         if not is_string_empty(string):
             self.remove_identifier_with_scheme()

@@ -20,6 +20,8 @@ from typing import TYPE_CHECKING
 from oc_ocdm.decorators import accepts_only
 
 if TYPE_CHECKING:
+    from typing import Optional, List
+    from rdflib import URIRef
     from oc_ocdm.entities.bibliographic import ReferencePointer
 from oc_ocdm import GraphEntity
 from oc_ocdm.entities import BibliographicEntity
@@ -31,7 +33,9 @@ class PointerList(BibliographicEntity):
        the list pertains."""
 
     # HAS POINTER LIST TEXT
-    # <self.res> C4O:hasContent "string"
+    def get_content(self) -> Optional[str]:
+        return self._get_literal(GraphEntity.has_content)
+
     @accepts_only('literal')
     def has_content(self, string: str) -> None:
         self.remove_content()
@@ -41,7 +45,13 @@ class PointerList(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.has_content, None))
 
     # HAS ELEMENT (ReferencePointer)
-    # <self.res> CO:element <rp_res>
+    def get_contained_elements(self) -> List[ReferencePointer]:
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.has_element)
+        result: List[ReferencePointer] = []
+        for uri in uri_list:
+            result.append(self.g_set.add_rp(self.resp_agent, self.source_agent, self.source, uri))
+        return result
+
     @accepts_only('rp')
     def contains_element(self, rp_res: ReferencePointer) -> None:
         """The in-text reference pointer that is part of the in-text reference pointer list present at

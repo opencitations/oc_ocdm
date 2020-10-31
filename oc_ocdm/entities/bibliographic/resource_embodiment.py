@@ -19,6 +19,7 @@ import re
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from typing import Optional, List
     from rdflib import URIRef
 
 from rdflib import RDF
@@ -33,7 +34,10 @@ class ResourceEmbodiment(BibliographicEntity):
        bibliographic resource was made available by its publisher."""
 
     # HAS FORMAT
-    # <self.res> DCTERMS:format <thing_ref>
+    def get_media_type(self) -> Optional[URIRef]:
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.has_format)
+        return uri
+
     @accepts_only('thing')
     def has_media_type(self, thing_ref: URIRef) -> None:
         """It allows one to specify the IANA media type of the embodiment.
@@ -45,7 +49,9 @@ class ResourceEmbodiment(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.has_format, None))
 
     # HAS FIRST PAGE
-    # <self.res> PRISM:startingPage "string"
+    def get_starting_page(self) -> Optional[str]:
+        return self._get_literal(GraphEntity.starting_page)
+
     @accepts_only('literal')
     def has_starting_page(self, string: str) -> None:
         """The first page of the bibliographic resource according to the current embodiment.
@@ -61,7 +67,9 @@ class ResourceEmbodiment(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.starting_page, None))
 
     # HAS LAST PAGE
-    # <self.res> PRISM:endingPage "string"
+    def get_ending_page(self) -> Optional[str]:
+        return self._get_literal(GraphEntity.ending_page)
+
     @accepts_only('literal')
     def has_ending_page(self, string: str) -> None:
         """The last page of the bibliographic resource according to the current embodiment.
@@ -77,7 +85,10 @@ class ResourceEmbodiment(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.ending_page, None))
 
     # HAS URL
-    # <self.res> FRBR:exemplar <thing_ref>
+    def get_url(self) -> Optional[URIRef]:
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.has_url)
+        return uri
+
     @accepts_only('thing')
     def has_url(self, thing_ref: URIRef) -> None:
         """The URL at which the embodiment of the bibliographic resource is available.
@@ -88,8 +99,10 @@ class ResourceEmbodiment(BibliographicEntity):
     def remove_url(self) -> None:
         self.g.remove((self.res, GraphEntity.has_url, None))
 
-    # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
-    # <self.res> RDF:type <type>
+    # HAS TYPE
+    def get_types(self) -> List[URIRef]:
+        uri_list: List[URIRef] = self._get_multiple_uri_references(RDF.type)
+        return uri_list
 
     def create_digital_embodiment(self) -> None:
         """It identifies the particular type of the embodiment, either digital or print.

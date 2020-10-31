@@ -19,13 +19,13 @@ __author__ = 'essepuntato'
 
 from typing import TYPE_CHECKING
 
-from rdflib import Graph, Namespace, URIRef
+from rdflib import Graph, Namespace, URIRef, Literal
 from rdflib.namespace import RDFS
 
 from oc_ocdm.entity_flags import EntityFlags
 
 if TYPE_CHECKING:
-    from typing import ClassVar
+    from typing import ClassVar, Optional, List
     from oc_ocdm import GraphSet
 from oc_ocdm.support import create_literal,\
                                     create_type
@@ -265,3 +265,33 @@ class GraphEntity(object):
         for s, p, o in iterable_of_triples:
             if s == self.res:  # This guarantees that only triples belonging to the resource will be added
                 self.g.add((s, p, o))
+
+    def _get_literal(self, predicate: URIRef) -> Optional[str]:
+        result: Optional[str] = None
+        for o in self.g.objects(self.res, predicate):
+            if type(o) == Literal:
+                result = str(o)
+                break
+        return result
+
+    def _get_multiple_literals(self, predicate: URIRef) -> List[str]:
+        result: List[str] = []
+        for o in self.g.objects(self.res, predicate):
+            if type(o) == Literal:
+                result.append(str(o))
+        return result
+
+    def _get_uri_reference(self, predicate: URIRef) -> Optional[URIRef]:
+        result: Optional[URIRef] = None
+        for o in self.g.objects(self.res, predicate):
+            if type(o) == URIRef:
+                result = o
+                break
+        return result
+
+    def _get_multiple_uri_references(self, predicate: URIRef) -> List[URIRef]:
+        result: List[URIRef] = []
+        for o in self.g.objects(self.res, predicate):
+            if type(o) == URIRef:
+                result.append(o)
+        return result

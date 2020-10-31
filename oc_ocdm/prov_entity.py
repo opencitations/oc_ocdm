@@ -25,6 +25,7 @@ from rdflib.namespace import XSD, RDF
 from oc_ocdm.decorators import accepts_only
 
 if TYPE_CHECKING:
+    from typing import Optional, List
     from oc_ocdm import ProvSet
     from oc_ocdm.entities.bibliographic import ResponsibleAgent
 from oc_ocdm import GraphEntity
@@ -81,7 +82,9 @@ class ProvEntity(GraphEntity):
         return URIRef(str(g.identifier) + (short_name + "/" if short_name != "" else "") + count)
 
     # HAS CREATION DATE
-    # <self.res> PROV:generatedAtTime "string"
+    def get_generation_date(self) -> Optional[str]:
+        return self._get_literal(ProvEntity.generated_at_time)
+
     @accepts_only('literal')
     def has_generation_time(self, string: str) -> None:
         """The date on which a particular snapshot of a bibliographic entity's metadata was
@@ -94,7 +97,9 @@ class ProvEntity(GraphEntity):
         self.g.remove((self.res, ProvEntity.generated_at_time, None))
 
     # HAS INVALIDATION DATE
-    # <self.res> PROV:invalidatedAtTime "string"
+    def get_invalidation_date(self) -> Optional[str]:
+        return self._get_literal(ProvEntity.invalidated_at_time)
+
     @accepts_only('literal')
     def has_invalidation_time(self, string: str) -> None:
         """The date on which a snapshot of a bibliographic entity's metadata was invalidated due
@@ -108,7 +113,10 @@ class ProvEntity(GraphEntity):
         self.g.remove((self.res, ProvEntity.invalidated_at_time, None))
 
     # IS SNAPSHOT OF
-    # <self.res> PROV:specializationOf <en_res>
+    def get_snapshot_of(self) -> Optional[URIRef]:
+        uri: Optional[URIRef] = self._get_uri_reference(ProvEntity.specialization_of)
+        return uri
+
     def snapshot_of(self, en_res: GraphEntity) -> None:
         """This property is used to link a snapshot of entity metadata to the bibliographic entity
         to which the snapshot refers.
@@ -120,7 +128,13 @@ class ProvEntity(GraphEntity):
         self.g.remove((self.res, ProvEntity.specialization_of, None))
 
     # IS DERIVED FROM
-    # <self.res> PROV:wasDerivedFrom <se_res>
+    def get_derives_from(self) -> List[ProvEntity]:
+        uri_list: List[URIRef] = self._get_multiple_uri_references(ProvEntity.was_derived_from)
+        result: List[ProvEntity] = []
+        for uri in uri_list:
+            result.append(self.g_set.add_se(self.resp_agent, self.source_agent, self.source, uri))
+        return result
+
     @accepts_only('se')
     def derives_from(self, se_res: ProvEntity) -> None:
         """This property is used to identify the immediately previous snapshot of entity metadata
@@ -136,7 +150,10 @@ class ProvEntity(GraphEntity):
             self.g.remove((self.res, ProvEntity.was_derived_from, None))
 
     # HAS PRIMARY SOURCE
-    # <self.res> PROV:hadPrimarySource <any_res>
+    def get_primary_source(self) -> Optional[URIRef]:
+        uri: Optional[URIRef] = self._get_uri_reference(ProvEntity.had_primary_source)
+        return uri
+
     @accepts_only('thing')
     def has_primary_source(self, any_res: URIRef) -> None:
         """This property is used to identify the primary source from which the metadata
@@ -150,7 +167,9 @@ class ProvEntity(GraphEntity):
         self.g.remove((self.res, ProvEntity.had_primary_source, None))
 
     # HAS UPDATE ACTION
-    # <self.res> OCO:hasUpdateQuery "string"
+    def get_update_action(self) -> Optional[str]:
+        return self._get_literal(ProvEntity.has_update_query)
+
     @accepts_only('literal')
     def has_update_action(self, string: str) -> None:
         """The UPDATE SPARQL query that specifies which data, associated to the bibliographic
@@ -164,7 +183,9 @@ class ProvEntity(GraphEntity):
         self.g.remove((self.res, ProvEntity.has_update_query, None))
 
     # HAS DESCRIPTION
-    # <self.res> DCTERM:description "string"
+    def get_description(self) -> Optional[str]:
+        return self._get_literal(ProvEntity.description)
+
     @accepts_only('literal')
     def has_description(self, string: str) -> None:
         """A textual description of the events that have resulted in the current snapshot (e.g. the
@@ -180,7 +201,10 @@ class ProvEntity(GraphEntity):
         self.g.remove((self.res, ProvEntity.description, None))
 
     # IS ATTRIBUTED TO
-    # <self.res> PROV:wasAttributedTo <se_agent>
+    def get_resp_agent(self) -> Optional[URIRef]:
+        uri: Optional[URIRef] = self._get_uri_reference(ProvEntity.was_attributed_to)
+        return uri
+
     @accepts_only('thing')
     def has_resp_agent(self, se_agent: URIRef) -> None:
         """The agent responsible for the creation of the current entity snapshot.
@@ -191,8 +215,10 @@ class ProvEntity(GraphEntity):
     def remove_resp_agent(self) -> None:
         self.g.remove((self.res, ProvEntity.was_attributed_to, None))
 
-    # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
-    # <self.res> RDF:type <type>
+    # HAS TYPE
+    def get_types(self) -> List[URIRef]:
+        uri_list: List[URIRef] = self._get_multiple_uri_references(RDF.type)
+        return uri_list
 
     def create_creation_activity(self) -> None:
         self._create_type(ProvEntity.create)

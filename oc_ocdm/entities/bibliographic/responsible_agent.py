@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING
 from oc_ocdm.decorators import accepts_only
 
 if TYPE_CHECKING:
+    from typing import Optional, List
     from rdflib import URIRef
 from oc_ocdm import GraphEntity
 from oc_ocdm.entities import BibliographicEntity
@@ -31,7 +32,9 @@ class ResponsibleAgent(BibliographicEntity):
        book, or an editor of a journal)."""
 
     # HAS NAME STRING
-    # <self.res> FOAF:name "string"
+    def get_name(self) -> Optional[str]:
+        return self._get_literal(GraphEntity.name)
+
     @accepts_only('literal')
     def has_name(self, string: str) -> None:
         """The name of an agent (for people, usually in the format: given name followed by family
@@ -44,7 +47,9 @@ class ResponsibleAgent(BibliographicEntity):
         self.g.remove((self.g, GraphEntity.name, None))
 
     # HAS GIVEN NAME
-    # <self.res> FOAF:givenName "string"
+    def get_given_name(self) -> Optional[str]:
+        return self._get_literal(GraphEntity.given_name)
+
     @accepts_only('literal')
     def has_given_name(self, string: str) -> None:
         """The given name of an agent, if a person.
@@ -56,7 +61,9 @@ class ResponsibleAgent(BibliographicEntity):
         self.g.remove((self.g, GraphEntity.given_name, None))
 
     # HAS FAMILY NAME
-    # <self.res> FOAF:familyName "string"
+    def get_family_name(self) -> Optional[str]:
+        return self._get_literal(GraphEntity.family_name)
+
     @accepts_only('literal')
     def has_family_name(self, string: str) -> None:
         """The family name of an agent, if a person.
@@ -68,7 +75,10 @@ class ResponsibleAgent(BibliographicEntity):
         self.g.remove((self.g, GraphEntity.family_name, None))
 
     # HAS RELATED AGENT
-    # <self.res> DCTERMS:relation <thing_ref>
+    def get_related_agents(self) -> List[URIRef]:
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.relation)
+        return uri_list
+
     @accepts_only('thing')
     def has_related_agent(self, thing_ref: URIRef) -> None:
         """An external agent that/who is related in some relevant way with this responsible agent

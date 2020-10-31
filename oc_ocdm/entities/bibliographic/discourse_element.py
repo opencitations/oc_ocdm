@@ -22,6 +22,7 @@ from rdflib import RDF
 from oc_ocdm.decorators import accepts_only
 
 if TYPE_CHECKING:
+    from typing import Optional, List
     from rdflib import URIRef
     from oc_ocdm.entities.bibliographic import ReferencePointer
     from oc_ocdm.entities.bibliographic import PointerList
@@ -36,7 +37,9 @@ class DiscourseElement(BibliographicEntity):
        the content of a bibliographic resource can be organized."""
 
     # HAS TITLE
-    # <self.res> DCTERMS:title "string"
+    def get_title(self) -> Optional[str]:
+        return self._get_literal(GraphEntity.title)
+
     @accepts_only('literal')
     def has_title(self, string: str) -> None:
         """The title of the discourse element, such as the title of a figure or a section in an article.
@@ -48,7 +51,13 @@ class DiscourseElement(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.title, None))
     
     # HAS PART (DiscourseElement)
-    # <self.res> FRBR:part <de_res>
+    def get_discourse_elements(self) -> List[DiscourseElement]:
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.contains_de)
+        result: List[DiscourseElement] = []
+        for uri in uri_list:
+            result.append(self.g_set.add_de(self.resp_agent, self.source_agent, self.source, uri))
+        return result
+
     @accepts_only('de')
     def contains_discourse_element(self, de_res: DiscourseElement) -> None:
         """The discourse element hierarchically nested within the parent element, such as a
@@ -64,7 +73,11 @@ class DiscourseElement(BibliographicEntity):
             self.g.remove((self.res, GraphEntity.contains_de, None))
 
     # HAS NEXT (DiscourseElement)
-    # <self.res> OCO:hasNext <de_res>
+    def get_next_de(self) -> Optional[DiscourseElement]:
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.has_next)
+        if uri is not None:
+            return self.g_set.add_de(self.resp_agent, self.source_agent, self.source, uri)
+
     @accepts_only('de')
     def has_next_de(self, de_res: DiscourseElement) -> None:
         """The following discourse element that includes at least one in-text reference pointer.
@@ -76,7 +89,13 @@ class DiscourseElement(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.has_next, None))
 
     # IS CONTEXT OF (ReferencePointer)
-    # <self.res> C4O:isContextOf <rp_res>
+    def get_context_of_rp(self) -> List[ReferencePointer]:
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.is_context_of)
+        result: List[ReferencePointer] = []
+        for uri in uri_list:
+            result.append(self.g_set.add_rp(self.resp_agent, self.source_agent, self.source, uri))
+        return result
+
     @accepts_only('rp')
     def is_context_of_rp(self, rp_res: ReferencePointer) -> None:
         """Provides the textual and semantic context of the in-text reference pointer
@@ -92,7 +111,13 @@ class DiscourseElement(BibliographicEntity):
             self.g.remove((self.res, GraphEntity.is_context_of, None))
 
     # IS CONTEXT OF (PointerList)
-    # <self.res> C4O:isContextOf <pl_res>
+    def get_context_of_pl(self) -> List[PointerList]:
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.is_context_of)
+        result: List[PointerList] = []
+        for uri in uri_list:
+            result.append(self.g_set.add_pl(self.resp_agent, self.source_agent, self.source, uri))
+        return result
+
     @accepts_only('pl')
     def is_context_of_pl(self, pl_res: PointerList) -> None:
         """Provides the textual and semantic context of the list of
@@ -108,7 +133,9 @@ class DiscourseElement(BibliographicEntity):
             self.g.remove((self.res, GraphEntity.is_context_of, None))
 
     # HAS CONTENT
-    # <self.res> C4O:hasContent "string"
+    def get_content(self) -> Optional[str]:
+        return self._get_literal(GraphEntity.has_content)
+
     @accepts_only('literal')
     def has_content(self, string: str) -> None:
         """The literal document text contained by the discourse element.
@@ -120,7 +147,9 @@ class DiscourseElement(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.has_content, None))
 
     # HAS NUMBER
-    # <self.res> FABIO:hasSequenceIdentifier "string"
+    def get_number(self) -> Optional[str]:
+        return self._get_literal(GraphEntity.has_sequence_identifier)
+
     @accepts_only('literal')
     def has_number(self, string: str) -> None:
         self.remove_number()
@@ -129,8 +158,11 @@ class DiscourseElement(BibliographicEntity):
     def remove_number(self) -> None:
         self.g.remove((self.res, GraphEntity.has_sequence_identifier, None))
 
-    # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
-    # <self.res> RDF:type <type>
+    # HAS TYPE
+    def get_types(self) -> List[URIRef]:
+        uri_list: List[URIRef] = self._get_multiple_uri_references(RDF.type)
+        return uri_list
+
     @accepts_only('thing')
     def create_discourse_element(self, de_class: URIRef) -> None:
         """The type of discourse element – such as “paragraph”, “section”, “sentence”,

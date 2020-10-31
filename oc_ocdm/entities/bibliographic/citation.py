@@ -40,7 +40,11 @@ class Citation(BibliographicEntity):
        Locator (URL), to the cited bibliographic resource on the World Wide Web."""
 
     # HAS CITING DOCUMENT (BibliographicResource)
-    # <self.res> CITO:hasCitingEntity <citing_res>
+    def get_citing_entity(self) -> Optional[BibliographicResource]:
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.has_citing_entity)
+        if uri is not None:
+            return self.g_set.add_br(self.resp_agent, self.source_agent, self.source, uri)
+
     @accepts_only('br')
     def has_citing_entity(self, citing_res: BibliographicResource) -> None:
         """The bibliographic resource which acts as the source for the citation.
@@ -52,7 +56,11 @@ class Citation(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.has_citing_entity, None))
 
     # HAS CITED DOCUMENT (BibliographicResource)
-    # <self.res> CITO:hasCitedEntity <cited_res>
+    def get_cited_entity(self) -> Optional[BibliographicResource]:
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.has_cited_entity)
+        if uri is not None:
+            return self.g_set.add_br(self.resp_agent, self.source_agent, self.source, uri)
+
     @accepts_only('br')
     def has_cited_entity(self, cited_res: BibliographicResource) -> None:
         """ The bibliographic resource which acts as the target for the citation.
@@ -64,7 +72,9 @@ class Citation(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.has_cited_entity, None))
 
     # HAS CITATION CREATION DATE
-    # <self.res> CITO:hasCitationCreationDate "string"
+    def get_citation_creation_date(self) -> Optional[str]:
+        return self._get_literal(GraphEntity.has_citation_creation_date)
+
     @accepts_only('literal')
     def has_citation_creation_date(self, string: str) -> None:
         """The date on which the citation was created. This has the same numerical value
@@ -81,7 +91,9 @@ class Citation(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.has_citation_creation_date, None))
 
     # HAS CITATION TIME SPAN
-    # <self.res> CITO:hasCitationTimeSpan "string"
+    def get_citation_time_span(self) -> Optional[str]:
+        return self._get_literal(GraphEntity.has_citation_time_span)
+
     @accepts_only('literal')
     def has_citation_time_span(self, string: str) -> None:
         """The date interval between the publication date of the cited bibliographic resource and
@@ -94,7 +106,10 @@ class Citation(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.has_citation_time_span, None))
 
     # HAS CITATION CHARACTERIZATION
-    # <self.res> CITO:hasCitationCharacterization <thing_ref>
+    def get_citation_characterization(self) -> Optional[URIRef]:
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.citation_characterisation)
+        return uri
+
     @accepts_only('thing')
     def has_citation_characterization(self, thing_ref: URIRef) -> None:
         """The citation function characterizing the purpose of the citation.
@@ -105,8 +120,10 @@ class Citation(BibliographicEntity):
     def remove_characterization(self) -> None:
         self.g.remove((self.res, GraphEntity.citation_characterisation, None))
 
-    # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
-    # <self.res> RDF:type <type>
+    # HAS TYPE
+    def get_types(self) -> List[URIRef]:
+        uri_list: List[URIRef] = self._get_multiple_uri_references(RDF.type)
+        return uri_list
 
     def create_self_citation(self) -> None:
         self._create_type(GraphEntity.self_citation)

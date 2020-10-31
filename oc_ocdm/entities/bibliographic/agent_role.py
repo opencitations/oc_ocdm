@@ -20,6 +20,8 @@ from typing import TYPE_CHECKING
 from oc_ocdm.decorators import accepts_only
 
 if TYPE_CHECKING:
+    from typing import Optional
+    from rdflib import URIRef
     from oc_ocdm.entities.bibliographic import ResponsibleAgent
 from oc_ocdm import GraphEntity
 from oc_ocdm.entities import BibliographicEntity
@@ -29,6 +31,11 @@ class AgentRole(BibliographicEntity):
     """Agent role (short: ar): a particular role held by an agent with respect to a bibliographic resource."""
 
     # HAS NEXT (AgentRole)
+    def get_next(self) -> Optional[AgentRole]:
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.has_next)
+        if uri is not None:
+            return self.g_set.add_ar(self.resp_agent, self.source_agent, self.source, uri)
+
     @accepts_only('ar')
     def has_next(self, ar_res: AgentRole) -> None:
         """The previous role in a sequence of agent roles of the same type associated with the
@@ -41,6 +48,11 @@ class AgentRole(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.has_next, None))
 
     # IS HELD BY (ResponsibleAgent)
+    def get_held_by(self) -> Optional[ResponsibleAgent]:
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.is_held_by)
+        if uri is not None:
+            return self.g_set.add_ra(self.resp_agent, self.source_agent, self.source, uri)
+
     @accepts_only('ra')
     def is_held_by(self, ra_res: ResponsibleAgent):
         """The agent holding this role with respect to a particular bibliographic resource.
@@ -51,7 +63,11 @@ class AgentRole(BibliographicEntity):
     def remove_held_by(self) -> None:
         self.g.remove((self.res, GraphEntity.is_held_by, None))
 
-    # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
+    # HAS ROLE TYPE
+    def get_role_type(self) -> Optional[URIRef]:
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.with_role)
+        return uri
+
     def create_publisher(self) -> None:
         """The specific type of role under consideration (e.g. author, editor or publisher).
         """

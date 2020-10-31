@@ -20,6 +20,8 @@ from typing import TYPE_CHECKING
 from oc_ocdm.decorators import accepts_only
 
 if TYPE_CHECKING:
+    from typing import Optional
+    from rdflib import URIRef
     from oc_ocdm.entities.bibliographic import Citation
 from oc_ocdm import GraphEntity
 from oc_ocdm.entities import BibliographicEntity
@@ -35,7 +37,11 @@ class ReferenceAnnotation(BibliographicEntity):
        with a citation function (the reason for that citation)."""
 
     # HAS CITATION (Citation)
-    # <self.res> OA:hasBody <ci_res>
+    def get_body_annotation(self) -> Optional[Citation]:
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.has_body)
+        if uri is not None:
+            return self.g_set.add_ci(self.resp_agent, self.source_agent, self.source, uri)
+
     @accepts_only('ci')
     def has_body_annotation(self, ci_res: Citation) -> None:
         """The citation to which the annotation relates, that is relevant either to a bibliographic
