@@ -167,6 +167,7 @@ class GraphEntity(object):
         self.g_set: GraphSet = g_set
         self.flags: EntityFlags = EntityFlags()
         self.preexisting_graph: Graph = Graph(identifier=g.identifier)
+        self.merge_list: List[GraphEntity] = []
 
         # If res was not specified, create from scratch the URI reference for this entity,
         # otherwise use the provided one
