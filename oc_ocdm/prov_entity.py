@@ -20,7 +20,7 @@ __author__ = 'essepuntato'
 from typing import TYPE_CHECKING, ClassVar
 
 from rdflib import Namespace, URIRef, Graph
-from rdflib.namespace import XSD
+from rdflib.namespace import XSD, RDF
 
 from oc_ocdm.decorators import accepts_only
 
@@ -87,7 +87,11 @@ class ProvEntity(GraphEntity):
         """The date on which a particular snapshot of a bibliographic entity's metadata was
         created.
         """
+        self.remove_generation_time()
         self._create_literal(ProvEntity.generated_at_time, string, XSD.dateTime)
+
+    def remove_generation_time(self) -> None:
+        self.g.remove((self.res, ProvEntity.generated_at_time, None))
 
     # HAS INVALIDATION DATE
     # <self.res> PROV:invalidatedAtTime "string"
@@ -97,7 +101,11 @@ class ProvEntity(GraphEntity):
         to an update (e.g. a correction, or the addition of some metadata that was not specified
         in the previous snapshot), or due to a merger of the entity with another one.
         """
+        self.remove_invalidation_time()
         self._create_literal(ProvEntity.invalidated_at_time, string, XSD.dateTime)
+
+    def remove_invalidation_time(self) -> None:
+        self.g.remove((self.res, ProvEntity.invalidated_at_time, None))
 
     # IS SNAPSHOT OF
     # <self.res> PROV:specializationOf <en_res>
@@ -105,7 +113,11 @@ class ProvEntity(GraphEntity):
         """This property is used to link a snapshot of entity metadata to the bibliographic entity
         to which the snapshot refers.
         """
+        self.remove_snapshot_of()
         self.g.add((self.res, ProvEntity.specialization_of, en_res.res))
+
+    def remove_snapshot_of(self) -> None:
+        self.g.remove((self.res, ProvEntity.specialization_of, None))
 
     # IS DERIVED FROM
     # <self.res> PROV:wasDerivedFrom <se_res>
@@ -116,6 +128,13 @@ class ProvEntity(GraphEntity):
         """
         self.g.add((self.res, ProvEntity.was_derived_from, se_res.res))
 
+    @accepts_only('se')
+    def remove_derives_from(self, se_res: ProvEntity = None) -> None:
+        if se_res is not None:
+            self.g.remove((self.res, ProvEntity.was_derived_from, se_res.res))
+        else:
+            self.g.remove((self.res, ProvEntity.was_derived_from, None))
+
     # HAS PRIMARY SOURCE
     # <self.res> PROV:hadPrimarySource <any_res>
     @accepts_only('thing')
@@ -124,7 +143,11 @@ class ProvEntity(GraphEntity):
         described in the snapshot are derived (e.g. Crossref, as the result of querying the
         CrossRef API).
         """
+        self.remove_primary_source()
         self.g.add((self.res, ProvEntity.had_primary_source, any_res))
+
+    def remove_primary_source(self) -> None:
+        self.g.remove((self.res, ProvEntity.had_primary_source, None))
 
     # HAS UPDATE ACTION
     # <self.res> OCO:hasUpdateQuery "string"
@@ -134,7 +157,11 @@ class ProvEntity(GraphEntity):
         entity in consideration, have been modified (e.g. for correcting a mistake) in the
         current snapshot starting from those associated to the previous snapshot of the entity.
         """
+        self.remove_update_action()
         self._create_literal(ProvEntity.has_update_query, string)
+
+    def remove_update_action(self) -> None:
+        self.g.remove((self.res, ProvEntity.has_update_query, None))
 
     # HAS DESCRIPTION
     # <self.res> DCTERM:description "string"
@@ -146,7 +173,11 @@ class ProvEntity(GraphEntity):
         snapshot following the merger with another entity of the entity to which the previous
         snapshot related).
         """
+        self.remove_description()
         self._create_literal(ProvEntity.description, string)
+
+    def remove_description(self) -> None:
+        self.g.remove((self.res, ProvEntity.description, None))
 
     # IS ATTRIBUTED TO
     # <self.res> PROV:wasAttributedTo <se_agent>
@@ -154,7 +185,11 @@ class ProvEntity(GraphEntity):
     def has_resp_agent(self, se_agent: URIRef) -> None:
         """The agent responsible for the creation of the current entity snapshot.
         """
+        self.remove_resp_agent()
         self.g.add((self.res, ProvEntity.was_attributed_to, se_agent))
+
+    def remove_resp_agent(self) -> None:
+        self.g.remove((self.res, ProvEntity.was_attributed_to, None))
 
     # ++++++++++++++++++++++++ FACTORY METHODS ++++++++++++++++++++++++
     # <self.res> RDF:type <type>
@@ -168,6 +203,12 @@ class ProvEntity(GraphEntity):
     def create_merging_activity(self) -> None:
         self._create_type(ProvEntity.replace)
 
+    @accepts_only('thing')
+    def remove_type(self, type_ref: URIRef = None) -> None:
+        if type_ref is not None:
+            self.g.remove((self.res, RDF.type, type_ref))
+        else:
+            self.g.remove((self.res, RDF.type, None))
     # +++++++++++++++++++++++++ UNDOCUMENTED ++++++++++++++++++++++++++
 
     @accepts_only('se')
