@@ -29,8 +29,7 @@ from urllib.parse import quote
 from rdflib import Literal, RDF, URIRef, XSD
 
 
-def create_date(date_list: List[Optional[int]] = None) -> Tuple[Optional[URIRef], Optional[str]]:
-    cur_type = None
+def create_date(date_list: List[Optional[int]] = None) -> Optional[str]:
     string = None
     if date_list is not None:
         l_date_list = len(date_list)
@@ -38,17 +37,30 @@ def create_date(date_list: List[Optional[int]] = None) -> Tuple[Optional[URIRef]
             if l_date_list == 3 and \
                     ((date_list[1] is not None and date_list[1] != 1) or
                      (date_list[2] is not None and date_list[2] != 1)):
-                cur_type = XSD.date
-                string = datetime(
-                    date_list[0], date_list[1], date_list[2], 0, 0).strftime('%Y-%m-%d')
+                string = datetime(date_list[0], date_list[1], date_list[2]).strftime('%Y-%m-%d')
             elif l_date_list == 2 and date_list[1] is not None:
-                cur_type = XSD.gYearMonth
-                string = datetime(
-                    date_list[0], date_list[1], 1, 0, 0).strftime('%Y-%m')
+                string = datetime(date_list[0], date_list[1], 1).strftime('%Y-%m')
             else:
-                cur_type = XSD.gYear
-                string = datetime(date_list[0], 1, 1, 0, 0).strftime('%Y')
-    return cur_type, string
+                string = datetime(date_list[0], 1, 1,).strftime('%Y')
+    return string
+
+
+def get_datatype_from_iso_8601(string: str) -> Tuple[URIRef, str]:
+    # Keep only the "yyyy-mm-dd" part of the string
+    string = string[:10]
+
+    try:
+        date_parts: List[int] = [int(s) for s in string.split(sep='-', maxsplit=2)]
+    except ValueError:
+        raise ValueError("The provided date string is not ISO-8601 compliant!")
+
+    num_of_parts: int = len(date_parts)
+    if num_of_parts == 3:
+        return XSD.date, datetime(*date_parts).strftime('%Y-%m-%d')
+    elif num_of_parts == 2:
+        return XSD.gYearMonth, datetime(*date_parts, 1).strftime('%Y-%m')
+    else:
+        return XSD.gYear, datetime(*date_parts, 1, 1).strftime('%Y')
 
 
 def encode_url(u):

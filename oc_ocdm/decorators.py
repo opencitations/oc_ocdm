@@ -33,7 +33,6 @@ def accepts_only(param_type: str):
             if param is None or \
                     (lowercase_type == 'literal' and type(param) == str) or \
                     (lowercase_type == 'thing' and type(param) == URIRef) or \
-                    (lowercase_type == 'date' and type(param) in (list, tuple)) or \
                     (isinstance(param, GraphEntity) and param.short_name == lowercase_type):
                 function(self, param)
             else:

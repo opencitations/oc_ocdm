@@ -20,10 +20,9 @@ from typing import TYPE_CHECKING
 from rdflib import XSD, RDF
 
 from oc_ocdm.decorators import accepts_only
-from oc_ocdm.support import create_date
+from oc_ocdm.support import get_datatype_from_iso_8601
 
 if TYPE_CHECKING:
-    from typing import Optional, List
     from rdflib import URIRef
     from oc_ocdm.entities.bibliographic import BibliographicResource
 from oc_ocdm import GraphEntity
@@ -66,14 +65,14 @@ class Citation(BibliographicEntity):
 
     # HAS CITATION CREATION DATE
     # <self.res> CITO:hasCitationCreationDate "string"
-    @accepts_only('date')
-    def has_citation_creation_date(self, date_list: List[Optional[int]] = None) -> None:
+    @accepts_only('literal')
+    def has_citation_creation_date(self, string: str) -> None:
         """The date on which the citation was created. This has the same numerical value
         as the publication date of the citing bibliographic resource, but is a property
         of the citation itself. When combined with the citation time span, it permits
         that citation to be located in history.
         """
-        cur_type, string = create_date(date_list)
+        cur_type, string = get_datatype_from_iso_8601(string)
         if cur_type is not None and string is not None:
             self.remove_creation_date()
             self._create_literal(GraphEntity.has_citation_creation_date, string, cur_type, False)

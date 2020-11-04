@@ -49,94 +49,28 @@ class TestCitation(unittest.TestCase):
         self.assertIn(triple, self.ci.g)
 
     def test_has_citation_creation_date(self):
-        with self.subTest("date_list is [int, int, int]"):
+        with self.subTest("date is '2020-05-25'"):
             string = "2020-05-25"
             datatype = XSD.date
-            result = self.ci.has_citation_creation_date([2020, 5, 25])
+            result = self.ci.has_citation_creation_date(string)
             self.assertIsNone(result)
 
             triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
                                                                                       normalize=False)
             self.assertIn(triple, self.ci.g)
-        with self.subTest("date_list is [int, int]"):
+        with self.subTest("date is '2020-05'"):
             string = "2020-05"
             datatype = XSD.gYearMonth
-            result = self.ci.has_citation_creation_date([2020, 5])
+            result = self.ci.has_citation_creation_date(string)
             self.assertIsNone(result)
 
             triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
                                                                                       normalize=False)
             self.assertIn(triple, self.ci.g)
-        with self.subTest("date_list is [int]"):
+        with self.subTest("date is '2020'"):
             string = "2020"
             datatype = XSD.gYear
-            result = self.ci.has_citation_creation_date([2020])
-            self.assertIsNone(result)
-
-            triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
-                                                                                      normalize=False)
-            self.assertIn(triple, self.ci.g)
-        with self.subTest("date_list is [int, None]"):
-            string = "2020"
-            datatype = XSD.gYear
-            result = self.ci.has_citation_creation_date([2020, None])
-            self.assertIsNone(result)
-
-            triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
-                                                                                      normalize=False)
-            self.assertIn(triple, self.ci.g)
-        with self.subTest("date_list is [int, None, None]"):
-            string = "2020"
-            datatype = XSD.gYear
-            result = self.ci.has_citation_creation_date([2020, None, None])
-            self.assertIsNone(result)
-
-            triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
-                                                                                      normalize=False)
-            self.assertIn(triple, self.ci.g)
-        with self.subTest("date_list is [None, None, None]"):
-            prev_len = len(self.ci.g)
-            result = self.ci.has_citation_creation_date([None, None, None])
-            self.assertIsNone(result)
-
-            after_len = len(self.ci.g)
-            self.assertEqual(prev_len, after_len)
-        with self.subTest("date_list is empty"):
-            prev_len = len(self.ci.g)
-            result = self.ci.has_citation_creation_date([])
-            self.assertIsNone(result)
-
-            after_len = len(self.ci.g)
-            self.assertEqual(prev_len, after_len)
-        with self.subTest("date_list is None"):
-            prev_len = len(self.ci.g)
-            result = self.ci.has_citation_creation_date()
-            self.assertIsNone(result)
-
-            after_len = len(self.ci.g)
-            self.assertEqual(prev_len, after_len)
-        with self.subTest("date_list is [int, 1, int]"):
-            string = "2020-01-25"
-            datatype = XSD.date
-            result = self.ci.has_citation_creation_date([2020, 1, 25])
-            self.assertIsNone(result)
-
-            triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
-                                                                                      normalize=False)
-            self.assertIn(triple, self.ci.g)
-        with self.subTest("date_list is [int, 1, 1]"):
-            string = "2020"
-            datatype = XSD.gYear
-            result = self.ci.has_citation_creation_date([2020, 1, 1])
-            self.assertIsNone(result)
-
-            triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
-                                                                                      normalize=False)
-            self.assertIn(triple, self.ci.g)
-        with self.subTest("date_list is [int, 5, 1]"):
-            string = "2020-05-01"
-            datatype = XSD.date
-            result = self.ci.has_citation_creation_date([2020, 5, 1])
+            result = self.ci.has_citation_creation_date(string)
             self.assertIsNone(result)
 
             triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,

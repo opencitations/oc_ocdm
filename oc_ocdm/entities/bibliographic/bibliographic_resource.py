@@ -20,10 +20,9 @@ from typing import TYPE_CHECKING
 from rdflib import RDF
 
 from oc_ocdm.decorators import accepts_only
-from oc_ocdm.support import create_date
+from oc_ocdm.support import get_datatype_from_iso_8601
 
 if TYPE_CHECKING:
-    from typing import List, Optional
     from rdflib import URIRef
     from oc_ocdm.entities.bibliographic import BibliographicReference, AgentRole
     from oc_ocdm.entities.bibliographic import DiscourseElement
@@ -91,11 +90,11 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS PUBLICATION DATE
     # <self.res> PRISM:publicationDate "string"
-    @accepts_only('date')
-    def has_pub_date(self, date_list: List[Optional[int]] = None) -> None:
+    @accepts_only('literal')
+    def has_pub_date(self, string: str) -> None:
         """The date of publication of the bibliographic resource.
         """
-        cur_type, string = create_date(date_list)
+        cur_type, string = get_datatype_from_iso_8601(string)
         if cur_type is not None and string is not None:
             self.remove_pub_date()
             self._create_literal(GraphEntity.has_publication_date, string, cur_type, False)
