@@ -32,6 +32,18 @@ class PointerList(BibliographicEntity):
        number of reference pointers denoting the specific bibliographic references to which
        the list pertains."""
 
+    @accepts_only('pl')
+    def merge(self, other: PointerList) -> None:
+        super(PointerList, self).merge(other)
+
+        content: Optional[str] = self.get_content()
+        if content is not None:
+            self.has_content(content)
+
+        rp_list: List[ReferencePointer] = other.get_contained_elements()
+        for cur_rp in rp_list:
+            self.contains_element(cur_rp)
+
     # HAS POINTER LIST TEXT
     def get_content(self) -> Optional[str]:
         return self._get_literal(GraphEntity.iri_has_content)

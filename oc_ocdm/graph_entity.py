@@ -300,6 +300,19 @@ class GraphEntity(object):
             if s == self.res:  # This guarantees that only triples belonging to the resource will be added
                 self.g.add((s, p, o))
 
+    def merge(self, other: GraphEntity) -> None:
+        types: List[URIRef] = other.get_types()
+        for cur_type in types:
+            self._create_type(cur_type)
+
+        label: Optional[str] = other.get_label()
+        if label is not None:
+            self.create_label(label)
+
+        self.flags.was_merged = True
+        other.mark_as_to_be_deleted()
+        self.merge_list.append(other)
+
     def _get_literal(self, predicate: URIRef) -> Optional[str]:
         result: Optional[str] = None
         for o in self.g.objects(self.res, predicate):

@@ -30,6 +30,27 @@ from oc_ocdm.entities import BibliographicEntity
 class AgentRole(BibliographicEntity):
     """Agent role (short: ar): a particular role held by an agent with respect to a bibliographic resource."""
 
+    @accepts_only('ar')
+    def merge(self, other: AgentRole) -> None:
+        super(AgentRole, self).merge(other)
+
+        next_ar: Optional[AgentRole] = other.get_next()
+        if next_ar is not None:
+            self.has_next(next_ar)
+
+        resp_agent: Optional[ResponsibleAgent] = other.get_held_by()
+        if resp_agent is not None:
+            self.is_held_by(resp_agent)
+
+        role_type: Optional[URIRef] = other.get_role_type()
+        if role_type is not None:
+            if role_type == GraphEntity.iri_publisher:
+                self.create_publisher()
+            elif role_type == GraphEntity.iri_author:
+                self.create_author()
+            elif role_type == GraphEntity.iri_editor:
+                self.create_editor()
+
     # HAS NEXT (AgentRole)
     def get_next(self) -> Optional[AgentRole]:
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_next)

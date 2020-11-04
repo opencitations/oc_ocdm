@@ -36,6 +36,14 @@ class ReferenceAnnotation(BibliographicEntity):
        annotated, the related citation may be similarly characterized in a more general way
        with a citation function (the reason for that citation)."""
 
+    @accepts_only('an')
+    def merge(self, other: ReferenceAnnotation) -> None:
+        super(ReferenceAnnotation, self).merge(other)
+
+        citation: Optional[Citation] = other.get_body_annotation()
+        if citation is not None:
+            self.has_body_annotation(citation)
+
     # HAS CITATION (Citation)
     def get_body_annotation(self) -> Optional[Citation]:
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_body)

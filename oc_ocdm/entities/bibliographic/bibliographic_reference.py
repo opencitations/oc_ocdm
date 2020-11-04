@@ -34,6 +34,22 @@ class BibliographicReference(BibliographicEntity):
     bibliographic resource.
     """
 
+    @accepts_only('be')
+    def merge(self, other: BibliographicReference) -> None:
+        super(BibliographicReference, self).merge(other)
+
+        content: Optional[str] = other.get_content()
+        if content is not None:
+            self.has_content(content)
+
+        annotations_list: List[ReferenceAnnotation] = other.get_annotations()
+        for cur_annotation in annotations_list:
+            self.has_annotation(cur_annotation)
+
+        referenced_br: Optional[BibliographicResource] = other.get_referenced_br()
+        if referenced_br is not None:
+            self.references_br(referenced_br)
+
     # HAS BIBLIOGRAPHIC REFERENCE TEXT
     def get_content(self) -> Optional[str]:
         return self._get_literal(GraphEntity.iri_has_content)

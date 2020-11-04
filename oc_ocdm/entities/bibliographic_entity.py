@@ -35,6 +35,12 @@ Notes about BibliographicEntity:
 class BibliographicEntity(GraphEntity):
     """The base class for each bibliographic entity of the OpenCitations DataModel (OCDM)."""
 
+    def merge(self, other: BibliographicEntity) -> None:
+        super(BibliographicEntity, self).merge(other)
+        id_list: List[Identifier] = other.get_identifiers()
+        for cur_id in id_list:
+            self.has_id(cur_id)
+
     # HAS IDENTIFIER
     def get_identifiers(self) -> List[Identifier]:
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_identifier)

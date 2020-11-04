@@ -34,6 +34,26 @@ class ReferencePointer(BibliographicEntity):
        document within the context of a particular sentence or text chunk. A bibliographic
        reference can be denoted in the text by one or more in-text reference pointers."""
 
+    @accepts_only('rp')
+    def merge(self, other: ReferencePointer) -> None:
+        super(ReferencePointer, self).merge(other)
+
+        content: Optional[str] = other.get_content()
+        if content is not None:
+            self.has_content(content)
+
+        next_rp: Optional[ReferencePointer] = other.get_next_rp()
+        if next_rp is not None:
+            self.has_next_rp(next_rp)
+
+        denoted_be: Optional[BibliographicReference] = other.get_denoted_be()
+        if denoted_be is not None:
+            self.denotes_be(denoted_be)
+
+        an_list: List[ReferenceAnnotation] = other.get_annotations()
+        for cur_an in an_list:
+            self.has_annotation(cur_an)
+
     # HAS REFERENCE POINTER TEXT
     def get_content(self) -> Optional[str]:
         return self._get_literal(GraphEntity.iri_has_content)

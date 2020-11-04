@@ -36,6 +36,38 @@ class DiscourseElement(BibliographicEntity):
        introduction, discussion, acknowledgements, reference list, figure, appendix), in which
        the content of a bibliographic resource can be organized."""
 
+    @accepts_only('de')
+    def merge(self, other: DiscourseElement) -> None:
+        super(DiscourseElement, self).merge(other)
+
+        title: Optional[str] = other.get_title()
+        if title is not None:
+            self.has_title(title)
+
+        de_list: List[DiscourseElement] = other.get_discourse_elements()
+        for cur_de in de_list:
+            self.contains_discourse_element(cur_de)
+
+        next_de: Optional[DiscourseElement] = other.get_next_de()
+        if next_de is not None:
+            self.has_next_de(next_de)
+
+        rp_list: List[ReferencePointer] = other.get_context_of_rp()
+        for cur_rp in rp_list:
+            self.is_context_of_rp(cur_rp)
+
+        pl_list: List[PointerList] = other.get_context_of_pl()
+        for cur_pl in pl_list:
+            self.is_context_of_pl(cur_pl)
+
+        content: Optional[str] = other.get_content()
+        if content is not None:
+            self.has_content(content)
+
+        number: Optional[str] = other.get_number()
+        if number is not None:
+            self.has_number(number)
+
     # HAS TITLE
     def get_title(self) -> Optional[str]:
         return self._get_literal(GraphEntity.iri_title)

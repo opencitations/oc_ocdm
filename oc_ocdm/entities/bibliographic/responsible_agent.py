@@ -31,6 +31,26 @@ class ResponsibleAgent(BibliographicEntity):
        a certain role with respect to a bibliographic resource (e.g. an author of a paper or
        book, or an editor of a journal)."""
 
+    @accepts_only('ra')
+    def merge(self, other: ResponsibleAgent) -> None:
+        super(ResponsibleAgent, self).merge(other)
+
+        name: Optional[str] = other.get_name()
+        if name is not None:
+            self.has_name(name)
+
+        given_name: Optional[str] = other.get_given_name()
+        if given_name is not None:
+            self.has_given_name(given_name)
+
+        family_name: Optional[str] = other.get_family_name()
+        if family_name is not None:
+            self.has_family_name(family_name)
+
+        related_agents: List[URIRef] = other.get_related_agents()
+        for cur_agent in related_agents:
+            self.has_related_agent(cur_agent)
+
     # HAS NAME STRING
     def get_name(self) -> Optional[str]:
         return self._get_literal(GraphEntity.iri_name)

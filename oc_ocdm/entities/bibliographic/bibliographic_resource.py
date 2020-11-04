@@ -35,6 +35,58 @@ class BibliographicResource(BibliographicEntity):
     """Bibliographic resource (short: br): a published bibliographic resource that cites/is
        cited by another published bibliographic resource."""
 
+    @accepts_only('br')
+    def merge(self, other: BibliographicResource) -> None:
+        super(BibliographicResource, self).merge(other)
+
+        title: Optional[str] = other.get_title()
+        if title is not None:
+            self.has_title(title)
+
+        subtitle: Optional[str] = other.get_subtitle()
+        if subtitle is not None:
+            self.has_subtitle(subtitle)
+
+        container: Optional[BibliographicResource] = other.get_part_of()
+        if container is not None:
+            self.is_part_of(container)
+
+        citations_list: List[BibliographicResource] = other.get_citations()
+        for cur_citation in citations_list:
+            self.has_citation(cur_citation)
+
+        pub_date: Optional[str] = other.get_pub_date()
+        if pub_date is not None:
+            self.has_pub_date(pub_date)
+
+        re_list: List[ResourceEmbodiment] = other.get_formats()
+        for cur_format in re_list:
+            self.has_format(cur_format)
+
+        number: Optional[str] = other.get_number()
+        if number is not None:
+            self.has_number(number)
+
+        edition: Optional[str] = other.get_edition()
+        if edition is not None:
+            self.has_edition(edition)
+
+        be_list: List[BibliographicReference] = other.get_in_reference_lists()
+        for reference in be_list:
+            self.contains_in_reference_list(reference)
+
+        de_list: List[DiscourseElement] = other.get_discourse_elements()
+        for discourse_element in de_list:
+            self.contains_discourse_element(discourse_element)
+
+        ar_list: List[AgentRole] = other.get_contributors()
+        for agent_role in ar_list:
+            self.has_contributor(agent_role)
+
+        related_doc_list: List[URIRef] = other.get_related_documents()
+        for doc in related_doc_list:
+            self.has_related_document(doc)
+
     # HAS TITLE
     def get_title(self) -> Optional[str]:
         return self._get_literal(GraphEntity.iri_title)

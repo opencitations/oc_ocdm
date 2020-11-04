@@ -39,6 +39,30 @@ class Citation(BibliographicEntity):
        the inclusion within the citing work of a link, in the form of an HTTP Uniform Resource
        Locator (URL), to the cited bibliographic resource on the World Wide Web."""
 
+    @accepts_only('ci')
+    def merge(self, other: Citation) -> None:
+        super(Citation, self).merge(other)
+
+        citing_br: Optional[BibliographicResource] = other.get_citing_entity()
+        if citing_br is not None:
+            self.has_citing_entity(citing_br)
+
+        cited_br: Optional[BibliographicResource] = other.get_cited_entity()
+        if cited_br is not None:
+            self.has_cited_entity(cited_br)
+
+        creation_date: Optional[str] = other.get_citation_creation_date()
+        if creation_date is not None:
+            self.has_citation_creation_date(creation_date)
+
+        time_span: Optional[str] = other.get_citation_time_span()
+        if time_span is not None:
+            self.has_citation_time_span(time_span)
+
+        characterization: Optional[URIRef] = other.get_citation_characterization()
+        if characterization is not None:
+            self.has_citation_characterization(characterization)
+
     # HAS CITING DOCUMENT (BibliographicResource)
     def get_citing_entity(self) -> Optional[BibliographicResource]:
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_citing_entity)

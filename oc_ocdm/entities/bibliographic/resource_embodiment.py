@@ -33,6 +33,26 @@ class ResourceEmbodiment(BibliographicEntity):
     """Resource embodiment (short: re): the particular physical or digital format in which a
        bibliographic resource was made available by its publisher."""
 
+    @accepts_only('re')
+    def merge(self, other: ResourceEmbodiment) -> None:
+        super(ResourceEmbodiment, self).merge(other)
+
+        media_type: Optional[URIRef] = other.get_media_type()
+        if media_type is not None:
+            self.has_media_type(media_type)
+
+        starting_page: Optional[str] = other.get_starting_page()
+        if starting_page is not None:
+            self.has_starting_page(starting_page)
+
+        ending_page: Optional[str] = other.get_ending_page()
+        if ending_page is not None:
+            self.has_ending_page(ending_page)
+
+        url: Optional[URIRef] = other.get_url()
+        if url is not None:
+            self.has_url(url)
+
     # HAS FORMAT
     def get_media_type(self) -> Optional[URIRef]:
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_format)

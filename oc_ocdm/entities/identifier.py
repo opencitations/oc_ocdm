@@ -39,6 +39,15 @@ class Identifier(GraphEntity):
        Citation Identifier) associated with the bibliographic entity. Members of this class of
        metadata are themselves given unique corpus identifiers e.g. 'id/0420129'."""
 
+    @accepts_only('id')
+    def merge(self, other: Identifier):
+        super(Identifier, self).merge(other)
+
+        literal_value: Optional[str] = other.get_literal_value()
+        scheme: Optional[URIRef] = other.get_scheme()
+        if literal_value is not None and scheme is not None:
+            self._associate_identifier_with_scheme(literal_value, scheme)
+
     # HAS LITERAL VALUE and HAS SCHEME
     def get_literal_value(self) -> Optional[str]:
         return self._get_literal(GraphEntity.iri_has_literal_value)
