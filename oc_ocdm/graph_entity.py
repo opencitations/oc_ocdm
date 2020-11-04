@@ -20,12 +20,12 @@ __author__ = 'essepuntato'
 from typing import TYPE_CHECKING
 
 from rdflib import Graph, Namespace, URIRef, Literal
-from rdflib.namespace import RDFS
+from rdflib.namespace import RDFS, RDF
 
 from oc_ocdm.entity_flags import EntityFlags
 
 if TYPE_CHECKING:
-    from typing import ClassVar, Optional, List
+    from typing import ClassVar, Optional, List, Dict
     from oc_ocdm import GraphSet
 from oc_ocdm.support import create_literal,\
                                     create_type
@@ -155,6 +155,20 @@ class GraphEntity(object):
     iri_distant_citation: ClassVar[URIRef] = CITO.DistantCitation
     iri_has_format: ClassVar[URIRef] = DCTERMS["format"]
 
+    short_name_to_type_iri: ClassVar[Dict[str, URIRef]] = {
+        'an': iri_note,
+        'ar': iri_role_in_time,
+        'be': iri_bibliographic_reference,
+        'br': iri_expression,
+        'ci': iri_citation,
+        'de': iri_discourse_element,
+        'id': iri_identifier,
+        'pl': iri_singleloc_pointer_list,
+        'ra': iri_agent,
+        're': iri_manifestation,
+        'rp': iri_intextref_pointer
+    }
+
     def __init__(self, g: Graph, res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
                  source_agent: str = None, source: str = None, count: str = None, label: str = None,
                  short_name: str = "", g_set: GraphSet = None, forced_type: bool = False,
@@ -255,7 +269,12 @@ class GraphEntity(object):
         :type res_type: URIRef
         :rtype: None
         """
+        self.g.remove((self.res, RDF.type, None))
         create_type(self.g, self.res, res_type)
+
+        # Restore the main type IRI
+        iri_main_type: URIRef = self.short_name_to_type_iri[self.short_name]
+        create_type(self.g, self.res, iri_main_type)
 
     # Overrides __str__ method
     def __str__(self) -> str:

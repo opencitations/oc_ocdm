@@ -73,6 +73,11 @@ class ProvEntity(GraphEntity):
     def __init__(self, prov_subject: GraphEntity, g: Graph, res: URIRef = None, res_type: URIRef = None,
                  resp_agent: str = None, source_agent: str = None, source: str = None, count: str = None,
                  label: str = None, short_name: str = "", g_set: ProvSet = None) -> None:
+        # This must be done immediately because the constructor of the superclass assumes that this data structure
+        # has already been completely initialized!
+        self.short_name_to_type_iri.update({
+            'se': self.iri_entity
+        })
         super(ProvEntity, self).__init__(
             g, res, res_type, resp_agent, source_agent, source, count, label, short_name, g_set)
         self.prov_subject: GraphEntity = prov_subject
