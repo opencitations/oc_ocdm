@@ -36,7 +36,7 @@ class ReferencePointer(BibliographicEntity):
 
     # HAS REFERENCE POINTER TEXT
     def get_content(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.has_content)
+        return self._get_literal(GraphEntity.iri_has_content)
 
     @accepts_only('literal')
     def has_content(self, string: str) -> None:
@@ -44,14 +44,14 @@ class ReferencePointer(BibliographicEntity):
         a single bibliographic reference (e.g. “[1]”).
         """
         self.remove_content()
-        self._create_literal(GraphEntity.has_content, string)
+        self._create_literal(GraphEntity.iri_has_content, string)
 
     def remove_content(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_content, None))
+        self.g.remove((self.res, GraphEntity.iri_has_content, None))
 
     # HAS NEXT (ReferencePointer)
     def get_next_rp(self) -> Optional[ReferencePointer]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.has_next)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_next)
         if uri is not None:
             return self.g_set.add_rp(self.resp_agent, self.source_agent, self.source, uri)
 
@@ -61,14 +61,14 @@ class ReferencePointer(BibliographicEntity):
         pointer list.
         """
         self.remove_next_rp()
-        self.g.add((self.res, GraphEntity.has_next, rp_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_next, rp_res.res))
 
     def remove_next_rp(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_next, None))
+        self.g.remove((self.res, GraphEntity.iri_has_next, None))
 
     # DENOTES (BibliographicReference)
     def get_denoted_be(self) -> Optional[BibliographicReference]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.denotes)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_denotes)
         if uri is not None:
             return self.g_set.add_be(self.resp_agent, self.source_agent, self.source, uri)
 
@@ -78,14 +78,14 @@ class ReferencePointer(BibliographicEntity):
         the in-text reference pointer.
         """
         self.remove_be()
-        self.g.add((self.res, GraphEntity.denotes, be_res.res))
+        self.g.add((self.res, GraphEntity.iri_denotes, be_res.res))
 
     def remove_be(self) -> None:
-        self.g.remove((self.res, GraphEntity.denotes, None))
+        self.g.remove((self.res, GraphEntity.iri_denotes, None))
 
     # HAS ANNOTATION (ReferenceAnnotation)
     def get_annotations(self) -> List[ReferenceAnnotation]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.has_annotation)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_annotation)
         result: List[ReferenceAnnotation] = []
         for uri in uri_list:
             result.append(self.g_set.add_an(self.resp_agent, self.source_agent, self.source, uri))
@@ -97,11 +97,11 @@ class ReferencePointer(BibliographicEntity):
         in terms of its citation function (the reason for that citation) specific to the textual
         location of that in-text reference pointer within the citing entity.
         """
-        self.g.add((self.res, GraphEntity.has_annotation, an_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_annotation, an_res.res))
 
     @accepts_only('an')
     def remove_annotation(self, an_res: ReferenceAnnotation = None) -> None:
         if an_res is not None:
-            self.g.remove((self.res, GraphEntity.has_annotation, an_res.res))
+            self.g.remove((self.res, GraphEntity.iri_has_annotation, an_res.res))
         else:
-            self.g.remove((self.res, GraphEntity.has_annotation, None))
+            self.g.remove((self.res, GraphEntity.iri_has_annotation, None))

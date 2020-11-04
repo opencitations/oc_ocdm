@@ -34,19 +34,19 @@ class PointerList(BibliographicEntity):
 
     # HAS POINTER LIST TEXT
     def get_content(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.has_content)
+        return self._get_literal(GraphEntity.iri_has_content)
 
     @accepts_only('literal')
     def has_content(self, string: str) -> None:
         self.remove_content()
-        self._create_literal(GraphEntity.has_content, string)
+        self._create_literal(GraphEntity.iri_has_content, string)
 
     def remove_content(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_content, None))
+        self.g.remove((self.res, GraphEntity.iri_has_content, None))
 
     # HAS ELEMENT (ReferencePointer)
     def get_contained_elements(self) -> List[ReferencePointer]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.has_element)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_element)
         result: List[ReferencePointer] = []
         for uri in uri_list:
             result.append(self.g_set.add_rp(self.resp_agent, self.source_agent, self.source, uri))
@@ -57,11 +57,11 @@ class PointerList(BibliographicEntity):
         """The in-text reference pointer that is part of the in-text reference pointer list present at
         a particular location within the body of the citing work.
         """
-        self.g.add((self.res, GraphEntity.has_element, rp_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_element, rp_res.res))
 
     @accepts_only('rp')
     def remove_contained_element(self, rp_res: ReferencePointer = None) -> None:
         if rp_res is not None:
-            self.g.remove((self.res, GraphEntity.has_element, rp_res.res))
+            self.g.remove((self.res, GraphEntity.iri_has_element, rp_res.res))
         else:
-            self.g.remove((self.res, GraphEntity.has_element, None))
+            self.g.remove((self.res, GraphEntity.iri_has_element, None))

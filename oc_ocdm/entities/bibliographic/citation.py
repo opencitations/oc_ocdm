@@ -41,7 +41,7 @@ class Citation(BibliographicEntity):
 
     # HAS CITING DOCUMENT (BibliographicResource)
     def get_citing_entity(self) -> Optional[BibliographicResource]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.has_citing_entity)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_citing_entity)
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source_agent, self.source, uri)
 
@@ -50,14 +50,14 @@ class Citation(BibliographicEntity):
         """The bibliographic resource which acts as the source for the citation.
         """
         self.remove_citing_entity()
-        self.g.add((self.res, GraphEntity.has_citing_entity, citing_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_citing_entity, citing_res.res))
 
     def remove_citing_entity(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_citing_entity, None))
+        self.g.remove((self.res, GraphEntity.iri_has_citing_entity, None))
 
     # HAS CITED DOCUMENT (BibliographicResource)
     def get_cited_entity(self) -> Optional[BibliographicResource]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.has_cited_entity)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_cited_entity)
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source_agent, self.source, uri)
 
@@ -66,14 +66,14 @@ class Citation(BibliographicEntity):
         """ The bibliographic resource which acts as the target for the citation.
         """
         self.remove_cited_entity()
-        self.g.add((self.res, GraphEntity.has_cited_entity, cited_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_cited_entity, cited_res.res))
 
     def remove_cited_entity(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_cited_entity, None))
+        self.g.remove((self.res, GraphEntity.iri_has_cited_entity, None))
 
     # HAS CITATION CREATION DATE
     def get_citation_creation_date(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.has_citation_creation_date)
+        return self._get_literal(GraphEntity.iri_has_citation_creation_date)
 
     @accepts_only('literal')
     def has_citation_creation_date(self, string: str) -> None:
@@ -85,14 +85,14 @@ class Citation(BibliographicEntity):
         cur_type, string = get_datatype_from_iso_8601(string)
         if cur_type is not None and string is not None:
             self.remove_creation_date()
-            self._create_literal(GraphEntity.has_citation_creation_date, string, cur_type, False)
+            self._create_literal(GraphEntity.iri_has_citation_creation_date, string, cur_type, False)
 
     def remove_creation_date(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_citation_creation_date, None))
+        self.g.remove((self.res, GraphEntity.iri_has_citation_creation_date, None))
 
     # HAS CITATION TIME SPAN
     def get_citation_time_span(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.has_citation_time_span)
+        return self._get_literal(GraphEntity.iri_has_citation_time_span)
 
     @accepts_only('literal')
     def has_citation_time_span(self, string: str) -> None:
@@ -100,14 +100,14 @@ class Citation(BibliographicEntity):
         the publication date of the citing bibliographic resource.
         """
         self.remove_time_span()
-        self._create_literal(GraphEntity.has_citation_time_span, string, XSD.duration, False)
+        self._create_literal(GraphEntity.iri_has_citation_time_span, string, XSD.duration, False)
 
     def remove_time_span(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_citation_time_span, None))
+        self.g.remove((self.res, GraphEntity.iri_has_citation_time_span, None))
 
     # HAS CITATION CHARACTERIZATION
     def get_citation_characterization(self) -> Optional[URIRef]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.citation_characterisation)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_citation_characterisation)
         return uri
 
     @accepts_only('thing')
@@ -115,10 +115,10 @@ class Citation(BibliographicEntity):
         """The citation function characterizing the purpose of the citation.
         """
         self.remove_characterization()
-        self.g.add((self.res, GraphEntity.citation_characterisation, thing_ref))
+        self.g.add((self.res, GraphEntity.iri_citation_characterisation, thing_ref))
 
     def remove_characterization(self) -> None:
-        self.g.remove((self.res, GraphEntity.citation_characterisation, None))
+        self.g.remove((self.res, GraphEntity.iri_citation_characterisation, None))
 
     # HAS TYPE
     def get_types(self) -> List[URIRef]:
@@ -126,28 +126,28 @@ class Citation(BibliographicEntity):
         return uri_list
 
     def create_self_citation(self) -> None:
-        self._create_type(GraphEntity.self_citation)
+        self._create_type(GraphEntity.iri_self_citation)
 
     def create_affiliation_self_citation(self) -> None:
-        self._create_type(GraphEntity.affiliation_self_citation)
+        self._create_type(GraphEntity.iri_affiliation_self_citation)
 
     def create_author_network_self_citation(self) -> None:
-        self._create_type(GraphEntity.author_network_self_citation)
+        self._create_type(GraphEntity.iri_author_network_self_citation)
 
     def create_author_self_citation(self) -> None:
-        self._create_type(GraphEntity.author_self_citation)
+        self._create_type(GraphEntity.iri_author_self_citation)
 
     def create_funder_self_citation(self) -> None:
-        self._create_type(GraphEntity.funder_self_citation)
+        self._create_type(GraphEntity.iri_funder_self_citation)
 
     def create_journal_self_citation(self) -> None:
-        self._create_type(GraphEntity.journal_self_citation)
+        self._create_type(GraphEntity.iri_journal_self_citation)
 
     def create_journal_cartel_citation(self) -> None:
-        self._create_type(GraphEntity.journal_cartel_citation)
+        self._create_type(GraphEntity.iri_journal_cartel_citation)
 
     def create_distant_citation(self) -> None:
-        self._create_type(GraphEntity.distant_citation)
+        self._create_type(GraphEntity.iri_distant_citation)
 
     @accepts_only('thing')
     def remove_type(self, type_ref: URIRef = None) -> None:

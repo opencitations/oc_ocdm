@@ -37,10 +37,10 @@ class TestIdentifier(unittest.TestCase):
         result = self.id.create_orcid(orcid)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.has_literal_value, Literal(orcid)
+        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(orcid)
         self.assertIn(triple, self.id.g)
 
-        triple = self.id.res, GraphEntity.uses_identifier_scheme, GraphEntity.orcid
+        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_orcid
         self.assertIn(triple, self.id.g)
 
     def test_create_doi(self):
@@ -48,10 +48,10 @@ class TestIdentifier(unittest.TestCase):
         result = self.id.create_doi(doi)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.has_literal_value, Literal(doi)
+        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(doi)
         self.assertIn(triple, self.id.g)
 
-        triple = self.id.res, GraphEntity.uses_identifier_scheme, GraphEntity.doi
+        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_doi
         self.assertIn(triple, self.id.g)
 
     def test_create_pmid(self):
@@ -59,10 +59,10 @@ class TestIdentifier(unittest.TestCase):
         result = self.id.create_pmid(pmid)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.has_literal_value, Literal(pmid)
+        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(pmid)
         self.assertIn(triple, self.id.g)
 
-        triple = self.id.res, GraphEntity.uses_identifier_scheme, GraphEntity.pmid
+        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_pmid
         self.assertIn(triple, self.id.g)
 
     def test_create_pmcid(self):
@@ -70,10 +70,10 @@ class TestIdentifier(unittest.TestCase):
         result = self.id.create_pmcid(pmcid)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.has_literal_value, Literal(pmcid)
+        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(pmcid)
         self.assertIn(triple, self.id.g)
 
-        triple = self.id.res, GraphEntity.uses_identifier_scheme, GraphEntity.pmcid
+        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_pmcid
         self.assertIn(triple, self.id.g)
 
     def test_create_issn(self):
@@ -81,10 +81,10 @@ class TestIdentifier(unittest.TestCase):
         result = self.id.create_issn(issn)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.has_literal_value, Literal(issn)
+        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(issn)
         self.assertIn(triple, self.id.g)
 
-        triple = self.id.res, GraphEntity.uses_identifier_scheme, GraphEntity.issn
+        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_issn
         self.assertIn(triple, self.id.g)
 
     def test_create_isbn(self):
@@ -92,10 +92,10 @@ class TestIdentifier(unittest.TestCase):
         result = self.id.create_isbn(isbn)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.has_literal_value, Literal(isbn)
+        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(isbn)
         self.assertIn(triple, self.id.g)
 
-        triple = self.id.res, GraphEntity.uses_identifier_scheme, GraphEntity.isbn
+        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_isbn
         self.assertIn(triple, self.id.g)
 
     def test_create_url(self):
@@ -103,10 +103,10 @@ class TestIdentifier(unittest.TestCase):
         result = self.id.create_url(url)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.has_literal_value, Literal(url)
+        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(url)
         self.assertIn(triple, self.id.g)
 
-        triple = self.id.res, GraphEntity.uses_identifier_scheme, GraphEntity.url
+        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_url
         self.assertIn(triple, self.id.g)
 
     def test_create_xpath(self):
@@ -114,10 +114,10 @@ class TestIdentifier(unittest.TestCase):
         result = self.id.create_xpath(xpath)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.has_literal_value, Literal(xpath)
+        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(xpath)
         self.assertIn(triple, self.id.g)
 
-        triple = self.id.res, GraphEntity.uses_identifier_scheme, GraphEntity.xpath
+        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_xpath
         self.assertIn(triple, self.id.g)
 
     def test_create_intrepid(self):
@@ -125,10 +125,10 @@ class TestIdentifier(unittest.TestCase):
         result = self.id.create_intrepid(intrepid)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.has_literal_value, Literal(intrepid)
+        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(intrepid)
         self.assertIn(triple, self.id.g)
 
-        triple = self.id.res, GraphEntity.uses_identifier_scheme, GraphEntity.intrepid
+        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_intrepid
         self.assertIn(triple, self.id.g)
 
     def test_create_xmlid(self):
@@ -136,10 +136,10 @@ class TestIdentifier(unittest.TestCase):
         result = self.id.create_xmlid(xmlid)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.has_literal_value, Literal(xmlid)
+        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(xmlid)
         self.assertIn(triple, self.id.g)
 
-        triple = self.id.res, GraphEntity.uses_identifier_scheme, GraphEntity.xmlid
+        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_xmlid
         self.assertIn(triple, self.id.g)
 
     def test_create_wikidata(self):
@@ -147,10 +147,10 @@ class TestIdentifier(unittest.TestCase):
         result = self.id.create_wikidata(wikidata)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.has_literal_value, Literal(wikidata)
+        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(wikidata)
         self.assertIn(triple, self.id.g)
 
-        triple = self.id.res, GraphEntity.uses_identifier_scheme, GraphEntity.wikidata
+        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_wikidata
         self.assertIn(triple, self.id.g)
 
     def test_create_crossref(self):
@@ -158,10 +158,10 @@ class TestIdentifier(unittest.TestCase):
         result = self.id.create_crossref(crossref)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.has_literal_value, Literal(crossref)
+        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(crossref)
         self.assertIn(triple, self.id.g)
 
-        triple = self.id.res, GraphEntity.uses_identifier_scheme, GraphEntity.crossref
+        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_crossref
         self.assertIn(triple, self.id.g)
 
     def test_create_viaf(self):
@@ -169,10 +169,10 @@ class TestIdentifier(unittest.TestCase):
         result = self.id.create_viaf(viaf)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.has_literal_value, Literal(viaf)
+        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(viaf)
         self.assertIn(triple, self.id.g)
 
-        triple = self.id.res, GraphEntity.uses_identifier_scheme, GraphEntity.viaf
+        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_viaf
         self.assertIn(triple, self.id.g)
 
 

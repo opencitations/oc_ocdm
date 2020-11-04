@@ -65,7 +65,7 @@ class ProvSet(GraphSet):
         list_of_entities: Tuple[GraphEntity] = () if prov_subject is None else (prov_subject,)
         cur_g, count, label = self._add_prov(graph_url=g_prov, res=res, short_name="se",
                                              list_of_entities=list_of_entities)
-        return ProvEntity(list_of_entities[0] if list_of_entities else None, cur_g, res=res, res_type=ProvEntity.entity,
+        return ProvEntity(list_of_entities[0] if list_of_entities else None, cur_g, res=res, res_type=ProvEntity.iri_entity,
                           short_name="se", resp_agent=resp_agent, source_agent=None, source=None, count=count,
                           label=label, g_set=self)
 
@@ -173,9 +173,9 @@ class ProvSet(GraphSet):
         are_others: bool = False
 
         for s, p, o in cur_subj_g.triples((None, None, None)):
-            if p == GraphEntity.cites:
+            if p == GraphEntity.iri_cites:
                 are_citations = True
-            elif p == GraphEntity.has_identifier:
+            elif p == GraphEntity.iri_has_identifier:
                 are_ids = True
             else:
                 are_others = True

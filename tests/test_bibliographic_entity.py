@@ -35,7 +35,7 @@ class TestBibliographicEntity(unittest.TestCase):
         result = self.entity.has_id(self.identifier)
         self.assertIsNone(result)
 
-        triple = self.entity.res, GraphEntity.has_identifier, self.identifier.res
+        triple = self.entity.res, GraphEntity.iri_has_identifier, self.identifier.res
         self.assertIn(triple, self.entity.g)
 
 

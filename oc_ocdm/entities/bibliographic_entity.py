@@ -37,7 +37,7 @@ class BibliographicEntity(GraphEntity):
 
     # HAS IDENTIFIER
     def get_identifiers(self) -> List[Identifier]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.has_identifier)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_identifier)
         result: List[Identifier] = []
         for uri in uri_list:
             result.append(self.g_set.add_id(self.resp_agent, self.source_agent, self.source, uri))
@@ -49,11 +49,11 @@ class BibliographicEntity(GraphEntity):
         curation (format: [entity short name]/[local identifier]), other external third-party
         identifiers can be specified through this attribute (e.g. DOI, ORCID, PubMedID).
         """
-        self.g.add((self.res, GraphEntity.has_identifier, id_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_identifier, id_res.res))
 
     @accepts_only('id')
     def remove_id(self, id_res: Identifier = None) -> None:
         if id_res is not None:
-            self.g.remove((self.res, GraphEntity.has_identifier, id_res.res))
+            self.g.remove((self.res, GraphEntity.iri_has_identifier, id_res.res))
         else:
-            self.g.remove((self.res, GraphEntity.has_identifier, None))
+            self.g.remove((self.res, GraphEntity.iri_has_identifier, None))

@@ -32,7 +32,7 @@ class AgentRole(BibliographicEntity):
 
     # HAS NEXT (AgentRole)
     def get_next(self) -> Optional[AgentRole]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.has_next)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_next)
         if uri is not None:
             return self.g_set.add_ar(self.resp_agent, self.source_agent, self.source, uri)
 
@@ -42,14 +42,14 @@ class AgentRole(BibliographicEntity):
         same bibliographic resource (so as to define, for instance, an ordered list of authors).
         """
         self.remove_next()
-        self.g.add((self.res, GraphEntity.has_next, ar_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_next, ar_res.res))
 
     def remove_next(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_next, None))
+        self.g.remove((self.res, GraphEntity.iri_has_next, None))
 
     # IS HELD BY (ResponsibleAgent)
     def get_held_by(self) -> Optional[ResponsibleAgent]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.is_held_by)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_is_held_by)
         if uri is not None:
             return self.g_set.add_ra(self.resp_agent, self.source_agent, self.source, uri)
 
@@ -58,33 +58,33 @@ class AgentRole(BibliographicEntity):
         """The agent holding this role with respect to a particular bibliographic resource.
         """
         self.remove_held_by()
-        self.g.add((self.res, GraphEntity.is_held_by, ra_res.res))
+        self.g.add((self.res, GraphEntity.iri_is_held_by, ra_res.res))
 
     def remove_held_by(self) -> None:
-        self.g.remove((self.res, GraphEntity.is_held_by, None))
+        self.g.remove((self.res, GraphEntity.iri_is_held_by, None))
 
     # HAS ROLE TYPE
     def get_role_type(self) -> Optional[URIRef]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.with_role)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_with_role)
         return uri
 
     def create_publisher(self) -> None:
         """The specific type of role under consideration (e.g. author, editor or publisher).
         """
         self.remove_role_type()
-        self.g.add((self.res, GraphEntity.with_role, GraphEntity.publisher))
+        self.g.add((self.res, GraphEntity.iri_with_role, GraphEntity.iri_publisher))
 
     def create_author(self) -> None:
         """The specific type of role under consideration (e.g. author, editor or publisher).
         """
         self.remove_role_type()
-        self.g.add((self.res, GraphEntity.with_role, GraphEntity.author))
+        self.g.add((self.res, GraphEntity.iri_with_role, GraphEntity.iri_author))
 
     def create_editor(self) -> None:
         """The specific type of role under consideration (e.g. author, editor or publisher).
         """
         self.remove_role_type()
-        self.g.add((self.res, GraphEntity.with_role, GraphEntity.editor))
+        self.g.add((self.res, GraphEntity.iri_with_role, GraphEntity.iri_editor))
 
     def remove_role_type(self) -> None:
-        self.g.remove((self.res, GraphEntity.with_role, None))
+        self.g.remove((self.res, GraphEntity.iri_with_role, None))

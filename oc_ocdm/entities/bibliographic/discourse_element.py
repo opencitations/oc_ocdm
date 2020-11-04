@@ -38,21 +38,21 @@ class DiscourseElement(BibliographicEntity):
 
     # HAS TITLE
     def get_title(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.title)
+        return self._get_literal(GraphEntity.iri_title)
 
     @accepts_only('literal')
     def has_title(self, string: str) -> None:
         """The title of the discourse element, such as the title of a figure or a section in an article.
         """
         self.remove_title()
-        self._create_literal(GraphEntity.title, string)
+        self._create_literal(GraphEntity.iri_title, string)
 
     def remove_title(self) -> None:
-        self.g.remove((self.res, GraphEntity.title, None))
+        self.g.remove((self.res, GraphEntity.iri_title, None))
     
     # HAS PART (DiscourseElement)
     def get_discourse_elements(self) -> List[DiscourseElement]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.contains_de)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_de)
         result: List[DiscourseElement] = []
         for uri in uri_list:
             result.append(self.g_set.add_de(self.resp_agent, self.source_agent, self.source, uri))
@@ -63,18 +63,18 @@ class DiscourseElement(BibliographicEntity):
         """The discourse element hierarchically nested within the parent element, such as a
         sentence within a paragraph, or a paragraph within a section.
         """
-        self.g.add((self.res, GraphEntity.contains_de, de_res.res))
+        self.g.add((self.res, GraphEntity.iri_contains_de, de_res.res))
 
     @accepts_only('de')
     def remove_contained_de(self, de_res: DiscourseElement = None) -> None:
         if de_res is not None:
-            self.g.remove((self.res, GraphEntity.contains_de, de_res.res))
+            self.g.remove((self.res, GraphEntity.iri_contains_de, de_res.res))
         else:
-            self.g.remove((self.res, GraphEntity.contains_de, None))
+            self.g.remove((self.res, GraphEntity.iri_contains_de, None))
 
     # HAS NEXT (DiscourseElement)
     def get_next_de(self) -> Optional[DiscourseElement]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.has_next)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_next)
         if uri is not None:
             return self.g_set.add_de(self.resp_agent, self.source_agent, self.source, uri)
 
@@ -83,14 +83,14 @@ class DiscourseElement(BibliographicEntity):
         """The following discourse element that includes at least one in-text reference pointer.
         """
         self.remove_next_de()
-        self.g.add((self.res, GraphEntity.has_next, de_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_next, de_res.res))
 
     def remove_next_de(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_next, None))
+        self.g.remove((self.res, GraphEntity.iri_has_next, None))
 
     # IS CONTEXT OF (ReferencePointer)
     def get_context_of_rp(self) -> List[ReferencePointer]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.is_context_of)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of)
         result: List[ReferencePointer] = []
         for uri in uri_list:
             result.append(self.g_set.add_rp(self.resp_agent, self.source_agent, self.source, uri))
@@ -101,18 +101,18 @@ class DiscourseElement(BibliographicEntity):
         """Provides the textual and semantic context of the in-text reference pointer
         that appears within the discourse element.
         """
-        self.g.add((self.res, GraphEntity.is_context_of, rp_res.res))
+        self.g.add((self.res, GraphEntity.iri_is_context_of, rp_res.res))
 
     @accepts_only('rp')
     def remove_context_of_rp(self, rp_res: ReferencePointer = None) -> None:
         if rp_res is not None:
-            self.g.remove((self.res, GraphEntity.is_context_of, rp_res.res))
+            self.g.remove((self.res, GraphEntity.iri_is_context_of, rp_res.res))
         else:
-            self.g.remove((self.res, GraphEntity.is_context_of, None))
+            self.g.remove((self.res, GraphEntity.iri_is_context_of, None))
 
     # IS CONTEXT OF (PointerList)
     def get_context_of_pl(self) -> List[PointerList]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.is_context_of)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of)
         result: List[PointerList] = []
         for uri in uri_list:
             result.append(self.g_set.add_pl(self.resp_agent, self.source_agent, self.source, uri))
@@ -123,40 +123,40 @@ class DiscourseElement(BibliographicEntity):
         """Provides the textual and semantic context of the list of
         in-text reference pointers that appears within the discourse element.
         """
-        self.g.add((self.res, GraphEntity.is_context_of, pl_res.res))
+        self.g.add((self.res, GraphEntity.iri_is_context_of, pl_res.res))
 
     @accepts_only('pl')
     def remove_context_of_pl(self, pl_res: PointerList = None) -> None:
         if pl_res is not None:
-            self.g.remove((self.res, GraphEntity.is_context_of, pl_res.res))
+            self.g.remove((self.res, GraphEntity.iri_is_context_of, pl_res.res))
         else:
-            self.g.remove((self.res, GraphEntity.is_context_of, None))
+            self.g.remove((self.res, GraphEntity.iri_is_context_of, None))
 
     # HAS CONTENT
     def get_content(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.has_content)
+        return self._get_literal(GraphEntity.iri_has_content)
 
     @accepts_only('literal')
     def has_content(self, string: str) -> None:
         """The literal document text contained by the discourse element.
         """
         self.remove_content()
-        self._create_literal(GraphEntity.has_content, string)
+        self._create_literal(GraphEntity.iri_has_content, string)
 
     def remove_content(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_content, None))
+        self.g.remove((self.res, GraphEntity.iri_has_content, None))
 
     # HAS NUMBER
     def get_number(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.has_sequence_identifier)
+        return self._get_literal(GraphEntity.iri_has_sequence_identifier)
 
     @accepts_only('literal')
     def has_number(self, string: str) -> None:
         self.remove_number()
-        self._create_literal(GraphEntity.has_sequence_identifier, string)
+        self._create_literal(GraphEntity.iri_has_sequence_identifier, string)
 
     def remove_number(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_sequence_identifier, None))
+        self.g.remove((self.res, GraphEntity.iri_has_sequence_identifier, None))
 
     # HAS TYPE
     def get_types(self) -> List[URIRef]:
@@ -171,55 +171,55 @@ class DiscourseElement(BibliographicEntity):
         if de_class is not None:
             self._create_type(de_class)
         else:
-            self._create_type(GraphEntity.discourse_element)
+            self._create_type(GraphEntity.iri_discourse_element)
 
     def create_section(self) -> None:
         """The type of discourse element – such as “paragraph”, “section”, “sentence”,
         “acknowledgements”, “reference list” or “figure”.
         """
-        self._create_type(GraphEntity.section)
+        self._create_type(GraphEntity.iri_section)
 
     def create_section_title(self) -> None:
         """The type of discourse element – such as “paragraph”, “section”, “sentence”,
         “acknowledgements”, “reference list” or “figure”.
         """
-        self._create_type(GraphEntity.section_title)
+        self._create_type(GraphEntity.iri_section_title)
 
     def create_paragraph(self) -> None:
         """The type of discourse element – such as “paragraph”, “section”, “sentence”,
         “acknowledgements”, “reference list” or “figure”.
         """
-        self._create_type(GraphEntity.paragraph)
+        self._create_type(GraphEntity.iri_paragraph)
 
     def create_sentence(self) -> None:
         """The type of discourse element – such as “paragraph”, “section”, “sentence”,
         “acknowledgements”, “reference list” or “figure”.
         """
-        self._create_type(GraphEntity.sentence)
+        self._create_type(GraphEntity.iri_sentence)
 
     def create_text_chunk(self) -> None:
         """The type of discourse element – such as “paragraph”, “section”, “sentence”,
         “acknowledgements”, “reference list” or “figure”.
         """
-        self._create_type(GraphEntity.text_chunk)
+        self._create_type(GraphEntity.iri_text_chunk)
 
     def create_table(self) -> None:
         """The type of discourse element – such as “paragraph”, “section”, “sentence”,
         “acknowledgements”, “reference list” or “figure”.
         """
-        self._create_type(GraphEntity.table)
+        self._create_type(GraphEntity.iri_table)
 
     def create_footnote(self) -> None:
         """The type of discourse element – such as “paragraph”, “section”, “sentence”,
         “acknowledgements”, “reference list” or “figure”.
         """
-        self._create_type(GraphEntity.footnote)
+        self._create_type(GraphEntity.iri_footnote)
 
     def create_caption(self) -> None:
         """The type of discourse element – such as “paragraph”, “section”, “sentence”,
         “acknowledgements”, “reference list” or “figure”.
         """
-        self._create_type(GraphEntity.caption)
+        self._create_type(GraphEntity.iri_caption)
 
     @accepts_only('thing')
     def remove_type(self, type_ref: URIRef = None) -> None:

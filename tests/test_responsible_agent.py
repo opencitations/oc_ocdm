@@ -38,7 +38,7 @@ class TestResponsibleAgent(unittest.TestCase):
         result = self.ra.has_name(name)
         self.assertIsNone(result)
 
-        triple = self.ra.res, GraphEntity.name, Literal(name)
+        triple = self.ra.res, GraphEntity.iri_name, Literal(name)
         self.assertIn(triple, self.ra.g)
 
     def test_has_given_name(self):
@@ -46,7 +46,7 @@ class TestResponsibleAgent(unittest.TestCase):
         result = self.ra.has_given_name(given_name)
         self.assertIsNone(result)
 
-        triple = self.ra.res, GraphEntity.given_name, Literal(given_name)
+        triple = self.ra.res, GraphEntity.iri_given_name, Literal(given_name)
         self.assertIn(triple, self.ra.g)
 
     def test_has_family_name(self):
@@ -54,7 +54,7 @@ class TestResponsibleAgent(unittest.TestCase):
         result = self.ra.has_family_name(family_name)
         self.assertIsNone(result)
 
-        triple = self.ra.res, GraphEntity.family_name, Literal(family_name)
+        triple = self.ra.res, GraphEntity.iri_family_name, Literal(family_name)
         self.assertIn(triple, self.ra.g)
 
     def test_has_related_agent(self):
@@ -62,7 +62,7 @@ class TestResponsibleAgent(unittest.TestCase):
         result = self.ra.has_related_agent(related_agent)
         self.assertIsNone(result)
 
-        triple = self.ra.res, GraphEntity.relation, related_agent
+        triple = self.ra.res, GraphEntity.iri_relation, related_agent
         self.assertIn(triple, self.ra.g)
 
 

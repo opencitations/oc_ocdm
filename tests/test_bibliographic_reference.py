@@ -39,21 +39,21 @@ class TestBibliographicReference(unittest.TestCase):
         result = self.be.has_content(content)
         self.assertIsNone(result)
 
-        triple = self.be.res, GraphEntity.has_content, Literal(content)
+        triple = self.be.res, GraphEntity.iri_has_content, Literal(content)
         self.assertIn(triple, self.be.g)
 
     def test_has_annotation(self):
         result = self.be.has_annotation(self.an)
         self.assertIsNone(result)
 
-        triple = self.be.res, GraphEntity.has_annotation, self.an.res
+        triple = self.be.res, GraphEntity.iri_has_annotation, self.an.res
         self.assertIn(triple, self.be.g)
 
     def test_references(self):
         result = self.be.references_br(self.br)
         self.assertIsNone(result)
 
-        triple = self.be.res, GraphEntity.references, self.br.res
+        triple = self.be.res, GraphEntity.iri_references, self.br.res
         self.assertIn(triple, self.be.g)
 
 

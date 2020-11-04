@@ -33,7 +33,7 @@ class ResponsibleAgent(BibliographicEntity):
 
     # HAS NAME STRING
     def get_name(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.name)
+        return self._get_literal(GraphEntity.iri_name)
 
     @accepts_only('literal')
     def has_name(self, string: str) -> None:
@@ -41,42 +41,42 @@ class ResponsibleAgent(BibliographicEntity):
         name, separated by a space).
         """
         self.remove_name()
-        self._create_literal(GraphEntity.name, string)
+        self._create_literal(GraphEntity.iri_name, string)
 
     def remove_name(self) -> None:
-        self.g.remove((self.g, GraphEntity.name, None))
+        self.g.remove((self.g, GraphEntity.iri_name, None))
 
     # HAS GIVEN NAME
     def get_given_name(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.given_name)
+        return self._get_literal(GraphEntity.iri_given_name)
 
     @accepts_only('literal')
     def has_given_name(self, string: str) -> None:
         """The given name of an agent, if a person.
         """
         self.remove_given_name()
-        self._create_literal(GraphEntity.given_name, string)
+        self._create_literal(GraphEntity.iri_given_name, string)
 
     def remove_given_name(self) -> None:
-        self.g.remove((self.g, GraphEntity.given_name, None))
+        self.g.remove((self.g, GraphEntity.iri_given_name, None))
 
     # HAS FAMILY NAME
     def get_family_name(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.family_name)
+        return self._get_literal(GraphEntity.iri_family_name)
 
     @accepts_only('literal')
     def has_family_name(self, string: str) -> None:
         """The family name of an agent, if a person.
         """
         self.remove_family_name()
-        self._create_literal(GraphEntity.family_name, string)
+        self._create_literal(GraphEntity.iri_family_name, string)
 
     def remove_family_name(self) -> None:
-        self.g.remove((self.g, GraphEntity.family_name, None))
+        self.g.remove((self.g, GraphEntity.iri_family_name, None))
 
     # HAS RELATED AGENT
     def get_related_agents(self) -> List[URIRef]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.relation)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_relation)
         return uri_list
 
     @accepts_only('thing')
@@ -84,11 +84,11 @@ class ResponsibleAgent(BibliographicEntity):
         """An external agent that/who is related in some relevant way with this responsible agent
         (e.g. for inter-linking purposes).
         """
-        self.g.add((self.res, GraphEntity.relation, thing_ref))
+        self.g.add((self.res, GraphEntity.iri_relation, thing_ref))
 
     @accepts_only('thing')
     def remove_related_agent(self, thing_ref: URIRef = None) -> None:
         if thing_ref is not None:
-            self.g.remove((self.res, GraphEntity.relation, thing_ref))
+            self.g.remove((self.res, GraphEntity.iri_relation, thing_ref))
         else:
-            self.g.remove((self.res, GraphEntity.relation, None))
+            self.g.remove((self.res, GraphEntity.iri_relation, None))

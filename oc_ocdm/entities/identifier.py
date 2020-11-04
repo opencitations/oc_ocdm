@@ -41,76 +41,76 @@ class Identifier(GraphEntity):
 
     # HAS LITERAL VALUE and HAS SCHEME
     def get_literal_value(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.has_literal_value)
+        return self._get_literal(GraphEntity.iri_has_literal_value)
 
     def get_scheme(self) -> Optional[URIRef]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.uses_identifier_scheme)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_uses_identifier_scheme)
         return uri
 
     @accepts_only('literal')
     def create_oci(self, string: str) -> None:
-        self._associate_identifier_with_scheme(string, GraphEntity.oci)
+        self._associate_identifier_with_scheme(string, GraphEntity.iri_oci)
 
     @accepts_only('literal')
     def create_orcid(self, string: str) -> None:
-        self._associate_identifier_with_scheme(string, GraphEntity.orcid)
+        self._associate_identifier_with_scheme(string, GraphEntity.iri_orcid)
 
     @accepts_only('literal')
     def create_doi(self, string: str) -> None:
-        self._associate_identifier_with_scheme(string.lower(), GraphEntity.doi)
+        self._associate_identifier_with_scheme(string.lower(), GraphEntity.iri_doi)
 
     @accepts_only('literal')
     def create_pmid(self, string: str) -> None:
-        self._associate_identifier_with_scheme(string, GraphEntity.pmid)
+        self._associate_identifier_with_scheme(string, GraphEntity.iri_pmid)
 
     @accepts_only('literal')
     def create_pmcid(self, string: str) -> None:
-        self._associate_identifier_with_scheme(string, GraphEntity.pmcid)
+        self._associate_identifier_with_scheme(string, GraphEntity.iri_pmcid)
 
     @accepts_only('literal')
     def create_issn(self, string: str) -> None:
         cur_string = re.sub("–", "-", string)
         if cur_string != "0000-0000":
-            self._associate_identifier_with_scheme(string, GraphEntity.issn)
+            self._associate_identifier_with_scheme(string, GraphEntity.iri_issn)
 
     @accepts_only('literal')
     def create_isbn(self, string: str) -> None:
-        self._associate_identifier_with_scheme(re.sub("–", "-", string), GraphEntity.isbn)
+        self._associate_identifier_with_scheme(re.sub("–", "-", string), GraphEntity.iri_isbn)
 
     @accepts_only('literal')
     def create_url(self, string: str) -> None:
-        self._associate_identifier_with_scheme(encode_url(string.lower()), GraphEntity.url)
+        self._associate_identifier_with_scheme(encode_url(string.lower()), GraphEntity.iri_url)
 
     @accepts_only('literal')
     def create_xpath(self, string: str) -> None:
-        self._associate_identifier_with_scheme(string, GraphEntity.xpath)
+        self._associate_identifier_with_scheme(string, GraphEntity.iri_xpath)
 
     @accepts_only('literal')
     def create_intrepid(self, string: str) -> None:
-        self._associate_identifier_with_scheme(string, GraphEntity.intrepid)
+        self._associate_identifier_with_scheme(string, GraphEntity.iri_intrepid)
 
     @accepts_only('literal')
     def create_xmlid(self, string: str) -> None:
-        self._associate_identifier_with_scheme(string, GraphEntity.xmlid)
+        self._associate_identifier_with_scheme(string, GraphEntity.iri_xmlid)
 
     @accepts_only('literal')
     def create_wikidata(self, string: str) -> None:
-        self._associate_identifier_with_scheme(string, GraphEntity.wikidata)
+        self._associate_identifier_with_scheme(string, GraphEntity.iri_wikidata)
 
     @accepts_only('literal')
     def create_crossref(self, string: str) -> None:
-        self._associate_identifier_with_scheme(string, GraphEntity.crossref)
+        self._associate_identifier_with_scheme(string, GraphEntity.iri_crossref)
 
     @accepts_only('literal')
     def create_viaf(self, string: str) -> None:
-        self._associate_identifier_with_scheme(string, GraphEntity.viaf)
+        self._associate_identifier_with_scheme(string, GraphEntity.iri_viaf)
 
     def _associate_identifier_with_scheme(self, string: str, id_type: URIRef) -> None:
         if not is_string_empty(string):
             self.remove_identifier_with_scheme()
-            self._create_literal(GraphEntity.has_literal_value, string)
-            self.g.add((self.res, GraphEntity.uses_identifier_scheme, id_type))
+            self._create_literal(GraphEntity.iri_has_literal_value, string)
+            self.g.add((self.res, GraphEntity.iri_uses_identifier_scheme, id_type))
 
     def remove_identifier_with_scheme(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_literal_value, None))
-        self.g.remove((self.res, GraphEntity.uses_identifier_scheme, None))
+        self.g.remove((self.res, GraphEntity.iri_has_literal_value, None))
+        self.g.remove((self.res, GraphEntity.iri_uses_identifier_scheme, None))

@@ -38,7 +38,7 @@ class ReferenceAnnotation(BibliographicEntity):
 
     # HAS CITATION (Citation)
     def get_body_annotation(self) -> Optional[Citation]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.has_body)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_body)
         if uri is not None:
             return self.g_set.add_ci(self.resp_agent, self.source_agent, self.source, uri)
 
@@ -48,7 +48,7 @@ class ReferenceAnnotation(BibliographicEntity):
         reference or to an in-text reference pointer that denotes such a bibliographic reference.
         """
         self.remove_body_annotation()
-        self.g.add((self.res, GraphEntity.has_body, ci_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_body, ci_res.res))
 
     def remove_body_annotation(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_body, None))
+        self.g.remove((self.res, GraphEntity.iri_has_body, None))

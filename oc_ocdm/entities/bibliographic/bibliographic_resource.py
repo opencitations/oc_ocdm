@@ -37,35 +37,35 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS TITLE
     def get_title(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.title)
+        return self._get_literal(GraphEntity.iri_title)
 
     @accepts_only('literal')
     def has_title(self, string: str) -> None:
         """The title of the bibliographic resource.
         """
         self.remove_title()
-        self._create_literal(GraphEntity.title, string)
+        self._create_literal(GraphEntity.iri_title, string)
 
     def remove_title(self) -> None:
-        self.g.remove((self.res, GraphEntity.title, None))
+        self.g.remove((self.res, GraphEntity.iri_title, None))
 
     # HAS SUBTITLE
     def get_subtitle(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.has_subtitle)
+        return self._get_literal(GraphEntity.iri_has_subtitle)
 
     @accepts_only('literal')
     def has_subtitle(self, string: str) -> None:
         """The subtitle of the bibliographic resource.
         """
         self.remove_subtitle()
-        self._create_literal(GraphEntity.has_subtitle, string)
+        self._create_literal(GraphEntity.iri_has_subtitle, string)
 
     def remove_subtitle(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_subtitle, None))
+        self.g.remove((self.res, GraphEntity.iri_has_subtitle, None))
 
     # IS PART OF (BibliographicResource)
     def get_part_of(self) -> Optional[BibliographicResource]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.part_of)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_part_of)
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source_agent, self.source, uri)
 
@@ -75,14 +75,14 @@ class BibliographicResource(BibliographicEntity):
         conference proceedings) that contains the subject bibliographic resource.
         """
         self.remove_part_of()
-        self.g.add((self.res, GraphEntity.part_of, br_res.res))
+        self.g.add((self.res, GraphEntity.iri_part_of, br_res.res))
 
     def remove_part_of(self) -> None:
-        self.g.remove((self.res, GraphEntity.part_of, None))
+        self.g.remove((self.res, GraphEntity.iri_part_of, None))
 
     # CITES (BibliographicResource)
     def get_citations(self) -> List[BibliographicResource]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.cites)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_cites)
         result: List[BibliographicResource] = []
         for uri in uri_list:
             result.append(self.g_set.add_br(self.resp_agent, self.source_agent, self.source, uri))
@@ -93,18 +93,18 @@ class BibliographicResource(BibliographicEntity):
         """The corpus identifier of the bibliographic resource cited by the subject bibliographic
         resource.
         """
-        self.g.add((self.res, GraphEntity.cites, br_res.res))
+        self.g.add((self.res, GraphEntity.iri_cites, br_res.res))
 
     @accepts_only('br')
     def remove_citation(self, br_res: BibliographicResource = None) -> None:
         if br_res is not None:
-            self.g.remove((self.res, GraphEntity.cites, br_res.res))
+            self.g.remove((self.res, GraphEntity.iri_cites, br_res.res))
         else:
-            self.g.remove((self.res, GraphEntity.cites, None))
+            self.g.remove((self.res, GraphEntity.iri_cites, None))
 
     # HAS PUBLICATION DATE
     def get_pub_date(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.has_publication_date)
+        return self._get_literal(GraphEntity.iri_has_publication_date)
 
     @accepts_only('literal')
     def has_pub_date(self, string: str) -> None:
@@ -113,14 +113,14 @@ class BibliographicResource(BibliographicEntity):
         cur_type, string = get_datatype_from_iso_8601(string)
         if cur_type is not None and string is not None:
             self.remove_pub_date()
-            self._create_literal(GraphEntity.has_publication_date, string, cur_type, False)
+            self._create_literal(GraphEntity.iri_has_publication_date, string, cur_type, False)
 
     def remove_pub_date(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_publication_date, None))
+        self.g.remove((self.res, GraphEntity.iri_has_publication_date, None))
 
     # IS EMBODIED AS (ResourceEmbodiment)
     def get_formats(self) -> List[ResourceEmbodiment]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.embodiment)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_embodiment)
         result: List[ResourceEmbodiment] = []
         for uri in uri_list:
             result.append(self.g_set.add_re(self.resp_agent, self.source_agent, self.source, uri))
@@ -131,18 +131,18 @@ class BibliographicResource(BibliographicEntity):
         """The corpus identifier of the resource embodiment defining the format in which the
         bibliographic resource has been embodied, which can be either print or digital.
         """
-        self.g.add((self.res, GraphEntity.embodiment, re_res.res))
+        self.g.add((self.res, GraphEntity.iri_embodiment, re_res.res))
 
     @accepts_only('re')
     def remove_format(self, re_res: ResourceEmbodiment = None):
         if re_res is not None:
-            self.g.remove((self.res, GraphEntity.embodiment, re_res.res))
+            self.g.remove((self.res, GraphEntity.iri_embodiment, re_res.res))
         else:
-            self.g.remove((self.res, GraphEntity.embodiment, None))
+            self.g.remove((self.res, GraphEntity.iri_embodiment, None))
 
     # HAS NUMBER
     def get_number(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.has_sequence_identifier)
+        return self._get_literal(GraphEntity.iri_has_sequence_identifier)
 
     @accepts_only('literal')
     def has_number(self, string: str) -> None:
@@ -152,14 +152,14 @@ class BibliographicResource(BibliographicEntity):
         a book).
         """
         self.remove_number()
-        self._create_literal(GraphEntity.has_sequence_identifier, string)
+        self._create_literal(GraphEntity.iri_has_sequence_identifier, string)
 
     def remove_number(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_sequence_identifier, None))
+        self.g.remove((self.res, GraphEntity.iri_has_sequence_identifier, None))
 
     # HAS EDITION
     def get_edition(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.has_edition)
+        return self._get_literal(GraphEntity.iri_has_edition)
 
     @accepts_only('literal')
     def has_edition(self, string: str) -> None:
@@ -167,14 +167,14 @@ class BibliographicResource(BibliographicEntity):
         resource.
         """
         self.remove_edition()
-        self._create_literal(GraphEntity.has_edition, string)
+        self._create_literal(GraphEntity.iri_has_edition, string)
 
     def remove_edition(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_edition, None))
+        self.g.remove((self.res, GraphEntity.iri_has_edition, None))
 
     # HAS PART (BibliographicReference)
     def get_in_reference_lists(self) -> List[BibliographicReference]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.contains_reference)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_reference)
         result: List[BibliographicReference] = []
         for uri in uri_list:
             result.append(self.g_set.add_be(self.resp_agent, self.source_agent, self.source, uri))
@@ -185,18 +185,18 @@ class BibliographicResource(BibliographicEntity):
         """A bibliographic reference within the bibliographic resource, or a discourse element
         wherein the text of the bibliographic resources can be organized.
         """
-        self.g.add((self.res, GraphEntity.contains_reference, be_res.res))
+        self.g.add((self.res, GraphEntity.iri_contains_reference, be_res.res))
 
     @accepts_only('be')
     def remove_in_reference_list(self, be_res: BibliographicReference = None) -> None:
         if be_res is not None:
-            self.g.remove((self.res, GraphEntity.contains_reference, be_res.res))
+            self.g.remove((self.res, GraphEntity.iri_contains_reference, be_res.res))
         else:
-            self.g.remove((self.res, GraphEntity.contains_reference, None))
+            self.g.remove((self.res, GraphEntity.iri_contains_reference, None))
 
     # HAS PART (DiscourseElement)
     def get_discourse_elements(self) -> List[DiscourseElement]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.contains_de)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_de)
         result: List[DiscourseElement] = []
         for uri in uri_list:
             result.append(self.g_set.add_de(self.resp_agent, self.source_agent, self.source, uri))
@@ -207,18 +207,18 @@ class BibliographicResource(BibliographicEntity):
         """A bibliographic reference within the bibliographic resource, or a discourse element
         wherein the text of the bibliographic resources can be organized.
         """
-        self.g.add((self.res, GraphEntity.contains_de, de_res.res))
+        self.g.add((self.res, GraphEntity.iri_contains_de, de_res.res))
 
     @accepts_only('de')
     def remove_discourse_element(self, de_res: DiscourseElement = None) -> None:
         if de_res is not None:
-            self.g.remove((self.res, GraphEntity.contains_de, de_res.res))
+            self.g.remove((self.res, GraphEntity.iri_contains_de, de_res.res))
         else:
-            self.g.remove((self.res, GraphEntity.contains_de, None))
+            self.g.remove((self.res, GraphEntity.iri_contains_de, None))
 
     # HAS CONTRIBUTOR (AgentRole)
     def get_contributors(self) -> List[AgentRole]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.is_document_context_for)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_document_context_for)
         result: List[AgentRole] = []
         for uri in uri_list:
             result.append(self.g_set.add_ar(self.resp_agent, self.source_agent, self.source, uri))
@@ -226,18 +226,18 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('ar')
     def has_contributor(self, ar_res: AgentRole):
-        self.g.add((self.res, GraphEntity.is_document_context_for, ar_res.res))
+        self.g.add((self.res, GraphEntity.iri_is_document_context_for, ar_res.res))
 
     @accepts_only('ar')
     def remove_contributor(self, ar_res: AgentRole = None):
         if ar_res is not None:
-            self.g.remove((self.res, GraphEntity.is_document_context_for, ar_res.res))
+            self.g.remove((self.res, GraphEntity.iri_is_document_context_for, ar_res.res))
         else:
-            self.g.remove((self.res, GraphEntity.is_document_context_for, None))
+            self.g.remove((self.res, GraphEntity.iri_is_document_context_for, None))
 
     # HAS RELATED DOCUMENT
     def get_related_documents(self) -> List[URIRef]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.relation)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_relation)
         return uri_list
 
     @accepts_only('thing')
@@ -246,14 +246,14 @@ class BibliographicResource(BibliographicEntity):
         as a version of the bibliographic resource – for example a preprint – recorded in an
         external database).
         """
-        self.g.add((self.res, GraphEntity.relation, thing_ref))
+        self.g.add((self.res, GraphEntity.iri_relation, thing_ref))
 
     @accepts_only('thing')
     def remove_related_document(self, thing_ref: URIRef = None) -> None:
         if thing_ref is not None:
-            self.g.remove((self.res, GraphEntity.relation, thing_ref))
+            self.g.remove((self.res, GraphEntity.iri_relation, thing_ref))
         else:
-            self.g.remove((self.res, GraphEntity.relation, None))
+            self.g.remove((self.res, GraphEntity.iri_relation, None))
 
     # HAS TYPE
     def get_types(self) -> List[URIRef]:
@@ -263,142 +263,142 @@ class BibliographicResource(BibliographicEntity):
     def create_archival_document(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.archival_document)
+        self._create_type(GraphEntity.iri_archival_document)
 
     def create_book(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.book)
+        self._create_type(GraphEntity.iri_book)
 
     def create_book_chapter(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.book_chapter)
+        self._create_type(GraphEntity.iri_book_chapter)
 
     def create_book_part(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.part)
+        self._create_type(GraphEntity.iri_part)
 
     def create_book_section(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.expression_collection)
+        self._create_type(GraphEntity.iri_expression_collection)
 
     def create_book_series(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.book_series)
+        self._create_type(GraphEntity.iri_book_series)
 
     def create_book_set(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.book_set)
+        self._create_type(GraphEntity.iri_book_set)
 
     def create_book_track(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.expression)
+        self._create_type(GraphEntity.iri_expression)
 
     def create_component(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.expression)
+        self._create_type(GraphEntity.iri_expression)
 
     def create_dataset(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.data_file)
+        self._create_type(GraphEntity.iri_data_file)
 
     def create_dissertation(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.thesis)
+        self._create_type(GraphEntity.iri_thesis)
 
     def create_edited_book(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.book)
+        self._create_type(GraphEntity.iri_book)
 
     def create_journal_article(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.journal_article)
+        self._create_type(GraphEntity.iri_journal_article)
 
     def create_issue(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.journal_issue)
+        self._create_type(GraphEntity.iri_journal_issue)
 
     def create_volume(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.journal_volume)
+        self._create_type(GraphEntity.iri_journal_volume)
 
     def create_journal(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.journal)
+        self._create_type(GraphEntity.iri_journal)
 
     def create_monograph(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.book)
+        self._create_type(GraphEntity.iri_book)
 
     def create_proceedings_article(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.proceedings_paper)
+        self._create_type(GraphEntity.iri_proceedings_paper)
 
     def create_proceedings(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.academic_proceedings)
+        self._create_type(GraphEntity.iri_academic_proceedings)
 
     def create_reference_book(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.reference_book)
+        self._create_type(GraphEntity.iri_reference_book)
 
     def create_reference_entry(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.reference_entry)
+        self._create_type(GraphEntity.iri_reference_entry)
 
     def create_report_series(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.series)
+        self._create_type(GraphEntity.iri_series)
 
     def create_report(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.report_document)
+        self._create_type(GraphEntity.iri_report_document)
 
     def create_standard_series(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.series)
+        self._create_type(GraphEntity.iri_series)
 
     def create_standard(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.specification_document)
+        self._create_type(GraphEntity.iri_specification_document)
 
     def create_series(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.series)
+        self._create_type(GraphEntity.iri_series)
 
     def create_expression_collection(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.expression_collection)
+        self._create_type(GraphEntity.iri_expression_collection)
 
     def create_other(self) -> None:
         """The type of the bibliographic resource
         """
-        self._create_type(GraphEntity.expression)
+        self._create_type(GraphEntity.iri_expression)
 
     @accepts_only('thing')
     def remove_type(self, type_ref: URIRef = None) -> None:

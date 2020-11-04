@@ -47,28 +47,28 @@ class ProvEntity(GraphEntity):
     PROV: ClassVar[Namespace] = Namespace("http://www.w3.org/ns/prov#")
 
     # Exclusive provenance entities
-    prov_agent: ClassVar[URIRef] = PROV.Agent
-    entity: ClassVar[URIRef] = PROV.Entity
-    activity: ClassVar[URIRef] = PROV.Activity
-    create: ClassVar[URIRef] = PROV.Create
-    modify: ClassVar[URIRef] = PROV.Modify
-    replace: ClassVar[URIRef] = PROV.Replace
-    association: ClassVar[URIRef] = PROV.Association
-    generated_at_time: ClassVar[URIRef] = PROV.generatedAtTime
-    invalidated_at_time: ClassVar[URIRef] = PROV.invalidatedAtTime
-    specialization_of: ClassVar[URIRef] = PROV.specializationOf
-    was_derived_from: ClassVar[URIRef] = PROV.wasDerivedFrom
-    had_primary_source: ClassVar[URIRef] = PROV.hadPrimarySource
-    was_generated_by: ClassVar[URIRef] = PROV.wasGeneratedBy
-    was_attributed_to: ClassVar[URIRef] = PROV.wasAttributedTo
-    was_invalidated_by: ClassVar[URIRef] = PROV.wasInvalidatedBy
-    qualified_association: ClassVar[URIRef] = PROV.qualifiedAssociation
-    description: ClassVar[URIRef] = GraphEntity.DCTERMS.description
-    has_update_query: ClassVar[URIRef] = GraphEntity.OCO.hasUpdateQuery
-    had_role: ClassVar[URIRef] = PROV.hadRole
-    associated_agent: ClassVar[URIRef] = PROV.agent
-    curator: ClassVar[URIRef] = GraphEntity.OCO["occ-curator"]
-    source_provider: ClassVar[URIRef] = GraphEntity.OCO["source-metadata-provider"]
+    iri_prov_agent: ClassVar[URIRef] = PROV.Agent
+    iri_entity: ClassVar[URIRef] = PROV.Entity
+    iri_activity: ClassVar[URIRef] = PROV.Activity
+    iri_create: ClassVar[URIRef] = PROV.Create
+    iri_modify: ClassVar[URIRef] = PROV.Modify
+    iri_replace: ClassVar[URIRef] = PROV.Replace
+    iri_association: ClassVar[URIRef] = PROV.Association
+    iri_generated_at_time: ClassVar[URIRef] = PROV.generatedAtTime
+    iri_invalidated_at_time: ClassVar[URIRef] = PROV.invalidatedAtTime
+    iri_specialization_of: ClassVar[URIRef] = PROV.specializationOf
+    iri_was_derived_from: ClassVar[URIRef] = PROV.wasDerivedFrom
+    iri_had_primary_source: ClassVar[URIRef] = PROV.hadPrimarySource
+    iri_was_generated_by: ClassVar[URIRef] = PROV.wasGeneratedBy
+    iri_was_attributed_to: ClassVar[URIRef] = PROV.wasAttributedTo
+    iri_was_invalidated_by: ClassVar[URIRef] = PROV.wasInvalidatedBy
+    iri_qualified_association: ClassVar[URIRef] = PROV.qualifiedAssociation
+    iri_description: ClassVar[URIRef] = GraphEntity.DCTERMS.description
+    iri_has_update_query: ClassVar[URIRef] = GraphEntity.OCO.hasUpdateQuery
+    iri_had_role: ClassVar[URIRef] = PROV.hadRole
+    iri_associated_agent: ClassVar[URIRef] = PROV.agent
+    iri_curator: ClassVar[URIRef] = GraphEntity.OCO["occ-curator"]
+    iri_source_provider: ClassVar[URIRef] = GraphEntity.OCO["source-metadata-provider"]
 
     def __init__(self, prov_subject: GraphEntity, g: Graph, res: URIRef = None, res_type: URIRef = None,
                  resp_agent: str = None, source_agent: str = None, source: str = None, count: str = None,
@@ -83,7 +83,7 @@ class ProvEntity(GraphEntity):
 
     # HAS CREATION DATE
     def get_generation_date(self) -> Optional[str]:
-        return self._get_literal(ProvEntity.generated_at_time)
+        return self._get_literal(ProvEntity.iri_generated_at_time)
 
     @accepts_only('literal')
     def has_generation_time(self, string: str) -> None:
@@ -91,14 +91,14 @@ class ProvEntity(GraphEntity):
         created.
         """
         self.remove_generation_time()
-        self._create_literal(ProvEntity.generated_at_time, string, XSD.dateTime)
+        self._create_literal(ProvEntity.iri_generated_at_time, string, XSD.dateTime)
 
     def remove_generation_time(self) -> None:
-        self.g.remove((self.res, ProvEntity.generated_at_time, None))
+        self.g.remove((self.res, ProvEntity.iri_generated_at_time, None))
 
     # HAS INVALIDATION DATE
     def get_invalidation_date(self) -> Optional[str]:
-        return self._get_literal(ProvEntity.invalidated_at_time)
+        return self._get_literal(ProvEntity.iri_invalidated_at_time)
 
     @accepts_only('literal')
     def has_invalidation_time(self, string: str) -> None:
@@ -107,14 +107,14 @@ class ProvEntity(GraphEntity):
         in the previous snapshot), or due to a merger of the entity with another one.
         """
         self.remove_invalidation_time()
-        self._create_literal(ProvEntity.invalidated_at_time, string, XSD.dateTime)
+        self._create_literal(ProvEntity.iri_invalidated_at_time, string, XSD.dateTime)
 
     def remove_invalidation_time(self) -> None:
-        self.g.remove((self.res, ProvEntity.invalidated_at_time, None))
+        self.g.remove((self.res, ProvEntity.iri_invalidated_at_time, None))
 
     # IS SNAPSHOT OF
     def get_snapshot_of(self) -> Optional[URIRef]:
-        uri: Optional[URIRef] = self._get_uri_reference(ProvEntity.specialization_of)
+        uri: Optional[URIRef] = self._get_uri_reference(ProvEntity.iri_specialization_of)
         return uri
 
     def snapshot_of(self, en_res: GraphEntity) -> None:
@@ -122,14 +122,14 @@ class ProvEntity(GraphEntity):
         to which the snapshot refers.
         """
         self.remove_snapshot_of()
-        self.g.add((self.res, ProvEntity.specialization_of, en_res.res))
+        self.g.add((self.res, ProvEntity.iri_specialization_of, en_res.res))
 
     def remove_snapshot_of(self) -> None:
-        self.g.remove((self.res, ProvEntity.specialization_of, None))
+        self.g.remove((self.res, ProvEntity.iri_specialization_of, None))
 
     # IS DERIVED FROM
     def get_derives_from(self) -> List[ProvEntity]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(ProvEntity.was_derived_from)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(ProvEntity.iri_was_derived_from)
         result: List[ProvEntity] = []
         for uri in uri_list:
             result.append(self.g_set.add_se(self.resp_agent, self.source_agent, self.source, uri))
@@ -140,18 +140,18 @@ class ProvEntity(GraphEntity):
         """This property is used to identify the immediately previous snapshot of entity metadata
         associated with the same bibliographic entity.
         """
-        self.g.add((self.res, ProvEntity.was_derived_from, se_res.res))
+        self.g.add((self.res, ProvEntity.iri_was_derived_from, se_res.res))
 
     @accepts_only('se')
     def remove_derives_from(self, se_res: ProvEntity = None) -> None:
         if se_res is not None:
-            self.g.remove((self.res, ProvEntity.was_derived_from, se_res.res))
+            self.g.remove((self.res, ProvEntity.iri_was_derived_from, se_res.res))
         else:
-            self.g.remove((self.res, ProvEntity.was_derived_from, None))
+            self.g.remove((self.res, ProvEntity.iri_was_derived_from, None))
 
     # HAS PRIMARY SOURCE
     def get_primary_source(self) -> Optional[URIRef]:
-        uri: Optional[URIRef] = self._get_uri_reference(ProvEntity.had_primary_source)
+        uri: Optional[URIRef] = self._get_uri_reference(ProvEntity.iri_had_primary_source)
         return uri
 
     @accepts_only('thing')
@@ -161,14 +161,14 @@ class ProvEntity(GraphEntity):
         CrossRef API).
         """
         self.remove_primary_source()
-        self.g.add((self.res, ProvEntity.had_primary_source, any_res))
+        self.g.add((self.res, ProvEntity.iri_had_primary_source, any_res))
 
     def remove_primary_source(self) -> None:
-        self.g.remove((self.res, ProvEntity.had_primary_source, None))
+        self.g.remove((self.res, ProvEntity.iri_had_primary_source, None))
 
     # HAS UPDATE ACTION
     def get_update_action(self) -> Optional[str]:
-        return self._get_literal(ProvEntity.has_update_query)
+        return self._get_literal(ProvEntity.iri_has_update_query)
 
     @accepts_only('literal')
     def has_update_action(self, string: str) -> None:
@@ -177,14 +177,14 @@ class ProvEntity(GraphEntity):
         current snapshot starting from those associated to the previous snapshot of the entity.
         """
         self.remove_update_action()
-        self._create_literal(ProvEntity.has_update_query, string)
+        self._create_literal(ProvEntity.iri_has_update_query, string)
 
     def remove_update_action(self) -> None:
-        self.g.remove((self.res, ProvEntity.has_update_query, None))
+        self.g.remove((self.res, ProvEntity.iri_has_update_query, None))
 
     # HAS DESCRIPTION
     def get_description(self) -> Optional[str]:
-        return self._get_literal(ProvEntity.description)
+        return self._get_literal(ProvEntity.iri_description)
 
     @accepts_only('literal')
     def has_description(self, string: str) -> None:
@@ -195,14 +195,14 @@ class ProvEntity(GraphEntity):
         snapshot related).
         """
         self.remove_description()
-        self._create_literal(ProvEntity.description, string)
+        self._create_literal(ProvEntity.iri_description, string)
 
     def remove_description(self) -> None:
-        self.g.remove((self.res, ProvEntity.description, None))
+        self.g.remove((self.res, ProvEntity.iri_description, None))
 
     # IS ATTRIBUTED TO
     def get_resp_agent(self) -> Optional[URIRef]:
-        uri: Optional[URIRef] = self._get_uri_reference(ProvEntity.was_attributed_to)
+        uri: Optional[URIRef] = self._get_uri_reference(ProvEntity.iri_was_attributed_to)
         return uri
 
     @accepts_only('thing')
@@ -210,10 +210,10 @@ class ProvEntity(GraphEntity):
         """The agent responsible for the creation of the current entity snapshot.
         """
         self.remove_resp_agent()
-        self.g.add((self.res, ProvEntity.was_attributed_to, se_agent))
+        self.g.add((self.res, ProvEntity.iri_was_attributed_to, se_agent))
 
     def remove_resp_agent(self) -> None:
-        self.g.remove((self.res, ProvEntity.was_attributed_to, None))
+        self.g.remove((self.res, ProvEntity.iri_was_attributed_to, None))
 
     # HAS TYPE
     def get_types(self) -> List[URIRef]:
@@ -221,13 +221,13 @@ class ProvEntity(GraphEntity):
         return uri_list
 
     def create_creation_activity(self) -> None:
-        self._create_type(ProvEntity.create)
+        self._create_type(ProvEntity.iri_create)
 
     def create_update_activity(self) -> None:
-        self._create_type(ProvEntity.modify)
+        self._create_type(ProvEntity.iri_modify)
 
     def create_merging_activity(self) -> None:
-        self._create_type(ProvEntity.replace)
+        self._create_type(ProvEntity.iri_replace)
 
     @accepts_only('thing')
     def remove_type(self, type_ref: URIRef = None) -> None:
@@ -239,20 +239,20 @@ class ProvEntity(GraphEntity):
 
     @accepts_only('se')
     def generates(self, se_res: ProvEntity) -> None:
-        se_res.g.add((se_res.res, ProvEntity.was_generated_by, self.res))
+        se_res.g.add((se_res.res, ProvEntity.iri_was_generated_by, self.res))
 
     @accepts_only('se')
     def invalidates(self, se_res: ProvEntity) -> None:
-        se_res.g.add((se_res.res, ProvEntity.was_invalidated_by, self.res))
+        se_res.g.add((se_res.res, ProvEntity.iri_was_invalidated_by, self.res))
 
     @accepts_only('thing')
     def involves_agent_with_role(self, cr_res: URIRef) -> None:
-        self.g.add((self.res, ProvEntity.qualified_association, cr_res))
+        self.g.add((self.res, ProvEntity.iri_qualified_association, cr_res))
 
     @accepts_only('thing')
     def has_role_type(self, any_res: URIRef) -> None:
-        self.g.add((self.res, ProvEntity.had_role, any_res))
+        self.g.add((self.res, ProvEntity.iri_had_role, any_res))
 
     @accepts_only('ra')
     def has_role_in(self, ca_res: ResponsibleAgent) -> None:
-        ca_res.g.add((ca_res.res, ProvEntity.associated_agent, self.res))
+        ca_res.g.add((ca_res.res, ProvEntity.iri_associated_agent, self.res))

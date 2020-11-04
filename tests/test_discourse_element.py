@@ -40,35 +40,35 @@ class TestDiscourseElement(unittest.TestCase):
         result = self.de1.has_title(title)
         self.assertIsNone(result)
 
-        triple = self.de1.res, GraphEntity.title, Literal(title)
+        triple = self.de1.res, GraphEntity.iri_title, Literal(title)
         self.assertIn(triple, self.de1.g)
 
     def test_contains_discourse_element(self):
         result = self.de1.contains_discourse_element(self.de2)
         self.assertIsNone(result)
 
-        triple = self.de1.res, GraphEntity.contains_de, self.de2.res
+        triple = self.de1.res, GraphEntity.iri_contains_de, self.de2.res
         self.assertIn(triple, self.de1.g)
 
     def test_has_next_de(self):
         result = self.de1.has_next_de(self.de2)
         self.assertIsNone(result)
 
-        triple = self.de1.res, GraphEntity.has_next, self.de2.res
+        triple = self.de1.res, GraphEntity.iri_has_next, self.de2.res
         self.assertIn(triple, self.de1.g)
 
     def test_is_context_of_rp(self):
         result = self.de1.is_context_of_rp(self.rp)
         self.assertIsNone(result)
 
-        triple = self.de1.res, GraphEntity.is_context_of, self.rp.res
+        triple = self.de1.res, GraphEntity.iri_is_context_of, self.rp.res
         self.assertIn(triple, self.de1.g)
 
     def test_is_context_of_pl(self):
         result = self.de1.is_context_of_pl(self.pl)
         self.assertIsNone(result)
 
-        triple = self.de1.res, GraphEntity.is_context_of, self.pl.res
+        triple = self.de1.res, GraphEntity.iri_is_context_of, self.pl.res
         self.assertIn(triple, self.de1.g)
 
     def test_has_content(self):
@@ -76,63 +76,63 @@ class TestDiscourseElement(unittest.TestCase):
         result = self.de1.has_content(content)
         self.assertIsNone(result)
 
-        triple = self.de1.res, GraphEntity.has_content, Literal(content)
+        triple = self.de1.res, GraphEntity.iri_has_content, Literal(content)
         self.assertIn(triple, self.de1.g)
 
     def test_create_section(self):
         result = self.de1.create_section()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, GraphEntity.section
+        triple = self.de1.res, RDF.type, GraphEntity.iri_section
         self.assertIn(triple, self.de1.g)
 
     def test_create_section_title(self):
         result = self.de1.create_section_title()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, GraphEntity.section_title
+        triple = self.de1.res, RDF.type, GraphEntity.iri_section_title
         self.assertIn(triple, self.de1.g)
 
     def test_create_paragraph(self):
         result = self.de1.create_paragraph()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, GraphEntity.paragraph
+        triple = self.de1.res, RDF.type, GraphEntity.iri_paragraph
         self.assertIn(triple, self.de1.g)
 
     def test_create_sentence(self):
         result = self.de1.create_sentence()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, GraphEntity.sentence
+        triple = self.de1.res, RDF.type, GraphEntity.iri_sentence
         self.assertIn(triple, self.de1.g)
 
     def test_create_text_chunk(self):
         result = self.de1.create_text_chunk()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, GraphEntity.text_chunk
+        triple = self.de1.res, RDF.type, GraphEntity.iri_text_chunk
         self.assertIn(triple, self.de1.g)
 
     def test_create_table(self):
         result = self.de1.create_table()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, GraphEntity.table
+        triple = self.de1.res, RDF.type, GraphEntity.iri_table
         self.assertIn(triple, self.de1.g)
 
     def test_create_footnote(self):
         result = self.de1.create_footnote()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, GraphEntity.footnote
+        triple = self.de1.res, RDF.type, GraphEntity.iri_footnote
         self.assertIn(triple, self.de1.g)
 
     def test_create_caption(self):
         result = self.de1.create_caption()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, GraphEntity.caption
+        triple = self.de1.res, RDF.type, GraphEntity.iri_caption
         self.assertIn(triple, self.de1.g)
 
 

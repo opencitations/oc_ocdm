@@ -37,7 +37,7 @@ class TestResourceEmbodiment(unittest.TestCase):
         result = self.re.has_media_type(media_type)
         self.assertIsNone(result)
 
-        triple = self.re.res, GraphEntity.has_format, media_type
+        triple = self.re.res, GraphEntity.iri_has_format, media_type
         self.assertIn(triple, self.re.g)
 
     def test_has_starting_page(self):
@@ -45,7 +45,7 @@ class TestResourceEmbodiment(unittest.TestCase):
         result = self.re.has_starting_page(starting_page)
         self.assertIsNone(result)
 
-        triple = self.re.res, GraphEntity.starting_page, Literal(starting_page)
+        triple = self.re.res, GraphEntity.iri_starting_page, Literal(starting_page)
         self.assertIn(triple, self.re.g)
 
     def test_has_ending_page(self):
@@ -53,7 +53,7 @@ class TestResourceEmbodiment(unittest.TestCase):
         result = self.re.has_ending_page(ending_page)
         self.assertIsNone(result)
 
-        triple = self.re.res, GraphEntity.ending_page, Literal(ending_page)
+        triple = self.re.res, GraphEntity.iri_ending_page, Literal(ending_page)
         self.assertIn(triple, self.re.g)
 
     def test_has_url(self):
@@ -61,21 +61,21 @@ class TestResourceEmbodiment(unittest.TestCase):
         result = self.re.has_url(url)
         self.assertIsNone(result)
 
-        triple = self.re.res, GraphEntity.has_url, url
+        triple = self.re.res, GraphEntity.iri_has_url, url
         self.assertIn(triple, self.re.g)
 
     def test_create_digital_embodiment(self):
         result = self.re.create_digital_embodiment()
         self.assertIsNone(result)
 
-        triple = self.re.res, RDF.type, GraphEntity.digital_manifestation
+        triple = self.re.res, RDF.type, GraphEntity.iri_digital_manifestation
         self.assertIn(triple, self.re.g)
 
     def test_create_print_embodiment(self):
         result = self.re.create_print_embodiment()
         self.assertIsNone(result)
 
-        triple = self.re.res, RDF.type, GraphEntity.print_object
+        triple = self.re.res, RDF.type, GraphEntity.iri_print_object
         self.assertIn(triple, self.re.g)
 
 

@@ -38,14 +38,14 @@ class TestCitation(unittest.TestCase):
         result = self.ci.has_citing_entity(self.br1)
         self.assertIsNone(result)
 
-        triple = self.ci.res, GraphEntity.has_citing_entity, self.br1.res
+        triple = self.ci.res, GraphEntity.iri_has_citing_entity, self.br1.res
         self.assertIn(triple, self.ci.g)
 
     def test_create_cited_entity(self):
         result = self.ci.has_cited_entity(self.br2)
         self.assertIsNone(result)
 
-        triple = self.ci.res, GraphEntity.has_cited_entity, self.br2.res
+        triple = self.ci.res, GraphEntity.iri_has_cited_entity, self.br2.res
         self.assertIn(triple, self.ci.g)
 
     def test_has_citation_creation_date(self):
@@ -55,7 +55,7 @@ class TestCitation(unittest.TestCase):
             result = self.ci.has_citation_creation_date(string)
             self.assertIsNone(result)
 
-            triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
+            triple = self.ci.res, GraphEntity.iri_has_citation_creation_date, Literal(string, datatype=datatype,
                                                                                       normalize=False)
             self.assertIn(triple, self.ci.g)
         with self.subTest("date is '2020-05'"):
@@ -64,7 +64,7 @@ class TestCitation(unittest.TestCase):
             result = self.ci.has_citation_creation_date(string)
             self.assertIsNone(result)
 
-            triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
+            triple = self.ci.res, GraphEntity.iri_has_citation_creation_date, Literal(string, datatype=datatype,
                                                                                       normalize=False)
             self.assertIn(triple, self.ci.g)
         with self.subTest("date is '2020'"):
@@ -73,7 +73,7 @@ class TestCitation(unittest.TestCase):
             result = self.ci.has_citation_creation_date(string)
             self.assertIsNone(result)
 
-            triple = self.ci.res, GraphEntity.has_citation_creation_date, Literal(string, datatype=datatype,
+            triple = self.ci.res, GraphEntity.iri_has_citation_creation_date, Literal(string, datatype=datatype,
                                                                                       normalize=False)
             self.assertIn(triple, self.ci.g)
 
@@ -83,8 +83,8 @@ class TestCitation(unittest.TestCase):
         result = self.ci.has_citation_time_span(duration)
         self.assertIsNone(result)
 
-        triple = self.ci.res, GraphEntity.has_citation_time_span, Literal(duration, datatype=datatype,
-                                                                                       normalize=False)
+        triple = self.ci.res, GraphEntity.iri_has_citation_time_span, Literal(duration, datatype=datatype,
+                                                                              normalize=False)
         self.assertIn(triple, self.ci.g)
 
     def test_has_citation_characterization(self):
@@ -92,63 +92,63 @@ class TestCitation(unittest.TestCase):
         result = self.ci.has_citation_characterization(characterization)
         self.assertIsNone(result)
 
-        triple = self.ci.res, GraphEntity.citation_characterisation, characterization
+        triple = self.ci.res, GraphEntity.iri_citation_characterisation, characterization
         self.assertIn(triple, self.ci.g)
 
     def test_create_self_citation(self):
         result = self.ci.create_self_citation()
         self.assertIsNone(result)
 
-        triple = self.ci.res, RDF.type, GraphEntity.self_citation
+        triple = self.ci.res, RDF.type, GraphEntity.iri_self_citation
         self.assertIn(triple, self.ci.g)
 
     def test_create_affiliation_self_citation(self):
         result = self.ci.create_affiliation_self_citation()
         self.assertIsNone(result)
 
-        triple = self.ci.res, RDF.type, GraphEntity.affiliation_self_citation
+        triple = self.ci.res, RDF.type, GraphEntity.iri_affiliation_self_citation
         self.assertIn(triple, self.ci.g)
 
     def test_create_author_network_self_citation(self):
         result = self.ci.create_author_network_self_citation()
         self.assertIsNone(result)
 
-        triple = self.ci.res, RDF.type, GraphEntity.author_network_self_citation
+        triple = self.ci.res, RDF.type, GraphEntity.iri_author_network_self_citation
         self.assertIn(triple, self.ci.g)
 
     def test_create_author_self_citation(self):
         result = self.ci.create_author_self_citation()
         self.assertIsNone(result)
 
-        triple = self.ci.res, RDF.type, GraphEntity.author_self_citation
+        triple = self.ci.res, RDF.type, GraphEntity.iri_author_self_citation
         self.assertIn(triple, self.ci.g)
 
     def test_create_funder_self_citation(self):
         result = self.ci.create_funder_self_citation()
         self.assertIsNone(result)
 
-        triple = self.ci.res, RDF.type, GraphEntity.funder_self_citation
+        triple = self.ci.res, RDF.type, GraphEntity.iri_funder_self_citation
         self.assertIn(triple, self.ci.g)
 
     def test_create_journal_self_citation(self):
         result = self.ci.create_journal_self_citation()
         self.assertIsNone(result)
 
-        triple = self.ci.res, RDF.type, GraphEntity.journal_self_citation
+        triple = self.ci.res, RDF.type, GraphEntity.iri_journal_self_citation
         self.assertIn(triple, self.ci.g)
 
     def test_create_journal_cartel_citation(self):
         result = self.ci.create_journal_cartel_citation()
         self.assertIsNone(result)
 
-        triple = self.ci.res, RDF.type, GraphEntity.journal_cartel_citation
+        triple = self.ci.res, RDF.type, GraphEntity.iri_journal_cartel_citation
         self.assertIn(triple, self.ci.g)
 
     def test_create_distant_citation(self):
         result = self.ci.create_distant_citation()
         self.assertIsNone(result)
 
-        triple = self.ci.res, RDF.type, GraphEntity.distant_citation
+        triple = self.ci.res, RDF.type, GraphEntity.iri_distant_citation
         self.assertIn(triple, self.ci.g)
 
 

@@ -35,7 +35,7 @@ class ResourceEmbodiment(BibliographicEntity):
 
     # HAS FORMAT
     def get_media_type(self) -> Optional[URIRef]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.has_format)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_format)
         return uri
 
     @accepts_only('thing')
@@ -43,14 +43,14 @@ class ResourceEmbodiment(BibliographicEntity):
         """It allows one to specify the IANA media type of the embodiment.
         """
         self.remove_media_type()
-        self.g.add((self.res, GraphEntity.has_format, thing_ref))
+        self.g.add((self.res, GraphEntity.iri_has_format, thing_ref))
 
     def remove_media_type(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_format, None))
+        self.g.remove((self.res, GraphEntity.iri_has_format, None))
 
     # HAS FIRST PAGE
     def get_starting_page(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.starting_page)
+        return self._get_literal(GraphEntity.iri_starting_page)
 
     @accepts_only('literal')
     def has_starting_page(self, string: str) -> None:
@@ -61,14 +61,14 @@ class ResourceEmbodiment(BibliographicEntity):
             page_number = string
         else:
             page_number = re.sub("[-–]+.*$", "", string)
-        self._create_literal(GraphEntity.starting_page, page_number)
+        self._create_literal(GraphEntity.iri_starting_page, page_number)
 
     def remove_starting_page(self) -> None:
-        self.g.remove((self.res, GraphEntity.starting_page, None))
+        self.g.remove((self.res, GraphEntity.iri_starting_page, None))
 
     # HAS LAST PAGE
     def get_ending_page(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.ending_page)
+        return self._get_literal(GraphEntity.iri_ending_page)
 
     @accepts_only('literal')
     def has_ending_page(self, string: str) -> None:
@@ -79,14 +79,14 @@ class ResourceEmbodiment(BibliographicEntity):
             page_number = string
         else:
             page_number = re.sub("^.*[-–]+", "", string)
-        self._create_literal(GraphEntity.ending_page, page_number)
+        self._create_literal(GraphEntity.iri_ending_page, page_number)
 
     def remove_ending_page(self) -> None:
-        self.g.remove((self.res, GraphEntity.ending_page, None))
+        self.g.remove((self.res, GraphEntity.iri_ending_page, None))
 
     # HAS URL
     def get_url(self) -> Optional[URIRef]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.has_url)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_url)
         return uri
 
     @accepts_only('thing')
@@ -94,10 +94,10 @@ class ResourceEmbodiment(BibliographicEntity):
         """The URL at which the embodiment of the bibliographic resource is available.
         """
         self.remove_url()
-        self.g.add((self.res, GraphEntity.has_url, thing_ref))
+        self.g.add((self.res, GraphEntity.iri_has_url, thing_ref))
 
     def remove_url(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_url, None))
+        self.g.remove((self.res, GraphEntity.iri_has_url, None))
 
     # HAS TYPE
     def get_types(self) -> List[URIRef]:
@@ -107,12 +107,12 @@ class ResourceEmbodiment(BibliographicEntity):
     def create_digital_embodiment(self) -> None:
         """It identifies the particular type of the embodiment, either digital or print.
         """
-        self._create_type(GraphEntity.digital_manifestation)
+        self._create_type(GraphEntity.iri_digital_manifestation)
 
     def create_print_embodiment(self) -> None:
         """It identifies the particular type of the embodiment, either digital or print.
         """
-        self._create_type(GraphEntity.print_object)
+        self._create_type(GraphEntity.iri_print_object)
 
     @accepts_only('thing')
     def remove_type(self, type_ref: URIRef = None) -> None:

@@ -36,7 +36,7 @@ class BibliographicReference(BibliographicEntity):
 
     # HAS BIBLIOGRAPHIC REFERENCE TEXT
     def get_content(self) -> Optional[str]:
-        return self._get_literal(GraphEntity.has_content)
+        return self._get_literal(GraphEntity.iri_has_content)
 
     @accepts_only('literal')
     def has_content(self, string: str) -> None:
@@ -51,14 +51,14 @@ class BibliographicReference(BibliographicEntity):
         or as a block of XML.
         """
         self.remove_content()
-        self._create_literal(GraphEntity.has_content, string)
+        self._create_literal(GraphEntity.iri_has_content, string)
 
     def remove_content(self) -> None:
-        self.g.remove((self.res, GraphEntity.has_content, None))
+        self.g.remove((self.res, GraphEntity.iri_has_content, None))
 
     # HAS ANNOTATION (ReferenceAnnotation)
     def get_annotations(self) -> List[ReferenceAnnotation]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.has_annotation)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_annotation)
         result: List[ReferenceAnnotation] = []
         for uri in uri_list:
             result.append(self.g_set.add_an(self.resp_agent, self.source_agent, self.source, uri))
@@ -69,18 +69,18 @@ class BibliographicReference(BibliographicEntity):
         """An annotation characterizing the related citation, in terms of its citation function (the
         reason for that citation).
         """
-        self.g.add((self.res, GraphEntity.has_annotation, an_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_annotation, an_res.res))
 
     @accepts_only('an')
     def remove_annotation(self, an_res: ReferenceAnnotation = None) -> None:
         if an_res is not None:
-            self.g.remove((self.res, GraphEntity.has_annotation, an_res.res))
+            self.g.remove((self.res, GraphEntity.iri_has_annotation, an_res.res))
         else:
-            self.g.remove((self.res, GraphEntity.has_annotation, None))
+            self.g.remove((self.res, GraphEntity.iri_has_annotation, None))
 
     # REFERENCES (BibliographicResource)
     def get_referenced_br(self) -> Optional[BibliographicResource]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.references)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_references)
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source_agent, self.source, uri)
 
@@ -89,7 +89,7 @@ class BibliographicReference(BibliographicEntity):
         """The bibliographic reference that cites this bibliographic resource.
         """
         self.remove_referenced_br()
-        self.g.add((self.res, GraphEntity.references, br_res.res))
+        self.g.add((self.res, GraphEntity.iri_references, br_res.res))
 
     def remove_referenced_br(self) -> None:
-        self.g.remove((self.res, GraphEntity.references, None))
+        self.g.remove((self.res, GraphEntity.iri_references, None))
