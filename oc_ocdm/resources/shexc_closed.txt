@@ -1,0 +1,270 @@
+PREFIX :         <https://opencitations.net/shex/>
+PREFIX rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+
+PREFIX biro:     <http://purl.org/spar/biro/>
+PREFIX c4o:      <http://purl.org/spar/c4o/>
+PREFIX co:       <http://purl.org/co/>
+PREFIX cito:     <http://purl.org/spar/cito/>
+PREFIX datacite: <http://purl.org/spar/datacite/>
+PREFIX dcterms:  <http://purl.org/dc/terms/>
+PREFIX deo:      <http://purl.org/spar/deo/>
+PREFIX doco:     <http://purl.org/spar/doco/>
+PREFIX fabio:    <http://purl.org/spar/fabio/>
+PREFIX foaf:     <http://xmlns.com/foaf/0.1/>
+PREFIX frbr:     <http://purl.org/vocab/frbr/core#>
+PREFIX literal:  <http://www.essepuntato.it/2010/06/literalreification/>
+PREFIX oa:       <http://www.w3.org/ns/oa#>
+PREFIX oco:      <https://w3id.org/oc/ontology/>
+PREFIX prism:    <http://prismstandard.org/namespaces/basic/2.0/>
+PREFIX pro:      <http://purl.org/spar/pro/>
+
+PREFIX prov:     <http://www.w3.org/ns/prov#>
+
+:GraphEntityShape IRI {
+    rdf:type IRI{1,2};
+    rdfs:label xsd:string?;
+}
+
+:IdentifierShape @:GraphEntityShape AND IRI CLOSED {
+    rdf:type [datacite:Identifier];
+    literal:hasLiteralValue xsd:string;
+    datacite:usesIdentifierScheme [datacite:oci
+                                   datacite:orcid
+                                   datacite:doi
+                                   datacite:pmid
+                                   datacite:pmcid
+                                   datacite:issn
+                                   datacite:isbn
+                                   datacite:url
+                                   datacite:local-resource-identifier-scheme
+                                   datacite:intrepid
+                                   datacite:wikidata
+                                   datacite:crossref
+                                   datacite:viaf
+                                   # TODO: check the existence of other applicable IRIs
+                                  ];
+    # Inverse properties:
+    ^datacite:hasIdentifier (@:AgentRoleShape OR
+                             @:BibliographicReferenceShape OR
+                             @:BibliographicResourceShape OR
+                             @:CitationShape OR
+                             @:DiscourseElementShape OR
+                             @:PointerListShape OR
+                             @:ReferenceAnnotationShape OR
+                             @:ReferencePointerShape OR
+                             @:ResourceEmbodimentShape OR
+                             @:ResponsibleAgentShape)?;
+    ^prov:specializationOf @:ProvenanceEntityShape*;
+}
+
+:BibliographicEntityShape @:GraphEntityShape AND IRI {
+    datacite:hasIdentifier @:IdentifierShape*;
+}
+
+############################# ENTITIES #############################
+
+#ProvenanceEntity
+:ProvenanceEntityShape @:GraphEntityShape AND IRI CLOSED {
+    rdf:type [prov:Entity];
+    prov:generatedAtTime xsd:dateTime;
+    prov:invalidatedAtTime xsd:dateTime?;
+    prov:specializationOf (@:IdentifierShape OR
+                           @:AgentRoleShape OR
+                           @:BibliographicReferenceShape OR
+                           @:BibliographicResourceShape OR
+                           @:CitationShape OR
+                           @:DiscourseElementShape OR
+                           @:PointerListShape OR
+                           @:ReferenceAnnotationShape OR
+                           @:ReferencePointerShape OR
+                           @:ResourceEmbodimentShape OR
+                           @:ResponsibleAgentShape)+;
+    prov:wasDerivedFrom @:ProvenanceEntityShape*;
+    prov:hadPrimarySource IRI?;
+    oco:hasUpdateQuery xsd:string?;
+    dcterms:description xsd:string?;
+    prov:wasAttributedTo IRI?;
+    # Inverse properties:
+    ^prov:wasDerivedFrom @:ProvenanceEntityShape?;
+}
+
+# AgentRole
+:AgentRoleShape @:BibliographicEntityShape AND IRI CLOSED {
+    rdf:type [pro:RoleInTime];
+    oco:hasNext @:AgentRoleShape?;
+    pro:isHeldBy @:ResponsibleAgentShape?;
+    pro:withRole [pro:publisher
+                  pro:author
+                  pro:editor]?;
+    # Inverse properties:
+    ^oco:hasNext @:AgentRoleShape?;
+    ^pro:isDocumentContextFor @:BibliographicResourceShape?;
+    ^prov:specializationOf @:ProvenanceEntityShape*;
+}
+
+# BibliographicReference
+:BibliographicReferenceShape @:BibliographicEntityShape AND IRI CLOSED {
+    rdf:type [biro:BibliographicReference];
+    c4o:hasContent xsd:string?;
+    oco:hasAnnotation @:ReferenceAnnotationShape*;
+    biro:references @:BibliographicResourceShape?;
+    # Inverse properties:
+    ^frbr:part @:BibliographicResourceShape?;
+    ^c4o:denotes @:ReferencePointerShape*;
+    ^prov:specializationOf @:ProvenanceEntityShape*;
+}
+
+# BibliographicResource
+:BibliographicResourceShape @:BibliographicEntityShape AND IRI CLOSED {
+    rdf:type [fabio:Expression];
+    rdf:type [fabio:ArchivalDocument
+              fabio:Book
+              fabio:BookChapter
+              doco:Part
+              fabio:ExpressionCollection
+              fabio:BookSeries
+              fabio:BookSet
+              fabio:DataFile
+              fabio:Thesis
+              fabio:JournalArticle
+              fabio:JournalIssue
+              fabio:JournalVolume
+              fabio:Journal
+              fabio:ProceedingsPaper
+              fabio:AcademicProceedings
+              fabio:ReferenceBook
+              fabio:ReferenceEntry
+              fabio:Series
+              fabio:ReportDocument
+              fabio:SpecificationDocument]?;
+    dcterms:title xsd:string?;
+    fabio:hasSubtitle xsd:string?;
+    frbr:partOf @:BibliographicResourceShape?;
+    cito:cites @:BibliographicResourceShape*;
+    prism:publicationDate (xsd:date OR xsd:gYearMonth OR xsd:gYear)?;
+    frbr:embodiment @:ResourceEmbodimentShape*;
+    fabio:hasSequenceIdentifier xsd:string?;
+    prism:edition xsd:string?;
+    frbr:part (@:BibliographicReferenceShape OR @:DiscourseElementShape)*;
+    pro:isDocumentContextFor @:AgentRoleShape*;
+    dcterms:relation IRI*;
+    # Inverse properties:
+    ^frbr:partOf @:BibliographicResourceShape*;
+    ^cito:cites @:BibliographicResourceShape*;
+    ^biro:references @:BibliographicReferenceShape*;
+    ^cito:hasCitingEntity @:CitationShape*;
+    ^cito:hasCitedEntity @:CitationShape*;
+    ^prov:specializationOf @:ProvenanceEntityShape*;
+}
+AND (NOT { rdf:type [doco:Part fabio:ExpressionCollection] }
+     OR { frbr:partOf @:BibliographicResourceShape AND {rdf:type [fabio:Book]}? }
+    )
+AND (NOT { rdf:type [fabio:Series] }
+     OR { frbr:part @:DiscourseElementShape AND {rdf:type [fabio:ReportDocument fabio:SpecificationDocument]}* }
+    )
+
+# Citation
+:CitationShape @:BibliographicEntityShape AND IRI CLOSED {
+    rdf:type [cito:Citation];
+    rdf:type [cito:SelfCitation
+              cito:AffiliationSelfCitation
+              cito:AuthorNetworkSelfCitation
+              cito:AuthorSelfCitation
+              cito:FunderSelfCitation
+              cito:JournalSelfCitation
+              cito:JournalCartelCitation
+              cito:DistantCitation]?;
+    cito:hasCitingEntity @:BibliographicResourceShape?;
+    cito:hasCitedEntity @:BibliographicResourceShape?;
+    cito:hasCitationCreationDate (xsd:date OR xsd:gYearMonth OR xsd:gYear)?;
+    cito:hasCitationTimeSpan xsd:duration?;
+    cito:hasCitationCharacterisation IRI?;
+    # Inverse properties:
+    ^oa:hasBody @:ReferenceAnnotationShape*;
+    ^prov:specializationOf @:ProvenanceEntityShape*;
+}
+
+# DiscourseElement
+:DiscourseElementShape @:BibliographicEntityShape AND IRI CLOSED {
+    rdf:type [deo:DiscourseElement];
+    rdf:type [deo:Caption
+              doco:Footnote
+              doco:Paragraph
+              doco:Section
+              doco:SectionTitle
+              doco:Sentence
+              doco:Table
+              doco:TextChunk]?;
+    dcterms:title xsd:string?;
+    frbr:part @:DiscourseElementShape*;
+    oco:hasNext @:DiscourseElementShape?;
+    c4o:isContextOf (@:ReferencePointerShape OR @:PointerListShape)*;
+    c4o:hasContent xsd:string?;
+    fabio:hasSequenceIdentifier xsd:string?;
+    # Inverse properties:
+    ^frbr:part (@:BibliographicResourceShape OR @:DiscourseElementShape)?;
+    ^oco:hasNext @:DiscourseElementShape?;
+    ^prov:specializationOf @:ProvenanceEntityShape*;
+}
+
+# PointerList
+:PointerListShape @:BibliographicEntityShape AND IRI CLOSED {
+    rdf:type [c4o:SingleLocationPointerList];
+    c4o:hasContent xsd:string?;
+    co:element @:ReferencePointerShape*;
+    # Inverse properties:
+    ^c4o:isContextOf @:DiscourseElementShape?;
+    ^prov:specializationOf @:ProvenanceEntityShape*;
+}
+
+# ReferenceAnnotation
+:ReferenceAnnotationShape @:BibliographicEntityShape AND IRI CLOSED {
+    rdf:type [oa:Annotation];
+    oa:hasBody @:CitationShape?;
+    # Inverse properties:
+    ^oco:hasAnnotation @:BibliographicReferenceShape?;
+    ^oco:hasAnnotation @:ReferencePointerShape?;
+    ^prov:specializationOf @:ProvenanceEntityShape*;
+}
+
+# ReferencePointer
+:ReferencePointerShape @:BibliographicEntityShape AND IRI CLOSED {
+    rdf:type [c4o:InTextReferencePointer];
+    c4o:hasContent xsd:string?;
+    oco:hasNext @:ReferencePointerShape?;
+    c4o:denotes @:BibliographicReferenceShape?;
+    oco:hasAnnotation @:ReferenceAnnotationShape*;
+    # Inverse properties:
+    ^oco:hasNext @:ReferencePointerShape?;
+    ^c4o:isContextOf @:DiscourseElementShape?;
+    ^co:element @:PointerListShape?;
+    ^prov:specializationOf @:ProvenanceEntityShape*;
+}
+
+# ResourceEmbodiment
+:ResourceEmbodimentShape @:BibliographicEntityShape AND IRI CLOSED {
+    rdf:type [fabio:Manifestation];
+    rdf:type [fabio:DigitalManifestation
+              fabio:PrintObject]?;
+    dcterms:format IRI?;
+    prism:startingPage xsd:string?;
+    prism:endingPage xsd:string?;
+    frbr:exemplar IRI?;
+    # Inverse properties:
+    ^frbr:embodiment @:BibliographicResourceShape*;
+    ^prov:specializationOf @:ProvenanceEntityShape*;
+}
+
+# ResponsibleAgent
+:ResponsibleAgentShape @:BibliographicEntityShape AND IRI CLOSED {
+    rdf:type [foaf:Agent];
+    foaf:name xsd:string?;
+    foaf:givenName xsd:string?;
+    foaf:familyName xsd:string?;
+    dcterms:relation IRI*;
+    # Inverse properties:
+    ^pro:isHeldBy @:AgentRoleShape*;
+    ^prov:specializationOf @:ProvenanceEntityShape*;
+}
