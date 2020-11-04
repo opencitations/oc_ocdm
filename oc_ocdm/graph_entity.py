@@ -238,6 +238,10 @@ class GraphEntity(object):
     def mark_as_to_be_deleted(self, to_be_deleted: bool = True) -> None:
         self.flags.to_be_deleted = to_be_deleted
 
+    # LABEL
+    def get_label(self) -> Optional[str]:
+        return self._get_literal(RDFS.label)
+
     def create_label(self, string: str) -> None:
         """Creates the RDF triple <self.res> rdfs:label <string>
         inside the graph self.g
@@ -245,7 +249,11 @@ class GraphEntity(object):
         :param string: The string to be added as a label for this entity
         :type string: str
         """
+        self.remove_label()
         self._create_literal(RDFS.label, string)
+
+    def remove_label(self) -> None:
+        self.g.remove((self.res, RDFS.label, None))
 
     def _create_literal(self, p: URIRef, s: str, dt: URIRef = None, nor: bool = True) -> None:
         """Creates an RDF triple with a literal object inside the graph self.g
@@ -261,6 +269,11 @@ class GraphEntity(object):
         """
         create_literal(self.g, self.res, p, s, dt, nor)
 
+    # TYPE
+    def get_types(self) -> List[URIRef]:
+        uri_list: List[URIRef] = self._get_multiple_uri_references(RDF.type)
+        return uri_list
+
     def _create_type(self, res_type: URIRef) -> None:
         """Creates the RDF triple <self.res> rdf:type <res_type>
         inside the graph self.g
@@ -269,9 +282,11 @@ class GraphEntity(object):
         :type res_type: URIRef
         :rtype: None
         """
-        self.g.remove((self.res, RDF.type, None))
+        self.remove_type()
         create_type(self.g, self.res, res_type)
 
+    def remove_type(self) -> None:
+        self.g.remove((self.res, RDF.type, None))
         # Restore the main type IRI
         iri_main_type: URIRef = self.short_name_to_type_iri[self.short_name]
         create_type(self.g, self.res, iri_main_type)
