@@ -44,8 +44,8 @@ class BibliographicEntity(GraphEntity):
         self.g.add((self.res, GraphEntity.has_identifier, id_res.res))
 
     @accepts_only('id')
-    def remove_id(self, id: Identifier = None) -> None:
-        if id is not None:
-            self.g.remove((self.res, GraphEntity.has_identifier, id.res))
+    def remove_id(self, id_res: Identifier = None) -> None:
+        if id_res is not None:
+            self.g.remove((self.res, GraphEntity.has_identifier, id_res.res))
         else:
             self.g.remove((self.res, GraphEntity.has_identifier, None))
