@@ -129,7 +129,7 @@ class GraphSet(object):
         cur_g, count, label = self._add(graph_url=self.g_ci, res=res, short_name="ci")
         return Citation(cur_g, res=res, res_type=GraphEntity.citation, short_name="ci",
                         resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                        label=None, g_set=self, forced_type=self.forced_type,
+                        label=label, g_set=self, forced_type=self.forced_type,
                         preexisting_graph=preexisting_graph)
 
     def add_de(self, resp_agent: str, source_agent: str = None, source: str = None,
