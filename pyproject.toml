@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "oc_ocdm"
-version = "2.1.1"
+version = "3.0.0"
 description = "Object mapping library for OpenCitations, OCDM 2.0.1 compliant."
 authors = [
     "Silvio Peroni <essepuntato@gmail.com>",
