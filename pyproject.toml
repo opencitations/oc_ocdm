@@ -32,6 +32,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.8"
 rdflib = "^5.0.0"
+PyShEx = "^0.7.15"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
