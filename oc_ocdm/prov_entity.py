@@ -20,14 +20,13 @@ __author__ = 'essepuntato'
 from typing import TYPE_CHECKING, ClassVar
 
 from rdflib import Namespace, URIRef, Graph
-from rdflib.namespace import XSD, RDF
+from rdflib.namespace import XSD
 
 from oc_ocdm.decorators import accepts_only
 
 if TYPE_CHECKING:
     from typing import Optional, List
     from oc_ocdm import ProvSet
-    from oc_ocdm.entities.bibliographic import ResponsibleAgent
 from oc_ocdm import GraphEntity
 
 """
@@ -47,28 +46,15 @@ class ProvEntity(GraphEntity):
     PROV: ClassVar[Namespace] = Namespace("http://www.w3.org/ns/prov#")
 
     # Exclusive provenance entities
-    iri_prov_agent: ClassVar[URIRef] = PROV.Agent
     iri_entity: ClassVar[URIRef] = PROV.Entity
-    iri_activity: ClassVar[URIRef] = PROV.Activity
-    iri_create: ClassVar[URIRef] = PROV.Create
-    iri_modify: ClassVar[URIRef] = PROV.Modify
-    iri_replace: ClassVar[URIRef] = PROV.Replace
-    iri_association: ClassVar[URIRef] = PROV.Association
     iri_generated_at_time: ClassVar[URIRef] = PROV.generatedAtTime
     iri_invalidated_at_time: ClassVar[URIRef] = PROV.invalidatedAtTime
     iri_specialization_of: ClassVar[URIRef] = PROV.specializationOf
     iri_was_derived_from: ClassVar[URIRef] = PROV.wasDerivedFrom
     iri_had_primary_source: ClassVar[URIRef] = PROV.hadPrimarySource
-    iri_was_generated_by: ClassVar[URIRef] = PROV.wasGeneratedBy
     iri_was_attributed_to: ClassVar[URIRef] = PROV.wasAttributedTo
-    iri_was_invalidated_by: ClassVar[URIRef] = PROV.wasInvalidatedBy
-    iri_qualified_association: ClassVar[URIRef] = PROV.qualifiedAssociation
     iri_description: ClassVar[URIRef] = GraphEntity.DCTERMS.description
     iri_has_update_query: ClassVar[URIRef] = GraphEntity.OCO.hasUpdateQuery
-    iri_had_role: ClassVar[URIRef] = PROV.hadRole
-    iri_associated_agent: ClassVar[URIRef] = PROV.agent
-    iri_curator: ClassVar[URIRef] = GraphEntity.OCO["occ-curator"]
-    iri_source_provider: ClassVar[URIRef] = GraphEntity.OCO["source-metadata-provider"]
 
     def __init__(self, prov_subject: GraphEntity, g: Graph, res: URIRef = None, res_type: URIRef = None,
                  resp_agent: str = None, source_agent: str = None, source: str = None, count: str = None,
@@ -219,45 +205,3 @@ class ProvEntity(GraphEntity):
 
     def remove_resp_agent(self) -> None:
         self.g.remove((self.res, ProvEntity.iri_was_attributed_to, None))
-
-    # HAS TYPE
-    def get_types(self) -> List[URIRef]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(RDF.type)
-        return uri_list
-
-    def create_creation_activity(self) -> None:
-        self._create_type(ProvEntity.iri_create)
-
-    def create_update_activity(self) -> None:
-        self._create_type(ProvEntity.iri_modify)
-
-    def create_merging_activity(self) -> None:
-        self._create_type(ProvEntity.iri_replace)
-
-    @accepts_only('thing')
-    def remove_type(self, type_ref: URIRef = None) -> None:
-        if type_ref is not None:
-            self.g.remove((self.res, RDF.type, type_ref))
-        else:
-            self.g.remove((self.res, RDF.type, None))
-    # +++++++++++++++++++++++++ UNDOCUMENTED ++++++++++++++++++++++++++
-
-    @accepts_only('se')
-    def generates(self, se_res: ProvEntity) -> None:
-        se_res.g.add((se_res.res, ProvEntity.iri_was_generated_by, self.res))
-
-    @accepts_only('se')
-    def invalidates(self, se_res: ProvEntity) -> None:
-        se_res.g.add((se_res.res, ProvEntity.iri_was_invalidated_by, self.res))
-
-    @accepts_only('thing')
-    def involves_agent_with_role(self, cr_res: URIRef) -> None:
-        self.g.add((self.res, ProvEntity.iri_qualified_association, cr_res))
-
-    @accepts_only('thing')
-    def has_role_type(self, any_res: URIRef) -> None:
-        self.g.add((self.res, ProvEntity.iri_had_role, any_res))
-
-    @accepts_only('ra')
-    def has_role_in(self, ca_res: ResponsibleAgent) -> None:
-        ca_res.g.add((ca_res.res, ProvEntity.iri_associated_agent, self.res))

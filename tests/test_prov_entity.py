@@ -15,7 +15,7 @@
 # SOFTWARE.
 import unittest
 
-from rdflib import URIRef, Literal, XSD, RDF
+from rdflib import URIRef, Literal, XSD
 
 from oc_ocdm import GraphSet
 from oc_ocdm import ProvEntity
@@ -44,7 +44,7 @@ class TestProvEntity(unittest.TestCase):
 
     def test_create_generation_time(self):
         time = "2001-10-26T21:32:52"
-        datatype=XSD.dateTime
+        datatype = XSD.dateTime
         result = self.se.has_generation_time(time)
         self.assertIsNone(result)
 
@@ -54,7 +54,7 @@ class TestProvEntity(unittest.TestCase):
 
     def test_create_invalidation_time(self):
         time = "2001-10-26T21:32:52"
-        datatype=XSD.dateTime
+        datatype = XSD.dateTime
         result = self.se.has_invalidation_time(time)
         self.assertIsNone(result)
 
@@ -107,27 +107,6 @@ class TestProvEntity(unittest.TestCase):
         self.assertIsNone(result)
 
         triple = self.se.res, ProvEntity.iri_was_attributed_to, ra
-        self.assertIn(triple, self.se.g)
-
-    def test_create_creation_activity(self):
-        result = self.se.create_creation_activity()
-        self.assertIsNone(result)
-
-        triple = self.se.res, RDF.type, ProvEntity.iri_create
-        self.assertIn(triple, self.se.g)
-
-    def test_create_update_activity(self):
-        result = self.se.create_update_activity()
-        self.assertIsNone(result)
-
-        triple = self.se.res, RDF.type, ProvEntity.iri_modify
-        self.assertIn(triple, self.se.g)
-
-    def test_create_merging_activity(self):
-        result = self.se.create_merging_activity()
-        self.assertIsNone(result)
-
-        triple = self.se.res, RDF.type, ProvEntity.iri_replace
         self.assertIn(triple, self.se.g)
 
 

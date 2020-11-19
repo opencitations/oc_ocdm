@@ -53,7 +53,6 @@ class ProvSet(GraphSet):
         if wanted_label:
             GraphSet.labels.update(
                 {
-                    "pa": "provenance agent",
                     "se": "snapshot of entity metadata"
                 }
             )
@@ -124,11 +123,9 @@ class ProvSet(GraphSet):
                 if last_snapshot is not None:
                     cur_snapshot.derives_from(last_snapshot)
                     last_snapshot.has_invalidation_time(cur_time)
-                    cur_snapshot.invalidates(last_snapshot)
 
                 # Invalidate the new snapshot if the entity has been removed
                 if remove_entity:
-                    cur_snapshot.invalidates(cur_snapshot)
                     cur_snapshot.has_invalidation_time(cur_time)
 
     @staticmethod
@@ -241,7 +238,6 @@ class ProvSet(GraphSet):
 
     def _set_ns(self, g: Graph) -> None:
         super(ProvSet, self)._set_ns(g)
-        g.namespace_manager.bind("oco", ProvEntity.OCO)
         g.namespace_manager.bind("prov", ProvEntity.PROV)
 
     def _retrieve_last_snapshot(self, prov_subject: URIRef) -> Optional[URIRef]:
