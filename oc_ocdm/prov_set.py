@@ -59,13 +59,14 @@ class ProvSet(GraphSet):
 
     # Add resources related to provenance information
 
-    def add_se(self, resp_agent: str = None, prov_subject: GraphEntity = None, res: URIRef = None) -> ProvEntity:
+    def add_se(self, prov_subject: GraphEntity, resp_agent: str = None, source_agent: str = None, source: str = None,
+               res: URIRef = None) -> ProvEntity:
+        if res is not None and res in self.res_to_entity:
+            return self.res_to_entity[res]
         g_prov: str = str(prov_subject) + "/prov/"
-        list_of_entities: Tuple[GraphEntity] = () if prov_subject is None else (prov_subject,)
-        cur_g, count, label = self._add_prov(graph_url=g_prov, res=res, short_name="se",
-                                             list_of_entities=list_of_entities)
-        return ProvEntity(list_of_entities[0] if list_of_entities else None, cur_g, res=res, res_type=ProvEntity.iri_entity,
-                          short_name="se", resp_agent=resp_agent, source_agent=None, source=None, count=count,
+        cur_g, count, label = self._add_prov(graph_url=g_prov, res=res, short_name="se", prov_subject=prov_subject)
+        return ProvEntity(prov_subject, cur_g, res=res, res_type=ProvEntity.iri_entity,
+                          short_name="se", resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                           label=label, g_set=self)
 
     def generate_provenance(self, resp_agent: Optional[str], c_time: float = None, do_insert: bool = True,
@@ -86,9 +87,9 @@ class ProvSet(GraphSet):
             last_snapshot: Optional[ProvEntity] = None
             last_snapshot_res: Optional[URIRef] = self._retrieve_last_snapshot(prov_subject)
             if last_snapshot_res is not None:
-                last_snapshot: ProvEntity = self.add_se(resp_agent, cur_subj, last_snapshot_res)
+                last_snapshot: ProvEntity = self.add_se(cur_subj, resp_agent, last_snapshot_res)
             # Snapshot
-            cur_snapshot: ProvEntity = self.add_se(resp_agent, cur_subj)
+            cur_snapshot: ProvEntity = self.add_se(cur_subj, resp_agent)
             cur_snapshot.snapshot_of(cur_subj)
             cur_snapshot.has_generation_time(cur_time)
             if cur_subj.source is not None:
@@ -182,7 +183,7 @@ class ProvSet(GraphSet):
         return query_string + "}", are_citations, are_ids, are_others
 
     def _add_prov(self, graph_url: str, res: URIRef, short_name: str,
-                  list_of_entities: Tuple[GraphEntity] = ()) -> Tuple[Graph, Optional[str], Optional[str]]:
+                  prov_subject: GraphEntity) -> Tuple[Graph, Optional[str], Optional[str]]:
         cur_g: Graph = Graph(identifier=graph_url)
         self._set_ns(cur_g)
         self.g += [cur_g]
@@ -197,42 +198,19 @@ class ProvSet(GraphSet):
         if res is not None:
             return cur_g, count, label
 
-        # This is the case when 'res_or_resp_agent' is actually a string representing the name
-        # of the responsible agent. In this case, a new individual will be created.
-        related_to_label: str = ""
-        related_to_short_label: str = ""
-        # Note: even if list of entities is actually a list, it seems
-        # that it would be composed by at most one item (e.g. for provenance)
-        if list_of_entities:
-            entity_res: URIRef = list_of_entities[0].res
-            count = str(self.counter_handler.increment_counter(
-                get_short_name(entity_res), "se", int(get_count(entity_res))))
-            related_to_label += " related to"
-            related_to_short_label += " ->"
-            for idx, cur_entity in enumerate(list_of_entities):
-                if idx > 0:
-                    related_to_label += ","
-                    related_to_short_label += ","
-                cur_short_name = get_short_name(cur_entity)
-                cur_entity_count = get_count(cur_entity)
-                cur_entity_prefix = get_prefix(cur_entity)
-                if cur_short_name == 'ci':
-                    related_to_label += " %s %s" % (
-                        self.labels[cur_short_name], cur_entity_count)
-                    related_to_short_label += " %s/%s" % (
-                        cur_short_name, cur_entity_count)
-                else:
-                    related_to_label += " %s %s%s" % (
-                        self.labels[cur_short_name], cur_entity_prefix, cur_entity_count)
-                    related_to_short_label += " %s/%s%s" % (
-                        cur_short_name, cur_entity_prefix, cur_entity_count)
-        else:
-            count = self.supplier_prefix + str(self.counter_handler.increment_counter(short_name))
+        count = str(self.counter_handler.increment_counter(
+            prov_subject.short_name, "se", int(get_count(prov_subject.res))))
 
         if self.wanted_label:
-            label = "%s %s%s [%s/%s%s]" % (
-                self.labels[short_name], count, related_to_label,
-                short_name, count, related_to_short_label)
+            cur_short_name = prov_subject.short_name
+            cur_entity_count = get_count(prov_subject.res)
+            cur_entity_prefix = get_prefix(prov_subject.res)
+
+            related_to_label = "related to %s %s%s" % (self.labels[cur_short_name], cur_entity_prefix, cur_entity_count)
+            related_to_short_label = "-> %s/%s%s" % (cur_short_name, cur_entity_prefix, cur_entity_count)
+
+            label = "%s %s %s [%s/%s %s]" % (self.labels[short_name], count, related_to_label, short_name, count,
+                                             related_to_short_label)
 
         return cur_g, count, label
 

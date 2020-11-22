@@ -39,8 +39,8 @@ class TestProvEntity(unittest.TestCase):
         self.prov_set.g = []
         self.prov_subj_graph_set.g = []
         self.prov_subject = self.prov_subj_graph_set.add_br(self.__class__.__name__)
-        self.se = self.prov_set.add_se(self.__class__.__name__, self.prov_subject)
-        self.prev_se = self.prov_set.add_se(self.__class__.__name__, self.prov_subject)
+        self.se = self.prov_set.add_se(self.prov_subject, self.__class__.__name__)
+        self.prev_se = self.prov_set.add_se(self.prov_subject, self.__class__.__name__)
 
     def test_create_generation_time(self):
         time = "2001-10-26T21:32:52"
