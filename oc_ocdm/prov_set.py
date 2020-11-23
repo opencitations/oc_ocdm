@@ -47,7 +47,7 @@ class ProvSet(GraphSet):
         self.all_subjects: Set[URIRef] = set()
         for cur_subj_g in prov_subj_graph_set.graphs():
             self.all_subjects.add(next(cur_subj_g.subjects(None, None)))
-        self.resp: str = "SPACIN ProvSet"
+
         self.prov_g: GraphSet = prov_subj_graph_set
 
         if wanted_label:
