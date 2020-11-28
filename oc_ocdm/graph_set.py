@@ -87,7 +87,7 @@ class GraphSet(object):
 
         self.counter_handler: CounterHandler = counter_handler
 
-    def get_entity(self, res: URIRef) -> GraphEntity:
+    def get_entity(self, res: URIRef) -> Optional[GraphEntity]:
         if res in self.res_to_entity:
             return self.res_to_entity[res]
 
