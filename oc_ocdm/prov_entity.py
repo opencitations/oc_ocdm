@@ -123,7 +123,7 @@ class ProvEntity(GraphEntity):
         uri_list: List[URIRef] = self._get_multiple_uri_references(ProvEntity.iri_was_derived_from)
         result: List[ProvEntity] = []
         for uri in uri_list:
-            result.append(self.g_set.add_se(self.resp_agent, self.source_agent, self.source, uri))
+            result.append(self.g_set.add_se(None, uri))
         return result
 
     @accepts_only('se')

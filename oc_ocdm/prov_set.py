@@ -57,17 +57,14 @@ class ProvSet(GraphSet):
                 }
             )
 
-    # Add resources related to provenance information
-
-    def add_se(self, prov_subject: GraphEntity, resp_agent: str = None, source_agent: str = None, source: str = None,
-               res: URIRef = None) -> ProvEntity:
+    def add_se(self, prov_subject: GraphEntity, res: URIRef = None) -> ProvEntity:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         g_prov: str = str(prov_subject) + "/prov/"
         cur_g, count, label = self._add_prov(graph_url=g_prov, res=res, short_name="se", prov_subject=prov_subject)
-        return ProvEntity(prov_subject, cur_g, res=res, res_type=ProvEntity.iri_entity,
-                          short_name="se", resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                          label=label, g_set=self)
+        return ProvEntity(prov_subject, cur_g, res=res, res_type=ProvEntity.iri_entity, short_name="se",
+                          resp_agent=prov_subject.resp_agent, source_agent=prov_subject.source_agent,
+                          source=prov_subject.source, count=count, label=label, g_set=self)
 
     def generate_provenance(self, resp_agent: Optional[str], c_time: float = None, do_insert: bool = True,
                             remove_entity: bool = False) -> None:

@@ -40,7 +40,7 @@ class TestProvSet(unittest.TestCase):
         result = self.prov_set._retrieve_last_snapshot(br_res)
         self.assertIsNone(result)
 
-        se = self.prov_set.add_se(br, self.__class__.__name__)
+        se = self.prov_set.add_se(br)
         result = self.prov_set._retrieve_last_snapshot(br_res)
         self.assertIsNotNone(result)
         self.assertEqual(str(result), str(se))
