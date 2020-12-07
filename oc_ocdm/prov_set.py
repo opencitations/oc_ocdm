@@ -85,10 +85,10 @@ class ProvSet(GraphSet):
         is_first: bool = True
         for snapshot in snapshots_list:
             if is_first:
-                merge_description += f" with '{snapshot.res}'"
+                merge_description += f" with '{snapshot.prov_subject.res}'"
                 is_first = False
             else:
-                merge_description += f", '{snapshot.res}'"
+                merge_description += f", '{snapshot.prov_subject.res}'"
         merge_description += "."
         return merge_description
 
