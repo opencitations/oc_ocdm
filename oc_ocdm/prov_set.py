@@ -18,11 +18,10 @@ from __future__ import annotations
 __author__ = 'essepuntato'
 
 from datetime import datetime
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 from rdflib import Graph, ConjunctiveGraph, URIRef
 from rdflib.compare import to_isomorphic, graph_diff, IsomorphicGraph
-from rdflib.query import Result
 
 from oc_ocdm import GraphEntity
 from oc_ocdm import GraphSet
@@ -72,6 +71,27 @@ class ProvSet(GraphSet):
             new_snapshot.has_resp_agent(URIRef(cur_subj.resp_agent))
         return new_snapshot
 
+    def _get_snapshots_from_merge_list(self, cur_subj: GraphEntity) -> List[ProvEntity]:
+        snapshots_list: List[ProvEntity] = []
+        for entity in cur_subj.merge_list:
+            last_entity_snapshot_res: Optional[URIRef] = self._retrieve_last_snapshot(entity.res)
+            if last_entity_snapshot_res is not None:
+                snapshots_list.append(self.add_se(prov_subject=entity, res=last_entity_snapshot_res))
+        return snapshots_list
+
+    @staticmethod
+    def _get_merge_description(cur_subj: GraphEntity, snapshots_list: List[ProvEntity]) -> str:
+        merge_description: str = f"The entity '{cur_subj.res}' has been merged"
+        is_first: bool = True
+        for snapshot in snapshots_list:
+            if is_first:
+                merge_description += f" with '{snapshot.res}'"
+                is_first = False
+            else:
+                merge_description += f", '{snapshot.res}'"
+        merge_description += "."
+        return merge_description
+
     def generate_provenance(self, c_time: float = None) -> None:
         time_string: str = '%Y-%m-%dT%H:%M:%S'
         if c_time is None:
@@ -79,123 +99,123 @@ class ProvSet(GraphSet):
         else:
             cur_time: str = datetime.fromtimestamp(c_time).strftime(time_string)
 
-        # MERGE SNAPSHOTS
+        # MERGED ENTITIES
         for cur_subj in self.prov_g.res_to_entity.values():
-            if cur_subj is None or (not cur_subj.flags.was_merged or cur_subj.flags.to_be_deleted):
+            if cur_subj is None or (not cur_subj._was_merged or cur_subj._to_be_deleted):
                 # Here we must skip every entity that was not merged or that must be deleted.
                 continue
 
             # Previous snapshot
             last_snapshot_res: Optional[URIRef] = self._retrieve_last_snapshot(cur_subj.res)
-            if last_snapshot_res is not None:
-                last_snapshot: ProvEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
-                last_snapshot.has_invalidation_time(cur_time)
+            if last_snapshot_res is None:
+                # CREATION SNAPSHOT
+                cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
+                cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
             else:
-                # TODO: should we raise an error here to inform the user of what just happened?
-                continue
+                update_query: Optional[str] = self._get_update_query(cur_subj)
+                was_modified: bool = update_query is not None
+                snapshots_list: List[ProvEntity] = self._get_snapshots_from_merge_list(cur_subj)
 
-            # Current snapshot
-            cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
-            cur_snapshot.derives_from(last_snapshot)
+                if was_modified and len(snapshots_list) <= 0:
+                    # MODIFICATION SNAPSHOT
+                    last_snapshot: ProvEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
+                    last_snapshot.has_invalidation_time(cur_time)
 
-            # Snapshot description
-            merge_description: str = f"The entity '{cur_subj.res}' has been merged"
-            merge_counter: int = 0
-            for entity in cur_subj.merge_list:
-                last_entity_snapshot_res: Optional[URIRef] = self._retrieve_last_snapshot(entity.res)
-                if last_entity_snapshot_res is not None:
-                    merge_counter += 1
-                    last_entity_snapshot: ProvEntity = self.add_se(prov_subject=cur_subj, res=last_entity_snapshot_res)
-                    cur_snapshot.derives_from(last_entity_snapshot)
-                    if merge_counter <= 1:
-                        merge_description += f" with '{last_entity_snapshot_res}'"
-                    else:
-                        merge_description += f", '{last_entity_snapshot_res}'"
-            merge_description += "."
-            if merge_counter >= 1:
-                cur_snapshot.has_description(merge_description)
-            else:
-                # This is actually a MODIFICATION SNAPSHOT
-                cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been modified.")
+                    cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
+                    cur_snapshot.derives_from(last_snapshot)
+                    cur_snapshot.has_update_action(update_query)
+                    cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been modified.")
+                elif len(snapshots_list) > 0:
+                    # MERGE SNAPSHOT
+                    last_snapshot: ProvEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
+                    last_snapshot.has_invalidation_time(cur_time)
 
-            # Update query
-            update_query: Optional[str] = self._get_update_query(cur_subj)
-            if update_query is not None:
-                cur_snapshot.has_update_action(update_query)
+                    cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
+                    cur_snapshot.derives_from(last_snapshot)
+                    for snapshot in snapshots_list:
+                        cur_snapshot.derives_from(snapshot)
+                    cur_snapshot.has_description(self._get_merge_description(cur_subj, snapshots_list))
 
-        # DELETION, CREATION AND MODIFICATION SNAPSHOTS
+        # EVERY OTHER ENTITY
         for cur_subj in self.prov_g.res_to_entity.values():
-            if cur_subj is None or (cur_subj.flags.was_merged and not cur_subj.flags.to_be_deleted):
+            if cur_subj is None or (cur_subj._was_merged and not cur_subj._to_be_deleted):
                 # Here we must skip every entity which was merged while not being marked as to be deleted,
                 # since we already processed those entities in the previous loop.
                 continue
 
             last_snapshot_res: Optional[URIRef] = self._retrieve_last_snapshot(cur_subj.res)
-            if last_snapshot_res is not None:
-                last_snapshot: ProvEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
-                last_snapshot.has_invalidation_time(cur_time)
-            else:
-                if cur_subj.flags.to_be_deleted and cur_subj.flags.is_a_new_entity:
+            if last_snapshot_res is None:
+                if cur_subj._to_be_deleted:
                     # We can ignore this entity because it was deleted even before being created.
                     continue
-                if not cur_subj.flags.is_a_new_entity:
-                    # cur_subj is not a new entity but no creation snapshot was found
-                    # TODO: should we raise an error here to inform the user of what just happened?
-                    continue
-
-            cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
-
-            if cur_subj.flags.to_be_deleted:
-                # DELETION SNAPSHOT
-                cur_snapshot.derives_from(last_snapshot)
-                cur_snapshot.has_invalidation_time(cur_time)
-                cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been removed.")
-            elif cur_subj.flags.is_a_new_entity:
                 # CREATION SNAPSHOT
+                cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
                 cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
             else:
-                # MODIFICATION SNAPSHOT
-                cur_snapshot.derives_from(last_snapshot)
-                cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been modified.")
+                update_query: Optional[str] = self._get_update_query(cur_subj)
+                was_modified: bool = update_query is not None
 
-            # Update query
-            update_query: Optional[str] = self._get_update_query(cur_subj)
-            if update_query is not None:
-                cur_snapshot.has_update_action(update_query)
+                if cur_subj._to_be_deleted:
+                    # DELETION SNAPSHOT
+                    last_snapshot: ProvEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
+                    last_snapshot.has_invalidation_time(cur_time)
 
-    def _get_update_query(self, cur_subj: GraphEntity) -> Optional[str]:
-        current_graph: Graph = cur_subj.g
+                    cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
+                    cur_snapshot.derives_from(last_snapshot)
+                    cur_snapshot.has_invalidation_time(cur_time)
+                    cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been deleted.")
+                    cur_snapshot.has_update_action(update_query)
+                elif was_modified:
+                    # MODIFICATION SNAPSHOT
+                    last_snapshot: ProvEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
+                    last_snapshot.has_invalidation_time(cur_time)
 
-        if cur_subj.flags.preexisting_graph_was_loaded:
-            preexisting_graph: Graph = cur_subj.preexisting_graph
-        else:
-            preexisting_graph: Graph = Graph()
-            query: str = f"CONSTRUCT {{<{cur_subj.res}> ?p ?o}} WHERE {{<{cur_subj.res}> ?p ?o}}"
-            # print(query, '\n')
-            result: Result = self.ts.query(query)
+                    cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
+                    cur_snapshot.derives_from(last_snapshot)
+                    cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been modified.")
+                    cur_snapshot.has_update_action(update_query)
 
-            if result is None:
-                # TODO: raise an error!
-                return None
-
-            for s, p, o in result:
-                preexisting_graph.add((s, p, o))
-
-        preexisting_iso: IsomorphicGraph = to_isomorphic(preexisting_graph)
-        current_iso: IsomorphicGraph = to_isomorphic(current_graph)
-        if preexisting_iso == current_iso:
-            # Both graphs have exactly the same content!
+    @staticmethod
+    def __get_delete_query(graph_iri: URIRef, data: Graph) -> Optional[str]:
+        if len(data) == 0:
             return None
-        else:
-            in_both, in_first, in_second = graph_diff(preexisting_iso, current_iso)
-            delete_string: str = u"DELETE DATA { GRAPH <%s> { " % current_graph.identifier
-            delete_string += in_first.serialize(format="nt11", encoding="utf-8").decode("utf-8")
-            delete_string = delete_string.replace('\n\n', '') + "} }"
+        delete_string: str = f"DELETE DATA {{ GRAPH <{graph_iri}> {{ "
+        delete_string += data.serialize(format="nt11", encoding="utf-8").decode("utf-8")
+        return delete_string.replace('\n\n', '') + "} }"
 
-            insert_string: str = u"INSERT DATA { GRAPH <%s> { " % current_graph.identifier
-            insert_string += in_second.serialize(format="nt11", encoding="utf-8").decode("utf-8")
-            insert_string = insert_string.replace('\n\n', '') + "} }"
-            return delete_string + " " + insert_string
+    @staticmethod
+    def __get_insert_query(graph_iri: URIRef, data: Graph) -> Optional[str]:
+        if len(data) == 0:
+            return None
+        insert_string: str = f"INSERT DATA {{ GRAPH <{graph_iri}> {{ "
+        insert_string += data.serialize(format="nt11", encoding="utf-8").decode("utf-8")
+        return insert_string.replace('\n\n', '') + "} }"
+
+    @staticmethod
+    def _get_update_query(cur_subj: GraphEntity) -> Optional[str]:
+        current_graph: Graph = cur_subj.g
+        preexisting_graph: Graph = cur_subj.preexisting_graph
+
+        if cur_subj._to_be_deleted:
+            return ProvSet.__get_delete_query(current_graph.identifier, preexisting_graph)
+        else:
+            preexisting_iso: IsomorphicGraph = to_isomorphic(preexisting_graph)
+            current_iso: IsomorphicGraph = to_isomorphic(current_graph)
+            if preexisting_iso == current_iso:
+                # Both graphs have exactly the same content!
+                return None
+            in_both, in_first, in_second = graph_diff(preexisting_iso, current_iso)
+            delete_string: Optional[str] = ProvSet.__get_delete_query(current_graph.identifier, in_first)
+            insert_string: Optional[str] = ProvSet.__get_insert_query(current_graph.identifier, in_second)
+
+            if delete_string is not None and insert_string is not None:
+                return delete_string + ' ' + insert_string
+            elif delete_string is not None:
+                return delete_string
+            elif insert_string is not None:
+                return insert_string
+            else:
+                return None
 
     def _add_prov(self, graph_url: str, res: URIRef, short_name: str,
                   prov_subject: GraphEntity) -> Tuple[Graph, Optional[str], Optional[str]]:
