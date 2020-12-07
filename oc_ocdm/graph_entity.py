@@ -306,6 +306,19 @@ class GraphEntity(object):
         other.mark_as_to_be_deleted()
         self.merge_list.append(other)
 
+    def apply_changes(self):
+        if self._to_be_deleted:
+            self.remove_every_triple()
+            self.preexisting_graph = Graph(identifier=self.g.identifier)
+            self._was_merged = False
+            self.merge_list = []
+        else:
+            self.preexisting_graph = Graph(identifier=self.g.identifier)
+            for triple in self.g.triples((None, None, None)):
+                self.preexisting_graph.add(triple)
+            self._was_merged = False
+            self.merge_list = []
+
     def _get_literal(self, predicate: URIRef) -> Optional[str]:
         result: Optional[str] = None
         for o in self.g.objects(self.res, predicate):
