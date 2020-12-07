@@ -22,8 +22,6 @@ from typing import TYPE_CHECKING
 from rdflib import Graph, Namespace, URIRef, Literal
 from rdflib.namespace import RDFS, RDF
 
-from oc_ocdm.entity_flags import EntityFlags
-
 if TYPE_CHECKING:
     from typing import ClassVar, Optional, List, Dict
     from oc_ocdm import GraphSet
@@ -179,15 +177,16 @@ class GraphEntity(object):
         self.source: str = source
         self.short_name: str = short_name
         self.g_set: GraphSet = g_set
-        self.flags: EntityFlags = EntityFlags()
         self.preexisting_graph: Graph = Graph(identifier=g.identifier)
         self.merge_list: List[GraphEntity] = []
+        # FLAGS
+        self._to_be_deleted: bool = False
+        self._was_merged: bool = False
 
         # If res was not specified, create from scratch the URI reference for this entity,
         # otherwise use the provided one
         if res is None:
             self.res = self._generate_new_res(g, count, short_name)
-            self.flags.is_a_new_entity = True
         else:
             self.res = res
 
@@ -214,17 +213,13 @@ class GraphEntity(object):
             for p, o in preexisting_graph.predicate_objects(self.res):
                 self.g.add((self.res, p, o))
                 self.preexisting_graph.add((self.res, p, o))
-            self.flags.preexisting_graph_was_loaded = True
             # Since we didn't change the object reference of self.g,
             # we don't have to update the reference inside g_set.entity_g:
             # g_set.entity_g[self.res] = self.g
 
-        # If this object represents a new entity in the dataset,
-        # add all the additional information to it
-        if self.flags.is_a_new_entity or forced_type:
+        # Add mandatory information to the entity graph
+        if forced_type:
             self._create_type(res_type)
-
-            # It creates the label
             if label is not None:
                 self.create_label(label)
 
@@ -236,7 +231,7 @@ class GraphEntity(object):
         self.g.remove((None, None, None))
 
     def mark_as_to_be_deleted(self, to_be_deleted: bool = True) -> None:
-        self.flags.to_be_deleted = to_be_deleted
+        self._to_be_deleted = to_be_deleted
 
     # LABEL
     def get_label(self) -> Optional[str]:
@@ -309,7 +304,7 @@ class GraphEntity(object):
         if label is not None:
             self.create_label(label)
 
-        self.flags.was_merged = True
+        self._was_merged = True
         other.mark_as_to_be_deleted()
         self.merge_list.append(other)
 
