@@ -169,8 +169,7 @@ class GraphEntity(object):
 
     def __init__(self, g: Graph, res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
                  source_agent: str = None, source: str = None, count: str = None, label: str = None,
-                 short_name: str = "", g_set: GraphSet = None, forced_type: bool = False,
-                 preexisting_graph: Graph = None) -> None:
+                 short_name: str = "", g_set: GraphSet = None, preexisting_graph: Graph = None) -> None:
         self.cur_name: str = "SPACIN " + self.__class__.__name__
         self.resp_agent: str = resp_agent
         self.source_agent: str = source_agent
@@ -216,9 +215,8 @@ class GraphEntity(object):
             # Since we didn't change the object reference of self.g,
             # we don't have to update the reference inside g_set.entity_g:
             # g_set.entity_g[self.res] = self.g
-
-        # Add mandatory information to the entity graph
-        if forced_type:
+        else:
+            # Add mandatory information to the entity graph
             self._create_type(res_type)
             if label is not None:
                 self.create_label(label)

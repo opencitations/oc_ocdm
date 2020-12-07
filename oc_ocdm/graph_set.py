@@ -56,7 +56,7 @@ class GraphSet(object):
     }
 
     def __init__(self, base_iri: str, context_path: str, counter_handler: CounterHandler,
-                 supplier_prefix: str = "", forced_type: bool = False, wanted_label: bool = True) -> None:
+                 supplier_prefix: str = "", wanted_label: bool = True) -> None:
         # A list of rdflib.Graphs, one for subject entity
         self.g: List[Graph] = []
         # The following variable maps a URIRef with the graph in the graph list related to them
@@ -68,7 +68,6 @@ class GraphSet(object):
         self.cur_name: str = "OCDM " + self.__class__.__name__
         self.supplier_prefix: str = supplier_prefix
         self.wanted_label: bool = wanted_label
-        self.forced_type: bool = forced_type
         # Graphs
         # The following structure of URL is quite important for the other classes
         # developed and should not be changed. The only part that can change is the
@@ -99,8 +98,7 @@ class GraphSet(object):
         cur_g, count, label = self._add(graph_url=self.g_an, res=res, short_name="an")
         return ReferenceAnnotation(cur_g, res=res, res_type=GraphEntity.iri_note, short_name="an", resp_agent=resp_agent,
                                    source_agent=source_agent, source=source, count=count,
-                                   label=label, g_set=self, forced_type=self.forced_type,
-                                   preexisting_graph=preexisting_graph)
+                                   label=label, g_set=self, preexisting_graph=preexisting_graph)
 
     def add_ar(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> AgentRole:
@@ -109,8 +107,7 @@ class GraphSet(object):
         cur_g, count, label = self._add(graph_url=self.g_ar, res=res, short_name="ar")
         return AgentRole(cur_g, res=res, res_type=GraphEntity.iri_role_in_time, short_name="ar", resp_agent=resp_agent,
                          source_agent=source_agent, source=source, count=count,
-                         label=label, g_set=self, forced_type=self.forced_type,
-                         preexisting_graph=preexisting_graph)
+                         label=label, g_set=self, preexisting_graph=preexisting_graph)
 
     def add_be(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> BibliographicReference:
@@ -119,8 +116,7 @@ class GraphSet(object):
         cur_g, count, label = self._add(graph_url=self.g_be, res=res, short_name="be")
         return BibliographicReference(cur_g, res=res, res_type=GraphEntity.iri_bibliographic_reference, short_name="be",
                                       resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                                      label=label, g_set=self, forced_type=self.forced_type,
-                                      preexisting_graph=preexisting_graph)
+                                      label=label, g_set=self, preexisting_graph=preexisting_graph)
 
     def add_br(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> BibliographicResource:
@@ -129,8 +125,7 @@ class GraphSet(object):
         cur_g, count, label = self._add(graph_url=self.g_br, res=res, short_name="br")
         return BibliographicResource(cur_g, res=res, res_type=GraphEntity.iri_expression, short_name="br",
                                      resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                                     label=label, g_set=self, forced_type=self.forced_type,
-                                     preexisting_graph=preexisting_graph)
+                                     label=label, g_set=self, preexisting_graph=preexisting_graph)
 
     def add_ci(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> Citation:
@@ -139,8 +134,7 @@ class GraphSet(object):
         cur_g, count, label = self._add(graph_url=self.g_ci, res=res, short_name="ci")
         return Citation(cur_g, res=res, res_type=GraphEntity.iri_citation, short_name="ci",
                         resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                        label=label, g_set=self, forced_type=self.forced_type,
-                        preexisting_graph=preexisting_graph)
+                        label=label, g_set=self, preexisting_graph=preexisting_graph)
 
     def add_de(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> DiscourseElement:
@@ -149,8 +143,7 @@ class GraphSet(object):
         cur_g, count, label = self._add(graph_url=self.g_de, res=res, short_name="de")
         return DiscourseElement(cur_g, res=res, res_type=GraphEntity.iri_discourse_element, short_name="de",
                                 resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                                label=label, g_set=self, forced_type=self.forced_type,
-                                preexisting_graph=preexisting_graph)
+                                label=label, g_set=self, preexisting_graph=preexisting_graph)
 
     def add_id(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> Identifier:
@@ -159,8 +152,7 @@ class GraphSet(object):
         cur_g, count, label = self._add(graph_url=self.g_id, res=res, short_name="id")
         return Identifier(cur_g, res=res, res_type=GraphEntity.iri_identifier, short_name="id",
                           resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                          label=label, g_set=self, forced_type=self.forced_type,
-                          preexisting_graph=preexisting_graph)
+                          label=label, g_set=self, preexisting_graph=preexisting_graph)
 
     def add_pl(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> PointerList:
@@ -169,8 +161,7 @@ class GraphSet(object):
         cur_g, count, label = self._add(graph_url=self.g_pl, res=res, short_name="pl")
         return PointerList(cur_g, res=res, res_type=GraphEntity.iri_singleloc_pointer_list, short_name="pl",
                            resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                           label=label, g_set=self, forced_type=self.forced_type,
-                           preexisting_graph=preexisting_graph)
+                           label=label, g_set=self, preexisting_graph=preexisting_graph)
 
     def add_rp(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> ReferencePointer:
@@ -179,8 +170,7 @@ class GraphSet(object):
         cur_g, count, label = self._add(graph_url=self.g_rp, res=res, short_name="rp")
         return ReferencePointer(cur_g, res=res, res_type=GraphEntity.iri_intextref_pointer, short_name="rp",
                                 resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                                label=label, g_set=self, forced_type=self.forced_type,
-                                preexisting_graph=preexisting_graph)
+                                label=label, g_set=self, preexisting_graph=preexisting_graph)
 
     def add_ra(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> ResponsibleAgent:
@@ -189,8 +179,7 @@ class GraphSet(object):
         cur_g, count, label = self._add(graph_url=self.g_ra, res=res, short_name="ra")
         return ResponsibleAgent(cur_g, res=res, res_type=GraphEntity.iri_agent, short_name="ra",
                                 resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                                label=label, g_set=self, forced_type=self.forced_type,
-                                preexisting_graph=preexisting_graph)
+                                label=label, g_set=self, preexisting_graph=preexisting_graph)
 
     def add_re(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> ResourceEmbodiment:
@@ -199,8 +188,7 @@ class GraphSet(object):
         cur_g, count, label = self._add(graph_url=self.g_re, res=res, short_name="re")
         return ResourceEmbodiment(cur_g, res=res, res_type=GraphEntity.iri_manifestation, short_name="re",
                                   resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                                  label=label, g_set=self, forced_type=self.forced_type,
-                                  preexisting_graph=preexisting_graph)
+                                  label=label, g_set=self, preexisting_graph=preexisting_graph)
 
     def _add(self, graph_url: str, res: URIRef, short_name: str) -> Tuple[Graph, Optional[str], Optional[str]]:
         cur_g: Graph = Graph(identifier=graph_url)
