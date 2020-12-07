@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from importlib import resources
 from pyshex import ShExEvaluator
-from rdflib import RDF
+from rdflib import RDF, Namespace
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -26,78 +26,147 @@ if TYPE_CHECKING:
     from rdflib import Graph, URIRef, term
 
 
-class Reader(object):
+def get_graph_from_subject(graph: Graph, subject: URIRef) -> Graph:
+    g: Graph = Graph(identifier=graph.identifier)
+    for p, o in graph.predicate_objects(subject):
+        g.add((subject, p, o))
+    return g
 
-    @staticmethod
-    def get_graph_from_subject(graph: Graph, subject: URIRef):
-        g: Graph = Graph(identifier=graph.identifier)
-        for p, o in graph.predicate_objects(subject):
-            g.add((subject, p, o))
-        return g
 
-    @staticmethod
-    def graph_validation(graph: Graph, closed: bool = False):
-        valid_graph: Graph = Graph(identifier=graph.identifier)
-        if closed:
-            shex = resources.read_text('resources', 'shexc_closed.txt')
-        else:
-            shex = resources.read_text('resources', 'shexc.txt')
-        for node_result in ShExEvaluator().evaluate(rdf=graph, shex=shex):
-            if node_result.result and node_result.focus is not None:
-                valid_graph.add(graph.triples(node_result.focus, None, None))
-        return valid_graph
+def _validate(graph: Graph, shex: str, valid_graph: Graph, focus: URIRef, shape: URIRef) -> bool:
+    node_result = next(ShExEvaluator().evaluate(rdf=graph, shex=shex, focus=focus, start=shape))
+    if node_result.result:
+        for triple in graph.triples((focus, None, None)):
+            valid_graph.add(triple)
+    return node_result.result
 
-    def import_entities_from_graph(self, g_set: GraphSet, graph: Graph, enable_validation: bool = True,
-                                   closed: bool = False):
-        if enable_validation:
-            graph = self.graph_validation(graph, closed)
 
-        for subject in graph.subjects():
-            types: List[term] = []
-            for o in graph.objects(subject, RDF.type):
-                types.append(o)
+def graph_validation(graph: Graph, closed: bool = False) -> Graph:
+    valid_graph: Graph = Graph(identifier=graph.identifier)
 
-            # ReferenceAnnotation
-            if GraphEntity.iri_note in types:
-                g_set.add_an(resp_agent='importer', res=subject,
-                             preexisting_graph=self.get_graph_from_subject(graph, subject))
-            # AgentRole
-            elif GraphEntity.iri_role_in_time in types:
-                g_set.add_ar(resp_agent='importer', res=subject,
-                             preexisting_graph=self.get_graph_from_subject(graph, subject))
-            # BibliographicReference
-            elif GraphEntity.iri_bibliographic_reference in types:
-                g_set.add_be(resp_agent='importer', res=subject,
-                             preexisting_graph=self.get_graph_from_subject(graph, subject))
-            # BibliographicResource
-            elif GraphEntity.iri_expression in types:
-                g_set.add_br(resp_agent='importer', res=subject,
-                             preexisting_graph=self.get_graph_from_subject(graph, subject))
-            # Citation
-            elif GraphEntity.iri_citation in types:
-                g_set.add_ci(resp_agent='importer', res=subject,
-                             preexisting_graph=self.get_graph_from_subject(graph, subject))
-            # DiscourseElement
-            elif GraphEntity.iri_discourse_element in types:
-                g_set.add_de(resp_agent='importer', res=subject,
-                             preexisting_graph=self.get_graph_from_subject(graph, subject))
-            # Identifier
-            elif GraphEntity.iri_identifier in types:
-                g_set.add_id(resp_agent='importer', res=subject,
-                             preexisting_graph=self.get_graph_from_subject(graph, subject))
-            # PointerList
-            elif GraphEntity.iri_singleloc_pointer_list in types:
-                g_set.add_pl(resp_agent='importer', res=subject,
-                             preexisting_graph=self.get_graph_from_subject(graph, subject))
-            # ResponsibleAgent
-            elif GraphEntity.iri_agent in types:
-                g_set.add_ra(resp_agent='importer', res=subject,
-                             preexisting_graph=self.get_graph_from_subject(graph, subject))
-            # ResourceEmbodiment
-            elif GraphEntity.iri_manifestation in types:
-                g_set.add_re(resp_agent='importer', res=subject,
-                             preexisting_graph=self.get_graph_from_subject(graph, subject))
-            # ReferencePointer
-            elif GraphEntity.iri_intextref_pointer in types:
-                g_set.add_rp(resp_agent='importer', res=subject,
-                             preexisting_graph=self.get_graph_from_subject(graph, subject))
+    if closed:
+        shex = resources.read_text('resources', 'shexc_closed.txt')
+    else:
+        shex = resources.read_text('resources', 'shexc.txt')
+
+    subjects = set()
+    for s in graph.subjects():
+        subjects.add(s)
+
+    BIRO = Namespace("http://purl.org/spar/biro/")
+    C4O = Namespace("http://purl.org/spar/c4o/")
+    CITO = Namespace("http://purl.org/spar/cito/")
+    DATACITE = Namespace("http://purl.org/spar/datacite/")
+    DEO = Namespace("http://purl.org/spar/deo/")
+    FABIO = Namespace("http://purl.org/spar/fabio/")
+    FOAF = Namespace("http://xmlns.com/foaf/0.1/")
+    OA = Namespace("http://www.w3.org/ns/oa#")
+    PRO = Namespace("http://purl.org/spar/pro/")
+
+    OC = Namespace("https://opencitations.net/shex/")
+
+    for subject in subjects:
+        # ReferenceAnnotation
+        if (subject, RDF.type, OA.Annotation) in graph:
+            _validate(graph, shex, valid_graph, subject, OC.ReferenceAnnotationShape)
+
+        # AgentRole
+        elif (subject, RDF.type, PRO.RoleInTime) in graph:
+            _validate(graph, shex, valid_graph, subject, OC.AgentRoleShape)
+
+        # BibliographicReference
+        elif (subject, RDF.type, BIRO.BibliographicReference) in graph:
+            _validate(graph, shex, valid_graph, subject, OC.BibliographicReferenceShape)
+
+        # BibliographicResource
+        elif (subject, RDF.type, FABIO.Expression) in graph:
+            _validate(graph, shex, valid_graph, subject, OC.BibliographicResourceShape)
+
+        # Citation
+        elif (subject, RDF.type, CITO.Citation) in graph:
+            _validate(graph, shex, valid_graph, subject, OC.CitationShape)
+
+        # DiscourseElement
+        elif (subject, RDF.type, DEO.DiscourseElement) in graph:
+            _validate(graph, shex, valid_graph, subject, OC.DiscourseElementShape)
+
+        # Identifier
+        elif (subject, RDF.type, DATACITE.Identifier) in graph:
+            _validate(graph, shex, valid_graph, subject, OC.IdentifierShape)
+
+        # PointerList
+        elif (subject, RDF.type, C4O.SingleLocationPointerList) in graph:
+            _validate(graph, shex, valid_graph, subject, OC.PointerListShape)
+
+        # ResponsibleAgent
+        elif (subject, RDF.type, FOAF.Agent) in graph:
+            _validate(graph, shex, valid_graph, subject, OC.ResponsibleAgentShape)
+
+        # ResourceEmbodiment
+        elif (subject, RDF.type, FABIO.Manifestation) in graph:
+            _validate(graph, shex, valid_graph, subject, OC.ResourceEmbodimentShape)
+
+        # ReferencePointer
+        elif (subject, RDF.type, C4O.InTextReferencePointer) in graph:
+            _validate(graph, shex, valid_graph, subject, OC.ReferencePointerShape)
+
+    return valid_graph
+
+
+def import_entities_from_graph(g_set: GraphSet, graph: Graph, enable_validation: bool = True,
+                               closed: bool = False) -> List[GraphEntity]:
+    if enable_validation:
+        graph = graph_validation(graph, closed)
+
+    imported_entities: List[GraphEntity] = []
+    for subject in graph.subjects():
+        types: List[term] = []
+        for o in graph.objects(subject, RDF.type):
+            types.append(o)
+
+        # ReferenceAnnotation
+        if GraphEntity.iri_note in types:
+            imported_entities.append(g_set.add_an(resp_agent='importer', res=subject,
+                                     preexisting_graph=get_graph_from_subject(graph, subject)))
+        # AgentRole
+        elif GraphEntity.iri_role_in_time in types:
+            imported_entities.append(g_set.add_ar(resp_agent='importer', res=subject,
+                                     preexisting_graph=get_graph_from_subject(graph, subject)))
+        # BibliographicReference
+        elif GraphEntity.iri_bibliographic_reference in types:
+            imported_entities.append(g_set.add_be(resp_agent='importer', res=subject,
+                                     preexisting_graph=get_graph_from_subject(graph, subject)))
+        # BibliographicResource
+        elif GraphEntity.iri_expression in types:
+            imported_entities.append(g_set.add_br(resp_agent='importer', res=subject,
+                                     preexisting_graph=get_graph_from_subject(graph, subject)))
+        # Citation
+        elif GraphEntity.iri_citation in types:
+            imported_entities.append(g_set.add_ci(resp_agent='importer', res=subject,
+                                     preexisting_graph=get_graph_from_subject(graph, subject)))
+        # DiscourseElement
+        elif GraphEntity.iri_discourse_element in types:
+            imported_entities.append(g_set.add_de(resp_agent='importer', res=subject,
+                                     preexisting_graph=get_graph_from_subject(graph, subject)))
+        # Identifier
+        elif GraphEntity.iri_identifier in types:
+            imported_entities.append(g_set.add_id(resp_agent='importer', res=subject,
+                                     preexisting_graph=get_graph_from_subject(graph, subject)))
+        # PointerList
+        elif GraphEntity.iri_singleloc_pointer_list in types:
+            imported_entities.append(g_set.add_pl(resp_agent='importer', res=subject,
+                                     preexisting_graph=get_graph_from_subject(graph, subject)))
+        # ResponsibleAgent
+        elif GraphEntity.iri_agent in types:
+            imported_entities.append(g_set.add_ra(resp_agent='importer', res=subject,
+                                     preexisting_graph=get_graph_from_subject(graph, subject)))
+        # ResourceEmbodiment
+        elif GraphEntity.iri_manifestation in types:
+            imported_entities.append(g_set.add_re(resp_agent='importer', res=subject,
+                                     preexisting_graph=get_graph_from_subject(graph, subject)))
+        # ReferencePointer
+        elif GraphEntity.iri_intextref_pointer in types:
+            imported_entities.append(g_set.add_rp(resp_agent='importer', res=subject,
+                                     preexisting_graph=get_graph_from_subject(graph, subject)))
+
+    return imported_entities
