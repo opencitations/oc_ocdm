@@ -73,7 +73,7 @@ class ProvEntity(GraphEntity):
         return URIRef(str(g.identifier) + (short_name + "/" if short_name != "" else "") + count)
 
     # HAS CREATION DATE
-    def get_generation_date(self) -> Optional[str]:
+    def get_generation_time(self) -> Optional[str]:
         return self._get_literal(ProvEntity.iri_generated_at_time)
 
     @accepts_only('literal')
@@ -88,7 +88,7 @@ class ProvEntity(GraphEntity):
         self.g.remove((self.res, ProvEntity.iri_generated_at_time, None))
 
     # HAS INVALIDATION DATE
-    def get_invalidation_date(self) -> Optional[str]:
+    def get_invalidation_time(self) -> Optional[str]:
         return self._get_literal(ProvEntity.iri_invalidated_at_time)
 
     @accepts_only('literal')
