@@ -101,7 +101,7 @@ class ProvSet(GraphSet):
 
         # MERGED ENTITIES
         for cur_subj in self.prov_g.res_to_entity.values():
-            if cur_subj is None or (not cur_subj._was_merged or cur_subj._to_be_deleted):
+            if cur_subj is None or (not cur_subj.was_merged or cur_subj.to_be_deleted):
                 # Here we must skip every entity that was not merged or that must be deleted.
                 continue
 
@@ -144,14 +144,14 @@ class ProvSet(GraphSet):
 
         # EVERY OTHER ENTITY
         for cur_subj in self.prov_g.res_to_entity.values():
-            if cur_subj is None or (cur_subj._was_merged and not cur_subj._to_be_deleted):
+            if cur_subj is None or (cur_subj.was_merged and not cur_subj.to_be_deleted):
                 # Here we must skip every entity which was merged while not being marked as to be deleted,
                 # since we already processed those entities in the previous loop.
                 continue
 
             last_snapshot_res: Optional[URIRef] = self._retrieve_last_snapshot(cur_subj.res)
             if last_snapshot_res is None:
-                if cur_subj._to_be_deleted:
+                if cur_subj.to_be_deleted:
                     # We can ignore this entity because it was deleted even before being created.
                     pass
                 else:
@@ -164,7 +164,7 @@ class ProvSet(GraphSet):
                 update_query: Optional[str] = self._get_update_query(cur_subj)
                 was_modified: bool = update_query is not None
 
-                if cur_subj._to_be_deleted:
+                if cur_subj.to_be_deleted:
                     # DELETION SNAPSHOT
                     last_snapshot: ProvEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
                     last_snapshot.has_invalidation_time(cur_time)
@@ -209,7 +209,7 @@ class ProvSet(GraphSet):
         current_graph: Graph = cur_subj.g
         preexisting_graph: Graph = cur_subj.preexisting_graph
 
-        if cur_subj._to_be_deleted:
+        if cur_subj.to_be_deleted:
             return ProvSet.__get_delete_query(current_graph.identifier, preexisting_graph)
         else:
             preexisting_iso: IsomorphicGraph = to_isomorphic(preexisting_graph)

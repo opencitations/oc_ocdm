@@ -23,10 +23,9 @@ from rdflib import Graph, Namespace, URIRef, Literal
 from rdflib.namespace import RDFS, RDF
 
 if TYPE_CHECKING:
-    from typing import ClassVar, Optional, List, Dict
+    from typing import ClassVar, Optional, List, Dict, Tuple
     from oc_ocdm import GraphSet
-from oc_ocdm.support import create_literal,\
-                                    create_type
+from oc_ocdm.support import create_literal, create_type
 
 
 class GraphEntity(object):
@@ -177,7 +176,7 @@ class GraphEntity(object):
         self.short_name: str = short_name
         self.g_set: GraphSet = g_set
         self.preexisting_graph: Graph = Graph(identifier=g.identifier)
-        self.merge_list: List[GraphEntity] = []
+        self._merge_list: Tuple[GraphEntity] = tuple()
         # FLAGS
         self._to_be_deleted: bool = False
         self._was_merged: bool = False
@@ -220,6 +219,18 @@ class GraphEntity(object):
             self._create_type(res_type)
             if label is not None:
                 self.create_label(label)
+
+    @property
+    def to_be_deleted(self) -> bool:
+        return self._to_be_deleted
+
+    @property
+    def was_merged(self) -> bool:
+        return self._was_merged
+
+    @property
+    def merge_list(self) -> Tuple[GraphEntity]:
+        return self._merge_list
 
     @staticmethod
     def _generate_new_res(g: Graph, count: str, short_name: str = "") -> URIRef:
@@ -304,20 +315,20 @@ class GraphEntity(object):
 
         self._was_merged = True
         other.mark_as_to_be_deleted()
-        self.merge_list.append(other)
+        self._merge_list = (*self._merge_list, other)
 
     def apply_changes(self):
         if self._to_be_deleted:
             self.remove_every_triple()
             self.preexisting_graph = Graph(identifier=self.g.identifier)
             self._was_merged = False
-            self.merge_list = []
+            self._merge_list = tuple()
         else:
             self.preexisting_graph = Graph(identifier=self.g.identifier)
             for triple in self.g.triples((None, None, None)):
                 self.preexisting_graph.add(triple)
             self._was_merged = False
-            self.merge_list = []
+            self._merge_list = tuple()
 
     def _get_literal(self, predicate: URIRef) -> Optional[str]:
         result: Optional[str] = None
