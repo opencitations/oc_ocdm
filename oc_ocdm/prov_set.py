@@ -18,12 +18,15 @@ from __future__ import annotations
 __author__ = 'essepuntato'
 
 from datetime import datetime
-from typing import Optional, Tuple, List
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Optional, Tuple, List
+    from oc_ocdm import GraphEntity
 
 from rdflib import Graph, ConjunctiveGraph, URIRef
 from rdflib.compare import to_isomorphic, graph_diff, IsomorphicGraph
 
-from oc_ocdm import GraphEntity
 from oc_ocdm import GraphSet
 from oc_ocdm import ProvEntity
 from oc_ocdm.counter_handler import CounterHandler
