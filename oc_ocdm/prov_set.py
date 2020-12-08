@@ -153,12 +153,13 @@ class ProvSet(GraphSet):
             if last_snapshot_res is None:
                 if cur_subj._to_be_deleted:
                     # We can ignore this entity because it was deleted even before being created.
-                    continue
-                # CREATION SNAPSHOT
-                cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
-                cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
-                if update_entities:
-                    cur_subj.apply_changes()
+                    pass
+                else:
+                    # CREATION SNAPSHOT
+                    cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
+                    cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
+                    if update_entities:
+                        cur_subj.apply_changes()
             else:
                 update_query: Optional[str] = self._get_update_query(cur_subj)
                 was_modified: bool = update_query is not None
