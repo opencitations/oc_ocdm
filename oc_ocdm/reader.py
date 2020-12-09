@@ -17,13 +17,14 @@ from __future__ import annotations
 
 from importlib import resources
 from pyshex import ShExEvaluator
-from rdflib import RDF, Namespace
+from rdflib import RDF, Namespace, ConjunctiveGraph
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import List
+    from typing import List, Set
     from oc_ocdm import GraphSet, GraphEntity
     from rdflib import Graph, URIRef, term
+    from rdflib.query import Result
 
 
 def get_graph_from_subject(graph: Graph, subject: URIRef) -> Graph:
@@ -41,6 +42,13 @@ def _validate(graph: Graph, shex: str, valid_graph: Graph, focus: URIRef, shape:
     return node_result.result
 
 
+def _extract_subjects(graph: Graph) -> Set[URIRef]:
+    subjects: Set[URIRef] = set()
+    for s in graph.subjects():
+        subjects.add(s)
+    return subjects
+
+
 def graph_validation(graph: Graph, closed: bool = False) -> Graph:
     valid_graph: Graph = Graph(identifier=graph.identifier)
 
@@ -48,10 +56,6 @@ def graph_validation(graph: Graph, closed: bool = False) -> Graph:
         shex = resources.read_text('resources', 'shexc_closed.txt')
     else:
         shex = resources.read_text('resources', 'shexc.txt')
-
-    subjects = set()
-    for s in graph.subjects():
-        subjects.add(s)
 
     BIRO = Namespace("http://purl.org/spar/biro/")
     C4O = Namespace("http://purl.org/spar/c4o/")
@@ -65,7 +69,7 @@ def graph_validation(graph: Graph, closed: bool = False) -> Graph:
 
     OC = Namespace("https://opencitations.net/shex/")
 
-    for subject in subjects:
+    for subject in _extract_subjects(graph):
         # ReferenceAnnotation
         if (subject, RDF.type, OA.Annotation) in graph:
             _validate(graph, shex, valid_graph, subject, OC.ReferenceAnnotationShape)
@@ -119,7 +123,7 @@ def import_entities_from_graph(g_set: GraphSet, graph: Graph, enable_validation:
         graph = graph_validation(graph, closed)
 
     imported_entities: List[GraphEntity] = []
-    for subject in graph.subjects():
+    for subject in _extract_subjects(graph):
         types: List[term] = []
         for o in graph.objects(subject, RDF.type):
             types.append(o)
@@ -170,3 +174,21 @@ def import_entities_from_graph(g_set: GraphSet, graph: Graph, enable_validation:
                                      preexisting_graph=get_graph_from_subject(graph, subject)))
 
     return imported_entities
+
+
+def import_entity_from_triplestore(g_set: GraphSet, ts_url: str, res: URIRef,
+                                   enable_validation: bool = True) -> GraphEntity:
+    ts: ConjunctiveGraph = ConjunctiveGraph()
+    ts.open((ts_url, ts_url))
+    query: str = f"CONSTRUCT {{<{res}> ?p ?o}} WHERE {{<{res}> ?p ?o}}"
+
+    result: Result = ts.query(query)
+    if result is not None:
+        imported_entities: List[GraphEntity] = import_entities_from_graph(g_set, result.graph,
+                                                                          enable_validation=enable_validation)
+        ts.close()
+        if len(imported_entities) <= 0:
+            raise ValueError("The required entity was not found or was not recognized as a proper OCDM entity.")
+        else:
+            return imported_entities[0]
+    ts.close()
