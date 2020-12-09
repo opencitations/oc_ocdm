@@ -19,10 +19,13 @@ __author__ = 'essepuntato'
 
 from typing import TYPE_CHECKING
 
+from oc_ocdm.reader import import_entities_from_graph
+
 if TYPE_CHECKING:
     from typing import Dict, List, ClassVar, Tuple, Optional
+    from rdflib.query import Result
 
-from rdflib import Graph, Namespace, URIRef
+from rdflib import Graph, Namespace, URIRef, ConjunctiveGraph
 
 from oc_ocdm import GraphEntity
 from oc_ocdm.counter_handler import CounterHandler
@@ -213,6 +216,19 @@ class GraphSet(object):
             label = "%s %s [%s/%s]" % (self.labels[short_name], count, short_name, count)
 
         return cur_g, count, label
+
+    def sync_with_triplestore(self, ts_url: str) -> None:
+        ts: ConjunctiveGraph = ConjunctiveGraph()
+        ts.open((ts_url, ts_url))
+        for entity_res, entity in self.res_to_entity.items():
+            if entity.to_be_deleted:
+                query: str = f"CONSTRUCT {{?s ?p ?o}} WHERE {{?s ?p ?o ; ?p_1 <{entity_res}>}}"
+                result: Result = ts.query(query)
+                if result is not None:
+                    imported_entities: List[GraphEntity] = import_entities_from_graph(self, result.graph)
+                    for imported_entity in imported_entities:
+                        imported_entity.g.remove((imported_entity.res, None, entity_res))
+        ts.close()
 
     def graphs(self) -> List[Graph]:
         result = []
