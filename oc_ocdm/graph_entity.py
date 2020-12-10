@@ -169,7 +169,6 @@ class GraphEntity(object):
     def __init__(self, g: Graph, res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
                  source_agent: str = None, source: str = None, count: str = None, label: str = None,
                  short_name: str = "", g_set: GraphSet = None, preexisting_graph: Graph = None) -> None:
-        self.cur_name: str = "SPACIN " + self.__class__.__name__
         self.resp_agent: str = resp_agent
         self.source_agent: str = source_agent
         self.source: str = source
