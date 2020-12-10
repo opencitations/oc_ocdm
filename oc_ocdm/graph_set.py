@@ -67,8 +67,6 @@ class GraphSet(object):
         # The following variable maps a URIRef with the related graph entity
         self.res_to_entity: Dict[URIRef, GraphEntity] = {}
         self.base_iri: str = base_iri
-        self.context_path: str = context_path
-        self.cur_name: str = "OCDM " + self.__class__.__name__
         self.supplier_prefix: str = supplier_prefix
         self.wanted_label: bool = wanted_label
         # Graphs
