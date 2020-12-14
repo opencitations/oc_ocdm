@@ -228,6 +228,13 @@ class GraphSet(object):
                         imported_entity.g.remove((imported_entity.res, None, entity_res))
         ts.close()
 
+    def apply_changes(self):
+        for res, entity in self.res_to_entity.items():
+            entity.apply_changes()
+            if entity.to_be_deleted:
+                del self.res_to_entity[res]
+                del self.entity_g[res]
+
     def graphs(self) -> List[Graph]:
         result = []
         for cur_g in self.g:

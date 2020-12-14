@@ -95,7 +95,7 @@ class ProvSet(GraphSet):
         merge_description += "."
         return merge_description
 
-    def generate_provenance(self, c_time: float = None, update_entities: bool = False) -> None:
+    def generate_provenance(self, c_time: float = None) -> None:
         time_string: str = '%Y-%m-%dT%H:%M:%S'
         if c_time is None:
             cur_time: str = datetime.now().strftime(time_string)
@@ -114,8 +114,6 @@ class ProvSet(GraphSet):
                 # CREATION SNAPSHOT
                 cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
                 cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
-                if update_entities:
-                    cur_subj.apply_changes()
             else:
                 update_query: Optional[str] = self._get_update_query(cur_subj)
                 was_modified: bool = update_query is not None
@@ -130,8 +128,6 @@ class ProvSet(GraphSet):
                     cur_snapshot.derives_from(last_snapshot)
                     cur_snapshot.has_update_action(update_query)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been modified.")
-                    if update_entities:
-                        cur_subj.apply_changes()
                 elif len(snapshots_list) > 0:
                     # MERGE SNAPSHOT
                     last_snapshot: ProvEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
@@ -142,8 +138,6 @@ class ProvSet(GraphSet):
                     for snapshot in snapshots_list:
                         cur_snapshot.derives_from(snapshot)
                     cur_snapshot.has_description(self._get_merge_description(cur_subj, snapshots_list))
-                    if update_entities:
-                        cur_subj.apply_changes()
 
         # EVERY OTHER ENTITY
         for cur_subj in self.prov_g.res_to_entity.values():
@@ -161,8 +155,6 @@ class ProvSet(GraphSet):
                     # CREATION SNAPSHOT
                     cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
-                    if update_entities:
-                        cur_subj.apply_changes()
             else:
                 update_query: Optional[str] = self._get_update_query(cur_subj)
                 was_modified: bool = update_query is not None
@@ -177,8 +169,6 @@ class ProvSet(GraphSet):
                     cur_snapshot.has_invalidation_time(cur_time)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been deleted.")
                     cur_snapshot.has_update_action(update_query)
-                    if update_entities:
-                        cur_subj.apply_changes()
                 elif was_modified:
                     # MODIFICATION SNAPSHOT
                     last_snapshot: ProvEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
@@ -188,8 +178,6 @@ class ProvSet(GraphSet):
                     cur_snapshot.derives_from(last_snapshot)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been modified.")
                     cur_snapshot.has_update_action(update_query)
-                    if update_entities:
-                        cur_subj.apply_changes()
 
     @staticmethod
     def __get_delete_query(graph_iri: URIRef, data: Graph) -> Optional[str]:

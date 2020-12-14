@@ -317,17 +317,15 @@ class GraphEntity(object):
         self._merge_list = (*self._merge_list, other)
 
     def apply_changes(self):
+        self.preexisting_graph = Graph(identifier=self.g.identifier)
         if self._to_be_deleted:
             self.remove_every_triple()
-            self.preexisting_graph = Graph(identifier=self.g.identifier)
-            self._was_merged = False
-            self._merge_list = tuple()
         else:
-            self.preexisting_graph = Graph(identifier=self.g.identifier)
             for triple in self.g.triples((None, None, None)):
                 self.preexisting_graph.add(triple)
-            self._was_merged = False
-            self._merge_list = tuple()
+        self._to_be_deleted = False
+        self._was_merged = False
+        self._merge_list = tuple()
 
     def _get_literal(self, predicate: URIRef) -> Optional[str]:
         result: Optional[str] = None
