@@ -31,19 +31,18 @@ PREFIX prov:     <http://www.w3.org/ns/prov#>
     rdf:type [datacite:Identifier];
     literal:hasLiteralValue xsd:string;
     datacite:usesIdentifierScheme [datacite:oci
-                                   datacite:orcid
                                    datacite:doi
                                    datacite:pmid
                                    datacite:pmcid
-                                   datacite:issn
-                                   datacite:isbn
-                                   datacite:url
+                                   datacite:orcid
                                    datacite:local-resource-identifier-scheme
                                    datacite:intrepid
-                                   datacite:wikidata
-                                   datacite:crossref
+                                   datacite:isbn
+                                   datacite:issn
+                                   datacite:url
                                    datacite:viaf
-                                   # TODO: check the existence of other applicable IRIs
+                                   datacite:crossref
+                                   datacite:wikidata
                                   ];
     # Inverse properties:
     ^datacite:hasIdentifier (@:AgentRoleType OR

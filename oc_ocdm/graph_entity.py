@@ -64,7 +64,6 @@ class GraphEntity(object):
     iri_has_cited_entity: ClassVar[URIRef] = CITO.hasCitedEntity
     iri_oci: ClassVar[URIRef] = DATACITE.oci
     iri_doi: ClassVar[URIRef] = DATACITE.doi
-    iri_occ: ClassVar[URIRef] = DATACITE.occ
     iri_pmid: ClassVar[URIRef] = DATACITE.pmid
     iri_pmcid: ClassVar[URIRef] = DATACITE.pmcid
     iri_orcid: ClassVar[URIRef] = DATACITE.orcid
