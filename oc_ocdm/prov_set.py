@@ -35,17 +35,9 @@ from oc_ocdm.support import get_short_name, get_count, get_prefix
 
 class ProvSet(GraphSet):
     def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, context_path: str,
-                 counter_handler: CounterHandler, supplier_prefix: str,
-                 triplestore_url: str, wanted_label: bool = True) -> None:
+                 counter_handler: CounterHandler, supplier_prefix: str, wanted_label: bool = True) -> None:
         super(ProvSet, self).__init__(base_iri, context_path, counter_handler, supplier_prefix,
                                       wanted_label=wanted_label)
-        if triplestore_url is None:
-            self.ts: Optional[ConjunctiveGraph] = None
-        else:
-            self.triplestore_url: str = triplestore_url
-            self.ts: Optional[ConjunctiveGraph] = ConjunctiveGraph('SPARQLUpdateStore')
-            self.ts.open((triplestore_url, triplestore_url))
-
         self.prov_g: GraphSet = prov_subj_graph_set
 
         if wanted_label:

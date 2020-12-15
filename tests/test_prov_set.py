@@ -31,8 +31,7 @@ class TestProvSet(unittest.TestCase):
 
         self.prov_set = ProvSet(prov_subj_graph_set=self.prov_subj_graph_set, base_iri="http://test/",
                                context_path="context_base", counter_handler=self.counter_handler,
-                               wanted_label=False, supplier_prefix="070",
-                               triplestore_url="http://localhost:9999/blazegraph/sparql")
+                               wanted_label=False, supplier_prefix="070")
 
     def test_add_se(self):
         prov_subj = self.prov_subj_graph_set.add_br(self.__class__.__name__)
