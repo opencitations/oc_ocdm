@@ -146,10 +146,6 @@ class Citation(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.iri_citation_characterisation, None))
 
     # HAS TYPE
-    def get_types(self) -> List[URIRef]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(RDF.type)
-        return uri_list
-
     def create_self_citation(self) -> None:
         self._create_type(GraphEntity.iri_self_citation)
 
@@ -173,10 +169,3 @@ class Citation(BibliographicEntity):
 
     def create_distant_citation(self) -> None:
         self._create_type(GraphEntity.iri_distant_citation)
-
-    @accepts_only('thing')
-    def remove_type(self, type_ref: URIRef = None) -> None:
-        if type_ref is not None:
-            self.g.remove((self.res, RDF.type, type_ref))
-        else:
-            self.g.remove((self.res, RDF.type, None))

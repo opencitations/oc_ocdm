@@ -309,10 +309,6 @@ class BibliographicResource(BibliographicEntity):
             self.g.remove((self.res, GraphEntity.iri_relation, None))
 
     # HAS TYPE
-    def get_types(self) -> List[URIRef]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(RDF.type)
-        return uri_list
-
     def create_archival_document(self) -> None:
         """The type of the bibliographic resource
         """
@@ -452,10 +448,3 @@ class BibliographicResource(BibliographicEntity):
         """The type of the bibliographic resource
         """
         self._create_type(GraphEntity.iri_expression)
-
-    @accepts_only('thing')
-    def remove_type(self, type_ref: URIRef = None) -> None:
-        if type_ref is not None:
-            self.g.remove((self.res, RDF.type, type_ref))
-        else:
-            self.g.remove((self.res, RDF.type, None))

@@ -120,10 +120,6 @@ class ResourceEmbodiment(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.iri_has_url, None))
 
     # HAS TYPE
-    def get_types(self) -> List[URIRef]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(RDF.type)
-        return uri_list
-
     def create_digital_embodiment(self) -> None:
         """It identifies the particular type of the embodiment, either digital or print.
         """
@@ -133,10 +129,3 @@ class ResourceEmbodiment(BibliographicEntity):
         """It identifies the particular type of the embodiment, either digital or print.
         """
         self._create_type(GraphEntity.iri_print_object)
-
-    @accepts_only('thing')
-    def remove_type(self, type_ref: URIRef = None) -> None:
-        if type_ref is not None:
-            self.g.remove((self.res, RDF.type, type_ref))
-        else:
-            self.g.remove((self.res, RDF.type, None))

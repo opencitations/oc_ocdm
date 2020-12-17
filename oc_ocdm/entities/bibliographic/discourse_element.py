@@ -191,10 +191,6 @@ class DiscourseElement(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.iri_has_sequence_identifier, None))
 
     # HAS TYPE
-    def get_types(self) -> List[URIRef]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(RDF.type)
-        return uri_list
-
     @accepts_only('thing')
     def create_discourse_element(self, de_class: URIRef) -> None:
         """The type of discourse element – such as “paragraph”, “section”, “sentence”,
@@ -252,10 +248,3 @@ class DiscourseElement(BibliographicEntity):
         “acknowledgements”, “reference list” or “figure”.
         """
         self._create_type(GraphEntity.iri_caption)
-
-    @accepts_only('thing')
-    def remove_type(self, type_ref: URIRef = None) -> None:
-        if type_ref is not None:
-            self.g.remove((self.res, RDF.type, type_ref))
-        else:
-            self.g.remove((self.res, RDF.type, None))
