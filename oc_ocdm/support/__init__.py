@@ -18,3 +18,4 @@ from oc_ocdm.support.support import create_date, get_datatype_from_iso_8601, enc
                                     get_resource_number, find_local_line_id, find_paths, has_supplier_prefix,\
                                     is_dataset
 from oc_ocdm.support.reporter import Reporter
+from oc_ocdm.support.query_utils import get_update_query, get_insert_query, get_delete_query

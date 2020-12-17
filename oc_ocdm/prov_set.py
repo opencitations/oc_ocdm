@@ -24,13 +24,12 @@ if TYPE_CHECKING:
     from typing import Optional, Tuple, List
     from oc_ocdm import GraphEntity
 
-from rdflib import Graph, ConjunctiveGraph, URIRef
-from rdflib.compare import to_isomorphic, graph_diff, IsomorphicGraph
+from rdflib import Graph, URIRef
 
 from oc_ocdm import GraphSet
 from oc_ocdm import ProvEntity
 from oc_ocdm.counter_handler import CounterHandler
-from oc_ocdm.support import get_short_name, get_count, get_prefix
+from oc_ocdm.support import get_short_name, get_count, get_prefix, get_update_query
 
 
 class ProvSet(GraphSet):
@@ -107,7 +106,7 @@ class ProvSet(GraphSet):
                 cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
                 cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
             else:
-                update_query: Optional[str] = self._get_update_query(cur_subj)
+                update_query: Optional[str] = get_update_query(cur_subj)[0]
                 was_modified: bool = update_query is not None
                 snapshots_list: List[ProvEntity] = self._get_snapshots_from_merge_list(cur_subj)
 
@@ -148,7 +147,7 @@ class ProvSet(GraphSet):
                     cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
             else:
-                update_query: Optional[str] = self._get_update_query(cur_subj)
+                update_query: Optional[str] = get_update_query(cur_subj)[0]
                 was_modified: bool = update_query is not None
 
                 if cur_subj.to_be_deleted:
@@ -170,48 +169,6 @@ class ProvSet(GraphSet):
                     cur_snapshot.derives_from(last_snapshot)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been modified.")
                     cur_snapshot.has_update_action(update_query)
-
-    @staticmethod
-    def __get_delete_query(graph_iri: URIRef, data: Graph) -> Optional[str]:
-        if len(data) == 0:
-            return None
-        delete_string: str = f"DELETE DATA {{ GRAPH <{graph_iri}> {{ "
-        delete_string += data.serialize(format="nt11", encoding="utf-8").decode("utf-8")
-        return delete_string.replace('\n\n', '') + "} }"
-
-    @staticmethod
-    def __get_insert_query(graph_iri: URIRef, data: Graph) -> Optional[str]:
-        if len(data) == 0:
-            return None
-        insert_string: str = f"INSERT DATA {{ GRAPH <{graph_iri}> {{ "
-        insert_string += data.serialize(format="nt11", encoding="utf-8").decode("utf-8")
-        return insert_string.replace('\n\n', '') + "} }"
-
-    @staticmethod
-    def _get_update_query(cur_subj: GraphEntity) -> Optional[str]:
-        current_graph: Graph = cur_subj.g
-        preexisting_graph: Graph = cur_subj.preexisting_graph
-
-        if cur_subj.to_be_deleted:
-            return ProvSet.__get_delete_query(current_graph.identifier, preexisting_graph)
-        else:
-            preexisting_iso: IsomorphicGraph = to_isomorphic(preexisting_graph)
-            current_iso: IsomorphicGraph = to_isomorphic(current_graph)
-            if preexisting_iso == current_iso:
-                # Both graphs have exactly the same content!
-                return None
-            in_both, in_first, in_second = graph_diff(preexisting_iso, current_iso)
-            delete_string: Optional[str] = ProvSet.__get_delete_query(current_graph.identifier, in_first)
-            insert_string: Optional[str] = ProvSet.__get_insert_query(current_graph.identifier, in_second)
-
-            if delete_string is not None and insert_string is not None:
-                return delete_string + ' ' + insert_string
-            elif delete_string is not None:
-                return delete_string
-            elif insert_string is not None:
-                return insert_string
-            else:
-                return None
 
     def _add_prov(self, graph_url: str, res: URIRef, short_name: str,
                   prov_subject: GraphEntity) -> Tuple[Graph, Optional[str], Optional[str]]:
