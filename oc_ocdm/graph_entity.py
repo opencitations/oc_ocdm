@@ -46,7 +46,6 @@ class GraphEntity(object):
     PRISM: ClassVar[Namespace] = Namespace("http://prismstandard.org/namespaces/basic/2.0/")
     PRO: ClassVar[Namespace] = Namespace("http://purl.org/spar/pro/")
 
-    # Bibliographic entities
     iri_has_subtitle: ClassVar[URIRef] = FABIO.hasSubtitle
     iri_has_publication_date: ClassVar[URIRef] = PRISM.publicationDate
     iri_bibliographic_reference: ClassVar[URIRef] = BIRO.BibliographicReference

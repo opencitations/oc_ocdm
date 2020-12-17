@@ -29,12 +29,6 @@ if TYPE_CHECKING:
     from oc_ocdm import ProvSet
 from oc_ocdm import GraphEntity
 
-"""
-Notes about SE:
-
-    Chill down, everything seems OK here!
-"""
-
 
 class ProvEntity(GraphEntity):
     """Snapshot of entity metadata (short: se): a particular snapshot recording the
