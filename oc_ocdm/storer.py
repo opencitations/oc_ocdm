@@ -107,7 +107,6 @@ class Storer(object):
 
         processed_graphs: Dict[str, ConjunctiveGraph] = {}
         for cur_g in self.g:
-            # TODO: bug here? Assignment instead of concatenation/extension...
             processed_graphs = self.store(cur_g, base_dir, base_iri, context_path, tmp_dir,
                                           override, processed_graphs, False, remove_data)
 
@@ -357,7 +356,7 @@ class Storer(object):
                         stored_g.addN(final_g.quads((None, None, None, None)))
                         final_g = stored_g
                     elif os.path.exists(cur_file_path):
-                        # This is a conjunctive graps that contains all the triples (and graphs)
+                        # This is a conjunctive graph that contains all the triples (and graphs)
                         # the file is actually defining - they could be more than those using
                         # 'cur_subject' as subject.
                         final_g = self.load(cur_file_path, cur_g, tmp_dir)
@@ -426,6 +425,7 @@ class Storer(object):
         if cur_graph is not None:
             current_graph.parse(data=cur_graph.serialize(format="trig"), format="trig")
 
+        errors: str = ""
         for cur_format in formats:
             try:
                 if cur_format == "json-ld":
@@ -450,55 +450,6 @@ class Storer(object):
 
                 return current_graph
             except Exception as e:
-                # TODO: bug here? errors should be initialized at the beginning of the loop
-                # TODO: bug here? Assignment instead of string concatenation...
-                errors = " | " + str(e)  # Try another format
+                errors += f" | {e}"  # Try another format
 
         raise IOError("1", f"It was impossible to handle the format used for storing the file '{file_path}'{errors}")
-
-
-"""
-if __name__ == "__main__":
-    arg_parser = argparse.ArgumentParser("storer.py")
-    arg_parser.add_argument("-i", "--input", dest="input", required=True,
-                            help="The file containing the RDF to execute, the JSON-LD to upload, "
-                                 "or a directory containing several files with both queries and RDF.")
-
-    args = arg_parser.parse_args()
-
-    if args.conf is not None:
-        my_conf = __import__(args.conf)
-        for attr in dir(my_conf):
-            if not attr.startswith("__"):
-                globals()[attr] = getattr(my_conf, attr)
-
-    storer = Storer(repok=Reporter(True), reperr=Reporter(True),
-                    context_map={context_path: context_file_path})
-
-    all_files = []
-    if os.path.isdir(args.input):
-        for cur_dir, cur_subdir, cur_files in os.walk(args.input):
-            for cur_file in cur_files:
-                full_path = cur_dir + os.sep + cur_file
-                if re.search(os.sep + "prov" + os.sep, full_path) is None and \
-                        not full_path.endswith("index.json"):
-                    all_files += [full_path]
-    else:
-        all_files += [args.input]
-
-    for cur_file in all_files:
-        if not os.path.basename(cur_file).startswith("index"):
-            storer.repok.new_article()
-            storer.repok.add_sentence("Processing file '%s'" % cur_file)
-            if cur_file.endswith(".txt"):
-                with io.open(cur_file, "r", encoding="utf-8") as f:
-                    query_string = f.read()
-                    storer.execute_upload_query(query_string, triplestore_url)
-            elif cur_file.endswith(".json"):
-                conj_g = storer.load(cur_file, tmp_dir=temp_dir_for_rdf_loading)
-                for cur_g in conj_g.contexts():
-                    storer.upload(cur_g, triplestore_url)
-
-    storer.repok.write_file("storer_ok.txt")
-    storer.reperr.write_file("storer_err.txt")
-"""
