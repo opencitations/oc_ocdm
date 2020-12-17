@@ -23,6 +23,7 @@ from oc_ocdm.decorators import accepts_only
 from oc_ocdm.support import get_datatype_from_iso_8601
 
 if TYPE_CHECKING:
+    from typing import Optional, List
     from rdflib import URIRef
     from oc_ocdm.entities.bibliographic import BibliographicResource
 from oc_ocdm import GraphEntity
