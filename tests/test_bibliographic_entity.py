@@ -31,8 +31,8 @@ class TestBibliographicEntity(unittest.TestCase):
         self.entity = self.graph_set.add_ar(self.__class__.__name__)
         self.identifier = self.graph_set.add_id(self.__class__.__name__)
 
-    def test_has_id(self):
-        result = self.entity.has_id(self.identifier)
+    def test_has_identifier(self):
+        result = self.entity.has_identifier(self.identifier)
         self.assertIsNone(result)
 
         triple = self.entity.res, GraphEntity.iri_has_identifier, self.identifier.res

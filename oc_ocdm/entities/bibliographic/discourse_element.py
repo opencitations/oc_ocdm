@@ -44,7 +44,7 @@ class DiscourseElement(BibliographicEntity):
         if title is not None:
             self.has_title(title)
 
-        de_list: List[DiscourseElement] = other.get_discourse_elements()
+        de_list: List[DiscourseElement] = other.get_contained_discourse_elements()
         for cur_de in de_list:
             self.contains_discourse_element(cur_de)
 
@@ -52,11 +52,11 @@ class DiscourseElement(BibliographicEntity):
         if next_de is not None:
             self.has_next_de(next_de)
 
-        rp_list: List[ReferencePointer] = other.get_context_of_rp()
+        rp_list: List[ReferencePointer] = other.get_is_context_of_rp()
         for cur_rp in rp_list:
             self.is_context_of_rp(cur_rp)
 
-        pl_list: List[PointerList] = other.get_context_of_pl()
+        pl_list: List[PointerList] = other.get_is_context_of_pl()
         for cur_pl in pl_list:
             self.is_context_of_pl(cur_pl)
 
@@ -83,7 +83,7 @@ class DiscourseElement(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.iri_title, None))
     
     # HAS PART (DiscourseElement)
-    def get_discourse_elements(self) -> List[DiscourseElement]:
+    def get_contained_discourse_elements(self) -> List[DiscourseElement]:
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_de)
         result: List[DiscourseElement] = []
         for uri in uri_list:
@@ -98,7 +98,7 @@ class DiscourseElement(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_contains_de, de_res.res))
 
     @accepts_only('de')
-    def remove_contained_de(self, de_res: DiscourseElement = None) -> None:
+    def remove_contained_discourse_element(self, de_res: DiscourseElement = None) -> None:
         if de_res is not None:
             self.g.remove((self.res, GraphEntity.iri_contains_de, de_res.res))
         else:
@@ -121,7 +121,7 @@ class DiscourseElement(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.iri_has_next, None))
 
     # IS CONTEXT OF (ReferencePointer)
-    def get_context_of_rp(self) -> List[ReferencePointer]:
+    def get_is_context_of_rp(self) -> List[ReferencePointer]:
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of)
         result: List[ReferencePointer] = []
         for uri in uri_list:
@@ -136,14 +136,14 @@ class DiscourseElement(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_is_context_of, rp_res.res))
 
     @accepts_only('rp')
-    def remove_context_of_rp(self, rp_res: ReferencePointer = None) -> None:
+    def remove_is_context_of_rp(self, rp_res: ReferencePointer = None) -> None:
         if rp_res is not None:
             self.g.remove((self.res, GraphEntity.iri_is_context_of, rp_res.res))
         else:
             self.g.remove((self.res, GraphEntity.iri_is_context_of, None))
 
     # IS CONTEXT OF (PointerList)
-    def get_context_of_pl(self) -> List[PointerList]:
+    def get_is_context_of_pl(self) -> List[PointerList]:
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of)
         result: List[PointerList] = []
         for uri in uri_list:
@@ -158,7 +158,7 @@ class DiscourseElement(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_is_context_of, pl_res.res))
 
     @accepts_only('pl')
-    def remove_context_of_pl(self, pl_res: PointerList = None) -> None:
+    def remove_is_context_of_pl(self, pl_res: PointerList = None) -> None:
         if pl_res is not None:
             self.g.remove((self.res, GraphEntity.iri_is_context_of, pl_res.res))
         else:

@@ -39,7 +39,7 @@ class BibliographicEntity(GraphEntity):
         super(BibliographicEntity, self).merge(other)
         id_list: List[Identifier] = other.get_identifiers()
         for cur_id in id_list:
-            self.has_id(cur_id)
+            self.has_identifier(cur_id)
 
     # HAS IDENTIFIER
     def get_identifiers(self) -> List[Identifier]:
@@ -50,7 +50,7 @@ class BibliographicEntity(GraphEntity):
         return result
 
     @accepts_only('id')
-    def has_id(self, id_res: Identifier) -> None:
+    def has_identifier(self, id_res: Identifier) -> None:
         """In addition to the internal dataset identifier assigned to the entity upon initial
         curation (format: [entity short name]/[local identifier]), other external third-party
         identifiers can be specified through this attribute (e.g. DOI, ORCID, PubMedID).
@@ -58,7 +58,7 @@ class BibliographicEntity(GraphEntity):
         self.g.add((self.res, GraphEntity.iri_has_identifier, id_res.res))
 
     @accepts_only('id')
-    def remove_id(self, id_res: Identifier = None) -> None:
+    def remove_identifier(self, id_res: Identifier = None) -> None:
         if id_res is not None:
             self.g.remove((self.res, GraphEntity.iri_has_identifier, id_res.res))
         else:

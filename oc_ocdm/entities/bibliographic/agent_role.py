@@ -38,7 +38,7 @@ class AgentRole(BibliographicEntity):
         if next_ar is not None:
             self.has_next(next_ar)
 
-        resp_agent: Optional[ResponsibleAgent] = other.get_held_by()
+        resp_agent: Optional[ResponsibleAgent] = other.get_is_held_by()
         if resp_agent is not None:
             self.is_held_by(resp_agent)
 
@@ -69,7 +69,7 @@ class AgentRole(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.iri_has_next, None))
 
     # IS HELD BY (ResponsibleAgent)
-    def get_held_by(self) -> Optional[ResponsibleAgent]:
+    def get_is_held_by(self) -> Optional[ResponsibleAgent]:
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_is_held_by)
         if uri is not None:
             return self.g_set.add_ra(self.resp_agent, self.source_agent, self.source, uri)
@@ -78,10 +78,10 @@ class AgentRole(BibliographicEntity):
     def is_held_by(self, ra_res: ResponsibleAgent):
         """The agent holding this role with respect to a particular bibliographic resource.
         """
-        self.remove_held_by()
+        self.remove_is_held_by()
         self.g.add((self.res, GraphEntity.iri_is_held_by, ra_res.res))
 
-    def remove_held_by(self) -> None:
+    def remove_is_held_by(self) -> None:
         self.g.remove((self.res, GraphEntity.iri_is_held_by, None))
 
     # HAS ROLE TYPE

@@ -108,10 +108,10 @@ class Citation(BibliographicEntity):
         """
         cur_type, string = get_datatype_from_iso_8601(string)
         if cur_type is not None and string is not None:
-            self.remove_creation_date()
+            self.remove_citation_creation_date()
             self._create_literal(GraphEntity.iri_has_citation_creation_date, string, cur_type, False)
 
-    def remove_creation_date(self) -> None:
+    def remove_citation_creation_date(self) -> None:
         self.g.remove((self.res, GraphEntity.iri_has_citation_creation_date, None))
 
     # HAS CITATION TIME SPAN
@@ -123,10 +123,10 @@ class Citation(BibliographicEntity):
         """The date interval between the publication date of the cited bibliographic resource and
         the publication date of the citing bibliographic resource.
         """
-        self.remove_time_span()
+        self.remove_citation_time_span()
         self._create_literal(GraphEntity.iri_has_citation_time_span, string, XSD.duration, False)
 
-    def remove_time_span(self) -> None:
+    def remove_citation_time_span(self) -> None:
         self.g.remove((self.res, GraphEntity.iri_has_citation_time_span, None))
 
     # HAS CITATION CHARACTERIZATION
@@ -138,10 +138,10 @@ class Citation(BibliographicEntity):
     def has_citation_characterization(self, thing_ref: URIRef) -> None:
         """The citation function characterizing the purpose of the citation.
         """
-        self.remove_characterization()
+        self.remove_citation_characterization()
         self.g.add((self.res, GraphEntity.iri_citation_characterisation, thing_ref))
 
-    def remove_characterization(self) -> None:
+    def remove_citation_characterization(self) -> None:
         self.g.remove((self.res, GraphEntity.iri_citation_characterisation, None))
 
     # HAS TYPE

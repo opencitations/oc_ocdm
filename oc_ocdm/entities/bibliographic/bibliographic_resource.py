@@ -47,7 +47,7 @@ class BibliographicResource(BibliographicEntity):
         if subtitle is not None:
             self.has_subtitle(subtitle)
 
-        container: Optional[BibliographicResource] = other.get_part_of()
+        container: Optional[BibliographicResource] = other.get_is_part_of()
         if container is not None:
             self.is_part_of(container)
 
@@ -71,11 +71,11 @@ class BibliographicResource(BibliographicEntity):
         if edition is not None:
             self.has_edition(edition)
 
-        be_list: List[BibliographicReference] = other.get_in_reference_lists()
+        be_list: List[BibliographicReference] = other.get_contained_in_reference_lists()
         for reference in be_list:
             self.contains_in_reference_list(reference)
 
-        de_list: List[DiscourseElement] = other.get_discourse_elements()
+        de_list: List[DiscourseElement] = other.get_contained_discourse_elements()
         for discourse_element in de_list:
             self.contains_discourse_element(discourse_element)
 
@@ -116,7 +116,7 @@ class BibliographicResource(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.iri_has_subtitle, None))
 
     # IS PART OF (BibliographicResource)
-    def get_part_of(self) -> Optional[BibliographicResource]:
+    def get_is_part_of(self) -> Optional[BibliographicResource]:
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_part_of)
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source_agent, self.source, uri)
@@ -126,10 +126,10 @@ class BibliographicResource(BibliographicEntity):
         """The corpus identifier of the bibliographic resource (e.g. issue, volume, journal,
         conference proceedings) that contains the subject bibliographic resource.
         """
-        self.remove_part_of()
+        self.remove_is_part_of()
         self.g.add((self.res, GraphEntity.iri_part_of, br_res.res))
 
-    def remove_part_of(self) -> None:
+    def remove_is_part_of(self) -> None:
         self.g.remove((self.res, GraphEntity.iri_part_of, None))
 
     # CITES (BibliographicResource)
@@ -225,7 +225,7 @@ class BibliographicResource(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.iri_has_edition, None))
 
     # HAS PART (BibliographicReference)
-    def get_in_reference_lists(self) -> List[BibliographicReference]:
+    def get_contained_in_reference_lists(self) -> List[BibliographicReference]:
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_reference)
         result: List[BibliographicReference] = []
         for uri in uri_list:
@@ -240,14 +240,14 @@ class BibliographicResource(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_contains_reference, be_res.res))
 
     @accepts_only('be')
-    def remove_in_reference_list(self, be_res: BibliographicReference = None) -> None:
+    def remove_contained_in_reference_list(self, be_res: BibliographicReference = None) -> None:
         if be_res is not None:
             self.g.remove((self.res, GraphEntity.iri_contains_reference, be_res.res))
         else:
             self.g.remove((self.res, GraphEntity.iri_contains_reference, None))
 
     # HAS PART (DiscourseElement)
-    def get_discourse_elements(self) -> List[DiscourseElement]:
+    def get_contained_discourse_elements(self) -> List[DiscourseElement]:
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_de)
         result: List[DiscourseElement] = []
         for uri in uri_list:
@@ -262,7 +262,7 @@ class BibliographicResource(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_contains_de, de_res.res))
 
     @accepts_only('de')
-    def remove_discourse_element(self, de_res: DiscourseElement = None) -> None:
+    def remove_contained_discourse_element(self, de_res: DiscourseElement = None) -> None:
         if de_res is not None:
             self.g.remove((self.res, GraphEntity.iri_contains_de, de_res.res))
         else:

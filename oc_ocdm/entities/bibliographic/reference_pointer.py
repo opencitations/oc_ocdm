@@ -97,10 +97,10 @@ class ReferencePointer(BibliographicEntity):
         """The bibliographic reference included in the list of bibliographic references, denoted by
         the in-text reference pointer.
         """
-        self.remove_be()
+        self.remove_denoted_be()
         self.g.add((self.res, GraphEntity.iri_denotes, be_res.res))
 
-    def remove_be(self) -> None:
+    def remove_denoted_be(self) -> None:
         self.g.remove((self.res, GraphEntity.iri_denotes, None))
 
     # HAS ANNOTATION (ReferenceAnnotation)
