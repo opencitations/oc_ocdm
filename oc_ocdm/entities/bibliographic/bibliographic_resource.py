@@ -17,8 +17,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from rdflib import RDF
-
 from oc_ocdm.decorators import accepts_only
 from oc_ocdm.support import get_datatype_from_iso_8601
 

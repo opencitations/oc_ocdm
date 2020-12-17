@@ -19,10 +19,8 @@ import re
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Optional, List
+    from typing import Optional
     from rdflib import URIRef
-
-from rdflib import RDF
 
 from oc_ocdm import GraphEntity
 from oc_ocdm.decorators import accepts_only
