@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "oc_ocdm"
 version = "3.1.0"
-description = "Object mapping library for OpenCitations, OCDM 2.0.1 compliant."
+description = "Object mapping library for manipulating RDF graphs that are compliant with the OpenCitations datamodel."
 authors = [
     "Silvio Peroni <essepuntato@gmail.com>",
     "Marilena Daquino <marilena.daquino2@unibo.it>",
@@ -11,7 +11,7 @@ authors = [
 readme = "README.md"
 license = "ISC"
 homepage = "http://opencitations.net"
-# repository = "https://github.com/opencitations/oc_ocdm"
+repository = "https://github.com/opencitations/oc_ocdm"
 # documentation = "https://oc_ocdm.github.io"
 keywords = ["opencitations", "openscience", "datamodel", "mapping"]
 
