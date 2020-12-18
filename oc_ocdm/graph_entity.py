@@ -314,7 +314,7 @@ class GraphEntity(object):
         other.mark_as_to_be_deleted()
         self._merge_list = (*self._merge_list, other)
 
-    def apply_changes(self):
+    def commit_changes(self):
         self.preexisting_graph = Graph(identifier=self.g.identifier)
         if self._to_be_deleted:
             self.remove_every_triple()
