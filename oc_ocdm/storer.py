@@ -306,7 +306,10 @@ class Storer(object):
                 added_statements = n_added
                 removed_statements = n_removed
             else:
-                query_string += " ; " + update_query
+                if update_query != "":
+                    if query_string != "":
+                        query_string += " ; "
+                    query_string += update_query
                 added_statements += n_added
                 removed_statements += n_removed
 
