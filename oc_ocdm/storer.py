@@ -22,12 +22,12 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Dict, List, Tuple, Any, Optional
-    from rdflib import Graph, URIRef
+    from rdflib import URIRef
     from oc_ocdm import GraphSet, GraphEntity
 
 from oc_ocdm.support import Reporter, get_update_query
 import os
-from rdflib import BNode, ConjunctiveGraph
+from rdflib import ConjunctiveGraph
 import shutil
 import json
 from datetime import datetime
@@ -332,18 +332,6 @@ class Storer(object):
         self.reperr.new_article()
 
         return self._query(query_string, triplestore_url)
-
-    def set_preface_query(self, query_string: str) -> None:
-        self.preface_query = query_string
-
-    def get_preface_query(self, cur_g: Graph) -> str:
-        if self.preface_query != "":
-            if type(cur_g.identifier) is BNode:
-                return "CLEAR DEFAULT ; "
-            else:
-                return f"WITH <%s> {cur_g.identifier} {self.preface_query} ; "
-        else:
-            return ""
 
     def _query(self, query_string: str, triplestore_url: str, base_dir: str = None,
                added_statements: int = 0, removed_statements: int = 0) -> bool:
