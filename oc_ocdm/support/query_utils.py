@@ -45,31 +45,19 @@ def get_insert_query(graph_iri: URIRef, data: Graph) -> Optional[str]:
     return insert_string.replace('\n\n', '') + "} }"
 
 
-def get_update_query(cur_subj: GraphEntity, triplestore_url: str = None) -> Tuple[str, int, int]:
-    if triplestore_url is None:
-        preexisting_graph: Graph = cur_subj.preexisting_graph
+def get_update_query(entity: GraphEntity) -> Tuple[str, int, int]:
+    if entity.to_be_deleted:
+        removed_triples: int = len(entity.g)
+        return get_delete_query(entity.g.identifier, entity.preexisting_graph), 0, removed_triples
     else:
-        preexisting_graph: Graph = Graph(identifier=cur_subj.g.identifier)
-        ts: ConjunctiveGraph = ConjunctiveGraph()
-        ts.open((triplestore_url, triplestore_url))
-        result: Result = ts.query(f"CONSTRUCT {{ <{cur_subj.res}> ?p ?o }} WHERE {{ <{cur_subj.res}> ?p ?o }}")
-        ts.close()
-        if result is not None:
-            for p, o in result.graph.predicate_objects(cur_subj.res):
-                preexisting_graph.add((cur_subj.res, p, o))
-
-    if cur_subj.to_be_deleted:
-        removed_triples: int = len(cur_subj.g)
-        return get_delete_query(cur_subj.g.identifier, preexisting_graph), 0, removed_triples
-    else:
-        preexisting_iso: IsomorphicGraph = to_isomorphic(preexisting_graph)
-        current_iso: IsomorphicGraph = to_isomorphic(cur_subj.g)
+        preexisting_iso: IsomorphicGraph = to_isomorphic(entity.preexisting_graph)
+        current_iso: IsomorphicGraph = to_isomorphic(entity.g)
         if preexisting_iso == current_iso:
             # Both graphs have exactly the same content!
             return "", 0, 0
         in_both, in_first, in_second = graph_diff(preexisting_iso, current_iso)
-        delete_string: Optional[str] = get_delete_query(cur_subj.g.identifier, in_first)
-        insert_string: Optional[str] = get_insert_query(cur_subj.g.identifier, in_second)
+        delete_string: Optional[str] = get_delete_query(entity.g.identifier, in_first)
+        insert_string: Optional[str] = get_insert_query(entity.g.identifier, in_second)
 
         removed_triples: int = len(in_first)
         added_triples: int = len(in_second)

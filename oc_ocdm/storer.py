@@ -299,15 +299,14 @@ class Storer(object):
         removed_statements: int = 0
         result: bool = True
         for idx, entity in enumerate(self.g_set.res_to_entity.values()):
-            update_query, n_added, n_removed = get_update_query(entity, triplestore_url)
-            cur_query: str = self.get_preface_query(entity.g) + update_query
+            update_query, n_added, n_removed = get_update_query(entity)
 
             if idx % batch_size == 0:
-                query_string = cur_query
+                query_string = update_query
                 added_statements = n_added
                 removed_statements = n_removed
             else:
-                query_string += " ; " + cur_query
+                query_string += " ; " + update_query
                 added_statements += n_added
                 removed_statements += n_removed
 
@@ -324,10 +323,9 @@ class Storer(object):
         self.repok.new_article()
         self.reperr.new_article()
 
-        update_query, n_added, n_removed = get_update_query(entity, triplestore_url)
-        query_string: str = self.get_preface_query(entity.g) + update_query
+        update_query, n_added, n_removed = get_update_query(entity)
 
-        return self._query(query_string, triplestore_url, base_dir, n_added, n_removed)
+        return self._query(update_query, triplestore_url, base_dir, n_added, n_removed)
 
     def execute_query(self, query_string: str, triplestore_url: str) -> bool:
         self.repok.new_article()
