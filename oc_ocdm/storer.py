@@ -181,9 +181,11 @@ class Storer(object):
             done because we already removed all of its triples.
             """
             if not entity.to_be_deleted:
+                quads: List[Tuple] = []
                 graph_identifier: URIRef = entity.g.identifier
                 for triple in entity.g.triples((None, None, None)):
-                    stored_g.addN((*triple, graph_identifier))
+                    quads.append((*triple, graph_identifier))
+                stored_g.addN(quads)
 
             # We must ensure that the graph is correctly stored in our cache
             if cur_file_path not in already_processed:
