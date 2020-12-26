@@ -36,7 +36,7 @@ class TestGraphSet(unittest.TestCase):
 
     def setUp(self):
         self.counter_handler = FilesystemCounterHandler("./info_dir/")
-        self.graph_set = GraphSet("http://test/", "context_base", self.counter_handler, "", wanted_label=False)
+        self.graph_set = GraphSet("http://test/", self.counter_handler, "", False)
 
     def test_get_entity(self):
         ar = self.graph_set.add_ar(self.__class__.__name__)

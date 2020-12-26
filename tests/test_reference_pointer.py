@@ -26,10 +26,9 @@ class TestReferencePointer(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.counter_handler = FilesystemCounterHandler("./info_dir/")
-        cls.graph_set = GraphSet("http://test/", "context_base", cls.counter_handler, "", wanted_label=False)
+        cls.graph_set = GraphSet("http://test/", cls.counter_handler, "", False)
 
     def setUp(self):
-        self.graph_set.g = []
         self.an = self.graph_set.add_an(self.__class__.__name__)
         self.rp1 = self.graph_set.add_rp(self.__class__.__name__)
         self.rp2 = self.graph_set.add_rp(self.__class__.__name__)

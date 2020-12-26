@@ -167,6 +167,7 @@ class GraphEntity(object):
     def __init__(self, g: Graph, res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
                  source_agent: str = None, source: str = None, count: str = None, label: str = None,
                  short_name: str = "", g_set: GraphSet = None, preexisting_graph: Graph = None) -> None:
+        self.g: Graph = g
         self.resp_agent: str = resp_agent
         self.source_agent: str = source_agent
         self.source: str = source
@@ -186,14 +187,6 @@ class GraphEntity(object):
             self.res = res
 
         if g_set is not None:
-            if self.res in g_set.entity_g:
-                # Use the rdflib.Graph already registered inside the GraphSet
-                self.g = g_set.entity_g[self.res]
-            else:
-                # Use the provided rdflib.Graph and register it inside the GraphSet
-                self.g = g
-                g_set.entity_g[self.res] = self.g
-
             # If not already done, register this GraphEntity instance inside the GraphSet
             if self.res not in g_set.res_to_entity:
                 g_set.res_to_entity[self.res] = self

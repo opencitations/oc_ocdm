@@ -58,12 +58,8 @@ class GraphSet(object):
         "rp": "in-text reference pointer"
     }
 
-    def __init__(self, base_iri: str, context_path: str, counter_handler: CounterHandler,
-                 supplier_prefix: str = "", wanted_label: bool = True) -> None:
-        # A list of rdflib.Graphs, one for subject entity
-        self.g: List[Graph] = []
-        # The following variable maps a URIRef with the graph in the graph list related to them
-        self.entity_g: Dict[URIRef, Graph] = {}
+    def __init__(self, base_iri: str, counter_handler: CounterHandler, supplier_prefix: str = "",
+                 wanted_label: bool = True) -> None:
         # The following variable maps a URIRef with the related graph entity
         self.res_to_entity: Dict[URIRef, GraphEntity] = {}
         self.base_iri: str = base_iri
@@ -194,7 +190,6 @@ class GraphSet(object):
     def _add(self, graph_url: str, res: URIRef, short_name: str) -> Tuple[Graph, Optional[str], Optional[str]]:
         cur_g: Graph = Graph(identifier=graph_url)
         self._set_ns(cur_g)
-        self.g += [cur_g]
 
         count: Optional[str] = None
         label: Optional[str] = None
@@ -233,13 +228,12 @@ class GraphSet(object):
             entity.commit_changes()
             if entity.to_be_deleted:
                 del self.res_to_entity[res]
-                del self.entity_g[res]
 
     def graphs(self) -> List[Graph]:
-        result = []
-        for cur_g in self.g:
-            if len(cur_g) > 0:
-                result += [cur_g]
+        result: List[Graph] = []
+        for entity in self.res_to_entity.values():
+            if len(entity.g) > 0:
+                result.append(entity.g)
         return result
 
     def _set_ns(self, g: Graph) -> None:

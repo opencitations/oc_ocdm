@@ -33,10 +33,9 @@ from oc_ocdm.support import get_short_name, get_count, get_prefix, get_update_qu
 
 
 class ProvSet(GraphSet):
-    def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, context_path: str,
-                 counter_handler: CounterHandler, supplier_prefix: str, wanted_label: bool = True) -> None:
-        super(ProvSet, self).__init__(base_iri, context_path, counter_handler, supplier_prefix,
-                                      wanted_label=wanted_label)
+    def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, counter_handler: CounterHandler,
+                 supplier_prefix: str = "", wanted_label: bool = True) -> None:
+        super(ProvSet, self).__init__(base_iri, counter_handler, supplier_prefix, wanted_label)
         self.prov_g: GraphSet = prov_subj_graph_set
 
         if wanted_label:
@@ -106,8 +105,8 @@ class ProvSet(GraphSet):
                 cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
                 cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
             else:
-                update_query: Optional[str] = get_update_query(cur_subj)[0]
-                was_modified: bool = update_query is not None
+                update_query: str = get_update_query(cur_subj)[0]
+                was_modified: bool = (update_query != "")
                 snapshots_list: List[ProvEntity] = self._get_snapshots_from_merge_list(cur_subj)
 
                 if was_modified and len(snapshots_list) <= 0:
@@ -147,8 +146,8 @@ class ProvSet(GraphSet):
                     cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
             else:
-                update_query: Optional[str] = get_update_query(cur_subj)[0]
-                was_modified: bool = update_query is not None
+                update_query: str = get_update_query(cur_subj)[0]
+                was_modified: bool = (update_query != "")
 
                 if cur_subj.to_be_deleted:
                     # DELETION SNAPSHOT
@@ -174,7 +173,6 @@ class ProvSet(GraphSet):
                   prov_subject: GraphEntity) -> Tuple[Graph, Optional[str], Optional[str]]:
         cur_g: Graph = Graph(identifier=graph_url)
         self._set_ns(cur_g)
-        self.g += [cur_g]
 
         count: Optional[str] = None
         label: Optional[str] = None

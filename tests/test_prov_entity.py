@@ -27,17 +27,12 @@ class TestProvEntity(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.counter_handler = FilesystemCounterHandler("./info_dir/")
-        cls.prov_subj_graph_set = GraphSet("http://test/", "context_base", cls.counter_handler, "",
-                                           wanted_label=False)
+        cls.graph_set = GraphSet("http://test/", cls.counter_handler, "", False)
 
-        cls.prov_set = ProvSet(prov_subj_graph_set=cls.prov_subj_graph_set, base_iri="http://test/",
-                               context_path="context_base", counter_handler=cls.counter_handler,
-                               wanted_label=False, supplier_prefix="070")
+        cls.prov_set = ProvSet(cls.graph_set, "http://test/", cls.counter_handler, "070", False)
 
     def setUp(self):
-        self.prov_set.g = []
-        self.prov_subj_graph_set.g = []
-        self.prov_subject = self.prov_subj_graph_set.add_br(self.__class__.__name__)
+        self.prov_subject = self.graph_set.add_br(self.__class__.__name__)
         self.se = self.prov_set.add_se(self.prov_subject)
         self.prev_se = self.prov_set.add_se(self.prov_subject)
 
