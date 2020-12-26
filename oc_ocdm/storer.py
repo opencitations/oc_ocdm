@@ -39,7 +39,7 @@ from rdflib import XSD
 
 class Storer(object):
 
-    def __init__(self, graph_set: GraphSet, repok: Reporter = None, reperr: Reporter = None,
+    def __init__(self, graph_set: GraphSet = None, repok: Reporter = None, reperr: Reporter = None,
                  context_map: Dict[str, Any] = None, default_dir: str = "_", dir_split: int = 0,
                  n_file_item: int = 1, output_format: str = "json-ld") -> None:
         self.output_format: str = output_format
@@ -47,7 +47,8 @@ class Storer(object):
         self.n_file_item: int = n_file_item
         self.default_dir: str = default_dir
         self.preface_query: str = ""
-        self.g_set: GraphSet = graph_set
+        if graph_set is not None:
+            self.g_set: GraphSet = graph_set
 
         if self.output_format == "json-ld":
             if context_map is not None:
