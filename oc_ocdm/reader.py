@@ -20,9 +20,11 @@ from pyshex import ShExEvaluator
 from rdflib import RDF, Namespace, ConjunctiveGraph
 from typing import TYPE_CHECKING
 
+from oc_ocdm.abstract_entity import AbstractEntity
+
 if TYPE_CHECKING:
     from typing import List, Set
-    from oc_ocdm import GraphSet, GraphEntity
+    from oc_ocdm.graph import GraphSet, GraphEntity
     from rdflib import Graph, URIRef, term
     from rdflib.query import Result
 
@@ -118,7 +120,7 @@ def graph_validation(graph: Graph, closed: bool = False) -> Graph:
 
 
 def import_entities_from_graph(g_set: GraphSet, graph: Graph, enable_validation: bool = True,
-                               closed: bool = False) -> List[GraphEntity]:
+                               closed: bool = False) -> List[AbstractEntity]:
     if enable_validation:
         graph = graph_validation(graph, closed)
 
@@ -177,14 +179,14 @@ def import_entities_from_graph(g_set: GraphSet, graph: Graph, enable_validation:
 
 
 def import_entity_from_triplestore(g_set: GraphSet, ts_url: str, res: URIRef,
-                                   enable_validation: bool = True) -> GraphEntity:
+                                   enable_validation: bool = True) -> AbstractEntity:
     ts: ConjunctiveGraph = ConjunctiveGraph()
     ts.open((ts_url, ts_url))
     query: str = f"CONSTRUCT {{<{res}> ?p ?o}} WHERE {{<{res}> ?p ?o}}"
 
     result: Result = ts.query(query)
     if result is not None:
-        imported_entities: List[GraphEntity] = import_entities_from_graph(g_set, result.graph,
+        imported_entities: List[AbstractEntity] = import_entities_from_graph(g_set, result.graph,
                                                                           enable_validation=enable_validation)
         ts.close()
         if len(imported_entities) <= 0:
