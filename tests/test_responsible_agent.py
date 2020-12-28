@@ -17,8 +17,8 @@ import unittest
 
 from rdflib import Literal, URIRef
 
-from oc_ocdm import GraphEntity
-from oc_ocdm import GraphSet
+from oc_ocdm.graph import GraphEntity
+from oc_ocdm.graph import GraphSet
 from oc_ocdm.counter_handler import FilesystemCounterHandler
 
 

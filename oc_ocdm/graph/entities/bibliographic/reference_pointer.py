@@ -22,10 +22,10 @@ from oc_ocdm.decorators import accepts_only
 if TYPE_CHECKING:
     from typing import Optional, List
     from rdflib import URIRef
-    from oc_ocdm.entities.bibliographic import BibliographicReference
-    from oc_ocdm.entities.bibliographic import ReferenceAnnotation
-from oc_ocdm import GraphEntity
-from oc_ocdm.entities import BibliographicEntity
+    from oc_ocdm.graph.entities.bibliographic import BibliographicReference
+    from oc_ocdm.graph.entities.bibliographic import ReferenceAnnotation
+from oc_ocdm.graph import GraphEntity
+from oc_ocdm.graph.entities import BibliographicEntity
 
 
 class ReferencePointer(BibliographicEntity):

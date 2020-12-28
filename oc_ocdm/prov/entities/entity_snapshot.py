@@ -15,57 +15,19 @@
 # SOFTWARE.
 from __future__ import annotations
 
-__author__ = 'essepuntato'
-
-from typing import TYPE_CHECKING, ClassVar
-
-from rdflib import Namespace, URIRef, Graph
-from rdflib.namespace import XSD
+from typing import TYPE_CHECKING
 
 from oc_ocdm.decorators import accepts_only
+from oc_ocdm.graph.graph_entity import GraphEntity
+from oc_ocdm.prov.prov_entity import ProvEntity
+from rdflib import XSD
 
 if TYPE_CHECKING:
     from typing import Optional, List
-    from oc_ocdm import ProvSet
-from oc_ocdm import GraphEntity
+    from rdflib import URIRef
 
 
-class ProvEntity(GraphEntity):
-    """Snapshot of entity metadata (short: se): a particular snapshot recording the
-    metadata associated with an individual entity (either a bibliographic entity or an
-    identifier) at a particular date and time, including the agent, such as a person,
-    organisation or automated process that created or modified the entity metadata.
-    """
-
-    PROV: ClassVar[Namespace] = Namespace("http://www.w3.org/ns/prov#")
-
-    # Exclusive provenance entities
-    iri_entity: ClassVar[URIRef] = PROV.Entity
-    iri_generated_at_time: ClassVar[URIRef] = PROV.generatedAtTime
-    iri_invalidated_at_time: ClassVar[URIRef] = PROV.invalidatedAtTime
-    iri_specialization_of: ClassVar[URIRef] = PROV.specializationOf
-    iri_was_derived_from: ClassVar[URIRef] = PROV.wasDerivedFrom
-    iri_had_primary_source: ClassVar[URIRef] = PROV.hadPrimarySource
-    iri_was_attributed_to: ClassVar[URIRef] = PROV.wasAttributedTo
-    iri_description: ClassVar[URIRef] = GraphEntity.DCTERMS.description
-    iri_has_update_query: ClassVar[URIRef] = GraphEntity.OCO.hasUpdateQuery
-
-    def __init__(self, prov_subject: GraphEntity, g: Graph, res: URIRef = None, res_type: URIRef = None,
-                 resp_agent: str = None, source_agent: str = None, source: str = None, count: str = None,
-                 label: str = None, short_name: str = "", g_set: ProvSet = None) -> None:
-        # This must be done immediately because the constructor of the superclass assumes that this data structure
-        # has already been completely initialized!
-        self.short_name_to_type_iri.update({
-            'se': self.iri_entity
-        })
-        super(ProvEntity, self).__init__(
-            g, res, res_type, resp_agent, source_agent, source, count, label, short_name, g_set)
-        self.prov_subject: GraphEntity = prov_subject
-
-    @staticmethod
-    def _generate_new_res(g: Graph, count: str, short_name: str = "") -> URIRef:
-        return URIRef(str(g.identifier) + (short_name + "/" if short_name != "" else "") + count)
-
+class EntitySnapshot(ProvEntity):
     # HAS CREATION DATE
     def get_generation_time(self) -> Optional[str]:
         return self._get_literal(ProvEntity.iri_generated_at_time)
@@ -117,7 +79,7 @@ class ProvEntity(GraphEntity):
         uri_list: List[URIRef] = self._get_multiple_uri_references(ProvEntity.iri_was_derived_from)
         result: List[ProvEntity] = []
         for uri in uri_list:
-            result.append(self.g_set.add_se(None, uri))
+            result.append(self.p_set.add_se(None, uri))
         return result
 
     @accepts_only('se')

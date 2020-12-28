@@ -18,44 +18,57 @@ from __future__ import annotations
 __author__ = 'essepuntato'
 
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, ClassVar
+
+from oc_ocdm.abstract_set import AbstractSet
+from oc_ocdm.prov.entities.entity_snapshot import EntitySnapshot
+from oc_ocdm.support import get_update_query
 
 if TYPE_CHECKING:
     from typing import Optional, Tuple, List
-    from oc_ocdm import GraphEntity
+    from oc_ocdm.graph import GraphEntity
 
 from rdflib import Graph, URIRef
 
-from oc_ocdm import GraphSet
-from oc_ocdm import ProvEntity
+from oc_ocdm.graph import GraphSet
+from oc_ocdm.prov import ProvEntity
 from oc_ocdm.counter_handler import CounterHandler
-from oc_ocdm.support import get_short_name, get_count, get_prefix, get_update_query
+from oc_ocdm.support import get_short_name, get_count, get_prefix
 
 
-class ProvSet(GraphSet):
+class ProvSet(AbstractSet):
+    # Labels
+    labels: ClassVar[Dict[str, str]] = {
+        "se": "snapshot of entity metadata"
+    }
+
     def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, counter_handler: CounterHandler,
                  supplier_prefix: str = "", wanted_label: bool = True) -> None:
-        super(ProvSet, self).__init__(base_iri, counter_handler, supplier_prefix, wanted_label)
+        super(ProvSet, self).__init__()
+        # The following variable maps a URIRef with the related provenance entity
+        self.res_to_entity: Dict[URIRef, ProvEntity] = {}
+        self.base_iri: str = base_iri
+        self.supplier_prefix: str = supplier_prefix
+        self.wanted_label: bool = wanted_label
+
+        self.counter_handler: CounterHandler = counter_handler
         self.prov_g: GraphSet = prov_subj_graph_set
 
-        if wanted_label:
-            GraphSet.labels.update(
-                {
-                    "se": "snapshot of entity metadata"
-                }
-            )
+    def get_entity(self, res: URIRef) -> Optional[ProvEntity]:
+        if res in self.res_to_entity:
+            return self.res_to_entity[res]
 
-    def add_se(self, prov_subject: GraphEntity, res: URIRef = None) -> ProvEntity:
+    def add_se(self, prov_subject: GraphEntity, res: URIRef = None) -> EntitySnapshot:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         g_prov: str = str(prov_subject) + "/prov/"
         cur_g, count, label = self._add_prov(graph_url=g_prov, res=res, short_name="se", prov_subject=prov_subject)
-        return ProvEntity(prov_subject, cur_g, res=res, res_type=ProvEntity.iri_entity, short_name="se",
-                          resp_agent=prov_subject.resp_agent, source_agent=prov_subject.source_agent,
-                          source=prov_subject.source, count=count, label=label, g_set=self)
+        return EntitySnapshot(prov_subject, cur_g, res=res, res_type=ProvEntity.iri_entity, short_name="se",
+                              resp_agent=prov_subject.resp_agent, source_agent=prov_subject.source_agent,
+                              source=prov_subject.source, count=count, label=label, p_set=self)
 
-    def _create_snapshot(self, cur_subj: GraphEntity, cur_time: str) -> ProvEntity:
-        new_snapshot: ProvEntity = self.add_se(prov_subject=cur_subj)
+    def _create_snapshot(self, cur_subj: GraphEntity, cur_time: str) -> EntitySnapshot:
+        new_snapshot: EntitySnapshot = self.add_se(prov_subject=cur_subj)
         new_snapshot.snapshot_of(cur_subj)
         new_snapshot.has_generation_time(cur_time)
         if cur_subj.source is not None:
@@ -64,8 +77,8 @@ class ProvSet(GraphSet):
             new_snapshot.has_resp_agent(URIRef(cur_subj.resp_agent))
         return new_snapshot
 
-    def _get_snapshots_from_merge_list(self, cur_subj: GraphEntity) -> List[ProvEntity]:
-        snapshots_list: List[ProvEntity] = []
+    def _get_snapshots_from_merge_list(self, cur_subj: GraphEntity) -> List[EntitySnapshot]:
+        snapshots_list: List[EntitySnapshot] = []
         for entity in cur_subj.merge_list:
             last_entity_snapshot_res: Optional[URIRef] = self._retrieve_last_snapshot(entity.res)
             if last_entity_snapshot_res is not None:
@@ -105,7 +118,7 @@ class ProvSet(GraphSet):
                 cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
                 cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
             else:
-                update_query: str = get_update_query(cur_subj)[0]
+                update_query: str = get_update_query(cur_subj, entity_type="graph")[0]
                 was_modified: bool = (update_query != "")
                 snapshots_list: List[ProvEntity] = self._get_snapshots_from_merge_list(cur_subj)
 
@@ -146,7 +159,7 @@ class ProvSet(GraphSet):
                     cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
             else:
-                update_query: str = get_update_query(cur_subj)[0]
+                update_query: str = get_update_query(cur_subj, entity_type="graph")[0]
                 was_modified: bool = (update_query != "")
 
                 if cur_subj.to_be_deleted:
@@ -200,8 +213,8 @@ class ProvSet(GraphSet):
 
         return cur_g, count, label
 
-    def _set_ns(self, g: Graph) -> None:
-        super(ProvSet, self)._set_ns(g)
+    @staticmethod
+    def _set_ns(g: Graph) -> None:
         g.namespace_manager.bind("prov", ProvEntity.PROV)
 
     def _retrieve_last_snapshot(self, prov_subject: URIRef) -> Optional[URIRef]:
@@ -219,3 +232,11 @@ class ProvSet(GraphSet):
             return None
         else:
             return URIRef(str(prov_subject) + '/prov/se/' + last_snapshot_count)
+
+    def get_se(self) -> Tuple[EntitySnapshot]:
+        result: Tuple[EntitySnapshot] = tuple()
+        for ref in self.res_to_entity:
+            entity: ProvEntity = self.res_to_entity[ref]
+            if isinstance(entity, EntitySnapshot):
+                result += (entity, )
+        return result

@@ -15,10 +15,10 @@
 # SOFTWARE.
 import unittest
 
-from rdflib import URIRef, Graph
+from rdflib import URIRef
 
-from oc_ocdm import GraphSet, ProvEntity
-from oc_ocdm import ProvSet
+from oc_ocdm.graph import GraphSet
+from oc_ocdm.prov import ProvSet, ProvEntity
 from oc_ocdm.counter_handler import FilesystemCounterHandler
 
 

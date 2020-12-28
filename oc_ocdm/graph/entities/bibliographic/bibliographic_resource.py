@@ -23,11 +23,11 @@ from oc_ocdm.support import get_datatype_from_iso_8601
 if TYPE_CHECKING:
     from typing import Optional, List
     from rdflib import URIRef
-    from oc_ocdm.entities.bibliographic import BibliographicReference, AgentRole
-    from oc_ocdm.entities.bibliographic import DiscourseElement
-    from oc_ocdm.entities.bibliographic import ResourceEmbodiment
-from oc_ocdm import GraphEntity
-from oc_ocdm.entities import BibliographicEntity
+    from oc_ocdm.graph.entities.bibliographic import BibliographicReference, AgentRole
+    from oc_ocdm.graph.entities.bibliographic import DiscourseElement
+    from oc_ocdm.graph.entities.bibliographic import ResourceEmbodiment
+from oc_ocdm.graph import GraphEntity
+from oc_ocdm.graph.entities import BibliographicEntity
 
 
 class BibliographicResource(BibliographicEntity):

@@ -20,29 +20,30 @@ __author__ = 'essepuntato'
 from typing import TYPE_CHECKING
 
 from oc_ocdm.reader import import_entities_from_graph
+from oc_ocdm.abstract_set import AbstractSet
 
 if TYPE_CHECKING:
-    from typing import Dict, List, ClassVar, Tuple, Optional
+    from typing import Dict, ClassVar, Tuple, Optional, List
     from rdflib.query import Result
 
 from rdflib import Graph, Namespace, URIRef, ConjunctiveGraph
 
-from oc_ocdm import GraphEntity
+from oc_ocdm.graph import GraphEntity
 from oc_ocdm.counter_handler import CounterHandler
-from oc_ocdm.entities import Identifier
-from oc_ocdm.entities.bibliographic import AgentRole
-from oc_ocdm.entities.bibliographic import BibliographicReference
-from oc_ocdm.entities.bibliographic import BibliographicResource
-from oc_ocdm.entities.bibliographic import Citation
-from oc_ocdm.entities.bibliographic import DiscourseElement
-from oc_ocdm.entities.bibliographic import PointerList
-from oc_ocdm.entities.bibliographic import ReferenceAnnotation
-from oc_ocdm.entities.bibliographic import ReferencePointer
-from oc_ocdm.entities.bibliographic import ResourceEmbodiment
-from oc_ocdm.entities.bibliographic import ResponsibleAgent
+from oc_ocdm.graph.entities import Identifier
+from oc_ocdm.graph.entities.bibliographic import AgentRole
+from oc_ocdm.graph.entities.bibliographic import BibliographicReference
+from oc_ocdm.graph.entities.bibliographic import BibliographicResource
+from oc_ocdm.graph.entities.bibliographic import Citation
+from oc_ocdm.graph.entities.bibliographic import DiscourseElement
+from oc_ocdm.graph.entities.bibliographic import PointerList
+from oc_ocdm.graph.entities.bibliographic import ReferenceAnnotation
+from oc_ocdm.graph.entities.bibliographic import ReferencePointer
+from oc_ocdm.graph.entities.bibliographic import ResourceEmbodiment
+from oc_ocdm.graph.entities.bibliographic import ResponsibleAgent
 
 
-class GraphSet(object):
+class GraphSet(AbstractSet):
     # Labels
     labels: ClassVar[Dict[str, str]] = {
         "an": "annotation",
@@ -60,6 +61,7 @@ class GraphSet(object):
 
     def __init__(self, base_iri: str, counter_handler: CounterHandler, supplier_prefix: str = "",
                  wanted_label: bool = True) -> None:
+        super(GraphSet, self).__init__()
         # The following variable maps a URIRef with the related graph entity
         self.res_to_entity: Dict[URIRef, GraphEntity] = {}
         self.base_iri: str = base_iri
@@ -229,13 +231,6 @@ class GraphSet(object):
             if entity.to_be_deleted:
                 del self.res_to_entity[res]
 
-    def graphs(self) -> List[Graph]:
-        result: List[Graph] = []
-        for entity in self.res_to_entity.values():
-            if len(entity.g) > 0:
-                result.append(entity.g)
-        return result
-
     def _set_ns(self, g: Graph) -> None:
         g.namespace_manager.bind("an", Namespace(self.g_an))
         g.namespace_manager.bind("ar", Namespace(self.g_ar))
@@ -264,10 +259,6 @@ class GraphSet(object):
         g.namespace_manager.bind("oco", GraphEntity.OCO)
         g.namespace_manager.bind("prism", GraphEntity.PRISM)
         g.namespace_manager.bind("pro", GraphEntity.PRO)
-
-    @staticmethod
-    def get_graph_iri(g: Graph) -> str:
-        return str(g.identifier)
 
     def get_an(self) -> Tuple[ReferenceAnnotation]:
         result: Tuple[ReferenceAnnotation] = tuple()

@@ -15,30 +15,34 @@
 # SOFTWARE.
 from __future__ import annotations
 
-from functools import wraps
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 from oc_ocdm.abstract_entity import AbstractEntity
 
 if TYPE_CHECKING:
-    from typing import Callable, Any
-from rdflib import URIRef
+    from typing import List, ClassVar, Dict, Optional
+    from rdflib import URIRef, Graph
 
 
-def accepts_only(param_type: str):
-    def accepts_only_decorator(function: Callable):
+class AbstractSet(ABC):
 
-        @wraps(function)
-        def accepts_only_wrapper(self, param: Any = None):
-            lowercase_type = param_type.lower()
-            if param is None or \
-                    (lowercase_type == 'literal' and type(param) == str) or \
-                    (lowercase_type == 'thing' and type(param) == URIRef) or \
-                    (isinstance(param, AbstractEntity) and param.short_name == lowercase_type):
-                function(self, param)
-            else:
-                raise TypeError('[%s.%s] Expected argument type: %s. Provided argument type: %s.' %
-                                (self.__class__.__name__, function.__name__, lowercase_type, type(param).__name__))
+    short_name_to_type_iri: ClassVar[Dict[str, URIRef]] = {}
 
-        return accepts_only_wrapper
-    return accepts_only_decorator
+    def __init__(self) -> None:
+        self.res_to_entity: Dict[URIRef, AbstractEntity] = {}
+
+    def graphs(self) -> List[Graph]:
+        result: List[Graph] = []
+        for entity in self.res_to_entity.values():
+            if len(entity.g) > 0:
+                result.append(entity.g)
+        return result
+
+    @abstractmethod
+    def get_entity(self, res: URIRef) -> Optional[AbstractEntity]:
+        pass
+
+    @staticmethod
+    def get_graph_iri(g: Graph) -> str:
+        return str(g.identifier)
