@@ -57,7 +57,7 @@ class TestProvEntity(unittest.TestCase):
         self.assertIn(triple, self.se.g)
 
     def test_snapshot_of(self):
-        ar = self.prov_set.add_ar(self.__class__.__name__)
+        ar = self.graph_set.add_ar(self.__class__.__name__)
         result = self.se.snapshot_of(self.prov_subject)
         self.assertIsNone(result)
 
