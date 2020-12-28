@@ -24,3 +24,11 @@ class CounterHandler(ABC):
     @abstractmethod
     def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
         raise NotImplementedError
+
+    @abstractmethod
+    def read_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+        raise NotImplementedError
+
+    @abstractmethod
+    def increment_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+        raise NotImplementedError

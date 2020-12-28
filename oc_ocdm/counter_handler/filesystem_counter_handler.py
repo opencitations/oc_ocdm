@@ -34,11 +34,13 @@ class FilesystemCounterHandler(CounterHandler):
         if info_dir is None or len(info_dir) <= 0:
             raise ValueError("info_dir parameter is required!")
 
-        if info_dir[-1] != '/':
-            info_dir += '/'
+        if info_dir[-1] != os.sep:
+            info_dir += os.sep
 
         self.info_dir: str = info_dir
+        self.datasets_dir: str = info_dir + 'datasets' + os.sep
         self.short_names: List[str] = ["an", "ar", "be", "br", "ci", "de", "id", "pl", "ra", "re", "rp"]
+        self.metadata_short_names: List[str] = ["di"]
         self.info_files: Dict[str, str] = {key: ("info_file_" + key + ".txt")
                                            for key in self.short_names}
         self.prov_files: Dict[str, str] = {key: ("prov_file_" + key + ".txt")
@@ -63,6 +65,9 @@ class FilesystemCounterHandler(CounterHandler):
 
     def get_prov_path(self, short_name: str) -> str:
         return self.info_dir + self.prov_files[short_name]
+
+    def get_metadata_path(self, short_name: str, dataset_name: str) -> str:
+        return self.datasets_dir + dataset_name + os.sep + 'metadata_' + short_name + '.txt'
 
     def _read_number(self, file_path: str, line_number: int) -> Tuple[int, int]:
         if line_number <= 0:
@@ -175,3 +180,17 @@ class FilesystemCounterHandler(CounterHandler):
                 fixed_line: str = (self.trailing_char * (line_len - 1)) + "\n"
                 file.write(fixed_line.encode("ascii"))
                 file.seek(-line_len, os.SEEK_CUR)
+
+    def read_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+        if entity_short_name not in self.metadata_short_names:
+            raise ValueError("entity_short_name is not a known metadata short name!")
+
+        file_path: str = self.get_metadata_path(entity_short_name, dataset_name)
+        return self._read_number(file_path, 1)[0]
+
+    def increment_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+        if entity_short_name not in self.metadata_short_names:
+            raise ValueError("entity_short_name is not a known metadata short name!")
+
+        file_path: str = self.get_metadata_path(entity_short_name, dataset_name)
+        return self._add_number(file_path, 1)

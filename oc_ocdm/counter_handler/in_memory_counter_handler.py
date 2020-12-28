@@ -28,9 +28,11 @@ class InMemoryCounterHandler(CounterHandler):
     def __init__(self) -> None:
         self.short_names: List[str] = ["an", "ar", "be", "br", "ci", "de", "id", "pl", "ra", "re", "rp"]
         self.prov_short_names: List[str] = ["se"]
+        self.metadata_short_names: List[str] = ["di"]
         self.entity_counters: Dict[str, int] = {key: 0 for key in self.short_names}
         self.prov_counters: Dict[str, Dict[str, List[int]]] = {key1: {key2: [] for key2 in self.prov_short_names}
                                                                for key1 in self.short_names}
+        self.metadata_counters: Dict[str, Dict[str, int]] = {}
 
     def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
         if entity_short_name not in self.short_names:
@@ -71,3 +73,25 @@ class InMemoryCounterHandler(CounterHandler):
             # It's an entity!
             self.entity_counters[entity_short_name] += 1
             return self.entity_counters[entity_short_name]
+
+    def read_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+        if entity_short_name not in self.metadata_short_names:
+            raise ValueError("entity_short_name is not a known metadata short name!")
+
+        if dataset_name not in self.metadata_counters:
+            return 0
+        else:
+            if entity_short_name not in self.metadata_counters[dataset_name]:
+                return 0
+            else:
+                return self.metadata_counters[dataset_name][entity_short_name]
+
+    def increment_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+        if entity_short_name not in self.metadata_short_names:
+            raise ValueError("entity_short_name is not a known metadata short name!")
+
+        if dataset_name not in self.metadata_counters:
+            self.metadata_counters[dataset_name] = {key: 0 for key in self.metadata_short_names}
+
+        self.metadata_counters[dataset_name][entity_short_name] += 1
+        return self.metadata_counters[dataset_name][entity_short_name]
