@@ -17,13 +17,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from rdflib.query import Result
 
 if TYPE_CHECKING:
     from typing import Optional, Tuple
-    from rdflib import URIRef, ConjunctiveGraph
+    from rdflib import URIRef
     from rdflib.compare import IsomorphicGraph
-    from oc_ocdm import GraphEntity
+    from oc_ocdm.abstract_entity import AbstractEntity
 
 from rdflib import Graph
 from rdflib.compare import to_isomorphic, graph_diff
@@ -45,12 +44,19 @@ def get_insert_query(graph_iri: URIRef, data: Graph) -> Optional[str]:
     return insert_string.replace('\n\n', '') + "} }"
 
 
-def get_update_query(entity: GraphEntity) -> Tuple[str, int, int]:
-    if entity.to_be_deleted:
+def get_update_query(entity: AbstractEntity, entity_type: str = "graph") -> Tuple[str, int, int]:
+    if entity_type in ["graph", "metadata"]:
+        to_be_deleted: bool = entity.to_be_deleted
+        preexisting_graph: Graph = entity.preexisting_graph
+    elif entity_type == "prov":
+        to_be_deleted: bool = False
+        preexisting_graph: Graph = Graph(identifier=entity.g.identifier)
+
+    if to_be_deleted:
         removed_triples: int = len(entity.g)
-        return get_delete_query(entity.g.identifier, entity.preexisting_graph), 0, removed_triples
+        return get_delete_query(entity.g.identifier, preexisting_graph), 0, removed_triples
     else:
-        preexisting_iso: IsomorphicGraph = to_isomorphic(entity.preexisting_graph)
+        preexisting_iso: IsomorphicGraph = to_isomorphic(preexisting_graph)
         current_iso: IsomorphicGraph = to_isomorphic(entity.g)
         if preexisting_iso == current_iso:
             # Both graphs have exactly the same content!

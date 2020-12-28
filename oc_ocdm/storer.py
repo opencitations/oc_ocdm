@@ -18,14 +18,20 @@ from __future__ import annotations
 __author__ = 'essepuntato'
 
 from SPARQLWrapper import SPARQLWrapper
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Type
+
+from oc_ocdm.prov import ProvEntity
+from oc_ocdm.graph import GraphEntity
+from oc_ocdm.metadata import MetadataEntity
+from oc_ocdm.support import get_update_query
 
 if TYPE_CHECKING:
     from typing import Dict, List, Tuple, Any, Optional
     from rdflib import URIRef
-    from oc_ocdm import GraphSet, GraphEntity
+    from oc_ocdm.abstract_entity import AbstractEntity
+    from oc_ocdm.abstract_set import AbstractSet
 
-from oc_ocdm.support import Reporter, get_update_query
+from oc_ocdm.support import Reporter
 import os
 from rdflib import ConjunctiveGraph
 import shutil
@@ -39,7 +45,7 @@ from rdflib import XSD
 
 class Storer(object):
 
-    def __init__(self, graph_set: GraphSet = None, repok: Reporter = None, reperr: Reporter = None,
+    def __init__(self, graph_set: AbstractSet = None, repok: Reporter = None, reperr: Reporter = None,
                  context_map: Dict[str, Any] = None, default_dir: str = "_", dir_split: int = 0,
                  n_file_item: int = 1, output_format: str = "json-ld") -> None:
         self.output_format: str = output_format
@@ -48,7 +54,7 @@ class Storer(object):
         self.default_dir: str = default_dir
         self.preface_query: str = ""
         if graph_set is not None:
-            self.g_set: GraphSet = graph_set
+            self.g_set: AbstractSet = graph_set
 
         if self.output_format == "json-ld":
             if context_map is not None:
@@ -139,7 +145,7 @@ class Storer(object):
 
         return stored_graph_path
 
-    def store(self, entity: GraphEntity, base_dir: str, base_iri: str, context_path: str,
+    def store(self, entity: AbstractEntity, base_dir: str, base_iri: str, context_path: str,
               tmp_dir: str = None, already_processed: Dict[str, ConjunctiveGraph] = None,
               store_now: bool = True) -> Optional[Dict[str, ConjunctiveGraph]]:
         self.repok.new_article()
@@ -165,27 +171,32 @@ class Storer(object):
             if stored_g is None:
                 stored_g = ConjunctiveGraph()
 
-            """
-            The data related to a non deleted 'entity' should be
-            removed only if the preexisting_graph is not empty.
-            Otherwise, it would mean either that the entity is
-            new or that the user wants to modify the graph in
-            "append mode".
-            """
-            if entity.to_be_deleted or len(entity.preexisting_graph) > 0:
-                stored_g.remove((entity.res, None, None, None))
-
-            """
-            Here we copy data from the entity into the stored graph.
-            If the entity was marked as to be deleted, then we're
-            done because we already removed all of its triples.
-            """
-            if not entity.to_be_deleted:
+            if isinstance(entity, ProvEntity):
                 quads: List[Tuple] = []
                 graph_identifier: URIRef = entity.g.identifier
                 for triple in entity.g.triples((None, None, None)):
                     quads.append((*triple, graph_identifier))
                 stored_g.addN(quads)
+            elif isinstance(entity, GraphEntity) or isinstance(entity, MetadataEntity):
+                if entity.to_be_deleted:
+                    stored_g.remove((entity.res, None, None, None))
+                else:
+                    if len(entity.preexisting_graph) > 0:
+                        """
+                        We're not in 'append mode', so we need to remove
+                        the entity that we're going to overwrite.
+                        """
+                        stored_g.remove((entity.res, None, None, None))
+                    """
+                    Here we copy data from the entity into the stored graph.
+                    If the entity was marked as to be deleted, then we're
+                    done because we already removed all of its triples.
+                    """
+                    quads: List[Tuple] = []
+                    graph_identifier: URIRef = entity.g.identifier
+                    for triple in entity.g.triples((None, None, None)):
+                        quads.append((*triple, graph_identifier))
+                    stored_g.addN(quads)
 
             # We must ensure that the graph is correctly stored in our cache
             if cur_file_path not in already_processed:
@@ -301,8 +312,13 @@ class Storer(object):
         added_statements: int = 0
         removed_statements: int = 0
         result: bool = True
+        class_to_entity_type: Dict[Type, str] = {
+            GraphEntity: "graph",
+            ProvEntity: "prov",
+            MetadataEntity: "metadata"
+        }
         for idx, entity in enumerate(self.g_set.res_to_entity.values()):
-            update_query, n_added, n_removed = get_update_query(entity)
+            update_query, n_added, n_removed = get_update_query(entity, entity_type=class_to_entity_type[type(entity)])
 
             if idx % batch_size == 0:
                 query_string = update_query
@@ -325,11 +341,16 @@ class Storer(object):
 
         return result
 
-    def upload(self, entity: GraphEntity, triplestore_url: str, base_dir: str = None) -> bool:
+    def upload(self, entity: AbstractEntity, triplestore_url: str, base_dir: str = None) -> bool:
         self.repok.new_article()
         self.reperr.new_article()
 
-        update_query, n_added, n_removed = get_update_query(entity)
+        class_to_entity_type: Dict[Type, str] = {
+            GraphEntity: "graph",
+            ProvEntity: "prov",
+            MetadataEntity: "metadata"
+        }
+        update_query, n_added, n_removed = get_update_query(entity, entity_type=class_to_entity_type[type(entity)])
 
         return self._query(update_query, triplestore_url, base_dir, n_added, n_removed)
 
