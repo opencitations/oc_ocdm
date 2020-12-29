@@ -36,7 +36,7 @@ class TestProvEntity(unittest.TestCase):
         self.se = self.prov_set.add_se(self.prov_subject)
         self.prev_se = self.prov_set.add_se(self.prov_subject)
 
-    def test_create_generation_time(self):
+    def test_has_generation_time(self):
         time = "2001-10-26T21:32:52"
         datatype = XSD.dateTime
         result = self.se.has_generation_time(time)
@@ -46,7 +46,7 @@ class TestProvEntity(unittest.TestCase):
                                                                         normalize=False)
         self.assertIn(triple, self.se.g)
 
-    def test_create_invalidation_time(self):
+    def test_has_invalidation_time(self):
         time = "2001-10-26T21:32:52"
         datatype = XSD.dateTime
         result = self.se.has_invalidation_time(time)
@@ -56,9 +56,9 @@ class TestProvEntity(unittest.TestCase):
                                                                           normalize=False)
         self.assertIn(triple, self.se.g)
 
-    def test_snapshot_of(self):
+    def test_is_snapshot_of(self):
         ar = self.graph_set.add_ar(self.__class__.__name__)
-        result = self.se.snapshot_of(self.prov_subject)
+        result = self.se.is_snapshot_of(self.prov_subject)
         self.assertIsNone(result)
 
         triple = self.se.res, ProvEntity.iri_specialization_of, self.prov_subject.res
@@ -79,7 +79,7 @@ class TestProvEntity(unittest.TestCase):
         triple = self.se.res, ProvEntity.iri_had_primary_source, primary_source
         self.assertIn(triple, self.se.g)
 
-    def test_create_update_query(self):
+    def test_has_update_action(self):
         update_query = "DELETE {} INSERT {}"
         result = self.se.has_update_action(update_query)
         self.assertIsNone(result)
@@ -87,7 +87,7 @@ class TestProvEntity(unittest.TestCase):
         triple = self.se.res, ProvEntity.iri_has_update_query, Literal(update_query)
         self.assertIn(triple, self.se.g)
 
-    def test_create_description(self):
+    def test_has_description(self):
         description = "Description"
         result = self.se.has_description(description)
         self.assertIsNone(result)

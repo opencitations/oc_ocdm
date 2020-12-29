@@ -18,8 +18,9 @@ import unittest
 from rdflib import URIRef
 
 from oc_ocdm.graph import GraphSet
-from oc_ocdm.prov import ProvSet, ProvEntity
+from oc_ocdm.prov import ProvSet
 from oc_ocdm.counter_handler import FilesystemCounterHandler
+from oc_ocdm.prov.entities import EntitySnapshot
 
 
 class TestProvSet(unittest.TestCase):
@@ -35,7 +36,7 @@ class TestProvSet(unittest.TestCase):
         se = self.prov_set.add_se(prov_subj)
 
         self.assertIsNotNone(se)
-        self.assertIsInstance(se, ProvEntity)
+        self.assertIsInstance(se, EntitySnapshot)
         self.assertEqual(str(se.g.identifier), str(prov_subj.res) + "/prov/")
 
     def test_generate_provenance(self):
@@ -52,8 +53,8 @@ class TestProvSet(unittest.TestCase):
 
             se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
             self.assertIsNotNone(se_a)
-            self.assertIsInstance(se_a, ProvEntity)
-            self.assertEqual(a.res, se_a.get_snapshot_of())
+            self.assertIsInstance(se_a, EntitySnapshot)
+            self.assertEqual(a.res, se_a.get_is_snapshot_of())
             self.assertEqual(cur_time_str, se_a.get_generation_time())
             if a.source is not None:
                 self.assertEqual(a.source, str(se_a.get_primary_source()))
@@ -91,8 +92,8 @@ class TestProvSet(unittest.TestCase):
 
             se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
             self.assertIsNotNone(se_a_2)
-            self.assertIsInstance(se_a_2, ProvEntity)
-            self.assertEqual(a.res, se_a_2.get_snapshot_of())
+            self.assertIsInstance(se_a_2, EntitySnapshot)
+            self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
             self.assertEqual(cur_time_str, se_a_2.get_generation_time())
             if a.source is not None:
                 self.assertEqual(a.source, str(se_a_2.get_primary_source()))
@@ -118,8 +119,8 @@ class TestProvSet(unittest.TestCase):
 
             se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
             self.assertIsNotNone(se_a_2)
-            self.assertIsInstance(se_a_2, ProvEntity)
-            self.assertEqual(a.res, se_a_2.get_snapshot_of())
+            self.assertIsInstance(se_a_2, EntitySnapshot)
+            self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
             self.assertEqual(cur_time_str, se_a_2.get_generation_time())
             if a.source is not None:
                 self.assertEqual(a.source, str(se_a_2.get_primary_source()))
@@ -136,8 +137,8 @@ class TestProvSet(unittest.TestCase):
 
             se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
             self.assertIsNotNone(se_a)
-            self.assertIsInstance(se_a, ProvEntity)
-            self.assertEqual(a.res, se_a.get_snapshot_of())
+            self.assertIsInstance(se_a, EntitySnapshot)
+            self.assertEqual(a.res, se_a.get_is_snapshot_of())
             self.assertEqual(cur_time_str, se_a.get_generation_time())
             if a.source is not None:
                 self.assertEqual(a.source, str(se_a.get_primary_source()))
@@ -180,8 +181,8 @@ class TestProvSet(unittest.TestCase):
 
             se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
             self.assertIsNotNone(se_a_2)
-            self.assertIsInstance(se_a_2, ProvEntity)
-            self.assertEqual(a.res, se_a_2.get_snapshot_of())
+            self.assertIsInstance(se_a_2, EntitySnapshot)
+            self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
             self.assertEqual(cur_time_str, se_a_2.get_generation_time())
             if a.source is not None:
                 self.assertEqual(a.source, str(se_a_2.get_primary_source()))
@@ -203,8 +204,8 @@ class TestProvSet(unittest.TestCase):
 
             se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
             self.assertIsNotNone(se_a_2)
-            self.assertIsInstance(se_a_2, ProvEntity)
-            self.assertEqual(a.res, se_a_2.get_snapshot_of())
+            self.assertIsInstance(se_a_2, EntitySnapshot)
+            self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
             self.assertEqual(cur_time_str, se_a_2.get_generation_time())
             if a.source is not None:
                 self.assertEqual(a.source, str(se_a_2.get_primary_source()))
