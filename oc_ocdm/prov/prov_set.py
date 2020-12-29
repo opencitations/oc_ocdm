@@ -69,7 +69,7 @@ class ProvSet(AbstractSet):
 
     def _create_snapshot(self, cur_subj: GraphEntity, cur_time: str) -> EntitySnapshot:
         new_snapshot: EntitySnapshot = self.add_se(prov_subject=cur_subj)
-        new_snapshot.snapshot_of(cur_subj)
+        new_snapshot.is_snapshot_of(cur_subj)
         new_snapshot.has_generation_time(cur_time)
         if cur_subj.source is not None:
             new_snapshot.has_primary_source(URIRef(cur_subj.source))
@@ -115,7 +115,7 @@ class ProvSet(AbstractSet):
             last_snapshot_res: Optional[URIRef] = self._retrieve_last_snapshot(cur_subj.res)
             if last_snapshot_res is None:
                 # CREATION SNAPSHOT
-                cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
+                cur_snapshot: EntitySnapshot = self._create_snapshot(cur_subj, cur_time)
                 cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
             else:
                 update_query: str = get_update_query(cur_subj, entity_type="graph")[0]
@@ -124,19 +124,19 @@ class ProvSet(AbstractSet):
 
                 if was_modified and len(snapshots_list) <= 0:
                     # MODIFICATION SNAPSHOT
-                    last_snapshot: ProvEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
+                    last_snapshot: EntitySnapshot = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
                     last_snapshot.has_invalidation_time(cur_time)
 
-                    cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
+                    cur_snapshot: EntitySnapshot = self._create_snapshot(cur_subj, cur_time)
                     cur_snapshot.derives_from(last_snapshot)
                     cur_snapshot.has_update_action(update_query)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been modified.")
                 elif len(snapshots_list) > 0:
                     # MERGE SNAPSHOT
-                    last_snapshot: ProvEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
+                    last_snapshot: EntitySnapshot = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
                     last_snapshot.has_invalidation_time(cur_time)
 
-                    cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
+                    cur_snapshot: EntitySnapshot = self._create_snapshot(cur_subj, cur_time)
                     cur_snapshot.derives_from(last_snapshot)
                     for snapshot in snapshots_list:
                         cur_snapshot.derives_from(snapshot)
@@ -156,7 +156,7 @@ class ProvSet(AbstractSet):
                     pass
                 else:
                     # CREATION SNAPSHOT
-                    cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
+                    cur_snapshot: EntitySnapshot = self._create_snapshot(cur_subj, cur_time)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
             else:
                 update_query: str = get_update_query(cur_subj, entity_type="graph")[0]
@@ -164,20 +164,20 @@ class ProvSet(AbstractSet):
 
                 if cur_subj.to_be_deleted:
                     # DELETION SNAPSHOT
-                    last_snapshot: ProvEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
+                    last_snapshot: EntitySnapshot = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
                     last_snapshot.has_invalidation_time(cur_time)
 
-                    cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
+                    cur_snapshot: EntitySnapshot = self._create_snapshot(cur_subj, cur_time)
                     cur_snapshot.derives_from(last_snapshot)
                     cur_snapshot.has_invalidation_time(cur_time)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been deleted.")
                     cur_snapshot.has_update_action(update_query)
                 elif was_modified:
                     # MODIFICATION SNAPSHOT
-                    last_snapshot: ProvEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
+                    last_snapshot: EntitySnapshot = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
                     last_snapshot.has_invalidation_time(cur_time)
 
-                    cur_snapshot: ProvEntity = self._create_snapshot(cur_subj, cur_time)
+                    cur_snapshot: EntitySnapshot = self._create_snapshot(cur_subj, cur_time)
                     cur_snapshot.derives_from(last_snapshot)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been modified.")
                     cur_snapshot.has_update_action(update_query)

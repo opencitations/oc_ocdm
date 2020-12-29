@@ -60,18 +60,18 @@ class EntitySnapshot(ProvEntity):
         self.g.remove((self.res, ProvEntity.iri_invalidated_at_time, None))
 
     # IS SNAPSHOT OF
-    def get_snapshot_of(self) -> Optional[URIRef]:
+    def get_is_snapshot_of(self) -> Optional[URIRef]:
         uri: Optional[URIRef] = self._get_uri_reference(ProvEntity.iri_specialization_of)
         return uri
 
-    def snapshot_of(self, en_res: GraphEntity) -> None:
+    def is_snapshot_of(self, en_res: GraphEntity) -> None:
         """This property is used to link a snapshot of entity metadata to the bibliographic entity
         to which the snapshot refers.
         """
-        self.remove_snapshot_of()
+        self.remove_is_snapshot_of()
         self.g.add((self.res, ProvEntity.iri_specialization_of, en_res.res))
 
-    def remove_snapshot_of(self) -> None:
+    def remove_is_snapshot_of(self) -> None:
         self.g.remove((self.res, ProvEntity.iri_specialization_of, None))
 
     # IS DERIVED FROM
@@ -79,6 +79,7 @@ class EntitySnapshot(ProvEntity):
         uri_list: List[URIRef] = self._get_multiple_uri_references(ProvEntity.iri_was_derived_from)
         result: List[ProvEntity] = []
         for uri in uri_list:
+            # TODO: what is the prov_subject of these snapshots?
             result.append(self.p_set.add_se(None, uri))
         return result
 
