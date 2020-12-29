@@ -75,6 +75,9 @@ class InMemoryCounterHandler(CounterHandler):
             return self.entity_counters[entity_short_name]
 
     def read_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+        if dataset_name is None:
+            raise ValueError("dataset_name must be provided!")
+
         if entity_short_name not in self.metadata_short_names:
             raise ValueError("entity_short_name is not a known metadata short name!")
 
@@ -87,6 +90,9 @@ class InMemoryCounterHandler(CounterHandler):
                 return self.metadata_counters[dataset_name][entity_short_name]
 
     def increment_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+        if dataset_name is None:
+            raise ValueError("dataset_name must be provided!")
+
         if entity_short_name not in self.metadata_short_names:
             raise ValueError("entity_short_name is not a known metadata short name!")
 

@@ -182,6 +182,9 @@ class FilesystemCounterHandler(CounterHandler):
                 file.seek(-line_len, os.SEEK_CUR)
 
     def read_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+        if dataset_name is None:
+            raise ValueError("dataset_name must be provided!")
+
         if entity_short_name not in self.metadata_short_names:
             raise ValueError("entity_short_name is not a known metadata short name!")
 
@@ -189,6 +192,9 @@ class FilesystemCounterHandler(CounterHandler):
         return self._read_number(file_path, 1)[0]
 
     def increment_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+        if dataset_name is None:
+            raise ValueError("dataset_name must be provided!")
+
         if entity_short_name not in self.metadata_short_names:
             raise ValueError("entity_short_name is not a known metadata short name!")
 
