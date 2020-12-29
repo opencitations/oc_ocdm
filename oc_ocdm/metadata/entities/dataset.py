@@ -80,6 +80,7 @@ class Dataset(MetadataEntity):
 
     @accepts_only('literal')
     def has_title(self, string: str) -> None:
+        """The title of the dataset."""
         self.remove_title()
         self._create_literal(MetadataEntity.iri_title, string)
 
@@ -92,6 +93,7 @@ class Dataset(MetadataEntity):
 
     @accepts_only('literal')
     def has_description(self, string: str) -> None:
+        """A short textual description of the content of the dataset."""
         self.remove_description()
         self._create_literal(MetadataEntity.iri_description, string)
 
@@ -104,6 +106,7 @@ class Dataset(MetadataEntity):
 
     @accepts_only('literal')
     def has_publication_date(self, string: str) -> None:
+        """The date of first publication of the dataset."""
         self.remove_publication_date()
         self._create_literal(MetadataEntity.iri_issued, string, XSD.dateTime, False)
 
@@ -116,6 +119,7 @@ class Dataset(MetadataEntity):
 
     @accepts_only('literal')
     def has_modification_date(self, string: str) -> None:
+        """The date on which the dataset has been modified."""
         self.remove_modification_date()
         self._create_literal(MetadataEntity.iri_modified, string, XSD.dateTime, False)
 
@@ -128,6 +132,7 @@ class Dataset(MetadataEntity):
 
     @accepts_only('literal')
     def has_keyword(self, string: str) -> None:
+        """A keyword or phrase describing the content of the dataset."""
         self._create_literal(MetadataEntity.iri_keyword, string)
 
     @accepts_only('literal')
@@ -143,6 +148,7 @@ class Dataset(MetadataEntity):
 
     @accepts_only('thing')
     def has_subject(self, thing_res: URIRef) -> None:
+        """A concept describing the primary subject of the dataset."""
         self.g.add((self.res, MetadataEntity.iri_subject, thing_res))
 
     @accepts_only('thing')
@@ -158,6 +164,7 @@ class Dataset(MetadataEntity):
 
     @accepts_only('thing')
     def has_landing_page(self, thing_res: URIRef) -> None:
+        """An HTML page (indicated by its URL) representing a browsable page for the dataset."""
         self.remove_landing_page()
         self.g.add((self.res, MetadataEntity.iri_landing_page, thing_res))
 
@@ -174,6 +181,7 @@ class Dataset(MetadataEntity):
 
     @accepts_only('_dataset_')
     def has_subset(self, obj: Dataset) -> None:
+        """A link to a subset of the present dataset."""
         self.g.add((self.res, MetadataEntity.iri_subset, obj.res))
 
     @accepts_only('_dataset_')
@@ -189,6 +197,7 @@ class Dataset(MetadataEntity):
 
     @accepts_only('thing')
     def has_sparql_endpoint(self, thing_res: URIRef) -> None:
+        """The link to the SPARQL endpoint for querying the dataset."""
         self.remove_sparql_endpoint()
         self.g.add((self.res, MetadataEntity.iri_sparql_endpoint, thing_res))
 
@@ -205,6 +214,7 @@ class Dataset(MetadataEntity):
 
     @accepts_only('di')
     def has_distribution(self, obj: Distribution) -> None:
+        """A distribution of the dataset."""
         self.g.add((self.res, MetadataEntity.iri_distribution, obj.res))
 
     @accepts_only('di')

@@ -28,8 +28,8 @@ if TYPE_CHECKING:
 
 
 class Distribution(MetadataEntity):
-    """Dataset (short: not applicable and strictly dependent on the implementation of the
-       dataset infrastructure): a set of collected information about something."""
+    """Distribution (short: di): an accessible form of a dataset, for example a downloadable
+       file."""
 
     @accepts_only('di')
     def merge(self, other: Distribution) -> None:
@@ -69,6 +69,7 @@ class Distribution(MetadataEntity):
 
     @accepts_only('literal')
     def has_title(self, string: str) -> None:
+        """The title of the distribution."""
         self.remove_title()
         self._create_literal(MetadataEntity.iri_title, string)
 
@@ -81,6 +82,7 @@ class Distribution(MetadataEntity):
 
     @accepts_only('literal')
     def has_description(self, string: str) -> None:
+        """A short textual description of the content of the distribution."""
         self.remove_description()
         self._create_literal(MetadataEntity.iri_description, string)
 
@@ -93,6 +95,7 @@ class Distribution(MetadataEntity):
 
     @accepts_only('literal')
     def has_publication_date(self, string: str) -> None:
+        """The date of first publication of the distribution."""
         self.remove_publication_date()
         self._create_literal(MetadataEntity.iri_issued, string, XSD.dateTime, False)
 
@@ -105,6 +108,7 @@ class Distribution(MetadataEntity):
 
     @accepts_only('literal')
     def has_byte_size(self, string: str) -> None:
+        """The size in bytes of the distribution."""
         self.remove_byte_size()
         self._create_literal(MetadataEntity.iri_byte_size, string, XSD.decimal)
 
@@ -117,6 +121,7 @@ class Distribution(MetadataEntity):
 
     @accepts_only('thing')
     def has_license(self, thing_res: URIRef) -> None:
+        """The resource describing the license associated with the data in the distribution."""
         self.remove_license()
         self.g.add((self.res, MetadataEntity.iri_license, thing_res))
 
@@ -129,6 +134,7 @@ class Distribution(MetadataEntity):
 
     @accepts_only('thing')
     def has_download_url(self, thing_res: URIRef) -> None:
+        """The URL of the document where the distribution is stored."""
         self.g.add((self.res, MetadataEntity.iri_download_url, thing_res))
 
     def remove_download_url(self) -> None:
@@ -140,6 +146,7 @@ class Distribution(MetadataEntity):
 
     @accepts_only('thing')
     def has_media_type(self, thing_res: URIRef) -> None:
+        """The file type of the representation of the distribution (according to IANA media types)."""
         self.g.add((self.res, MetadataEntity.iri_media_type, thing_res))
 
     def remove_media_type(self) -> None:
