@@ -107,6 +107,48 @@ class TestFilesystemCounterHandler(unittest.TestCase):
             self.assertRaises(ValueError, self.counter_handler.increment_counter, "br", "xyz")
             self.assertRaises(ValueError, self.counter_handler.increment_counter, "br", "se", -1)
 
+    def test_read_metadata_counter(self):
+        dataset_name: str = "http://dataset/"
+        with self.subTest("Read DI counter"):
+            count = 99
+            self.counter_handler.metadata_counters[dataset_name] = {"di": count}
+
+            result = self.counter_handler.read_metadata_counter("di", dataset_name)
+            self.assertIsNotNone(result)
+            self.assertEqual(result, count)
+        with self.subTest("Read DI counter, long number"):
+            long_count = 2**256
+            self.counter_handler.metadata_counters[dataset_name] = {"di": long_count}
+
+            result = self.counter_handler.read_metadata_counter("di", dataset_name)
+            self.assertIsNotNone(result)
+            self.assertEqual(result, long_count)
+        with self.subTest("Wrong inputs"):
+            self.assertRaises(ValueError, self.counter_handler.read_metadata_counter, "xyz", dataset_name)
+            self.assertRaises(ValueError, self.counter_handler.read_metadata_counter, "di", None)
+
+    def test_increment_metadata_counter(self):
+        dataset_name: str = "http://dataset/"
+        with self.subTest("Increment DI counter"):
+            count = 99
+            self.counter_handler.metadata_counters[dataset_name] = {"di": count}
+
+            result = self.counter_handler.increment_metadata_counter("di", dataset_name)
+            self.assertIsNotNone(result)
+            self.assertEqual(result, count + 1)
+            self.assertEqual(self.counter_handler.metadata_counters[dataset_name]["di"], count + 1)
+        with self.subTest("Increment DI counter, long number"):
+            long_count = 2**256
+            self.counter_handler.metadata_counters[dataset_name] = {"di": long_count}
+
+            result = self.counter_handler.increment_metadata_counter("di", dataset_name)
+            self.assertIsNotNone(result)
+            self.assertEqual(result, long_count + 1)
+            self.assertEqual(self.counter_handler.metadata_counters[dataset_name]["di"], long_count + 1)
+        with self.subTest("Wrong inputs"):
+            self.assertRaises(ValueError, self.counter_handler.increment_metadata_counter, "xyz", dataset_name)
+            self.assertRaises(ValueError, self.counter_handler.increment_metadata_counter, "di", None)
+
 
 if __name__ == '__main__':
     unittest.main()

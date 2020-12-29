@@ -141,6 +141,16 @@ class TestFilesystemCounterHandler(unittest.TestCase):
 
         self.assertRaises(ValueError, self.counter_handler._add_number, self.file_path, -1)
 
+    def test_read_metadata_counter(self):
+        dataset_name: str = "http://dataset/"
+        self.assertRaises(ValueError, self.counter_handler.read_metadata_counter, "xyz", dataset_name)
+        self.assertRaises(ValueError, self.counter_handler.read_metadata_counter, "di", None)
+
+    def test_increment_metadata_counter(self):
+        dataset_name: str = "http://dataset/"
+        self.assertRaises(ValueError, self.counter_handler.increment_metadata_counter, "xyz", dataset_name)
+        self.assertRaises(ValueError, self.counter_handler.increment_metadata_counter, "di", None)
+
 
 if __name__ == '__main__':
     unittest.main()
