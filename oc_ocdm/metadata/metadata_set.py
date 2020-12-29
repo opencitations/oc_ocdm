@@ -23,9 +23,8 @@ from oc_ocdm.metadata.entities import Dataset, Distribution
 
 if TYPE_CHECKING:
     from typing import Dict, Optional, Tuple, ClassVar
-    from rdflib import URIRef
 
-from rdflib import Graph
+from rdflib import Graph, URIRef
 
 from oc_ocdm.metadata import MetadataEntity
 from oc_ocdm.abstract_set import AbstractSet
@@ -53,20 +52,22 @@ class MetadataSet(AbstractSet):
         if res in self.res_to_entity:
             return self.res_to_entity[res]
 
-    def add_dataset(self, resp_agent: str, source_agent: str = None, source: str = None,
+    def add_dataset(self, dataset_name: str, resp_agent: str, source_agent: str = None, source: str = None,
                     res: URIRef = None, preexisting_graph: Graph = None) -> Dataset:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add_metadata(graph_url=str(self.dataset_home), res=res, short_name="_dataset_")
+        cur_g, count, label = self._add_metadata(graph_url=str(self.dataset_home), res=res, short_name="_dataset_",
+                                                 dataset_name=dataset_name)
         return Dataset(cur_g, res=res, res_type=MetadataEntity.iri_dataset, short_name="_dataset_",
                        resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                        label=label, m_set=self, preexisting_graph=preexisting_graph)
 
-    def add_di(self, resp_agent: str, source_agent: str = None, source: str = None,
+    def add_di(self, dataset_name: str, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> Distribution:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add_metadata(graph_url=str(self.dataset_home), res=res, short_name="di")
+        cur_g, count, label = self._add_metadata(graph_url=str(self.dataset_home), res=res, short_name="di",
+                                                 dataset_name=dataset_name)
         return Distribution(cur_g, res=res, res_type=MetadataEntity.iri_distribution, short_name="di",
                             resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
                             label=label, m_set=self, preexisting_graph=preexisting_graph)
