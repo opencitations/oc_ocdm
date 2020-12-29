@@ -19,10 +19,11 @@ from typing import TYPE_CHECKING
 
 from oc_ocdm.decorators import accepts_only
 from oc_ocdm.metadata import MetadataEntity
+from rdflib import XSD
 
 if TYPE_CHECKING:
     from typing import Optional, List
-    from rdflib import URIRef, XSD
+    from rdflib import URIRef
     from oc_ocdm.metadata.entities import Distribution
 
 
@@ -62,9 +63,9 @@ class Dataset(MetadataEntity):
         if landing_page is not None:
             self.has_landing_page(landing_page)
 
-        subsets_list: List[Dataset] = other.get_subsets()
-        for cur_subset in subsets_list:
-            self.has_subset(cur_subset)
+        sub_datasets_list: List[Dataset] = other.get_sub_datasets()
+        for cur_sub_dataset in sub_datasets_list:
+            self.has_sub_dataset(cur_sub_dataset)
 
         sparql_endpoint: Optional[URIRef] = other.get_sparql_endpoint()
         if sparql_endpoint is not None:
@@ -171,8 +172,8 @@ class Dataset(MetadataEntity):
     def remove_landing_page(self) -> None:
         self.g.remove((self.res, MetadataEntity.iri_landing_page, None))
 
-    # HAS SUBSET
-    def get_subsets(self) -> List[Dataset]:
+    # HAS SUB-DATASET
+    def get_sub_datasets(self) -> List[Dataset]:
         uri_list: List[URIRef] = self._get_multiple_uri_references(MetadataEntity.iri_subset)
         result: List[Dataset] = []
         for uri in uri_list:
@@ -180,12 +181,12 @@ class Dataset(MetadataEntity):
         return result
 
     @accepts_only('_dataset_')
-    def has_subset(self, obj: Dataset) -> None:
+    def has_sub_dataset(self, obj: Dataset) -> None:
         """A link to a subset of the present dataset."""
         self.g.add((self.res, MetadataEntity.iri_subset, obj.res))
 
     @accepts_only('_dataset_')
-    def remove_subset(self, dataset_res: Dataset = None) -> None:
+    def remove_sub_dataset(self, dataset_res: Dataset = None) -> None:
         if dataset_res is not None:
             self.g.remove((self.res, MetadataEntity.iri_subset, dataset_res.res))
         else:
