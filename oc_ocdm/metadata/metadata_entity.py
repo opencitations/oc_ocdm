@@ -58,7 +58,7 @@ class MetadataEntity(AbstractEntity):
 
     short_name_to_type_iri: ClassVar[Dict[str, URIRef]] = {
         '_dataset_': iri_dataset,
-        'di': iri_distribution
+        'di': iri_datafile
     }
 
     def __init__(self, g: Graph, res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
