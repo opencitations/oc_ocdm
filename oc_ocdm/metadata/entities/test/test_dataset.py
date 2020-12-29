@@ -25,7 +25,7 @@ class TestDataset(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.counter_handler = FilesystemCounterHandler("./info_dir/")
-        cls.metadata_set = MetadataSet("http://test/", cls.counter_handler, "http://cccTest/", False)
+        cls.metadata_set = MetadataSet("http://test/", cls.counter_handler, "http://cccTest", False)
 
     def setUp(self):
         self.dataset = self.metadata_set.add_dataset("ocdmTest", self.__class__.__name__)
