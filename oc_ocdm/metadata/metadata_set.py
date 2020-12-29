@@ -16,15 +16,16 @@
 from __future__ import annotations
 __author__ = 'essepuntato'
 
-from typing import TYPE_CHECKING, Tuple, ClassVar
+from typing import TYPE_CHECKING
 
 from oc_ocdm.counter_handler import CounterHandler
 from oc_ocdm.metadata.entities import Dataset, Distribution
 
 if TYPE_CHECKING:
-    from typing import Dict, Optional
+    from typing import Dict, Optional, Tuple, ClassVar
+    from rdflib import URIRef
 
-from rdflib import Graph, URIRef
+from rdflib import Graph
 
 from oc_ocdm.metadata import MetadataEntity
 from oc_ocdm.abstract_set import AbstractSet
