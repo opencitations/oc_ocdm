@@ -39,6 +39,11 @@ Just run the following command inside the root project folder:
 ### How to manage the project using Poetry
 See [Poetry commands documentation](https://python-poetry.org/docs/cli/).
 
+### How to publish the package onto Pypi
+``` bash
+    poetry publish --build
+```
+
 ### How to build the documentation
 ___
 **Warning! In order to avoid getting the following `WARNING: html_static_path entry '_static' does not exist`, you'll
