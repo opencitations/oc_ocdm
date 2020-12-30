@@ -8,7 +8,6 @@ Subpackages
    :maxdepth: 4
 
    oc_ocdm.metadata.entities
-   oc_ocdm.metadata.test
 
 Submodules
 ----------

@@ -1,14 +1,6 @@
 oc\_ocdm.graph.entities.bibliographic package
 =============================================
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   oc_ocdm.graph.entities.bibliographic.test
-
 Submodules
 ----------
 

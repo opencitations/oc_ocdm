@@ -13,7 +13,6 @@ Subpackages
    oc_ocdm.prov
    oc_ocdm.resources
    oc_ocdm.support
-   oc_ocdm.test
 
 Submodules
 ----------

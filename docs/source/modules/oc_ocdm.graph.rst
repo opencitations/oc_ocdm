@@ -8,7 +8,6 @@ Subpackages
    :maxdepth: 4
 
    oc_ocdm.graph.entities
-   oc_ocdm.graph.test
 
 Submodules
 ----------

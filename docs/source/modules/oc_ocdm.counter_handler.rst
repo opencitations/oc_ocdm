@@ -1,14 +1,6 @@
 oc\_ocdm.counter\_handler package
 =================================
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   oc_ocdm.counter_handler.test
-
 Submodules
 ----------
 

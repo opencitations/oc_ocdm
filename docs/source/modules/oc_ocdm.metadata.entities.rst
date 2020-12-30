@@ -1,14 +1,6 @@
 oc\_ocdm.metadata.entities package
 ==================================
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   oc_ocdm.metadata.entities.test
-
 Submodules
 ----------
 

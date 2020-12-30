@@ -8,7 +8,6 @@ Subpackages
    :maxdepth: 4
 
    oc_ocdm.prov.entities
-   oc_ocdm.prov.test
 
 Submodules
 ----------

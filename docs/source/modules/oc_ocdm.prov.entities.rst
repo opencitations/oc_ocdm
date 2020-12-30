@@ -1,14 +1,6 @@
 oc\_ocdm.prov.entities package
 ==============================
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   oc_ocdm.prov.entities.test
-
 Submodules
 ----------
 
