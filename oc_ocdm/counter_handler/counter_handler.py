@@ -18,11 +18,20 @@ from abc import ABC, abstractmethod
 
 class CounterHandler(ABC):
     @abstractmethod
+    def set_counter(self, new_value: int, entity_short_name: str, prov_short_name: str = "",
+                    identifier: int = 1) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
     def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
         raise NotImplementedError
 
     @abstractmethod
     def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
+        raise NotImplementedError
+
+    @abstractmethod
+    def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str) -> None:
         raise NotImplementedError
 
     @abstractmethod

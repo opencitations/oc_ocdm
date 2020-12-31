@@ -104,6 +104,29 @@ class TestFilesystemCounterHandler(unittest.TestCase):
                     break
                 self.assertTrue(self.counter_handler._is_a_valid_line(line.encode('ascii')))
 
+    def test_set_number(self):
+        number = 18
+        with open(self.file_path, 'r+b') as test_file:
+            num_of_line = 35
+            test_file.seek(self.counter_handler.initial_line_len * (num_of_line - 1))
+            line = str(number).ljust(self.counter_handler.initial_line_len - 1, self.counter_handler.trailing_char) + '\n'
+            test_file.write(line.encode('ascii'))
+
+        new_number = 205
+        result = self.counter_handler._set_number(new_number, self.file_path, num_of_line)
+        self.assertIsNone(result)
+        with open(self.file_path, 'rt', encoding='ascii') as test_file:
+            count = 0
+            for line in test_file:
+                count += 1
+                if count >= num_of_line:
+                    self.assertEqual(int(line), new_number)
+                    break
+                self.assertTrue(self.counter_handler._is_a_valid_line(line.encode('ascii')))
+
+        self.assertRaises(ValueError, self.counter_handler._set_number, -1, self.file_path, 1)
+        self.assertRaises(ValueError, self.counter_handler._set_number, 1, self.file_path, -1)
+
     def test_read_number(self):
         number = 18
         with open(self.file_path, 'r+b') as test_file:

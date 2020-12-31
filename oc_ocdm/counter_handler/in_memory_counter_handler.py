@@ -34,9 +34,14 @@ class InMemoryCounterHandler(CounterHandler):
                                                                for key1 in self.short_names}
         self.metadata_counters: Dict[str, Dict[str, int]] = {}
 
-    def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
+    def set_counter(self, new_value: int, entity_short_name: str, prov_short_name: str = "",
+                    identifier: int = 1) -> None:
+        if new_value < 0:
+            raise ValueError("new_value must be a non negative integer!")
+
         if entity_short_name not in self.short_names:
             raise ValueError("entity_short_name is not a known short name!")
+
         if prov_short_name != "":
             if prov_short_name not in self.prov_short_names:
                 raise ValueError("prov_short_name is not a known provenance short name!")
@@ -46,8 +51,30 @@ class InMemoryCounterHandler(CounterHandler):
         identifier -= 1  # Internally we use zero_indexing!
         if prov_short_name in self.prov_short_names:
             # It's a provenance entity!
-            while identifier > len(self.prov_counters[entity_short_name][prov_short_name]) - 1:
-                self.prov_counters[entity_short_name][prov_short_name] += [0]
+            missing_counters: int = identifier - (len(self.prov_counters[entity_short_name][prov_short_name]) - 1)
+            if missing_counters > 0:
+                self.prov_counters[entity_short_name][prov_short_name] += [0] * missing_counters
+            self.prov_counters[entity_short_name][prov_short_name][identifier] = new_value
+        else:
+            # It's an entity!
+            self.entity_counters[entity_short_name] = new_value
+
+    def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
+        if entity_short_name not in self.short_names:
+            raise ValueError("entity_short_name is not a known short name!")
+
+        if prov_short_name != "":
+            if prov_short_name not in self.prov_short_names:
+                raise ValueError("prov_short_name is not a known provenance short name!")
+            if identifier <= 0:
+                raise ValueError("identifier must be a positive non-zero integer number!")
+
+        identifier -= 1  # Internally we use zero_indexing!
+        if prov_short_name in self.prov_short_names:
+            # It's a provenance entity!
+            missing_counters: int = identifier - (len(self.prov_counters[entity_short_name][prov_short_name]) - 1)
+            if missing_counters > 0:
+                self.prov_counters[entity_short_name][prov_short_name] += [0] * missing_counters
             return self.prov_counters[entity_short_name][prov_short_name][identifier]
         else:
             # It's an entity!
@@ -56,6 +83,7 @@ class InMemoryCounterHandler(CounterHandler):
     def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
         if entity_short_name not in self.short_names:
             raise ValueError("entity_short_name is not a known short name!")
+
         if prov_short_name != "":
             if prov_short_name not in self.prov_short_names:
                 raise ValueError("prov_short_name is not a known provenance short name!")
@@ -65,14 +93,30 @@ class InMemoryCounterHandler(CounterHandler):
         identifier -= 1  # Internally we use zero_indexing!
         if prov_short_name in self.prov_short_names:
             # It's a provenance entity!
-            while identifier > len(self.prov_counters[entity_short_name][prov_short_name]) - 1:
-                self.prov_counters[entity_short_name][prov_short_name] += [0]
+            missing_counters: int = identifier - (len(self.prov_counters[entity_short_name][prov_short_name]) - 1)
+            if missing_counters > 0:
+                self.prov_counters[entity_short_name][prov_short_name] += [0]*missing_counters
             self.prov_counters[entity_short_name][prov_short_name][identifier] += 1
             return self.prov_counters[entity_short_name][prov_short_name][identifier]
         else:
             # It's an entity!
             self.entity_counters[entity_short_name] += 1
             return self.entity_counters[entity_short_name]
+
+    def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str) -> None:
+        if new_value < 0:
+            raise ValueError("new_value must be a non negative integer!")
+
+        if dataset_name is None:
+            raise ValueError("dataset_name must be provided!")
+
+        if entity_short_name not in self.metadata_short_names:
+            raise ValueError("entity_short_name is not a known metadata short name!")
+
+        if dataset_name not in self.metadata_counters:
+            self.metadata_counters[dataset_name] = {key: 0 for key in self.metadata_short_names}
+
+        self.metadata_counters[dataset_name][entity_short_name] = new_value
 
     def read_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
         if dataset_name is None:

@@ -46,6 +46,17 @@ class FilesystemCounterHandler(CounterHandler):
         self.prov_files: Dict[str, str] = {key: ("prov_file_" + key + ".txt")
                                            for key in self.short_names}
 
+    def set_counter(self, new_value: int, entity_short_name: str, prov_short_name: str = "",
+                    identifier: int = 1) -> None:
+        if new_value < 0:
+            raise ValueError("new_value must be a non negative integer!")
+
+        if prov_short_name == "se":
+            file_path: str = self.get_prov_path(entity_short_name)
+        else:
+            file_path: str = self.get_info_path(entity_short_name)
+        self._set_number(new_value, file_path, identifier)
+
     def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
         if prov_short_name == "se":
             file_path: str = self.get_prov_path(entity_short_name)
@@ -118,6 +129,36 @@ class FilesystemCounterHandler(CounterHandler):
             self._fix_previous_lines(file, cur_line_len)
         return cur_number
 
+    def _set_number(self, new_value: int, file_path: str, line_number: int = 1) -> None:
+        if new_value < 0:
+            raise ValueError("new_value must be a non negative integer!")
+
+        if line_number <= 0:
+            raise ValueError("line_number must be a positive non-zero integer number!")
+
+        if not os.path.exists(os.path.dirname(file_path)):
+            os.makedirs(os.path.dirname(file_path))
+
+        if not os.path.isfile(file_path):
+            with open(file_path, "wb") as file:
+                first_line: str = self.trailing_char * (self.initial_line_len - 1) + "\n"
+                file.write(first_line.encode("ascii"))
+
+        cur_line_len = self._read_number(file_path, line_number)[1]
+
+        cur_number_len: int = len(str(new_value)) + 1
+        if cur_number_len > cur_line_len:
+            self._increase_line_len(file_path, new_length=cur_number_len)
+            cur_line_len = cur_number_len
+
+        with open(file_path, "r+b") as file:
+            line_offset: int = (line_number - 1) * cur_line_len
+            file.seek(line_offset)
+            line: str = str(new_value).ljust(cur_line_len - 1, self.trailing_char) + "\n"
+            file.write(line.encode("ascii"))
+            file.seek(-cur_line_len, os.SEEK_CUR)
+            self._fix_previous_lines(file, cur_line_len)
+
     @staticmethod
     def _get_line_len(file: BinaryIO) -> int:
         cur_char: str = file.read(1).decode("ascii")
@@ -180,6 +221,19 @@ class FilesystemCounterHandler(CounterHandler):
                 fixed_line: str = (self.trailing_char * (line_len - 1)) + "\n"
                 file.write(fixed_line.encode("ascii"))
                 file.seek(-line_len, os.SEEK_CUR)
+
+    def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str) -> None:
+        if new_value < 0:
+            raise ValueError("new_value must be a non negative integer!")
+
+        if dataset_name is None:
+            raise ValueError("dataset_name must be provided!")
+
+        if entity_short_name not in self.metadata_short_names:
+            raise ValueError("entity_short_name is not a known metadata short name!")
+
+        file_path: str = self.get_metadata_path(entity_short_name, dataset_name)
+        return self._set_number(new_value, file_path, 1)
 
     def read_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
         if dataset_name is None:
