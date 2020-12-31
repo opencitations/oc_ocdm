@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from typing import Optional, List, Tuple
 from urllib.parse import quote
 
-from rdflib import Literal, RDF, URIRef, XSD
+from rdflib import Literal, RDF, URIRef, XSD, Graph
 
 
 def create_date(date_list: List[Optional[int]] = None) -> Optional[str]:
@@ -63,44 +63,44 @@ def get_datatype_from_iso_8601(string: str) -> Tuple[URIRef, str]:
         return XSD.gYear, datetime(*date_parts, 1, 1).strftime('%Y')
 
 
-def encode_url(u):
+def encode_url(u: str) -> str:
     return quote(u, "://")
 
 
-def create_literal(g, res, p, s, dt=None, nor=True):
+def create_literal(g: Graph, res: URIRef, p: URIRef, s: str, dt: URIRef = None, nor: bool = True) -> None:
     string = s
     if not is_string_empty(string):
         g.add((res, p, Literal(string, datatype=dt, normalize=nor)))
 
 
-def create_type(g, res, res_type):
+def create_type(g: Graph, res: URIRef, res_type: URIRef) -> None:
     g.add((res, RDF.type, res_type))
 
 
-def is_string_empty(string):
+def is_string_empty(string: str) -> bool:
     return string is None or string.strip() == ""
 
 
-def get_short_name(res):
+def get_short_name(res: URIRef) -> str:
     return re.sub("^.+/([a-z][a-z])(/[0-9]+)?$", "\\1", str(res))
 
 
-def get_prefix(res):
+def get_prefix(res: URIRef) -> str:
     return re.sub("^.+/[a-z][a-z]/(0[1-9]+0)?([1-9][0-9]*)$", "\\1", str(res))
 
 
-def get_count(res):
+def get_count(res: URIRef) -> str:
     return re.sub("^.+/[a-z][a-z]/(0[1-9]+0)?([1-9][0-9]*)$", "\\2", str(res))
 
 
-def get_resource_number(string_iri):
+def get_resource_number(string_iri: str) -> int:
     if "/prov/" in string_iri:
         return int(re.sub(prov_regex, "\\3", string_iri))
     else:
         return int(re.sub(res_regex, "\\3", string_iri))
 
 
-def find_local_line_id(res, n_file_item=1):
+def find_local_line_id(res: URIRef, n_file_item: int = 1) -> int:
     cur_number = get_resource_number(str(res))
 
     cur_file_split = 0
@@ -115,11 +115,12 @@ def find_local_line_id(res, n_file_item=1):
 
 
 # Variable used in several functions
-res_regex = "(.+)/(0[1-9]+0)?([1-9][0-9]*)$"
-prov_regex = "(.+)/(0[1-9]+0)?([1-9][0-9]*)(/prov)/(.+)/([0-9]+)$"
+res_regex: str = "(.+)/(0[1-9]+0)?([1-9][0-9]*)$"
+prov_regex: str = "(.+)/(0[1-9]+0)?([1-9][0-9]*)(/prov)/(.+)/([0-9]+)$"
 
 
-def find_paths(string_iri, base_dir, base_iri, default_dir, dir_split, n_file_item,is_json=True):
+def find_paths(string_iri: str, base_dir: str, base_iri: str, default_dir: str, dir_split: int,
+               n_file_item: int, is_json: bool = True) -> Tuple[str, str]:
     """
     This function is responsible for looking for the correct JSON file that contains the data related to the
     resource identified by the variable 'string_iri'. This search takes into account the organisation in
@@ -205,9 +206,9 @@ def find_paths(string_iri, base_dir, base_iri, default_dir, dir_split, n_file_it
     return cur_dir_path, cur_file_path
 
 
-def has_supplier_prefix(string_iri, base_iri):
+def has_supplier_prefix(string_iri: str, base_iri: str) -> bool:
     return re.search("^%s[a-z][a-z]/0" % base_iri, string_iri) is not None
 
 
-def is_dataset(string_iri):
+def is_dataset(string_iri: str) -> bool:
     return re.search("^.+/[0-9]+(-[0-9]+)?(/[0-9]+)?$", string_iri) is None
