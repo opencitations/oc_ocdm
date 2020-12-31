@@ -81,7 +81,7 @@ class AbstractEntity(ABC):
         :type res_type: URIRef
         :rtype: None
         """
-        self.remove_type()
+        self.remove_type()  # <-- It doesn't remove the main type!
         create_type(self.g, self.res, res_type)
 
     def remove_type(self) -> None:
