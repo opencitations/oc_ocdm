@@ -37,13 +37,13 @@ class MetadataSet(AbstractSet):
         "di": "distribution"
     }
 
-    def __init__(self, base_iri: str, counter_handler: CounterHandler, dataset_home: str,
-                 wanted_label: bool = True) -> None:
+    def __init__(self, base_iri: str, counter_handler: CounterHandler, wanted_label: bool = True) -> None:
         super(MetadataSet, self).__init__()
         # The following variable maps a URIRef with the related metadata entity
         self.res_to_entity: Dict[URIRef, MetadataEntity] = {}
         self.base_iri: str = base_iri
-        self.dataset_home: URIRef = URIRef(dataset_home)
+        if self.base_iri[-1] != '/':
+            self.base_iri += '/'
         self.wanted_label: bool = wanted_label
 
         self.counter_handler: CounterHandler = counter_handler
@@ -56,25 +56,28 @@ class MetadataSet(AbstractSet):
                     res: URIRef = None, preexisting_graph: Graph = None) -> Dataset:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add_metadata(graph_url=str(self.dataset_home), res=res, short_name="_dataset_",
-                                                 dataset_name=dataset_name)
-        return Dataset(cur_g, res=res, res_type=MetadataEntity.iri_dataset, short_name="_dataset_",
-                       resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                       label=label, m_set=self, preexisting_graph=preexisting_graph)
+        # Here we use a fictitious short name for Dataset, since the OCDM document doesn't specify
+        # any particular short name for this type of entity. It's only used internally to distinguish
+        # between different metadata entities but it's meaningless outside of this scope.
+        cur_g, count, label = self._add_metadata(res, "_dataset_", dataset_name)
+        return Dataset(cur_g, self.base_iri, dataset_name, self, res,
+                       MetadataEntity.iri_dataset, resp_agent,
+                       source_agent, source, count, label, "_dataset_",
+                       preexisting_graph)
 
     def add_di(self, dataset_name: str, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> Distribution:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add_metadata(graph_url=str(self.dataset_home), res=res, short_name="di",
-                                                 dataset_name=dataset_name)
-        return Distribution(cur_g, res=res, res_type=MetadataEntity.iri_distribution, short_name="di",
-                            resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                            label=label, m_set=self, preexisting_graph=preexisting_graph)
+        cur_g, count, label = self._add_metadata(res, "di", dataset_name)
+        return Distribution(cur_g, self.base_iri, dataset_name, self, res,
+                            MetadataEntity.iri_datafile, resp_agent,
+                            source_agent, source, count, label, "di",
+                            preexisting_graph)
 
-    def _add_metadata(self, graph_url: str, res: URIRef, short_name: str,
+    def _add_metadata(self, res: URIRef, short_name: str,
                       dataset_name: str) -> Tuple[Graph, Optional[str], Optional[str]]:
-        cur_g: Graph = Graph(identifier=graph_url + '/' + dataset_name)
+        cur_g: Graph = Graph()
         self._set_ns(cur_g)
 
         count: Optional[str] = None

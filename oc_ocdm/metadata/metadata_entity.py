@@ -61,11 +61,14 @@ class MetadataEntity(AbstractEntity):
         'di': iri_datafile
     }
 
-    def __init__(self, g: Graph, res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
-                 source_agent: str = None, source: str = None, count: str = None, label: str = None,
-                 short_name: str = "", m_set: MetadataSet = None, preexisting_graph: Graph = None) -> None:
+    def __init__(self, g: Graph, base_iri: str, dataset_name: str, m_set: MetadataSet,
+                 res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
+                 source_agent: str = None, source: str = None, count: str = None,
+                 label: str = None, short_name: str = "", preexisting_graph: Graph = None) -> None:
         super(MetadataEntity, self).__init__()
         self.g: Graph = g
+        self.base_iri: str = base_iri
+        self.dataset_name: str = dataset_name
         self.resp_agent: str = resp_agent
         self.source_agent: str = source_agent
         self.source: str = source
@@ -80,12 +83,15 @@ class MetadataEntity(AbstractEntity):
         # If res was not specified, create from scratch the URI reference for this entity,
         # otherwise use the provided one
         if res is None:
-            self.res = self._generate_new_res(g, count, short_name)
+            base_res: str = self.base_iri + self.dataset_name
+            if base_res[-1] != '/':
+                base_res += '/'
+            self.res = self._generate_new_res(count, base_res, short_name)
         else:
             self.res = res
 
         if m_set is not None:
-            # If not already done, register this GraphEntity instance inside the GraphSet
+            # If not already done, register this MetadataEntity instance inside the MetadataSet
             if self.res not in m_set.res_to_entity:
                 m_set.res_to_entity[self.res] = self
 
@@ -109,11 +115,11 @@ class MetadataEntity(AbstractEntity):
                 self.create_label(label)
 
     @staticmethod
-    def _generate_new_res(g: Graph, count: str, short_name: str = "") -> URIRef:
+    def _generate_new_res(count: str, base_res: str, short_name: str) -> URIRef:
         if short_name == '_dataset_':
-            return URIRef(str(g.identifier))
+            return URIRef(base_res)
         else:
-            return URIRef(str(g.identifier) + short_name + "/" + count)
+            return URIRef(base_res + short_name + "/" + count)
 
     @property
     def to_be_deleted(self) -> bool:

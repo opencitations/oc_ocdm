@@ -15,7 +15,7 @@
 # SOFTWARE.
 import unittest
 
-from rdflib import Graph
+from rdflib import Graph, BNode
 
 from oc_ocdm.graph import GraphSet
 from oc_ocdm.counter_handler import FilesystemCounterHandler
@@ -28,7 +28,7 @@ class TestMetadataSet(unittest.TestCase):
 
     def setUp(self):
         self.counter_handler = FilesystemCounterHandler("./info_dir/")
-        self.metadata_set = MetadataSet("http://test/", self.counter_handler, "http://cccTest", False)
+        self.metadata_set = MetadataSet("http://test/", self.counter_handler, False)
 
     def test_get_entity(self):
         di = self.metadata_set.add_di("ocdmTest", self.__class__.__name__)
@@ -42,14 +42,14 @@ class TestMetadataSet(unittest.TestCase):
 
         self.assertIsNotNone(dataset)
         self.assertIsInstance(dataset, Dataset)
-        self.assertEqual(str(dataset.g.identifier), "http://cccTest/ocdmTest")
+        self.assertIsInstance(dataset.g.identifier, BNode)
 
     def test_add_di(self):
         di = self.metadata_set.add_di("ocdmTest", self.__class__.__name__)
 
         self.assertIsNotNone(di)
         self.assertIsInstance(di, Distribution)
-        self.assertEqual(str(di.g.identifier), "http://cccTest/ocdmTest")
+        self.assertIsInstance(di.g.identifier, BNode)
 
     def test_graphs(self):
         count = 10
