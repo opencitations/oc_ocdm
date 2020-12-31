@@ -94,100 +94,100 @@ class GraphSet(AbstractSet):
                res: URIRef = None, preexisting_graph: Graph = None) -> ReferenceAnnotation:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(graph_url=self.g_an, res=res, short_name="an")
-        return ReferenceAnnotation(cur_g, res=res, res_type=GraphEntity.iri_note, short_name="an", resp_agent=resp_agent,
-                                   source_agent=source_agent, source=source, count=count,
-                                   label=label, g_set=self, preexisting_graph=preexisting_graph)
+        cur_g, count, label = self._add(self.g_an, res, "an")
+        return ReferenceAnnotation(cur_g, self, res, GraphEntity.iri_note,
+                                   resp_agent, source_agent, source, count,
+                                   label, "an", preexisting_graph)
 
     def add_ar(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> AgentRole:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(graph_url=self.g_ar, res=res, short_name="ar")
-        return AgentRole(cur_g, res=res, res_type=GraphEntity.iri_role_in_time, short_name="ar", resp_agent=resp_agent,
-                         source_agent=source_agent, source=source, count=count,
-                         label=label, g_set=self, preexisting_graph=preexisting_graph)
+        cur_g, count, label = self._add(self.g_ar, res, "ar")
+        return AgentRole(cur_g, self, res, GraphEntity.iri_role_in_time, resp_agent,
+                         source_agent, source, count, label, "ar", preexisting_graph)
 
     def add_be(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> BibliographicReference:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(graph_url=self.g_be, res=res, short_name="be")
-        return BibliographicReference(cur_g, res=res, res_type=GraphEntity.iri_bibliographic_reference, short_name="be",
-                                      resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                                      label=label, g_set=self, preexisting_graph=preexisting_graph)
+        cur_g, count, label = self._add(self.g_be, res, "be")
+        return BibliographicReference(cur_g, self, res,
+                                      GraphEntity.iri_bibliographic_reference,
+                                      resp_agent, source_agent, source, count,
+                                      label, "be", preexisting_graph)
 
     def add_br(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> BibliographicResource:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(graph_url=self.g_br, res=res, short_name="br")
-        return BibliographicResource(cur_g, res=res, res_type=GraphEntity.iri_expression, short_name="br",
-                                     resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                                     label=label, g_set=self, preexisting_graph=preexisting_graph)
+        cur_g, count, label = self._add(self.g_br, res, "br")
+        return BibliographicResource(cur_g, self, res, GraphEntity.iri_expression,
+                                     resp_agent, source_agent, source, count,
+                                     label, "br", preexisting_graph)
 
     def add_ci(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> Citation:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(graph_url=self.g_ci, res=res, short_name="ci")
-        return Citation(cur_g, res=res, res_type=GraphEntity.iri_citation, short_name="ci",
-                        resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                        label=label, g_set=self, preexisting_graph=preexisting_graph)
+        cur_g, count, label = self._add(self.g_ci, res, "ci")
+        return Citation(cur_g, self, res, GraphEntity.iri_citation,
+                        resp_agent, source_agent, source, count,
+                        label, "ci", preexisting_graph)
 
     def add_de(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> DiscourseElement:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(graph_url=self.g_de, res=res, short_name="de")
-        return DiscourseElement(cur_g, res=res, res_type=GraphEntity.iri_discourse_element, short_name="de",
-                                resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                                label=label, g_set=self, preexisting_graph=preexisting_graph)
+        cur_g, count, label = self._add(self.g_de, res, "de")
+        return DiscourseElement(cur_g, self, res, GraphEntity.iri_discourse_element,
+                                resp_agent, source_agent, source, count,
+                                label, "de", preexisting_graph)
 
     def add_id(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> Identifier:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(graph_url=self.g_id, res=res, short_name="id")
-        return Identifier(cur_g, res=res, res_type=GraphEntity.iri_identifier, short_name="id",
-                          resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                          label=label, g_set=self, preexisting_graph=preexisting_graph)
+        cur_g, count, label = self._add(self.g_id, res, "id")
+        return Identifier(cur_g, self, res, GraphEntity.iri_identifier,
+                          resp_agent, source_agent, source, count,
+                          label, "id", preexisting_graph)
 
     def add_pl(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> PointerList:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(graph_url=self.g_pl, res=res, short_name="pl")
-        return PointerList(cur_g, res=res, res_type=GraphEntity.iri_singleloc_pointer_list, short_name="pl",
-                           resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                           label=label, g_set=self, preexisting_graph=preexisting_graph)
+        cur_g, count, label = self._add(self.g_pl, res, "pl")
+        return PointerList(cur_g, self, res, GraphEntity.iri_singleloc_pointer_list,
+                           resp_agent, source_agent, source, count,
+                           label, "pl", preexisting_graph)
 
     def add_rp(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> ReferencePointer:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(graph_url=self.g_rp, res=res, short_name="rp")
-        return ReferencePointer(cur_g, res=res, res_type=GraphEntity.iri_intextref_pointer, short_name="rp",
-                                resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                                label=label, g_set=self, preexisting_graph=preexisting_graph)
+        cur_g, count, label = self._add(self.g_rp, res, "rp")
+        return ReferencePointer(cur_g, self, res, GraphEntity.iri_intextref_pointer,
+                                resp_agent, source_agent, source, count,
+                                label, "rp", preexisting_graph)
 
     def add_ra(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> ResponsibleAgent:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(graph_url=self.g_ra, res=res, short_name="ra")
-        return ResponsibleAgent(cur_g, res=res, res_type=GraphEntity.iri_agent, short_name="ra",
-                                resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                                label=label, g_set=self, preexisting_graph=preexisting_graph)
+        cur_g, count, label = self._add(self.g_ra, res, "ra")
+        return ResponsibleAgent(cur_g, self, res, GraphEntity.iri_agent,
+                                resp_agent, source_agent, source, count,
+                                label, "ra", preexisting_graph)
 
     def add_re(self, resp_agent: str, source_agent: str = None, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> ResourceEmbodiment:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(graph_url=self.g_re, res=res, short_name="re")
-        return ResourceEmbodiment(cur_g, res=res, res_type=GraphEntity.iri_manifestation, short_name="re",
-                                  resp_agent=resp_agent, source_agent=source_agent, source=source, count=count,
-                                  label=label, g_set=self, preexisting_graph=preexisting_graph)
+        cur_g, count, label = self._add(self.g_re, res, "re")
+        return ResourceEmbodiment(cur_g, self, res, GraphEntity.iri_manifestation,
+                                  resp_agent, source_agent, source, count,
+                                  label, "re", preexisting_graph)
 
     def _add(self, graph_url: str, res: URIRef, short_name: str) -> Tuple[Graph, Optional[str], Optional[str]]:
         cur_g: Graph = Graph(identifier=graph_url)

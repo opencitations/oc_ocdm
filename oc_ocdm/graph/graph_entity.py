@@ -163,9 +163,10 @@ class GraphEntity(AbstractEntity):
         'rp': iri_intextref_pointer
     }
 
-    def __init__(self, g: Graph, res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
-                 source_agent: str = None, source: str = None, count: str = None, label: str = None,
-                 short_name: str = "", g_set: GraphSet = None, preexisting_graph: Graph = None) -> None:
+    def __init__(self, g: Graph, g_set: GraphSet, res: URIRef = None, res_type: URIRef = None,
+                 resp_agent: str = None, source_agent: str = None, source: str = None,
+                 count: str = None, label: str = None, short_name: str = "",
+                 preexisting_graph: Graph = None) -> None:
         super(GraphEntity, self).__init__()
         self.g: Graph = g
         self.resp_agent: str = resp_agent
