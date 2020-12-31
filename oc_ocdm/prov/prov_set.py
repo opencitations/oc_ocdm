@@ -62,10 +62,10 @@ class ProvSet(AbstractSet):
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         g_prov: str = str(prov_subject) + "/prov/"
-        cur_g, count, label = self._add_prov(graph_url=g_prov, res=res, short_name="se", prov_subject=prov_subject)
-        return EntitySnapshot(prov_subject, cur_g, res=res, res_type=ProvEntity.iri_entity, short_name="se",
-                              resp_agent=prov_subject.resp_agent, source_agent=prov_subject.source_agent,
-                              source=prov_subject.source, count=count, label=label, p_set=self)
+        cur_g, count, label = self._add_prov(g_prov, res, "se", prov_subject)
+        return EntitySnapshot(prov_subject, cur_g, self, res, prov_subject.resp_agent,
+                              prov_subject.source_agent, prov_subject.source,
+                              ProvEntity.iri_entity, count, label, "se")
 
     def _create_snapshot(self, cur_subj: GraphEntity, cur_time: str) -> EntitySnapshot:
         new_snapshot: EntitySnapshot = self.add_se(prov_subject=cur_subj)

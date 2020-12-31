@@ -52,9 +52,10 @@ class ProvEntity(AbstractEntity):
         'se': iri_entity
     }
 
-    def __init__(self, prov_subject: GraphEntity, g: Graph, res: URIRef = None, resp_agent: str = None,
-                 source_agent: str = None, source: str = None, res_type: URIRef = None,
-                 count: str = None, label: str = None, short_name: str = "", p_set: ProvSet = None) -> None:
+    def __init__(self, prov_subject: GraphEntity, g: Graph, p_set: ProvSet,
+                 res: URIRef = None, resp_agent: str = None, source_agent: str = None,
+                 source: str = None, res_type: URIRef = None, count: str = None,
+                 label: str = None, short_name: str = "") -> None:
         super(ProvEntity, self).__init__()
         self.prov_subject: GraphEntity = prov_subject
 
@@ -83,5 +84,5 @@ class ProvEntity(AbstractEntity):
             self.create_label(label)
 
     @staticmethod
-    def _generate_new_res(g: Graph, count: str, short_name: str = "") -> URIRef:
-        return URIRef(str(g.identifier) + (short_name + "/" if short_name != "" else "") + count)
+    def _generate_new_res(g: Graph, count: str, short_name: str) -> URIRef:
+        return URIRef(str(g.identifier) + short_name + "/" + count)
