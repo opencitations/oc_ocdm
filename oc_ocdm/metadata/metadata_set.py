@@ -18,7 +18,7 @@ __author__ = 'essepuntato'
 
 from typing import TYPE_CHECKING
 
-from oc_ocdm.counter_handler import CounterHandler
+from oc_ocdm.counter_handler import CounterHandler, FilesystemCounterHandler, InMemoryCounterHandler
 from oc_ocdm.metadata.entities import Dataset, Distribution
 
 if TYPE_CHECKING:
@@ -37,7 +37,7 @@ class MetadataSet(AbstractSet):
         "di": "distribution"
     }
 
-    def __init__(self, base_iri: str, counter_handler: CounterHandler, wanted_label: bool = True) -> None:
+    def __init__(self, base_iri: str, info_dir: str = "", wanted_label: bool = True) -> None:
         super(MetadataSet, self).__init__()
         # The following variable maps a URIRef with the related metadata entity
         self.res_to_entity: Dict[URIRef, MetadataEntity] = {}
@@ -46,7 +46,10 @@ class MetadataSet(AbstractSet):
             self.base_iri += '/'
         self.wanted_label: bool = wanted_label
 
-        self.counter_handler: CounterHandler = counter_handler
+        if info_dir is not None and info_dir != "":
+            self.counter_handler: CounterHandler = FilesystemCounterHandler(info_dir)
+        else:
+            self.counter_handler: CounterHandler = InMemoryCounterHandler()
 
     def get_entity(self, res: URIRef) -> Optional[MetadataEntity]:
         if res in self.res_to_entity:

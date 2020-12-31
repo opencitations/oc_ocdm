@@ -17,14 +17,12 @@ import unittest
 
 from oc_ocdm.graph import GraphEntity
 from oc_ocdm.graph import GraphSet
-from oc_ocdm.counter_handler import FilesystemCounterHandler
 
 
 class TestBibliographicEntity(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.counter_handler = FilesystemCounterHandler("./info_dir/")
-        cls.graph_set = GraphSet("http://test/", cls.counter_handler, "", False)
+        cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
 
     def setUp(self):
         self.entity = self.graph_set.add_ar(self.__class__.__name__)

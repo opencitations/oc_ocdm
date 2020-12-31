@@ -18,7 +18,6 @@ import unittest
 from rdflib import Graph
 
 from oc_ocdm.graph import GraphSet
-from oc_ocdm.counter_handler import FilesystemCounterHandler
 from oc_ocdm.graph.entities import Identifier
 from oc_ocdm.graph.entities.bibliographic import AgentRole
 from oc_ocdm.graph.entities.bibliographic import BibliographicReference
@@ -35,8 +34,7 @@ from oc_ocdm.graph.entities.bibliographic import ResponsibleAgent
 class TestGraphSet(unittest.TestCase):
 
     def setUp(self):
-        self.counter_handler = FilesystemCounterHandler("./info_dir/")
-        self.graph_set = GraphSet("http://test/", self.counter_handler, "", False)
+        self.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
 
     def test_get_entity(self):
         ar = self.graph_set.add_ar(self.__class__.__name__)

@@ -19,17 +19,14 @@ from rdflib import URIRef
 
 from oc_ocdm.graph import GraphSet
 from oc_ocdm.prov import ProvSet
-from oc_ocdm.counter_handler import FilesystemCounterHandler
 from oc_ocdm.prov.entities import EntitySnapshot
 
 
 class TestProvSet(unittest.TestCase):
 
     def setUp(self):
-        self.counter_handler = FilesystemCounterHandler("./info_dir/")
-        self.graph_set = GraphSet("http://test/", self.counter_handler, "", False)
-
-        self.prov_set = ProvSet(self.graph_set, "http://test/", self.counter_handler, "070", False)
+        self.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
+        self.prov_set = ProvSet(self.graph_set, "http://test/", "./info_dir/", "070", False)
 
     def test_add_se(self):
         prov_subj = self.graph_set.add_br(self.__class__.__name__)

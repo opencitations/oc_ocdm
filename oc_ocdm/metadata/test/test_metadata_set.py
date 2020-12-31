@@ -18,7 +18,6 @@ import unittest
 from rdflib import Graph, BNode
 
 from oc_ocdm.graph import GraphSet
-from oc_ocdm.counter_handler import FilesystemCounterHandler
 
 from oc_ocdm.metadata import MetadataSet
 from oc_ocdm.metadata.entities import Dataset, Distribution
@@ -27,8 +26,7 @@ from oc_ocdm.metadata.entities import Dataset, Distribution
 class TestMetadataSet(unittest.TestCase):
 
     def setUp(self):
-        self.counter_handler = FilesystemCounterHandler("./info_dir/")
-        self.metadata_set = MetadataSet("http://test/", self.counter_handler, False)
+        self.metadata_set = MetadataSet("http://test/", "./info_dir/", False)
 
     def test_get_entity(self):
         di = self.metadata_set.add_di("ocdmTest", self.__class__.__name__)

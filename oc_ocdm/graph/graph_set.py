@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 from rdflib import Graph, Namespace, URIRef, ConjunctiveGraph
 
 from oc_ocdm.graph import GraphEntity
-from oc_ocdm.counter_handler import CounterHandler
+from oc_ocdm.counter_handler import CounterHandler, FilesystemCounterHandler, InMemoryCounterHandler
 from oc_ocdm.graph.entities import Identifier
 from oc_ocdm.graph.entities.bibliographic import AgentRole
 from oc_ocdm.graph.entities.bibliographic import BibliographicReference
@@ -59,7 +59,7 @@ class GraphSet(AbstractSet):
         "rp": "in-text reference pointer"
     }
 
-    def __init__(self, base_iri: str, counter_handler: CounterHandler, supplier_prefix: str = "",
+    def __init__(self, base_iri: str, info_dir: str = "", supplier_prefix: str = "",
                  wanted_label: bool = True) -> None:
         super(GraphSet, self).__init__()
         # The following variable maps a URIRef with the related graph entity
@@ -83,7 +83,10 @@ class GraphSet(AbstractSet):
         self.g_re: str = base_iri + "re/"
         self.g_rp: str = base_iri + "rp/"
 
-        self.counter_handler: CounterHandler = counter_handler
+        if info_dir is not None and info_dir != "":
+            self.counter_handler: CounterHandler = FilesystemCounterHandler(info_dir)
+        else:
+            self.counter_handler: CounterHandler = InMemoryCounterHandler()
 
     def get_entity(self, res: URIRef) -> Optional[GraphEntity]:
         if res in self.res_to_entity:

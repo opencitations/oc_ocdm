@@ -17,15 +17,13 @@ import unittest
 
 from rdflib import URIRef, Literal, XSD
 
-from oc_ocdm.counter_handler import FilesystemCounterHandler
 from oc_ocdm.metadata import MetadataSet, MetadataEntity
 
 
 class TestDataset(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.counter_handler = FilesystemCounterHandler("./info_dir/")
-        cls.metadata_set = MetadataSet("http://test/", cls.counter_handler, False)
+        cls.metadata_set = MetadataSet("http://test/", "./info_dir/", False)
 
     def setUp(self):
         self.dataset = self.metadata_set.add_dataset("ocdmTest", self.__class__.__name__)

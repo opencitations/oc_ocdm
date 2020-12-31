@@ -32,7 +32,7 @@ from rdflib import Graph, URIRef
 
 from oc_ocdm.graph import GraphSet
 from oc_ocdm.prov import ProvEntity
-from oc_ocdm.counter_handler import CounterHandler
+from oc_ocdm.counter_handler import CounterHandler, FilesystemCounterHandler, InMemoryCounterHandler
 from oc_ocdm.support import get_short_name, get_count, get_prefix
 
 
@@ -42,17 +42,20 @@ class ProvSet(AbstractSet):
         "se": "snapshot of entity metadata"
     }
 
-    def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, counter_handler: CounterHandler,
+    def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, info_dir: str = "",
                  supplier_prefix: str = "", wanted_label: bool = True) -> None:
         super(ProvSet, self).__init__()
+        self.prov_g: GraphSet = prov_subj_graph_set
         # The following variable maps a URIRef with the related provenance entity
         self.res_to_entity: Dict[URIRef, ProvEntity] = {}
         self.base_iri: str = base_iri
         self.supplier_prefix: str = supplier_prefix
         self.wanted_label: bool = wanted_label
 
-        self.counter_handler: CounterHandler = counter_handler
-        self.prov_g: GraphSet = prov_subj_graph_set
+        if info_dir is not None and info_dir != "":
+            self.counter_handler: CounterHandler = FilesystemCounterHandler(info_dir)
+        else:
+            self.counter_handler: CounterHandler = InMemoryCounterHandler()
 
     def get_entity(self, res: URIRef) -> Optional[ProvEntity]:
         if res in self.res_to_entity:
