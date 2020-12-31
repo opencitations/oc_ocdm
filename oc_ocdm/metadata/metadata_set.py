@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING
 
 from oc_ocdm.counter_handler import CounterHandler, FilesystemCounterHandler, InMemoryCounterHandler
 from oc_ocdm.metadata.entities import Dataset, Distribution
+from oc_ocdm.support import get_count
 
 if TYPE_CHECKING:
     from typing import Dict, Optional, Tuple, ClassVar
@@ -87,9 +88,16 @@ class MetadataSet(AbstractSet):
         label: Optional[str] = None
 
         if res is not None:
+            if short_name != '_dataset_':  # Datasets don't have a counter associated with them...
+                try:
+                    res_count: int = int(get_count(res))
+                except ValueError:
+                    res_count: int = -1
+                if res_count > self.counter_handler.read_metadata_counter(short_name, dataset_name):
+                    self.counter_handler.set_metadata_counter(res_count, short_name, dataset_name)
             return cur_g, count, label
 
-        if short_name != '_dataset_':
+        if short_name != '_dataset_':  # Datasets don't have a counter associated with them...
             count = str(self.counter_handler.increment_metadata_counter(short_name, dataset_name))
 
         if self.wanted_label:

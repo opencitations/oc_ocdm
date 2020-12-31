@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING
 
 from oc_ocdm.reader import import_entities_from_graph
 from oc_ocdm.abstract_set import AbstractSet
+from oc_ocdm.support import get_count
 
 if TYPE_CHECKING:
     from typing import Dict, ClassVar, Tuple, Optional, List
@@ -200,6 +201,12 @@ class GraphSet(AbstractSet):
         label: Optional[str] = None
 
         if res is not None:
+            try:
+                res_count: int = int(get_count(res))
+            except ValueError:
+                res_count: int = -1
+            if res_count > self.counter_handler.read_counter(short_name):
+                self.counter_handler.set_counter(res_count, short_name)
             return cur_g, count, label
 
         count = self.supplier_prefix + str(self.counter_handler.increment_counter(short_name))

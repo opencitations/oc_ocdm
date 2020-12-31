@@ -194,6 +194,14 @@ class ProvSet(AbstractSet):
         label: Optional[str] = None
 
         if res is not None:
+            try:
+                res_count: int = int(get_count(res))
+            except ValueError:
+                res_count: int = -1
+            if res_count > self.counter_handler.read_counter(prov_subject.short_name, "se",
+                                                             int(get_count(prov_subject.res))):
+                self.counter_handler.set_counter(res_count, prov_subject.short_name, "se",
+                                                 int(get_count(prov_subject.res)))
             return cur_g, count, label
 
         count = str(self.counter_handler.increment_counter(
