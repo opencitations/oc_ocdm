@@ -190,10 +190,6 @@ class ProvSet(AbstractSet):
         count: Optional[str] = None
         label: Optional[str] = None
 
-        # This is the case when 'res_or_resp_agent' is a resource. It allows one to create
-        # the graph entity starting from and existing URIRef, without incrementing anything
-        # at the graph set level. However, a new graph is created and reserved for such resource
-        # and it is added to the graph set.
         if res is not None:
             return cur_g, count, label
 

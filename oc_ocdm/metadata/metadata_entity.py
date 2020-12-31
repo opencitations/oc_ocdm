@@ -105,9 +105,6 @@ class MetadataEntity(AbstractEntity):
             for p, o in preexisting_graph.predicate_objects(self.res):
                 self.g.add((self.res, p, o))
                 self.preexisting_graph.add((self.res, p, o))
-            # Since we didn't change the object reference of self.g,
-            # we don't have to update the reference inside g_set.entity_g:
-            # g_set.entity_g[self.res] = self.g
         else:
             # Add mandatory information to the entity graph
             self._create_type(res_type)
