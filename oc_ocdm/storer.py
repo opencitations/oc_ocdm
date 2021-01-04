@@ -45,7 +45,7 @@ from rdflib import XSD
 
 class Storer(object):
 
-    def __init__(self, graph_set: AbstractSet = None, repok: Reporter = None, reperr: Reporter = None,
+    def __init__(self, abstract_set: AbstractSet = None, repok: Reporter = None, reperr: Reporter = None,
                  context_map: Dict[str, Any] = None, default_dir: str = "_", dir_split: int = 0,
                  n_file_item: int = 1, output_format: str = "json-ld") -> None:
         self.output_format: str = output_format
@@ -53,8 +53,8 @@ class Storer(object):
         self.n_file_item: int = n_file_item
         self.default_dir: str = default_dir
         self.preface_query: str = ""
-        if graph_set is not None:
-            self.g_set: AbstractSet = graph_set
+        if abstract_set is not None:
+            self.a_set: AbstractSet = abstract_set
 
         if self.output_format == "json-ld":
             if context_map is not None:
@@ -90,7 +90,7 @@ class Storer(object):
         self.repok.add_sentence("Store the graphs into a file: starting process")
 
         cg: ConjunctiveGraph = ConjunctiveGraph()
-        for g in self.g_set.graphs():
+        for g in self.a_set.graphs():
             cg.addN([item + (g.identifier,) for item in list(g)])
 
         self.__store_in_file(cg, file_path, context_path)
@@ -134,7 +134,7 @@ class Storer(object):
         self.repok.add_sentence("Starting the process")
 
         processed_graphs: Dict[str, ConjunctiveGraph] = {}
-        for entity in self.g_set.res_to_entity.values():
+        for entity in self.a_set.res_to_entity.values():
             processed_graphs = self.store(entity, base_dir, base_iri, context_path, tmp_dir,
                                           processed_graphs, False)
 
@@ -253,7 +253,7 @@ class Storer(object):
                     except IOError as e:
                         self.reperr.add_sentence("[2] "
                                                  "It was impossible to handle the format used for "
-                                                 f"storing the file (stored in the temporary path) "
+                                                 "storing the file (stored in the temporary path) "
                                                  f"'{current_file_path}'. Additional details: {e}")
                     os.remove(current_file_path)
                 else:
@@ -317,7 +317,7 @@ class Storer(object):
             ProvEntity: "prov",
             MetadataEntity: "metadata"
         }
-        for idx, entity in enumerate(self.g_set.res_to_entity.values()):
+        for idx, entity in enumerate(self.a_set.res_to_entity.values()):
             update_query, n_added, n_removed = get_update_query(entity, entity_type=class_to_entity_type[type(entity)])
 
             if idx % batch_size == 0:
