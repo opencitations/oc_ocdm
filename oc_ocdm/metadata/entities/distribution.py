@@ -135,6 +135,7 @@ class Distribution(MetadataEntity):
     @accepts_only('thing')
     def has_download_url(self, thing_res: URIRef) -> None:
         """The URL of the document where the distribution is stored."""
+        self.remove_download_url()
         self.g.add((self.res, MetadataEntity.iri_download_url, thing_res))
 
     def remove_download_url(self) -> None:
@@ -147,6 +148,7 @@ class Distribution(MetadataEntity):
     @accepts_only('thing')
     def has_media_type(self, thing_res: URIRef) -> None:
         """The file type of the representation of the distribution (according to IANA media types)."""
+        self.remove_media_type()
         self.g.add((self.res, MetadataEntity.iri_media_type, thing_res))
 
     def remove_media_type(self) -> None:
