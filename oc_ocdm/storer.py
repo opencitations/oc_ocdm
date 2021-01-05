@@ -18,7 +18,7 @@ from __future__ import annotations
 __author__ = 'essepuntato'
 
 from SPARQLWrapper import SPARQLWrapper
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING
 
 from oc_ocdm.prov import ProvEntity
 from oc_ocdm.graph import GraphEntity
@@ -26,7 +26,7 @@ from oc_ocdm.metadata import MetadataEntity
 from oc_ocdm.support import get_update_query
 
 if TYPE_CHECKING:
-    from typing import Dict, List, Tuple, Any, Optional
+    from typing import Dict, List, Tuple, Any, Optional, Type
     from rdflib import URIRef
     from oc_ocdm.abstract_entity import AbstractEntity
     from oc_ocdm.abstract_set import AbstractSet
