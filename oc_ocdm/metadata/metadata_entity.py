@@ -18,7 +18,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Tuple, List, Optional
 
 from oc_ocdm.abstract_entity import AbstractEntity
-from rdflib import URIRef, Namespace, RDFS, Graph
+from rdflib import URIRef, Namespace, Graph
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict
@@ -29,8 +29,6 @@ class MetadataEntity(AbstractEntity):
     DCTERMS = Namespace("http://purl.org/dc/terms/")
     DCAT = Namespace("http://www.w3.org/ns/dcat#")
     VOID = Namespace("http://rdfs.org/ns/void#")
-    MTT = Namespace("https://w3id.org/spar/mediatype/text/")
-    DBR = Namespace("http://dbpedia.org/resource/")
 
     iri_dataset = DCAT.Dataset
     iri_datafile = DCAT.Distribution
@@ -49,12 +47,6 @@ class MetadataEntity(AbstractEntity):
     iri_download_url = DCAT.downloadURL
     iri_media_type = DCAT.mediaType
     iri_byte_size = DCAT.byte_size
-    iri_label = RDFS.label
-    iri_turtle = MTT.turtle
-    iri_bibliographic_database = DBR.Bibliographic_database
-    iri_open_access = DBR.Open_access
-    iri_scholary_communication = DBR.Scholarly_communication
-    iri_citations = DBR.Citation
 
     short_name_to_type_iri: ClassVar[Dict[str, URIRef]] = {
         '_dataset_': iri_dataset,
