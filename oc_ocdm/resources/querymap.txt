@@ -8,9 +8,12 @@ PREFIX cito:     <http://purl.org/spar/cito/>
 PREFIX deo:      <http://purl.org/spar/deo/>
 PREFIX c4o:      <http://purl.org/spar/c4o/>
 PREFIX foaf:     <http://xmlns.com/foaf/0.1/>
+PREFIX dcat:     <http://www.w3.org/ns/dcat#>
 
 {FOCUS rdf:type datacite:Identifier}@:IdentifierShape,
-{FOCUS rdf:type prov:Entity}@:ProvenanceEntityShape,
+{FOCUS rdf:type prov:Entity}@:EntitySnapshotShape,
+{FOCUS rdf:type dcat:Dataset}@:DatasetShape,
+{FOCUS rdf:type dcat:Distribution}@:DistributionShape,
 {FOCUS rdf:type pro:RoleInTime}@:AgentRoleShape,
 {FOCUS rdf:type biro:BibliographicReference}@:BibliographicReferenceShape,
 {FOCUS rdf:type fabio:Expression}@:BibliographicResourceShape,

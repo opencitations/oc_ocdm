@@ -22,12 +22,15 @@ PREFIX pro:      <http://purl.org/spar/pro/>
 
 PREFIX prov:     <http://www.w3.org/ns/prov#>
 
-:GraphEntityShape IRI {
+PREFIX dcat:     <http://www.w3.org/ns/dcat#>
+PREFIX void:     <http://rdfs.org/ns/void#>
+
+:AbstractEntityShape IRI {
     rdf:type IRI{1,2};
     rdfs:label xsd:string?;
 }
 
-:IdentifierShape @:GraphEntityShape AND IRI {
+:IdentifierShape @:AbstractEntityShape AND IRI {
     rdf:type [datacite:Identifier];
     literal:hasLiteralValue xsd:string;
     datacite:usesIdentifierScheme [datacite:oci
@@ -55,17 +58,17 @@ PREFIX prov:     <http://www.w3.org/ns/prov#>
                              @:ReferencePointerType OR
                              @:ResourceEmbodimentType OR
                              @:ResponsibleAgentType) ?;
-    ^prov:specializationOf @:ProvenanceEntityType *;
+    ^prov:specializationOf @:EntitySnapshotType *;
 }
 
-:BibliographicEntityShape @:GraphEntityShape AND IRI {
+:BibliographicEntityShape @:AbstractEntityShape AND IRI {
     datacite:hasIdentifier @:IdentifierType *;
 }
 
 ############################# ENTITIES #############################
 
-#ProvenanceEntity
-:ProvenanceEntityShape @:GraphEntityShape AND IRI {
+#EntitySnapshot
+:EntitySnapshotShape @:AbstractEntityShape AND IRI {
     rdf:type [prov:Entity];
     prov:generatedAtTime xsd:dateTime;
     prov:invalidatedAtTime xsd:dateTime?;
@@ -80,13 +83,44 @@ PREFIX prov:     <http://www.w3.org/ns/prov#>
                            @:ReferencePointerType OR
                            @:ResourceEmbodimentType OR
                            @:ResponsibleAgentType) +;
-    prov:wasDerivedFrom @:ProvenanceEntityType *;
+    prov:wasDerivedFrom @:EntitySnapshotType *;
     prov:hadPrimarySource IRI?;
     oco:hasUpdateQuery xsd:string?;
     dcterms:description xsd:string?;
     prov:wasAttributedTo IRI?;
     # Inverse properties:
-    ^prov:wasDerivedFrom @:ProvenanceEntityType ?;
+    ^prov:wasDerivedFrom @:EntitySnapshotType ?;
+}
+
+#Dataset
+:DatasetShape @:AbstractEntityShape AND IRI {
+    rdf:type [dcat:Dataset];
+    dcterms:title xsd:string?;
+    dcterms:description xsd:string?;
+    dcterms:issued xsd:dateTime?;
+    dcterms:modified xsd:dateTime?;
+    dcat:keyword xsd:string *;
+    dcat:theme IRI *;
+    dcat:landingPage IRI?;
+    void:subset @:DatasetType *;
+    void:sparqlEndpoint IRI?;
+    dcat:distribution @:DistributionType *;
+    # Inverse properties:
+    ^void:subset @:DatasetType ?;
+}
+
+#Distribution
+:DistributionShape @:AbstractEntityShape AND IRI {
+    rdf:type [dcat:Distribution];
+    dcterms:title xsd:string?;
+    dcterms:description xsd:string?;
+    dcterms:issued xsd:dateTime?;
+    dcat:byte_size xsd:decimal?;
+    dcterms:license IRI?;
+    dcat:downloadURL IRI?;
+    dcat:mediaType IRI?;
+    # Inverse properties:
+    ^dcat:distribution @:DatasetType ?;
 }
 
 # AgentRole
@@ -100,7 +134,7 @@ PREFIX prov:     <http://www.w3.org/ns/prov#>
     # Inverse properties:
     ^oco:hasNext @:AgentRoleType ?;
     ^pro:isDocumentContextFor @:BibliographicResourceType ?;
-    ^prov:specializationOf @:ProvenanceEntityType *;
+    ^prov:specializationOf @:EntitySnapshotType *;
 }
 
 # BibliographicReference
@@ -112,7 +146,7 @@ PREFIX prov:     <http://www.w3.org/ns/prov#>
     # Inverse properties:
     ^frbr:part @:BibliographicResourceType ?;
     ^c4o:denotes @:ReferencePointerType *;
-    ^prov:specializationOf @:ProvenanceEntityType *;
+    ^prov:specializationOf @:EntitySnapshotType *;
 }
 
 # BibliographicResource
@@ -155,7 +189,7 @@ PREFIX prov:     <http://www.w3.org/ns/prov#>
     ^biro:references @:BibliographicReferenceType *;
     ^cito:hasCitingEntity @:CitationType *;
     ^cito:hasCitedEntity @:CitationType *;
-    ^prov:specializationOf @:ProvenanceEntityType *;
+    ^prov:specializationOf @:EntitySnapshotType *;
 }
 AND (NOT { rdf:type [doco:Part fabio:ExpressionCollection] }
      OR { frbr:partOf @:BibliographicResourceType AND {rdf:type [fabio:Book]}? }
@@ -182,7 +216,7 @@ AND (NOT { rdf:type [fabio:Series] }
     cito:hasCitationCharacterisation IRI?;
     # Inverse properties:
     ^oa:hasBody @:ReferenceAnnotationType *;
-    ^prov:specializationOf @:ProvenanceEntityType *;
+    ^prov:specializationOf @:EntitySnapshotType *;
 }
 
 # DiscourseElement
@@ -205,7 +239,7 @@ AND (NOT { rdf:type [fabio:Series] }
     # Inverse properties:
     ^frbr:part (@:BibliographicResourceType OR @:DiscourseElementType) ?;
     ^oco:hasNext @:DiscourseElementType ?;
-    ^prov:specializationOf @:ProvenanceEntityType *;
+    ^prov:specializationOf @:EntitySnapshotType *;
 }
 
 # PointerList
@@ -215,7 +249,7 @@ AND (NOT { rdf:type [fabio:Series] }
     co:element @:ReferencePointerType *;
     # Inverse properties:
     ^c4o:isContextOf @:DiscourseElementType ?;
-    ^prov:specializationOf @:ProvenanceEntityType *;
+    ^prov:specializationOf @:EntitySnapshotType *;
 }
 
 # ReferenceAnnotation
@@ -225,7 +259,7 @@ AND (NOT { rdf:type [fabio:Series] }
     # Inverse properties:
     ^oco:hasAnnotation @:BibliographicReferenceType ?;
     ^oco:hasAnnotation @:ReferencePointerType ?;
-    ^prov:specializationOf @:ProvenanceEntityType *;
+    ^prov:specializationOf @:EntitySnapshotType *;
 }
 
 # ReferencePointer
@@ -239,7 +273,7 @@ AND (NOT { rdf:type [fabio:Series] }
     ^oco:hasNext @:ReferencePointerType ?;
     ^c4o:isContextOf @:DiscourseElementType ?;
     ^co:element @:PointerListType ?;
-    ^prov:specializationOf @:ProvenanceEntityType *;
+    ^prov:specializationOf @:EntitySnapshotType *;
 }
 
 # ResourceEmbodiment
@@ -253,7 +287,7 @@ AND (NOT { rdf:type [fabio:Series] }
     frbr:exemplar IRI?;
     # Inverse properties:
     ^frbr:embodiment @:BibliographicResourceType *;
-    ^prov:specializationOf @:ProvenanceEntityType *;
+    ^prov:specializationOf @:EntitySnapshotType *;
 }
 
 # ResponsibleAgent
@@ -265,7 +299,7 @@ AND (NOT { rdf:type [fabio:Series] }
     dcterms:relation IRI*;
     # Inverse properties:
     ^pro:isHeldBy @:AgentRoleType *;
-    ^prov:specializationOf @:ProvenanceEntityType *;
+    ^prov:specializationOf @:EntitySnapshotType *;
 }
 
 ###################################################################
@@ -274,8 +308,16 @@ AND (NOT { rdf:type [fabio:Series] }
     rdf:type [datacite:Identifier] ;
 }
 
-:ProvenanceEntityType {
+:EntitySnapshotType {
     rdf:type [prov:Entity] ;
+}
+
+:DatasetType {
+    rdf:type [dcat:Dataset] ;
+}
+
+:DistributionType {
+    rdf:type [dcat:Distribution] ;
 }
 
 :AgentRoleType {
