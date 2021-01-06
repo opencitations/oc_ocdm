@@ -24,7 +24,7 @@ from oc_ocdm.abstract_entity import AbstractEntity
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict, Tuple, List, Optional
-    from oc_ocdm.graph import GraphSet
+    from oc_ocdm.graph.graph_set import GraphSet
 
 
 class GraphEntity(AbstractEntity):

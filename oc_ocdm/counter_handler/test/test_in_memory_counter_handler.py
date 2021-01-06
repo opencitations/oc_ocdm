@@ -15,7 +15,7 @@
 # SOFTWARE.
 import unittest
 
-from oc_ocdm.counter_handler import InMemoryCounterHandler
+from oc_ocdm.counter_handler.in_memory_counter_handler import InMemoryCounterHandler
 
 
 class TestFilesystemCounterHandler(unittest.TestCase):

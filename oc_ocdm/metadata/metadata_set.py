@@ -18,16 +18,19 @@ __author__ = 'essepuntato'
 
 from typing import TYPE_CHECKING
 
-from oc_ocdm.counter_handler import CounterHandler, FilesystemCounterHandler, InMemoryCounterHandler
-from oc_ocdm.metadata.entities import Dataset, Distribution
-from oc_ocdm.support import get_count
+from oc_ocdm.counter_handler.counter_handler import CounterHandler
+from oc_ocdm.counter_handler.filesystem_counter_handler import FilesystemCounterHandler
+from oc_ocdm.counter_handler.in_memory_counter_handler import InMemoryCounterHandler
+from oc_ocdm.metadata.entities.dataset import Dataset
+from oc_ocdm.metadata.entities.distribution import Distribution
+from oc_ocdm.support.support import get_count
 
 if TYPE_CHECKING:
     from typing import Dict, Optional, Tuple, ClassVar
 
 from rdflib import Graph, URIRef
 
-from oc_ocdm.metadata import MetadataEntity
+from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from oc_ocdm.abstract_set import AbstractSet
 
 

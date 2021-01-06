@@ -22,9 +22,9 @@ from oc_ocdm.decorators import accepts_only
 if TYPE_CHECKING:
     from typing import Optional
     from rdflib import URIRef
-    from oc_ocdm.graph.entities.bibliographic import ResponsibleAgent
-from oc_ocdm.graph import GraphEntity
-from oc_ocdm.graph.entities import BibliographicEntity
+    from oc_ocdm.graph.entities.bibliographic.responsible_agent import ResponsibleAgent
+from oc_ocdm.graph.graph_entity import GraphEntity
+from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
 
 
 class AgentRole(BibliographicEntity):

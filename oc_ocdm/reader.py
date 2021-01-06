@@ -20,13 +20,13 @@ from pyshex import ShExEvaluator
 from rdflib import RDF, Namespace, ConjunctiveGraph
 from typing import TYPE_CHECKING
 
-from oc_ocdm.graph import GraphEntity
+from oc_ocdm.graph.graph_entity import GraphEntity
 
 if TYPE_CHECKING:
     from typing import List, Set
     from rdflib import Graph, URIRef, term
     from rdflib.query import Result
-    from oc_ocdm.graph import GraphSet
+    from oc_ocdm.graph.graph_set import GraphSet
 
 
 def get_graph_from_subject(graph: Graph, subject: URIRef) -> Graph:

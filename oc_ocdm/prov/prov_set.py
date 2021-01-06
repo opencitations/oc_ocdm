@@ -22,18 +22,20 @@ from typing import TYPE_CHECKING, Dict, ClassVar
 
 from oc_ocdm.abstract_set import AbstractSet
 from oc_ocdm.prov.entities.entity_snapshot import EntitySnapshot
-from oc_ocdm.support import get_update_query
+from oc_ocdm.support.query_utils import get_update_query
 
 if TYPE_CHECKING:
     from typing import Optional, Tuple, List
-    from oc_ocdm.graph import GraphEntity
+    from oc_ocdm.graph.graph_entity import GraphEntity
 
 from rdflib import Graph, URIRef
 
-from oc_ocdm.graph import GraphSet
-from oc_ocdm.prov import ProvEntity
-from oc_ocdm.counter_handler import CounterHandler, FilesystemCounterHandler, InMemoryCounterHandler
-from oc_ocdm.support import get_short_name, get_count, get_prefix
+from oc_ocdm.graph.graph_set import GraphSet
+from oc_ocdm.prov.prov_entity import ProvEntity
+from oc_ocdm.counter_handler.counter_handler import CounterHandler
+from oc_ocdm.counter_handler.filesystem_counter_handler import FilesystemCounterHandler
+from oc_ocdm.counter_handler.in_memory_counter_handler import InMemoryCounterHandler
+from oc_ocdm.support.support import get_short_name, get_count, get_prefix
 
 
 class ProvSet(AbstractSet):

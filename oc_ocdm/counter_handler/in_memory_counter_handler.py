@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List, Dict
 
-from oc_ocdm.counter_handler import CounterHandler
+from oc_ocdm.counter_handler.counter_handler import CounterHandler
 
 
 class InMemoryCounterHandler(CounterHandler):

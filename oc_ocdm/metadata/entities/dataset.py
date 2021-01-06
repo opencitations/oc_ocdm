@@ -18,13 +18,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from oc_ocdm.decorators import accepts_only
-from oc_ocdm.metadata import MetadataEntity
+from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from rdflib import XSD
 
 if TYPE_CHECKING:
     from typing import Optional, List
     from rdflib import URIRef
-    from oc_ocdm.metadata.entities import Distribution
+    from oc_ocdm.metadata.entities.distribution import Distribution
 
 
 class Dataset(MetadataEntity):

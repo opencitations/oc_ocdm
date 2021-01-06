@@ -22,11 +22,11 @@ from typing import TYPE_CHECKING
 from rdflib import Namespace, URIRef, Graph
 
 from oc_ocdm.abstract_entity import AbstractEntity
-from oc_ocdm.graph import GraphEntity
+from oc_ocdm.graph.graph_entity import GraphEntity
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict
-    from oc_ocdm.prov import ProvSet
+    from oc_ocdm.prov.prov_set import ProvSet
 
 
 class ProvEntity(AbstractEntity):

@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING
 from rdflib import XSD
 
 from oc_ocdm.decorators import accepts_only
-from oc_ocdm.metadata import MetadataEntity
+from oc_ocdm.metadata.metadata_entity import MetadataEntity
 
 if TYPE_CHECKING:
     from typing import Optional

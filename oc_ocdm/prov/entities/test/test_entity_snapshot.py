@@ -17,9 +17,9 @@ import unittest
 
 from rdflib import URIRef, Literal, XSD
 
-from oc_ocdm.graph import GraphSet
-from oc_ocdm.prov import ProvEntity
-from oc_ocdm.prov import ProvSet
+from oc_ocdm.graph.graph_set import GraphSet
+from oc_ocdm.prov.prov_entity import ProvEntity
+from oc_ocdm.prov.prov_set import ProvSet
 
 
 class TestProvEntity(unittest.TestCase):

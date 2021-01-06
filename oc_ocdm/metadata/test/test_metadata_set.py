@@ -17,10 +17,11 @@ import unittest
 
 from rdflib import Graph, BNode
 
-from oc_ocdm.graph import GraphSet
+from oc_ocdm.graph.graph_set import GraphSet
 
-from oc_ocdm.metadata import MetadataSet
-from oc_ocdm.metadata.entities import Dataset, Distribution
+from oc_ocdm.metadata.metadata_set import MetadataSet
+from oc_ocdm.metadata.entities.dataset import Dataset
+from oc_ocdm.metadata.entities.distribution import Distribution
 
 
 class TestMetadataSet(unittest.TestCase):

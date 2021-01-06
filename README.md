@@ -25,8 +25,8 @@
 ```
   6. If everything went the right way, than you should be able to use the `oc_ocdm` library in your Python modules as follows:
 ``` python
-    from oc_ocdm.graph_set import GraphSet
-    from oc_ocdm.agent_role import AgentRole
+    from oc_ocdm.graph import GraphSet
+    from oc_ocdm.graph.entities.bibliographic import AgentRole
     # ...
 ```
 

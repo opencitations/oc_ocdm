@@ -18,16 +18,17 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from oc_ocdm.decorators import accepts_only
-from oc_ocdm.support import get_datatype_from_iso_8601
+from oc_ocdm.support.support import get_datatype_from_iso_8601
 
 if TYPE_CHECKING:
     from typing import Optional, List
     from rdflib import URIRef
-    from oc_ocdm.graph.entities.bibliographic import BibliographicReference, AgentRole
-    from oc_ocdm.graph.entities.bibliographic import DiscourseElement
-    from oc_ocdm.graph.entities.bibliographic import ResourceEmbodiment
-from oc_ocdm.graph import GraphEntity
-from oc_ocdm.graph.entities import BibliographicEntity
+    from oc_ocdm.graph.entities.bibliographic.bibliographic_reference import BibliographicReference
+    from oc_ocdm.graph.entities.bibliographic.agent_role import AgentRole
+    from oc_ocdm.graph.entities.bibliographic.discourse_element import DiscourseElement
+    from oc_ocdm.graph.entities.bibliographic.resource_embodiment import ResourceEmbodiment
+from oc_ocdm.graph.graph_entity import GraphEntity
+from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
 
 
 class BibliographicResource(BibliographicEntity):

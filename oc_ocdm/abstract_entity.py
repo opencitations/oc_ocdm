@@ -18,7 +18,7 @@ from __future__ import annotations
 from abc import ABC
 from typing import TYPE_CHECKING
 
-from oc_ocdm.support import create_type, create_literal
+from oc_ocdm.support.support import create_type, create_literal
 from rdflib import URIRef, RDFS, RDF, Literal, Graph
 
 if TYPE_CHECKING:

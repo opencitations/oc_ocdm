@@ -20,10 +20,10 @@ __author__ = 'essepuntato'
 from SPARQLWrapper import SPARQLWrapper
 from typing import TYPE_CHECKING
 
-from oc_ocdm.prov import ProvEntity
-from oc_ocdm.graph import GraphEntity
-from oc_ocdm.metadata import MetadataEntity
-from oc_ocdm.support import get_update_query
+from oc_ocdm.prov.prov_entity import ProvEntity
+from oc_ocdm.graph.graph_entity import GraphEntity
+from oc_ocdm.metadata.metadata_entity import MetadataEntity
+from oc_ocdm.support.query_utils import get_update_query
 
 if TYPE_CHECKING:
     from typing import Dict, List, Tuple, Any, Optional, Type
@@ -31,14 +31,14 @@ if TYPE_CHECKING:
     from oc_ocdm.abstract_entity import AbstractEntity
     from oc_ocdm.abstract_set import AbstractSet
 
-from oc_ocdm.support import Reporter
+from oc_ocdm.support.reporter import Reporter
 import os
 from rdflib import ConjunctiveGraph
 import shutil
 import json
 from datetime import datetime
 import io
-from oc_ocdm.support import find_paths
+from oc_ocdm.support.support import find_paths
 from rdflib.term import _toPythonMapping
 from rdflib import XSD
 

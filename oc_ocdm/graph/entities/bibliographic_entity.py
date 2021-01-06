@@ -22,8 +22,8 @@ from oc_ocdm.decorators import accepts_only
 if TYPE_CHECKING:
     from typing import List
     from rdflib import URIRef
-    from oc_ocdm.graph.entities import Identifier
-from oc_ocdm.graph import GraphEntity
+    from oc_ocdm.graph.entities.identifier import Identifier
+from oc_ocdm.graph.graph_entity import GraphEntity
 
 """
 Notes about BibliographicEntity:

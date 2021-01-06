@@ -17,7 +17,8 @@ import unittest
 
 from rdflib import URIRef, Literal, XSD
 
-from oc_ocdm.metadata import MetadataSet, MetadataEntity
+from oc_ocdm.metadata.metadata_set import MetadataSet
+from oc_ocdm.metadata.metadata_entity import MetadataEntity
 
 
 class TestDataset(unittest.TestCase):

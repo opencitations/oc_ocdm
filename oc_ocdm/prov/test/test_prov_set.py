@@ -17,9 +17,9 @@ import unittest
 
 from rdflib import URIRef
 
-from oc_ocdm.graph import GraphSet
-from oc_ocdm.prov import ProvSet
-from oc_ocdm.prov.entities import EntitySnapshot
+from oc_ocdm.graph.graph_set import GraphSet
+from oc_ocdm.prov.prov_set import ProvSet
+from oc_ocdm.prov.entities.entity_snapshot import EntitySnapshot
 
 
 class TestProvSet(unittest.TestCase):
