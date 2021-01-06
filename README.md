@@ -44,6 +44,12 @@ See [Poetry commands documentation](https://python-poetry.org/docs/cli/).
     poetry publish --build
 ```
 
+### How to generate the documentation
+``` bash
+    rm ./docs/source/modules/*
+    sphinx-apidoc  -o ./docs/source/modules oc_ocdm *test*
+```
+
 ### How to build the documentation
 ___
 **Warning! In order to avoid getting the following `WARNING: html_static_path entry '_static' does not exist`, you'll
