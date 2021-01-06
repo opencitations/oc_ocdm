@@ -12,7 +12,6 @@ oc_ocdm/WIP/*
 oc_ocdm.egg-info/*
 
 # support directory for testing purposes
-tests/info_dir/*
 info_dir/*
 
 # documentation build folder
