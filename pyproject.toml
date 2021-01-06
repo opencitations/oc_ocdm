@@ -46,4 +46,3 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry.scripts]
 test = 'scripts:test'
-clean_info_dir = 'scripts:clean_info_dir'

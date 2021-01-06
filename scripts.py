@@ -25,12 +25,3 @@ def test():
     subprocess.run(
         ['python', '-u', '-m', 'unittest', 'discover']
     )
-
-
-def clean_info_dir():
-    """
-    Clean info_dir content
-    """
-    for file_path in os.listdir('./info_dir'):
-        os.remove(os.path.join('./info_dir', file_path))
-    print('Done! info_dir is now empty.')
