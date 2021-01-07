@@ -116,7 +116,7 @@ class Storer(object):
 
         self.repok.add_sentence(f"File '{cur_file_path}' added.")
 
-    def store_all(self, base_dir: str, base_iri: str, context_path: str, tmp_dir: str = None) -> List[str]:
+    def store_all(self, base_dir: str, base_iri: str, context_path: str) -> List[str]:
         self.repok.new_article()
         self.reperr.new_article()
 
@@ -124,7 +124,7 @@ class Storer(object):
 
         processed_graphs: Dict[str, ConjunctiveGraph] = {}
         for entity in self.a_set.res_to_entity.values():
-            processed_graphs = self.store(entity, base_dir, base_iri, context_path, tmp_dir,
+            processed_graphs = self.store(entity, base_dir, base_iri, context_path,
                                           processed_graphs, False)
 
         stored_graph_path: List[str] = []
@@ -135,7 +135,7 @@ class Storer(object):
         return stored_graph_path
 
     def store(self, entity: AbstractEntity, base_dir: str, base_iri: str, context_path: str,
-              tmp_dir: str = None, already_processed: Dict[str, ConjunctiveGraph] = None,
+              already_processed: Dict[str, ConjunctiveGraph] = None,
               store_now: bool = True) -> Optional[Dict[str, ConjunctiveGraph]]:
         self.repok.new_article()
         self.reperr.new_article()
@@ -155,7 +155,7 @@ class Storer(object):
             if cur_file_path in already_processed:
                 stored_g = already_processed[cur_file_path]
             elif os.path.exists(cur_file_path):
-                stored_g = Reader(self.repok, self.reperr, self.context_map).load(cur_file_path, tmp_dir)
+                stored_g = Reader(self.repok, self.reperr, self.context_map).load(cur_file_path)
 
             if stored_g is None:
                 stored_g = ConjunctiveGraph()

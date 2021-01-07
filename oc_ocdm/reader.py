@@ -60,7 +60,7 @@ class Reader(object):
         else:
             self.reperr: Reporter = reperr
 
-    def load(self, rdf_file_path: str, tmp_dir: str = None) -> Optional[ConjunctiveGraph]:
+    def load(self, rdf_file_path: str) -> Optional[ConjunctiveGraph]:
         self.repok.new_article()
         self.reperr.new_article()
 
@@ -72,25 +72,13 @@ class Reader(object):
 
             try:
                 loaded_graph = self._load_graph(rdf_file_path)
-            except IOError:
-                if tmp_dir is not None:
-                    current_file_path: str = tmp_dir + os.sep + "tmp_rdf_file.rdf"
-                    shutil.copyfile(rdf_file_path, current_file_path)
-                    try:
-                        loaded_graph = self._load_graph(current_file_path)
-                    except IOError as e:
-                        self.reperr.add_sentence("[2] "
-                                                 "It was impossible to handle the format used for "
-                                                 "storing the file (stored in the temporary path) "
-                                                 f"'{current_file_path}'. Additional details: {e}")
-                    os.remove(current_file_path)
-                else:
-                    self.reperr.add_sentence("[3] "
-                                             "It was impossible to try to load the file from the "
-                                             f"temporary path '{rdf_file_path}' since that has not been specified in "
-                                             "advance")
+            except Exception as e:
+                self.reperr.add_sentence("[1] "
+                                         "It was impossible to handle the format used for "
+                                         "storing the file (stored in the temporary path) "
+                                         f"'{rdf_file_path}'. Additional details: {e}")
         else:
-            self.reperr.add_sentence("[4] "
+            self.reperr.add_sentence("[2] "
                                      f"The file specified ('{rdf_file_path}') doesn't exist.")
 
         return loaded_graph
