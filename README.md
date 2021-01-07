@@ -1,4 +1,18 @@
 # oc_ocdm
+[![Documentation Status](https://readthedocs.org/projects/oc-ocdm/badge/?version=latest)](https://oc-ocdm.readthedocs.io/en/latest/?badge=latest)
+
+Documentation can be found here: [https://oc-ocdm.readthedocs.io](https://oc-ocdm.readthedocs.io).
+
+**oc_ocdm** is a Python &ge;3.7 library that enables the user to import, produce, modify and export RDF data
+structures which are compliant with the [OCDM v2.0.1](https://figshare.com/articles/Metadata_for_the_OpenCitations_Corpus/3443876) specification.
+
+## User's guide
+This package can be simply installed with **pip**:
+``` bash
+    pip install oc_ocdm
+```
+
+## Developer's guide
 
 ### First steps
   1. Install Poetry:
