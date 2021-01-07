@@ -53,6 +53,10 @@ Just run the following command inside the root project folder:
 ### How to manage the project using Poetry
 See [Poetry commands documentation](https://python-poetry.org/docs/cli/).
 
+**AAA: when adding a non-dev dependency via `poetry add`, always remember to add
+that same dependency to the `autodoc_mock_imports` list in `docs/source/conf.py`**
+(otherwise "Read the Docs" won't be able to compile the documentation correctly!).
+
 ### How to publish the package onto Pypi
 ``` bash
     poetry publish --build
