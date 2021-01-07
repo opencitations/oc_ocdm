@@ -16,4 +16,4 @@
 __version__ = '3.1.0'
 
 from oc_ocdm.storer import Storer
-from oc_ocdm.reader import import_entity_from_triplestore, import_entities_from_graph, graph_validation
+from oc_ocdm.reader import Reader

@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING
 from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
+from oc_ocdm.reader import Reader
 from oc_ocdm.support.query_utils import get_update_query
 
 if TYPE_CHECKING:
@@ -32,37 +33,35 @@ if TYPE_CHECKING:
 from oc_ocdm.support.reporter import Reporter
 import os
 from rdflib import ConjunctiveGraph
-import shutil
 import json
 from datetime import datetime
 import io
 from oc_ocdm.support.support import find_paths
-from rdflib.term import _toPythonMapping
-from rdflib import XSD
 
 
 class Storer(object):
 
-    def __init__(self, abstract_set: AbstractSet = None, repok: Reporter = None, reperr: Reporter = None,
+    def __init__(self, abstract_set: AbstractSet, repok: Reporter = None, reperr: Reporter = None,
                  context_map: Dict[str, Any] = None, default_dir: str = "_", dir_split: int = 0,
                  n_file_item: int = 1, output_format: str = "json-ld") -> None:
         self.output_format: str = output_format
         self.dir_split: int = dir_split
         self.n_file_item: int = n_file_item
         self.default_dir: str = default_dir
-        if abstract_set is not None:
-            self.a_set: AbstractSet = abstract_set
+        self.a_set: AbstractSet = abstract_set
+
+        if context_map is not None:
+            self.context_map: Dict[str, Any] = context_map
+        else:
+            self.context_map: Dict[str, Any] = {}
 
         if self.output_format == "json-ld":
-            if context_map is not None:
-                self.context_map: Dict[str, Any] = context_map
-            else:
-                self.context_map: Dict[str, Any] = {}
-            for context_url in context_map:
-                ctx_file_path = context_map[context_url]
-                with open(ctx_file_path, "rt") as ctx_f:
-                    context_json: Any = json.load(ctx_f)
-                    self.context_map[context_url] = context_json
+            for context_url in self.context_map:
+                ctx_file_path: Any = self.context_map[context_url]
+                if type(ctx_file_path) == str and os.path.isfile(ctx_file_path):
+                    # This expensive operation is done only when it's really needed
+                    with open(ctx_file_path, "rt") as ctx_f:
+                        self.context_map[context_url] = json.load(ctx_f)
 
         if repok is None:
             self.repok: Reporter = Reporter(prefix="[Storer: INFO] ")
@@ -73,13 +72,6 @@ class Storer(object):
             self.reperr: Reporter = Reporter(prefix="[Storer: ERROR] ")
         else:
             self.reperr: Reporter = reperr
-
-    @staticmethod
-    def _hack_dates() -> None:
-        if XSD.gYear in _toPythonMapping:
-            _toPythonMapping.pop(XSD.gYear)
-        if XSD.gYearMonth in _toPythonMapping:
-            _toPythonMapping.pop(XSD.gYearMonth)
 
     def store_graphs_in_file(self, file_path: str, context_path: str) -> None:
         self.repok.new_article()
@@ -163,7 +155,7 @@ class Storer(object):
             if cur_file_path in already_processed:
                 stored_g = already_processed[cur_file_path]
             elif os.path.exists(cur_file_path):
-                stored_g = self._load(cur_file_path, tmp_dir)
+                stored_g = Reader(self.repok, self.reperr, self.context_map).load(cur_file_path, tmp_dir)
 
             if stored_g is None:
                 stored_g = ConjunctiveGraph()
@@ -228,75 +220,6 @@ class Storer(object):
         is_json: bool = (self.output_format == "json-ld")
         return find_paths(
             str(res), base_dir, base_iri, self.default_dir, self.dir_split, self.n_file_item, is_json=is_json)
-
-    def _load(self, rdf_file_path: str, tmp_dir: str = None) -> Optional[ConjunctiveGraph]:
-        self.repok.new_article()
-        self.reperr.new_article()
-
-        loaded_graph: Optional[ConjunctiveGraph] = None
-        if os.path.isfile(rdf_file_path):
-            Storer._hack_dates()
-            # The line above has been added for handling gYear and gYearMonth correctly.
-            # More info at https://github.com/RDFLib/rdflib/issues/806.
-
-            try:
-                loaded_graph = self.__load_graph(rdf_file_path)
-            except IOError:
-                if tmp_dir is not None:
-                    current_file_path: str = tmp_dir + os.sep + "tmp_rdf_file.rdf"
-                    shutil.copyfile(rdf_file_path, current_file_path)
-                    try:
-                        loaded_graph = self.__load_graph(current_file_path)
-                    except IOError as e:
-                        self.reperr.add_sentence("[2] "
-                                                 "It was impossible to handle the format used for "
-                                                 "storing the file (stored in the temporary path) "
-                                                 f"'{current_file_path}'. Additional details: {e}")
-                    os.remove(current_file_path)
-                else:
-                    self.reperr.add_sentence("[3] "
-                                             "It was impossible to try to load the file from the "
-                                             f"temporary path '{rdf_file_path}' since that has not been specified in "
-                                             "advance")
-        else:
-            self.reperr.add_sentence("[4] "
-                                     f"The file specified ('{rdf_file_path}') doesn't exist.")
-
-        return loaded_graph
-
-    def __load_graph(self, file_path: str) -> ConjunctiveGraph:
-        formats: List[str] = ["json-ld", "rdfxml", "turtle", "trig", "nt11", "nquads"]
-
-        loaded_graph: ConjunctiveGraph = ConjunctiveGraph()
-
-        errors: str = ""
-        for cur_format in formats:
-            try:
-                if cur_format == "json-ld":
-                    with open(file_path, "rt") as f:
-                        json_ld_file: Any = json.load(f)
-                        if isinstance(json_ld_file, dict):
-                            json_ld_file: List[Any] = [json_ld_file]
-
-                        for json_ld_resource in json_ld_file:
-                            # Trick to force the use of a pre-loaded context if the format
-                            # specified is JSON-LD
-                            if "@context" in json_ld_resource:
-                                cur_context: str = json_ld_resource["@context"]
-                                if cur_context in self.context_map:
-                                    context_json: Any = self.context_map[cur_context]["@context"]
-                                    json_ld_resource["@context"] = context_json
-
-                            loaded_graph.parse(data=json.dumps(json_ld_resource, ensure_ascii=False),
-                                               format=cur_format)
-                else:
-                    loaded_graph.parse(file_path, format=cur_format)
-
-                return loaded_graph
-            except Exception as e:
-                errors += f" | {e}"  # Try another format
-
-        raise IOError("1", f"It was impossible to handle the format used for storing the file '{file_path}'{errors}")
 
     def upload_all(self, triplestore_url: str, base_dir: str = None, batch_size: int = 10) -> bool:
         self.repok.new_article()

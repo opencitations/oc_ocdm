@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from oc_ocdm.reader import import_entities_from_graph
+from oc_ocdm.reader import Reader
 from oc_ocdm.abstract_set import AbstractSet
 from oc_ocdm.support.support import get_count
 
@@ -224,7 +224,7 @@ class GraphSet(AbstractSet):
                 query: str = f"CONSTRUCT {{?s ?p ?o}} WHERE {{?s ?p ?o ; ?p_1 <{entity_res}>}}"
                 result: Result = ts.query(query)
                 if result is not None:
-                    imported_entities: List[GraphEntity] = import_entities_from_graph(self, result.graph)
+                    imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(self, result.graph)
                     for imported_entity in imported_entities:
                         imported_entity.g.remove((imported_entity.res, None, entity_res))
         ts.close()
