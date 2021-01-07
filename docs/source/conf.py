@@ -69,7 +69,7 @@ html_static_path = ['_static']
 
 html_context = {
   'display_github': True,
-  'github_user': 'iosonopersia',
+  'github_user': 'opencitations',
   'github_repo': 'oc_ocdm',
   'github_version': 'master/docs/source/',
 }
