@@ -50,7 +50,6 @@ class Storer(object):
         self.dir_split: int = dir_split
         self.n_file_item: int = n_file_item
         self.default_dir: str = default_dir
-        self.preface_query: str = ""
         if abstract_set is not None:
             self.a_set: AbstractSet = abstract_set
 
