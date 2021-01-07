@@ -14,7 +14,6 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 from __future__ import annotations
-__author__ = 'essepuntato'
 
 from typing import TYPE_CHECKING
 

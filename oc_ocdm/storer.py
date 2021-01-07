@@ -15,8 +15,6 @@
 # SOFTWARE.
 from __future__ import annotations
 
-__author__ = 'essepuntato'
-
 from SPARQLWrapper import SPARQLWrapper
 from typing import TYPE_CHECKING
 

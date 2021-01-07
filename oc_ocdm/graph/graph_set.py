@@ -15,8 +15,6 @@
 # SOFTWARE.
 from __future__ import annotations
 
-__author__ = 'essepuntato'
-
 from typing import TYPE_CHECKING
 
 from oc_ocdm.reader import import_entities_from_graph
