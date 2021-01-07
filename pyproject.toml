@@ -10,9 +10,9 @@ authors = [
 ]
 readme = "README.md"
 license = "ISC"
-homepage = "http://opencitations.net"
+homepage = "https://opencitations.net"
 repository = "https://github.com/opencitations/oc_ocdm"
-# documentation = "https://oc_ocdm.github.io"
+documentation = "https://oc-ocdm.readthedocs.io"
 keywords = ["opencitations", "openscience", "datamodel", "mapping"]
 
 classifiers = [
@@ -20,7 +20,6 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: ISC License (ISCL)",
     "Natural Language :: English",
-    "Natural Language :: Italian",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Topic :: Database",
