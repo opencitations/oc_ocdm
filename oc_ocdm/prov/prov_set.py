@@ -21,10 +21,10 @@ from typing import TYPE_CHECKING
 from oc_ocdm.abstract_set import AbstractSet
 from oc_ocdm.prov.entities.entity_snapshot import EntitySnapshot
 from oc_ocdm.support.query_utils import get_update_query
-from oc_ocdm.graph.graph_entity import GraphEntity
 
 if TYPE_CHECKING:
     from typing import Optional, Tuple, List, Dict, ClassVar
+    from oc_ocdm.graph.graph_entity import GraphEntity
 
 from rdflib import Graph, URIRef
 
@@ -212,7 +212,7 @@ class ProvSet(AbstractSet):
             cur_entity_count = get_count(prov_subject.res)
             cur_entity_prefix = get_prefix(prov_subject.res)
 
-            related_to_label = "related to %s %s%s" % (GraphEntity.labels[cur_short_name], cur_entity_prefix,
+            related_to_label = "related to %s %s%s" % (GraphSet.labels[cur_short_name], cur_entity_prefix,
                                                        cur_entity_count)
             related_to_short_label = "-> %s/%s%s" % (cur_short_name, cur_entity_prefix, cur_entity_count)
 
