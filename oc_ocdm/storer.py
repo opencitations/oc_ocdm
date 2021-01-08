@@ -82,9 +82,9 @@ class Storer(object):
         for g in self.a_set.graphs():
             cg.addN([item + (g.identifier,) for item in list(g)])
 
-        self.__store_in_file(cg, file_path, context_path)
+        self._store_in_file(cg, file_path, context_path)
 
-    def __store_in_file(self, cur_g: ConjunctiveGraph, cur_file_path: str, context_path: str) -> None:
+    def _store_in_file(self, cur_g: ConjunctiveGraph, cur_file_path: str, context_path: str) -> None:
         # Note: the following lines from here and until 'cur_json_ld' are a sort of hack for including all
         # the triples of the input graph into the final stored file. Some how, some of them are not written
         # in such file otherwise - in particular the provenance ones.
@@ -97,22 +97,23 @@ class Storer(object):
 
             new_g.addN([(s, p, o, g_iri)])
 
-        if self.output_format == "json-ld" and context_path in self.context_map:
-            cur_json_ld: Any = json.loads(
-                new_g.serialize(format="json-ld", context=self.context_map[context_path]).decode("utf-8"))
+        if self.output_format == "json-ld":
+            if context_path is not None and context_path in self.context_map:
+                cur_json_ld: Any = json.loads(
+                    new_g.serialize(format="json-ld", context=self.context_map[context_path]).decode("utf-8"))
 
-            if isinstance(cur_json_ld, dict):
-                cur_json_ld["@context"] = context_path
-            else:  # it is a list
-                for item in cur_json_ld:
-                    item["@context"] = context_path
+                if isinstance(cur_json_ld, dict):
+                    cur_json_ld["@context"] = context_path
+                else:  # it is a list
+                    for item in cur_json_ld:
+                        item["@context"] = context_path
+            else:
+                cur_json_ld: Any = json.loads(new_g.serialize(format="json-ld").decode("utf-8"))
 
             with open(cur_file_path, "wt", encoding='utf-8') as f:
                 json.dump(cur_json_ld, f, indent=4, ensure_ascii=False)
-        elif self.output_format == "nt11":
-            new_g.serialize(cur_file_path, format="nt11", encoding="utf-8")
-        elif self.output_format == "nquads":
-            new_g.serialize(cur_file_path, format="nquads", encoding="utf-8")
+        else:
+            new_g.serialize(cur_file_path, format=self.output_format, encoding="utf-8")
 
         self.repok.add_sentence(f"File '{cur_file_path}' added.")
 
@@ -130,7 +131,7 @@ class Storer(object):
         stored_graph_path: List[str] = []
         for cur_file_path in processed_graphs:
             stored_graph_path.append(cur_file_path)
-            self.__store_in_file(processed_graphs[cur_file_path], cur_file_path, context_path)
+            self._store_in_file(processed_graphs[cur_file_path], cur_file_path, context_path)
 
         return stored_graph_path
 
@@ -155,7 +156,7 @@ class Storer(object):
             if cur_file_path in already_processed:
                 stored_g = already_processed[cur_file_path]
             elif os.path.exists(cur_file_path):
-                stored_g = Reader(self.repok, self.reperr, self.context_map).load(cur_file_path)
+                stored_g = Reader(context_map=self.context_map).load(cur_file_path)
 
             if stored_g is None:
                 stored_g = ConjunctiveGraph()
@@ -192,15 +193,14 @@ class Storer(object):
                 already_processed[cur_file_path] = stored_g
 
             if store_now:
-                self.__store_in_file(stored_g, cur_file_path, context_path)
+                self._store_in_file(stored_g, cur_file_path, context_path)
 
             return already_processed
         except Exception as e:
-            self.reperr.add_sentence(f"[5] It was impossible to store the RDF statements in {cur_file_path}. {e}")
+            self.reperr.add_sentence(f"[1] It was impossible to store the RDF statements in {cur_file_path}. {e}")
 
-    def upload_and_store(self, base_dir: str, triplestore_url: str, base_iri: str, context_path: str,
-                         tmp_dir: str = None) -> None:
-        stored_graph_path: List[str] = self.store_all(base_dir, base_iri, context_path, tmp_dir)
+    def upload_and_store(self, base_dir: str, triplestore_url: str, base_iri: str, context_path: str) -> None:
+        stored_graph_path: List[str] = self.store_all(base_dir, base_iri, context_path)
 
         # If some graphs were not stored properly, then no one will be uploaded to the triplestore
         # Anyway, we should highlight those ones that could have been added in principle, by
@@ -210,7 +210,7 @@ class Storer(object):
                 if file_path is not None:
                     # Create a marker for the file not uploaded in the triplestore
                     open(f"{file_path}.notuploaded", "wt").close()
-                    self.reperr.add_sentence("[6] "
+                    self.reperr.add_sentence("[2] "
                                              f"The statements contained in the JSON-LD file '{file_path}' "
                                              "were not uploaded into the triplestore.")
         else:  # All the files have been stored
@@ -296,7 +296,7 @@ class Storer(object):
                 return True
 
             except Exception as e:
-                self.reperr.add_sentence("[1] "
+                self.reperr.add_sentence("[3] "
                                          "Graph was not loaded into the "
                                          f"triplestore due to communication problems: {e}")
                 if base_dir is not None:
