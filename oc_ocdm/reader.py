@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import json
 import os
-import shutil
 from importlib import resources
 from pyshex import ShExEvaluator
 from rdflib import RDF, Namespace, ConjunctiveGraph, XSD
@@ -155,17 +154,17 @@ class Reader(object):
         else:
             shex = resources.read_text('resources', 'shexc.txt')
 
-        BIRO = Namespace("http://purl.org/spar/biro/")
-        C4O = Namespace("http://purl.org/spar/c4o/")
-        CITO = Namespace("http://purl.org/spar/cito/")
-        DATACITE = Namespace("http://purl.org/spar/datacite/")
-        DEO = Namespace("http://purl.org/spar/deo/")
-        FABIO = Namespace("http://purl.org/spar/fabio/")
-        FOAF = Namespace("http://xmlns.com/foaf/0.1/")
-        OA = Namespace("http://www.w3.org/ns/oa#")
-        PRO = Namespace("http://purl.org/spar/pro/")
+        BIRO: Namespace = Namespace("http://purl.org/spar/biro/")
+        C4O: Namespace = Namespace("http://purl.org/spar/c4o/")
+        CITO: Namespace = Namespace("http://purl.org/spar/cito/")
+        DATACITE: Namespace = Namespace("http://purl.org/spar/datacite/")
+        DEO: Namespace = Namespace("http://purl.org/spar/deo/")
+        FABIO: Namespace = Namespace("http://purl.org/spar/fabio/")
+        FOAF: Namespace = Namespace("http://xmlns.com/foaf/0.1/")
+        OA: Namespace = Namespace("http://www.w3.org/ns/oa#")
+        PRO: Namespace = Namespace("http://purl.org/spar/pro/")
 
-        OC = Namespace("https://opencitations.net/shex/")
+        OC: Namespace = Namespace("https://opencitations.net/shex/")
 
         for subject in Reader._extract_subjects(graph):
             # ReferenceAnnotation
