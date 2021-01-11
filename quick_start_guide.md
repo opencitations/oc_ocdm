@@ -48,8 +48,8 @@ An entity object can be instantiated in three different ways:
       directly calling the corresponding factory method while passing the IRI of the existing entity as the `res: URIRef`
       parameter.
       
-An entity with no knowledge of its preexisting state --either because it was created as in **(case 3)** or because it's a
-completely new one-- can only be modified in *append mode*. This means that, starting from an empty graph, the final set 
+An entity with no knowledge of its preexisting state &mdash;either because it was created as in **(case 3)** or because it's a
+completely new one&mdash; can only be modified in *append mode*. This means that, starting from an empty graph, the final set 
 of triples that will have been produced by the user by invoking the *getter*, *setter* and *remover* methods of the entity
 will be simply added to the already existing graph, whatever its current content is. Both in case of an RDF file storage
 or of an online triplestore, the RDF semantics will automatically prevent the presence of duplicated triples: this means
@@ -127,7 +127,7 @@ It's now time to persist the changes made to the entity back to the online tripl
 from oc_ocdm import Storer
 my_graph_storer = Storer(my_graphset)
 my_prov_storer = Storer(my_provset)
-my_metadata_storer = Storer(my_metadata_storer)
+my_metadata_storer = Storer(my_metadataset)
 my_graph_storer.upload_all("http://triplestore_endpoint_url/")
 my_prov_storer.upload_all("http://triplestore_endpoint_url/")
 my_metadata_storer.upload_all("http://triplestore_endpoint_url/")
