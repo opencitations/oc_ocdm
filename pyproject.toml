@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "oc_ocdm"
-version = "4.0.2"
+version = "4.0.3"
 description = "Object mapping library for manipulating RDF graphs that are compliant with the OpenCitations datamodel."
 authors = [
     "Silvio Peroni <essepuntato@gmail.com>",
