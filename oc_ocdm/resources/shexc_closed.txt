@@ -46,6 +46,7 @@ PREFIX void:     <http://rdfs.org/ns/void#>
                                    datacite:viaf
                                    datacite:crossref
                                    datacite:wikidata
+                                   datacite:wikipedia
                                   ];
     # Inverse properties:
     ^datacite:hasIdentifier (@:AgentRoleType OR

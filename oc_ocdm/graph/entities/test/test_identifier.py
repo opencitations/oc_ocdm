@@ -150,6 +150,17 @@ class TestIdentifier(unittest.TestCase):
         triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_wikidata
         self.assertIn(triple, self.id.g)
 
+    def test_create_wikipedia(self):
+        wikipedia = "abcdefghi"
+        result = self.id.create_wikipedia(wikipedia)
+        self.assertIsNone(result)
+
+        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(wikipedia)
+        self.assertIn(triple, self.id.g)
+
+        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_wikipedia
+        self.assertIn(triple, self.id.g)
+
     def test_create_crossref(self):
         crossref = "abcdefghi"
         result = self.id.create_crossref(crossref)

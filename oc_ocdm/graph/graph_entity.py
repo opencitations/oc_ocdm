@@ -130,6 +130,7 @@ class GraphEntity(AbstractEntity):
     iri_viaf: ClassVar[URIRef] = DATACITE.viaf
     iri_crossref: ClassVar[URIRef] = DATACITE.crossref  # TODO: add to datacite!
     iri_wikidata: ClassVar[URIRef] = DATACITE.wikidata  # TODO: add to datacite!
+    iri_wikipedia: ClassVar[URIRef] = DATACITE.wikipedia  # TODO: add to datacite!
     iri_has_edition: ClassVar[URIRef] = PRISM.edition
     iri_relation: ClassVar[URIRef] = DCTERMS.relation
     iri_has_citation_creation_date: ClassVar[URIRef] = CITO.hasCitationCreationDate

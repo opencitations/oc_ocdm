@@ -107,6 +107,10 @@ class Identifier(GraphEntity):
         self._associate_identifier_with_scheme(string, GraphEntity.iri_wikidata)
 
     @accepts_only('literal')
+    def create_wikipedia(self, string: str) -> None:
+        self._associate_identifier_with_scheme(string, GraphEntity.iri_wikipedia)
+
+    @accepts_only('literal')
     def create_crossref(self, string: str) -> None:
         self._associate_identifier_with_scheme(string, GraphEntity.iri_crossref)
 
