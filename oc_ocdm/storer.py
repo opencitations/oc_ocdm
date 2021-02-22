@@ -25,7 +25,7 @@ from oc_ocdm.reader import Reader
 from oc_ocdm.support.query_utils import get_update_query
 
 if TYPE_CHECKING:
-    from typing import Dict, List, Tuple, Any, Optional, Type
+    from typing import Dict, List, Tuple, Any, Optional
     from rdflib import URIRef
     from oc_ocdm.abstract_entity import AbstractEntity
     from oc_ocdm.abstract_set import AbstractSet
@@ -221,6 +221,17 @@ class Storer(object):
         return find_paths(
             str(res), base_dir, base_iri, self.default_dir, self.dir_split, self.n_file_item, is_json=is_json)
 
+    @staticmethod
+    def _class_to_entity_type(entity: AbstractEntity) -> Optional[str]:
+        if isinstance(entity, GraphEntity):
+            return "graph"
+        elif isinstance(entity, ProvEntity):
+            return "prov"
+        elif isinstance(entity, MetadataEntity):
+            return "metadata"
+        else:
+            return None
+
     def upload_all(self, triplestore_url: str, base_dir: str = None, batch_size: int = 10) -> bool:
         self.repok.new_article()
         self.reperr.new_article()
@@ -232,13 +243,9 @@ class Storer(object):
         added_statements: int = 0
         removed_statements: int = 0
         result: bool = True
-        class_to_entity_type: Dict[Type, str] = {
-            GraphEntity: "graph",
-            ProvEntity: "prov",
-            MetadataEntity: "metadata"
-        }
+
         for idx, entity in enumerate(self.a_set.res_to_entity.values()):
-            update_query, n_added, n_removed = get_update_query(entity, entity_type=class_to_entity_type[type(entity)])
+            update_query, n_added, n_removed = get_update_query(entity, entity_type=self._class_to_entity_type(entity))
 
             if idx % batch_size == 0:
                 query_string = update_query
@@ -265,12 +272,7 @@ class Storer(object):
         self.repok.new_article()
         self.reperr.new_article()
 
-        class_to_entity_type: Dict[Type, str] = {
-            GraphEntity: "graph",
-            ProvEntity: "prov",
-            MetadataEntity: "metadata"
-        }
-        update_query, n_added, n_removed = get_update_query(entity, entity_type=class_to_entity_type[type(entity)])
+        update_query, n_added, n_removed = get_update_query(entity, entity_type=self._class_to_entity_type(entity))
 
         return self._query(update_query, triplestore_url, base_dir, n_added, n_removed)
 
