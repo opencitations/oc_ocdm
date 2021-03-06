@@ -19,7 +19,7 @@ import json
 import os
 from importlib import resources
 from pyshex import ShExEvaluator
-from rdflib import RDF, Namespace, ConjunctiveGraph, XSD
+from rdflib import RDF, Namespace, ConjunctiveGraph, Graph, XSD
 from rdflib.term import _toPythonMapping
 from typing import TYPE_CHECKING
 
@@ -28,7 +28,7 @@ from oc_ocdm.support.reporter import Reporter
 
 if TYPE_CHECKING:
     from typing import List, Set, Dict, Any, Optional
-    from rdflib import Graph, URIRef, term
+    from rdflib import URIRef, term
     from rdflib.query import Result
     from oc_ocdm.graph.graph_set import GraphSet
 
@@ -132,7 +132,7 @@ class Reader(object):
 
     @staticmethod
     def _validate(graph: Graph, shex: str, valid_graph: Graph, focus: URIRef, shape: URIRef) -> bool:
-        node_result = next(ShExEvaluator().evaluate(rdf=graph, shex=shex, focus=focus, start=shape))
+        node_result = ShExEvaluator().evaluate(rdf=graph, shex=shex, focus=focus, start=shape)[0]
         if node_result.result:
             for triple in graph.triples((focus, None, None)):
                 valid_graph.add(triple)
@@ -150,9 +150,9 @@ class Reader(object):
         valid_graph: Graph = Graph(identifier=graph.identifier)
 
         if closed:
-            shex = resources.read_text('resources', 'shexc_closed.txt')
+            shex = resources.read_text('oc_ocdm.resources', 'shexc_closed.txt')
         else:
-            shex = resources.read_text('resources', 'shexc.txt')
+            shex = resources.read_text('oc_ocdm.resources', 'shexc.txt')
 
         BIRO: Namespace = Namespace("http://purl.org/spar/biro/")
         C4O: Namespace = Namespace("http://purl.org/spar/c4o/")
@@ -214,8 +214,8 @@ class Reader(object):
         return valid_graph
 
     @staticmethod
-    def import_entities_from_graph(g_set: GraphSet, graph: Graph, enable_validation: bool = True,
-                                   closed: bool = False) -> List[GraphEntity]:
+    def import_entities_from_graph(g_set: GraphSet, graph: Graph, resp_agent: str,
+                                   enable_validation: bool = True, closed: bool = False) -> List[GraphEntity]:
         if enable_validation:
             graph = Reader.graph_validation(graph, closed)
 
@@ -227,53 +227,53 @@ class Reader(object):
 
             # ReferenceAnnotation
             if GraphEntity.iri_note in types:
-                imported_entities.append(g_set.add_an(resp_agent='importer', res=subject,
+                imported_entities.append(g_set.add_an(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
             # AgentRole
             elif GraphEntity.iri_role_in_time in types:
-                imported_entities.append(g_set.add_ar(resp_agent='importer', res=subject,
+                imported_entities.append(g_set.add_ar(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
             # BibliographicReference
             elif GraphEntity.iri_bibliographic_reference in types:
-                imported_entities.append(g_set.add_be(resp_agent='importer', res=subject,
+                imported_entities.append(g_set.add_be(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
             # BibliographicResource
             elif GraphEntity.iri_expression in types:
-                imported_entities.append(g_set.add_br(resp_agent='importer', res=subject,
+                imported_entities.append(g_set.add_br(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
             # Citation
             elif GraphEntity.iri_citation in types:
-                imported_entities.append(g_set.add_ci(resp_agent='importer', res=subject,
+                imported_entities.append(g_set.add_ci(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
             # DiscourseElement
             elif GraphEntity.iri_discourse_element in types:
-                imported_entities.append(g_set.add_de(resp_agent='importer', res=subject,
+                imported_entities.append(g_set.add_de(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
             # Identifier
             elif GraphEntity.iri_identifier in types:
-                imported_entities.append(g_set.add_id(resp_agent='importer', res=subject,
+                imported_entities.append(g_set.add_id(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
             # PointerList
             elif GraphEntity.iri_singleloc_pointer_list in types:
-                imported_entities.append(g_set.add_pl(resp_agent='importer', res=subject,
+                imported_entities.append(g_set.add_pl(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
             # ResponsibleAgent
             elif GraphEntity.iri_agent in types:
-                imported_entities.append(g_set.add_ra(resp_agent='importer', res=subject,
+                imported_entities.append(g_set.add_ra(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
             # ResourceEmbodiment
             elif GraphEntity.iri_manifestation in types:
-                imported_entities.append(g_set.add_re(resp_agent='importer', res=subject,
+                imported_entities.append(g_set.add_re(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
             # ReferencePointer
             elif GraphEntity.iri_intextref_pointer in types:
-                imported_entities.append(g_set.add_rp(resp_agent='importer', res=subject,
+                imported_entities.append(g_set.add_rp(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
 
         return imported_entities
 
     @staticmethod
-    def import_entity_from_triplestore(g_set: GraphSet, ts_url: str, res: URIRef,
+    def import_entity_from_triplestore(g_set: GraphSet, ts_url: str, res: URIRef, resp_agent: str,
                                        enable_validation: bool = True) -> GraphEntity:
         ts: ConjunctiveGraph = ConjunctiveGraph()
         ts.open((ts_url, ts_url))
@@ -282,7 +282,7 @@ class Reader(object):
         result: Result = ts.query(query)
         if result is not None:
             imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(g_set, result.graph,
-                                                                                     enable_validation)
+                                                                                     resp_agent, enable_validation)
             ts.close()
             if len(imported_entities) <= 0:
                 raise ValueError("The required entity was not found or was not recognized as a proper OCDM entity.")
