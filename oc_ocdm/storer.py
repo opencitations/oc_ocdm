@@ -199,7 +199,8 @@ class Storer(object):
         except Exception as e:
             self.reperr.add_sentence(f"[1] It was impossible to store the RDF statements in {cur_file_path}. {e}")
 
-    def upload_and_store(self, base_dir: str, triplestore_url: str, base_iri: str, context_path: str) -> None:
+    def upload_and_store(self, base_dir: str, triplestore_url: str, base_iri: str, context_path: str,
+                         batch_size: int = 10) -> None:
         stored_graph_path: List[str] = self.store_all(base_dir, base_iri, context_path)
 
         # If some graphs were not stored properly, then no one will be uploaded to the triplestore
@@ -214,7 +215,7 @@ class Storer(object):
                                              f"The statements contained in the JSON-LD file '{file_path}' "
                                              "were not uploaded into the triplestore.")
         else:  # All the files have been stored
-            self.upload_all(triplestore_url, base_dir)
+            self.upload_all(triplestore_url, base_dir, batch_size)
 
     def _dir_and_file_paths(self, res: URIRef, base_dir: str, base_iri: str) -> Tuple[str, str]:
         is_json: bool = (self.output_format == "json-ld")
@@ -242,26 +243,32 @@ class Storer(object):
         query_string: str = ""
         added_statements: int = 0
         removed_statements: int = 0
+        skipped_queries: int = 0
         result: bool = True
 
         for idx, entity in enumerate(self.a_set.res_to_entity.values()):
             update_query, n_added, n_removed = get_update_query(entity, entity_type=self._class_to_entity_type(entity))
 
-            if idx % batch_size == 0:
-                query_string = update_query
-                added_statements = n_added
-                removed_statements = n_removed
+            if update_query == "":
+                skipped_queries += 1
             else:
-                if update_query != "":
-                    if query_string != "":
-                        query_string += " ; "
-                    query_string += update_query
-                added_statements += n_added
-                removed_statements += n_removed
-
-            if idx > 0 and idx % batch_size == 0:
-                result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
-                query_string = ""
+                index = idx - skipped_queries
+                if index == 0:
+                    # First query
+                    query_string = update_query
+                    added_statements = n_added
+                    removed_statements = n_removed
+                elif index % batch_size == 0:
+                    # batch_size-multiple query
+                    result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
+                    query_string = update_query
+                    added_statements = n_added
+                    removed_statements = n_removed
+                else:
+                    # Accumulated query
+                    query_string += " ; " + update_query
+                    added_statements += n_added
+                    removed_statements += n_removed
 
         if query_string != "":
             result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
