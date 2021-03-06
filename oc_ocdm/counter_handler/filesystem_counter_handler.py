@@ -80,9 +80,20 @@ class FilesystemCounterHandler(CounterHandler):
     def get_metadata_path(self, short_name: str, dataset_name: str) -> str:
         return self.datasets_dir + dataset_name + os.sep + 'metadata_' + short_name + '.txt'
 
+    def __initialize_file_if_not_existing(self, file_path: str):
+        if not os.path.exists(os.path.dirname(file_path)):
+            os.makedirs(os.path.dirname(file_path))
+
+        if not os.path.isfile(file_path):
+            with open(file_path, "wb") as file:
+                first_line: str = self.trailing_char * (self.initial_line_len - 1) + "\n"
+                file.write(first_line.encode("ascii"))
+
     def _read_number(self, file_path: str, line_number: int) -> Tuple[int, int]:
         if line_number <= 0:
             raise ValueError("line_number must be a positive non-zero integer number!")
+
+        self.__initialize_file_if_not_existing(file_path)
 
         cur_number: int = 0
         cur_line_len: int = 0
@@ -104,13 +115,7 @@ class FilesystemCounterHandler(CounterHandler):
         if line_number <= 0:
             raise ValueError("line_number must be a positive non-zero integer number!")
 
-        if not os.path.exists(os.path.dirname(file_path)):
-            os.makedirs(os.path.dirname(file_path))
-
-        if not os.path.isfile(file_path):
-            with open(file_path, "wb") as file:
-                first_line: str = self.trailing_char * (self.initial_line_len - 1) + "\n"
-                file.write(first_line.encode("ascii"))
+        self.__initialize_file_if_not_existing(file_path)
 
         cur_number, cur_line_len = self._read_number(file_path, line_number)
         cur_number += 1
@@ -136,13 +141,7 @@ class FilesystemCounterHandler(CounterHandler):
         if line_number <= 0:
             raise ValueError("line_number must be a positive non-zero integer number!")
 
-        if not os.path.exists(os.path.dirname(file_path)):
-            os.makedirs(os.path.dirname(file_path))
-
-        if not os.path.isfile(file_path):
-            with open(file_path, "wb") as file:
-                first_line: str = self.trailing_char * (self.initial_line_len - 1) + "\n"
-                file.write(first_line.encode("ascii"))
+        self.__initialize_file_if_not_existing(file_path)
 
         cur_line_len = self._read_number(file_path, line_number)[1]
 
