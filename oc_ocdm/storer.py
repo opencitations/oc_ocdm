@@ -47,7 +47,7 @@ class Storer(object):
         self.output_format: str = output_format
         self.dir_split: int = dir_split
         self.n_file_item: int = n_file_item
-        self.default_dir: str = default_dir
+        self.default_dir: str = default_dir if default_dir != "" else "_"
         self.a_set: AbstractSet = abstract_set
 
         if context_map is not None:
@@ -313,7 +313,7 @@ class Storer(object):
                     if not os.path.exists(tp_err_dir):
                         os.makedirs(tp_err_dir)
                     cur_file_err: str = tp_err_dir + os.sep + \
-                                        datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f_not_uploaded.txt')
+                        datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f_not_uploaded.txt')
                     with io.open(cur_file_err, "w", encoding="utf-8") as f:
                         f.write(query_string)
 
