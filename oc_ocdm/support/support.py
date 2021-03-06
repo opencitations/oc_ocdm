@@ -21,7 +21,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Optional, List, Tuple
+    from typing import Optional, List, Tuple, Match
 from urllib.parse import quote
 
 from rdflib import Literal, RDF, URIRef, XSD, Graph
@@ -39,7 +39,7 @@ def create_date(date_list: List[Optional[int]] = None) -> Optional[str]:
             elif l_date_list == 2 and date_list[1] is not None:
                 string = datetime(date_list[0], date_list[1], 1).strftime('%Y-%m')
             else:
-                string = datetime(date_list[0], 1, 1,).strftime('%Y')
+                string = datetime(date_list[0], 1, 1).strftime('%Y')
     return string
 
 
@@ -79,23 +79,80 @@ def is_string_empty(string: str) -> bool:
     return string is None or string.strip() == ""
 
 
+# Variable used in several functions
+entity_regex: str = r"^(.+)/([a-z][a-z])/(0[1-9]+0)?([1-9][0-9]*)$"
+prov_regex: str = r"^(.+)/([a-z][a-z])/(0[1-9]+0)?([1-9][0-9]*)/prov/([a-z][a-z])/([1-9][0-9]*)$"
+
+
+def _get_match(regex: str, group: int, string: str) -> str:
+    match: Match = re.match(regex, string)
+    if match is not None:
+        return match.group(group)
+    else:
+        return ""
+
+
+def get_base_iri(res: URIRef) -> str:
+    string_iri = str(res)
+    if "/prov/" in string_iri:
+        return _get_match(prov_regex, 1, string_iri)
+    else:
+        return _get_match(entity_regex, 1, string_iri)
+
+
 def get_short_name(res: URIRef) -> str:
-    return re.sub("^.+/([a-z][a-z])(/[0-9]+)?$", "\\1", str(res))
+    string_iri = str(res)
+    if "/prov/" in string_iri:
+        return _get_match(prov_regex, 5, string_iri)
+    else:
+        return _get_match(entity_regex, 2, string_iri)
+
+
+def get_prov_subject_short_name(prov_res: URIRef) -> str:
+    string_iri = str(prov_res)
+    if "/prov/" in string_iri:
+        return _get_match(prov_regex, 2, string_iri)
+    else:
+        return ""  # non-provenance entities do not have a prov_subject!
 
 
 def get_prefix(res: URIRef) -> str:
-    return re.sub("^.+/[a-z][a-z]/(0[1-9]+0)?([1-9][0-9]*)$", "\\1", str(res))
+    string_iri = str(res)
+    if "/prov/" in string_iri:
+        return ""  # provenance entities cannot have a supplier prefix
+    else:
+        return _get_match(entity_regex, 3, string_iri)
+
+
+def get_prov_subject_prefix(prov_res: URIRef) -> str:
+    string_iri = str(prov_res)
+    if "/prov/" in string_iri:
+        return _get_match(prov_regex, 3, string_iri)
+    else:
+        return ""  # non-provenance entities do not have a prov_subject!
 
 
 def get_count(res: URIRef) -> str:
-    return re.sub("^.+/[a-z][a-z]/(0[1-9]+0)?([1-9][0-9]*)$", "\\2", str(res))
+    string_iri = str(res)
+    if "/prov/" in string_iri:
+        return _get_match(prov_regex, 6, string_iri)
+    else:
+        return _get_match(entity_regex, 4, string_iri)
+
+
+def get_prov_subject_count(prov_res: URIRef) -> str:
+    string_iri = str(prov_res)
+    if "/prov/" in string_iri:
+        return _get_match(prov_regex, 4, string_iri)
+    else:
+        return ""  # non-provenance entities do not have a prov_subject!
 
 
 def get_resource_number(string_iri: str) -> int:
     if "/prov/" in string_iri:
-        return int(re.sub(prov_regex, "\\3", string_iri))
+        return int(_get_match(prov_regex, 4, string_iri))
     else:
-        return int(re.sub(res_regex, "\\3", string_iri))
+        return int(_get_match(entity_regex, 4, string_iri))
 
 
 def find_local_line_id(res: URIRef, n_file_item: int = 1) -> int:
@@ -112,11 +169,6 @@ def find_local_line_id(res: URIRef, n_file_item: int = 1) -> int:
     return cur_number - cur_file_split
 
 
-# Variable used in several functions
-res_regex: str = "(.+)/(0[1-9]+0)?([1-9][0-9]*)$"
-prov_regex: str = "(.+)/(0[1-9]+0)?([1-9][0-9]*)(/prov)/(.+)/([0-9]+)$"
-
-
 def find_paths(string_iri: str, base_dir: str, base_iri: str, default_dir: str, dir_split: int,
                n_file_item: int, is_json: bool = True) -> Tuple[str, str]:
     """
@@ -131,12 +183,10 @@ def find_paths(string_iri: str, base_dir: str, base_iri: str, default_dir: str, 
         format_string = ".ttl"
 
     if is_dataset(string_iri):
-        cur_dir_path = (base_dir + re.sub("^%s(.*)$" % base_iri, "\\1", string_iri))[:-1]
+        cur_dir_path = (base_dir + re.sub(r"^%s(.*)$" % base_iri, r"\1", string_iri))[:-1]
         # In case of dataset, the file path is different from regular files, e.g.
         # /corpus/br/index.json
         cur_file_path = cur_dir_path + os.sep + "index.json"
-        print("is_dataset", cur_dir_path, cur_file_path)
-
     else:
         cur_number = get_resource_number(string_iri)
 
@@ -160,53 +210,65 @@ def find_paths(string_iri: str, base_dir: str, base_iri: str, default_dir: str, 
                     break
 
             if "/prov/" in string_iri:  # provenance file of a bibliographic entity
-                cur_dir_path = base_dir + \
-                               re.sub(("^%s" + prov_regex) % base_iri,
-                                      ("\\1%s\\2" % os.sep if has_supplier_prefix(string_iri, base_iri) else
-                                       "\\1%s%s" % (os.sep, default_dir)), string_iri) + \
-                               os.sep + str(cur_split) + os.sep + str(cur_file_split) + os.sep + "prov"
-                cur_file_path = cur_dir_path + os.sep + re.sub(
-                    ("^%s" + prov_regex) % base_iri, "\\5", string_iri) + format_string
-            else:  # regular bibliographic entity
-                cur_dir_path = base_dir + \
-                               re.sub(("^%s" + res_regex) % base_iri,
-                                      ("\\1%s\\2" % os.sep if has_supplier_prefix(string_iri, base_iri) else
-                                       "\\1%s%s" % (os.sep, default_dir)),
-                                      string_iri) + \
-                               os.sep + str(cur_split)
+                res = URIRef(string_iri)
+                subj_short_name = get_prov_subject_short_name(res)
+                short_name = get_short_name(res)
+                sub_folder = get_prov_subject_prefix(res)
+                if sub_folder == "":
+                    sub_folder = default_dir
 
+                cur_dir_path = base_dir + subj_short_name + os.sep + sub_folder + \
+                               os.sep + str(cur_split) + os.sep + str(cur_file_split) + os.sep + "prov"
+                cur_file_path = cur_dir_path + os.sep + short_name + format_string
+            else:  # regular bibliographic entity
+                res = URIRef(string_iri)
+                short_name = get_short_name(res)
+                sub_folder = get_prefix(res)
+                if sub_folder == "":
+                    sub_folder = default_dir
+
+                cur_dir_path = base_dir + short_name + os.sep + sub_folder + \
+                               os.sep + str(cur_split)
                 cur_file_path = cur_dir_path + os.sep + str(cur_file_split) + format_string
         # Enter here if no split is needed
         elif dir_split == 0:
             if "/prov/" in string_iri:
-                cur_dir_path = base_dir + \
-                               re.sub(("^%s" + prov_regex) % base_iri,
-                                      ("\\1%s\\2" % os.sep if has_supplier_prefix(string_iri, base_iri) else
-                                       "\\1%s%s" % (os.sep, default_dir)), string_iri) + \
-                               os.sep + str(cur_file_split) + os.sep + "prov"
-                cur_file_path = cur_dir_path + os.sep + re.sub(
-                    ("^%s" + prov_regex) % base_iri, "\\5", string_iri) + format_string
-            else:
-                cur_dir_path = base_dir + \
-                               re.sub(("^%s" + res_regex) % base_iri,
-                                      ("\\1%s\\2" % os.sep if has_supplier_prefix(string_iri, base_iri) else
-                                       "\\1%s%s" % (os.sep, default_dir)),
-                                      string_iri)
+                res = URIRef(string_iri)
+                subj_short_name = get_prov_subject_short_name(res)
+                short_name = get_short_name(res)
+                sub_folder = get_prov_subject_prefix(res)
+                if sub_folder == "":
+                    sub_folder = default_dir
 
+                cur_dir_path = base_dir + subj_short_name + os.sep + sub_folder + \
+                               os.sep + str(cur_file_split) + os.sep + "prov"
+                cur_file_path = cur_dir_path + os.sep + short_name + format_string
+            else:
+                res = URIRef(string_iri)
+                short_name = get_short_name(res)
+                sub_folder = get_prefix(res)
+                if sub_folder == "":
+                    sub_folder = default_dir
+
+                cur_dir_path = base_dir + short_name + os.sep + sub_folder
                 cur_file_path = cur_dir_path + os.sep + str(cur_file_split) + format_string
         # Enter here if the data is about a provenance agent, e.g.,
         # /corpus/prov/
         else:
-            cur_dir_path = base_dir + re.sub(("^%s" + res_regex) % base_iri, "\\1", string_iri)
-            cur_file_path = cur_dir_path + os.sep + re.sub(res_regex, "\\2\\3", string_iri) + format_string
-            print("else:", cur_dir_path, cur_file_path)
+            res = URIRef(string_iri)
+            short_name = get_short_name(res)
+            prefix = get_prefix(res)
+            count = get_count(res)
+
+            cur_dir_path = base_dir + short_name
+            cur_file_path = cur_dir_path + os.sep + prefix + count + format_string
 
     return cur_dir_path, cur_file_path
 
 
 def has_supplier_prefix(string_iri: str, base_iri: str) -> bool:
-    return re.search("^%s[a-z][a-z]/0" % base_iri, string_iri) is not None
+    return re.search(r"^%s[a-z][a-z]/0" % base_iri, string_iri) is not None
 
 
 def is_dataset(string_iri: str) -> bool:
-    return re.search("^.+/[0-9]+(-[0-9]+)?(/[0-9]+)?$", string_iri) is None
+    return re.search(r"^.+/[0-9]+(-[0-9]+)?(/[0-9]+)?$", string_iri) is None
