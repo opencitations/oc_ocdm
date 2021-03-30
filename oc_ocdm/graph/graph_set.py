@@ -216,7 +216,7 @@ class GraphSet(AbstractSet):
 
         return cur_g, count, label
 
-    def sync_with_triplestore(self, ts_url: str) -> None:
+    def sync_with_triplestore(self, ts_url: str, resp_agent: str) -> None:
         ts: ConjunctiveGraph = ConjunctiveGraph()
         ts.open((ts_url, ts_url))
         for entity_res, entity in self.res_to_entity.items():
@@ -224,7 +224,8 @@ class GraphSet(AbstractSet):
                 query: str = f"CONSTRUCT {{?s ?p ?o}} WHERE {{?s ?p ?o ; ?p_1 <{entity_res}>}}"
                 result: Result = ts.query(query)
                 if result is not None:
-                    imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(self, result.graph)
+                    imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(self, result.graph,
+                                                                                             resp_agent)
                     for imported_entity in imported_entities:
                         imported_entity.g.remove((imported_entity.res, None, entity_res))
         ts.close()
