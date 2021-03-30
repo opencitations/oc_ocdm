@@ -215,7 +215,7 @@ class Reader(object):
 
     @staticmethod
     def import_entities_from_graph(g_set: GraphSet, graph: Graph, resp_agent: str,
-                                   enable_validation: bool = True, closed: bool = False) -> List[GraphEntity]:
+                                   enable_validation: bool = False, closed: bool = False) -> List[GraphEntity]:
         if enable_validation:
             graph = Reader.graph_validation(graph, closed)
 
@@ -274,7 +274,7 @@ class Reader(object):
 
     @staticmethod
     def import_entity_from_triplestore(g_set: GraphSet, ts_url: str, res: URIRef, resp_agent: str,
-                                       enable_validation: bool = True) -> GraphEntity:
+                                       enable_validation: bool = False) -> GraphEntity:
         ts: ConjunctiveGraph = ConjunctiveGraph()
         ts.open((ts_url, ts_url))
         query: str = f"CONSTRUCT {{<{res}> ?p ?o}} WHERE {{<{res}> ?p ?o}}"
