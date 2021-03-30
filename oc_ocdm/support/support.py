@@ -218,7 +218,7 @@ def find_paths(string_iri: str, base_dir: str, base_iri: str, default_dir: str, 
                     sub_folder = default_dir
 
                 cur_dir_path = base_dir + subj_short_name + os.sep + sub_folder + \
-                               os.sep + str(cur_split) + os.sep + str(cur_file_split) + os.sep + "prov"
+                    os.sep + str(cur_split) + os.sep + str(cur_file_split) + os.sep + "prov"
                 cur_file_path = cur_dir_path + os.sep + short_name + format_string
             else:  # regular bibliographic entity
                 res = URIRef(string_iri)
@@ -228,7 +228,7 @@ def find_paths(string_iri: str, base_dir: str, base_iri: str, default_dir: str, 
                     sub_folder = default_dir
 
                 cur_dir_path = base_dir + short_name + os.sep + sub_folder + \
-                               os.sep + str(cur_split)
+                    os.sep + str(cur_split)
                 cur_file_path = cur_dir_path + os.sep + str(cur_file_split) + format_string
         # Enter here if no split is needed
         elif dir_split == 0:
@@ -241,7 +241,7 @@ def find_paths(string_iri: str, base_dir: str, base_iri: str, default_dir: str, 
                     sub_folder = default_dir
 
                 cur_dir_path = base_dir + subj_short_name + os.sep + sub_folder + \
-                               os.sep + str(cur_file_split) + os.sep + "prov"
+                    os.sep + str(cur_file_split) + os.sep + "prov"
                 cur_file_path = cur_dir_path + os.sep + short_name + format_string
             else:
                 res = URIRef(string_iri)
