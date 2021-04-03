@@ -43,7 +43,7 @@ An entity object can be instantiated in three different ways:
   * an already existing entity can be instantiated in two different ways, depending on the type of operations that the
     user wants to perform on it:
     * **(case 2)** manually importing the entity from a triplestore (or an RDF file) and passing the obtained `rdflib.Graph` to the
-      `import_entities_from_graph` static method from the `Reader` class;
+      `import_entities_from_graph` static method from the `Reader` class (**please, be aware that `import_entities_from_graph` stores the imported entities both in the list returned by the method and in the `GraphSet` passed as argument**);
     * **(case 3)** instantiating the entity without providing any information about its preexisting state: this can be done by
       directly calling the corresponding factory method while passing the IRI of the existing entity as the `res: URIRef`
       parameter.
