@@ -18,6 +18,8 @@ from __future__ import annotations
 import json
 import os
 from importlib import resources
+
+from SPARQLWrapper import SPARQLWrapper, RDFXML
 from pyshex import ShExEvaluator
 from rdflib import RDF, Namespace, ConjunctiveGraph, Graph, XSD
 from rdflib.term import _toPythonMapping
@@ -275,17 +277,17 @@ class Reader(object):
     @staticmethod
     def import_entity_from_triplestore(g_set: GraphSet, ts_url: str, res: URIRef, resp_agent: str,
                                        enable_validation: bool = False) -> GraphEntity:
-        ts: ConjunctiveGraph = ConjunctiveGraph()
-        ts.open((ts_url, ts_url))
+        sparql: SPARQLWrapper = SPARQLWrapper(ts_url)
         query: str = f"CONSTRUCT {{<{res}> ?p ?o}} WHERE {{<{res}> ?p ?o}}"
+        sparql.setQuery(query)
+        sparql.setMethod('POST')
+        sparql.setReturnFormat(RDFXML)
 
-        result: Result = ts.query(query)
+        result: Result = sparql.query().convert()
         if result is not None:
-            imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(g_set, result.graph,
+            imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(g_set, result,
                                                                                      resp_agent, enable_validation)
-            ts.close()
             if len(imported_entities) <= 0:
                 raise ValueError("The required entity was not found or was not recognized as a proper OCDM entity.")
             else:
                 return imported_entities[0]
-        ts.close()

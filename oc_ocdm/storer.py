@@ -293,10 +293,11 @@ class Storer(object):
                added_statements: int = 0, removed_statements: int = 0) -> bool:
         if query_string != "":
             try:
-                tp: SPARQLWrapper = SPARQLWrapper(triplestore_url)
-                tp.setMethod('POST')
-                tp.setQuery(query_string)
-                tp.query()
+                sparql: SPARQLWrapper = SPARQLWrapper(triplestore_url)
+                sparql.setQuery(query_string)
+                sparql.setMethod('POST')
+
+                sparql.query()
 
                 self.repok.add_sentence(
                     f"Triplestore updated with {added_statements} added statements and "

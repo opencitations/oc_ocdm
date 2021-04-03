@@ -17,6 +17,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from SPARQLWrapper import SPARQLWrapper, RDFXML
+
 from oc_ocdm.reader import Reader
 from oc_ocdm.abstract_set import AbstractSet
 from oc_ocdm.support.support import get_count
@@ -25,7 +27,7 @@ if TYPE_CHECKING:
     from typing import Dict, ClassVar, Tuple, Optional, List
     from rdflib.query import Result
 
-from rdflib import Graph, Namespace, URIRef, ConjunctiveGraph
+from rdflib import Graph, Namespace, URIRef
 
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.counter_handler.counter_handler import CounterHandler
@@ -218,18 +220,20 @@ class GraphSet(AbstractSet):
         return cur_g, count, label
 
     def sync_with_triplestore(self, ts_url: str, resp_agent: str) -> None:
-        ts: ConjunctiveGraph = ConjunctiveGraph()
-        ts.open((ts_url, ts_url))
+        sparql: SPARQLWrapper = SPARQLWrapper(ts_url)
+
         for entity_res, entity in self.res_to_entity.items():
             if entity.to_be_deleted:
                 query: str = f"CONSTRUCT {{?s ?p ?o}} WHERE {{?s ?p ?o ; ?p_1 <{entity_res}>}}"
-                result: Result = ts.query(query)
+                sparql.setQuery(query)
+                sparql.setMethod('POST')
+                sparql.setReturnFormat(RDFXML)
+
+                result: Result = sparql.query().convert()
                 if result is not None:
-                    imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(self, result.graph,
-                                                                                             resp_agent)
+                    imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(self, result, resp_agent)
                     for imported_entity in imported_entities:
                         imported_entity.g.remove((imported_entity.res, None, entity_res))
-        ts.close()
 
     def commit_changes(self):
         for res, entity in self.res_to_entity.items():
