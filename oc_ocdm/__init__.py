@@ -13,7 +13,7 @@
 # DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
-__version__ = '4.1.1'
+__version__ = '5.0.0'
 
 from oc_ocdm.storer import Storer
 from oc_ocdm.reader import Reader
