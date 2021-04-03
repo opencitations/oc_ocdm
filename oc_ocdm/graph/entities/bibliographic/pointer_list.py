@@ -61,7 +61,7 @@ class PointerList(BibliographicEntity):
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_element)
         result: List[ReferencePointer] = []
         for uri in uri_list:
-            result.append(self.g_set.add_rp(self.resp_agent, self.source_agent, self.source, uri))
+            result.append(self.g_set.add_rp(self.resp_agent, self.source, uri))
         return result
 
     @accepts_only('rp')

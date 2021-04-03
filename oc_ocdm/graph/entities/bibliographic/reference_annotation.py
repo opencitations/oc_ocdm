@@ -48,7 +48,7 @@ class ReferenceAnnotation(BibliographicEntity):
     def get_body_annotation(self) -> Optional[Citation]:
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_body)
         if uri is not None:
-            return self.g_set.add_ci(self.resp_agent, self.source_agent, self.source, uri)
+            return self.g_set.add_ci(self.resp_agent, self.source, uri)
 
     @accepts_only('ci')
     def has_body_annotation(self, ci_res: Citation) -> None:

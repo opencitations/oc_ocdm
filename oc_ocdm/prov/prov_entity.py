@@ -51,15 +51,14 @@ class ProvEntity(AbstractEntity):
     }
 
     def __init__(self, prov_subject: GraphEntity, g: Graph, p_set: ProvSet,
-                 res: URIRef = None, resp_agent: str = None, source_agent: str = None,
-                 source: str = None, res_type: URIRef = None, count: str = None,
-                 label: str = None, short_name: str = "") -> None:
+                 res: URIRef = None, resp_agent: str = None, source: str = None,
+                 res_type: URIRef = None, count: str = None, label: str = None,
+                 short_name: str = "") -> None:
         super(ProvEntity, self).__init__()
         self.prov_subject: GraphEntity = prov_subject
 
         self.g: Graph = g
         self.resp_agent: str = resp_agent
-        self.source_agent: str = source_agent
         self.source: str = source
         self.short_name: str = short_name
         self.p_set: ProvSet = p_set

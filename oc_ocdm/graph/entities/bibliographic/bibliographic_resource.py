@@ -119,7 +119,7 @@ class BibliographicResource(BibliographicEntity):
     def get_is_part_of(self) -> Optional[BibliographicResource]:
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_part_of)
         if uri is not None:
-            return self.g_set.add_br(self.resp_agent, self.source_agent, self.source, uri)
+            return self.g_set.add_br(self.resp_agent, self.source, uri)
 
     @accepts_only('br')
     def is_part_of(self, br_res: BibliographicResource) -> None:
@@ -137,7 +137,7 @@ class BibliographicResource(BibliographicEntity):
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_cites)
         result: List[BibliographicResource] = []
         for uri in uri_list:
-            result.append(self.g_set.add_br(self.resp_agent, self.source_agent, self.source, uri))
+            result.append(self.g_set.add_br(self.resp_agent, self.source, uri))
         return result
 
     @accepts_only('br')
@@ -175,7 +175,7 @@ class BibliographicResource(BibliographicEntity):
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_embodiment)
         result: List[ResourceEmbodiment] = []
         for uri in uri_list:
-            result.append(self.g_set.add_re(self.resp_agent, self.source_agent, self.source, uri))
+            result.append(self.g_set.add_re(self.resp_agent, self.source, uri))
         return result
 
     @accepts_only('re')
@@ -229,7 +229,7 @@ class BibliographicResource(BibliographicEntity):
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_reference)
         result: List[BibliographicReference] = []
         for uri in uri_list:
-            result.append(self.g_set.add_be(self.resp_agent, self.source_agent, self.source, uri))
+            result.append(self.g_set.add_be(self.resp_agent, self.source, uri))
         return result
 
     @accepts_only('be')
@@ -251,7 +251,7 @@ class BibliographicResource(BibliographicEntity):
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_de)
         result: List[DiscourseElement] = []
         for uri in uri_list:
-            result.append(self.g_set.add_de(self.resp_agent, self.source_agent, self.source, uri))
+            result.append(self.g_set.add_de(self.resp_agent, self.source, uri))
         return result
 
     @accepts_only('de')
@@ -273,7 +273,7 @@ class BibliographicResource(BibliographicEntity):
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_document_context_for)
         result: List[AgentRole] = []
         for uri in uri_list:
-            result.append(self.g_set.add_ar(self.resp_agent, self.source_agent, self.source, uri))
+            result.append(self.g_set.add_ar(self.resp_agent, self.source, uri))
         return result
 
     @accepts_only('ar')

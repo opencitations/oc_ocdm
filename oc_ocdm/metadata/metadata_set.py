@@ -58,8 +58,8 @@ class MetadataSet(AbstractSet):
         if res in self.res_to_entity:
             return self.res_to_entity[res]
 
-    def add_dataset(self, dataset_name: str, resp_agent: str, source_agent: str = None, source: str = None,
-                    res: URIRef = None, preexisting_graph: Graph = None) -> Dataset:
+    def add_dataset(self, dataset_name: str, resp_agent: str, source: str = None, res: URIRef = None,
+                    preexisting_graph: Graph = None) -> Dataset:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         # Here we use a fictitious short name for Dataset, since the OCDM document doesn't specify
@@ -68,18 +68,16 @@ class MetadataSet(AbstractSet):
         cur_g, count, label = self._add_metadata(res, "_dataset_", dataset_name)
         return Dataset(cur_g, self.base_iri, dataset_name, self, res,
                        MetadataEntity.iri_dataset, resp_agent,
-                       source_agent, source, count, label, "_dataset_",
-                       preexisting_graph)
+                       source, count, label, "_dataset_", preexisting_graph)
 
-    def add_di(self, dataset_name: str, resp_agent: str, source_agent: str = None, source: str = None,
+    def add_di(self, dataset_name: str, resp_agent: str, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> Distribution:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         cur_g, count, label = self._add_metadata(res, "di", dataset_name)
         return Distribution(cur_g, self.base_iri, dataset_name, self, res,
                             MetadataEntity.iri_datafile, resp_agent,
-                            source_agent, source, count, label, "di",
-                            preexisting_graph)
+                            source, count, label, "di", preexisting_graph)
 
     def _add_metadata(self, res: URIRef, short_name: str,
                       dataset_name: str) -> Tuple[Graph, Optional[str], Optional[str]]:

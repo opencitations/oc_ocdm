@@ -55,14 +55,13 @@ class MetadataEntity(AbstractEntity):
 
     def __init__(self, g: Graph, base_iri: str, dataset_name: str, m_set: MetadataSet,
                  res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
-                 source_agent: str = None, source: str = None, count: str = None,
-                 label: str = None, short_name: str = "", preexisting_graph: Graph = None) -> None:
+                 source: str = None, count: str = None, label: str = None, short_name: str = "",
+                 preexisting_graph: Graph = None) -> None:
         super(MetadataEntity, self).__init__()
         self.g: Graph = g
         self.base_iri: str = base_iri
         self.dataset_name: str = dataset_name
         self.resp_agent: str = resp_agent
-        self.source_agent: str = source_agent
         self.source: str = source
         self.short_name: str = short_name
         self.m_set: MetadataSet = m_set

@@ -67,8 +67,7 @@ class ProvSet(AbstractSet):
         g_prov: str = str(prov_subject) + "/prov/"
         cur_g, count, label = self._add_prov(g_prov, res, "se", prov_subject)
         return EntitySnapshot(prov_subject, cur_g, self, res, prov_subject.resp_agent,
-                              prov_subject.source_agent, prov_subject.source,
-                              ProvEntity.iri_entity, count, label, "se")
+                              prov_subject.source, ProvEntity.iri_entity, count, label, "se")
 
     def _create_snapshot(self, cur_subj: GraphEntity, cur_time: str) -> EntitySnapshot:
         new_snapshot: EntitySnapshot = self.add_se(prov_subject=cur_subj)

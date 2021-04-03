@@ -177,7 +177,7 @@ class Dataset(MetadataEntity):
         uri_list: List[URIRef] = self._get_multiple_uri_references(MetadataEntity.iri_subset)
         result: List[Dataset] = []
         for uri in uri_list:
-            result.append(self.m_set.add_dataset(self.resp_agent, self.source_agent, self.source, uri))
+            result.append(self.m_set.add_dataset(self.resp_agent, self.source, uri))
         return result
 
     @accepts_only('_dataset_')
@@ -210,7 +210,7 @@ class Dataset(MetadataEntity):
         uri_list: List[URIRef] = self._get_multiple_uri_references(MetadataEntity.iri_distribution)
         result: List[Distribution] = []
         for uri in uri_list:
-            result.append(self.m_set.add_di(self.resp_agent, self.source_agent, self.source, uri))
+            result.append(self.m_set.add_di(self.resp_agent, self.source, uri))
         return result
 
     @accepts_only('di')

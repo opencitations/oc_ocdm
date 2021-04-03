@@ -78,7 +78,7 @@ class BibliographicReference(BibliographicEntity):
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_annotation)
         result: List[ReferenceAnnotation] = []
         for uri in uri_list:
-            result.append(self.g_set.add_an(self.resp_agent, self.source_agent, self.source, uri))
+            result.append(self.g_set.add_an(self.resp_agent, self.source, uri))
         return result
 
     @accepts_only('an')
@@ -99,7 +99,7 @@ class BibliographicReference(BibliographicEntity):
     def get_referenced_br(self) -> Optional[BibliographicResource]:
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_references)
         if uri is not None:
-            return self.g_set.add_br(self.resp_agent, self.source_agent, self.source, uri)
+            return self.g_set.add_br(self.resp_agent, self.source, uri)
 
     @accepts_only('br')
     def references_br(self, br_res: BibliographicResource) -> None:
