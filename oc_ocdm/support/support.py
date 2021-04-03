@@ -21,7 +21,11 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Optional, List, Tuple, Match
+    from typing import Optional, List, Tuple, Match, Dict
+    from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import BibliographicResource
+    from oc_ocdm.graph.entities.bibliographic.responsible_agent import ResponsibleAgent
+    from oc_ocdm.graph.entities.bibliographic.agent_role import AgentRole
+
 from urllib.parse import quote
 
 from rdflib import Literal, RDF, URIRef, XSD, Graph
@@ -59,6 +63,88 @@ def get_datatype_from_iso_8601(string: str) -> Tuple[URIRef, str]:
         return XSD.gYearMonth, datetime(*date_parts, 1).strftime('%Y-%m')
     else:
         return XSD.gYear, datetime(*date_parts, 1, 1).strftime('%Y')
+
+
+def get_ordered_contributors_from_br(br: BibliographicResource,
+                                     contributor_type: URIRef):
+
+    ar_list: List[AgentRole] = br.get_contributors()
+
+    list_id = 0
+    heads: Dict[URIRef, Dict] = {}
+    tails: Dict[URIRef, Dict] = {}
+    sub_lists: List[Dict] = []
+    from_id_to_res_in_heads: Dict[int, URIRef] = {}
+    for ar in ar_list:
+        role_type: URIRef = ar.get_role_type()
+        ra: ResponsibleAgent = ar.get_is_held_by()
+        next_ar: AgentRole = ar.get_next()
+        if next_ar is not None:
+            next_ar_res: Optional[URIRef] = next_ar.res
+        else:
+            next_ar_res: Optional[URIRef] = None
+
+        if role_type is not None and role_type == contributor_type and ra is not None:
+            if next_ar_res is not None and next_ar_res in heads:
+                sub_list = heads[next_ar_res]
+                sub_list['list'].insert(0, ra)
+                del heads[next_ar_res]
+                heads[ar.res] = sub_list
+                from_id_to_res_in_heads[sub_list['id']] = ar.res
+            elif ar.res is not None and ar.res in tails:
+                sub_list = tails[ar.res]
+                sub_list['list'].append(ra)
+                del tails[ar.res]
+
+                if next_ar_res is not None:
+                    tails[next_ar_res] = sub_list
+            else:
+                # This AR cannot be inserted into any list, so
+                # we need to create an entirely new list for it:
+                sub_list = {'id': list_id, 'list': [ra]}
+                list_id += 1
+                sub_lists.append(sub_list)
+
+                heads[ar.res] = sub_list
+                from_id_to_res_in_heads[sub_list['id']] = ar.res
+                if next_ar_res is not None:
+                    tails[next_ar_res] = sub_list
+
+    ids_in_heads = {val['id'] for val in heads.values()}
+    ids_in_tails = {val['id'] for val in tails.values()}
+    diff_set = ids_in_heads - ids_in_tails
+    if len(diff_set) != 1:
+        raise ValueError('A malformed list of AgentRole entities was given.')
+    else:
+        result_list = []
+        cur_id = diff_set.pop()
+        already_merged_list_ids = set()
+        finished = False
+        while not finished:
+            found = False
+            if cur_id in from_id_to_res_in_heads:
+                res = from_id_to_res_in_heads[cur_id]
+                subl = heads[res]
+                subl_id = subl['id']
+                if subl_id not in already_merged_list_ids:
+                    found = True
+                    already_merged_list_ids.add(subl_id)
+                    result_list = subl['list'] + result_list
+
+                    # Now we need to get the next cur_id value:
+                    if res in tails:
+                        cur_id = tails[res]['id']
+                    else:
+                        finished = True
+
+            if not found:
+                raise ValueError('A malformed list of AgentRole entities was given.')
+
+        unmerged_list_ids = ids_in_heads - already_merged_list_ids
+        if len(unmerged_list_ids) != 0:
+            raise ValueError('A malformed list of AgentRole entities was given.')
+
+        return result_list
 
 
 def encode_url(u: str) -> str:
