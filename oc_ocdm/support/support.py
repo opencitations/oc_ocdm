@@ -113,7 +113,10 @@ def get_ordered_contributors_from_br(br: BibliographicResource,
     ids_in_heads = {val['id'] for val in heads.values()}
     ids_in_tails = {val['id'] for val in tails.values()}
     diff_set = ids_in_heads - ids_in_tails
-    if len(diff_set) != 1:
+    if len(diff_set) == 0:
+        # No contributor was found!
+        return []
+    elif len(diff_set) != 1:
         raise ValueError('A malformed list of AgentRole entities was given.')
     else:
         result_list = []
