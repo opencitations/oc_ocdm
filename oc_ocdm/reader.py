@@ -31,7 +31,6 @@ from oc_ocdm.support.reporter import Reporter
 if TYPE_CHECKING:
     from typing import List, Set, Dict, Any, Optional
     from rdflib import URIRef, term
-    from rdflib.query import Result
     from oc_ocdm.graph.graph_set import GraphSet
 
 
@@ -280,10 +279,10 @@ class Reader(object):
         sparql: SPARQLWrapper = SPARQLWrapper(ts_url)
         query: str = f"CONSTRUCT {{<{res}> ?p ?o}} WHERE {{<{res}> ?p ?o}}"
         sparql.setQuery(query)
-        sparql.setMethod('POST')
+        sparql.setMethod('GET')
         sparql.setReturnFormat(RDFXML)
 
-        result: Result = sparql.query().convert()
+        result: ConjunctiveGraph = sparql.query().convert()
         if result is not None:
             imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(g_set, result,
                                                                                      resp_agent, enable_validation)

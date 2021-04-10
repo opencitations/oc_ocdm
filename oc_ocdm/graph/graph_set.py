@@ -25,7 +25,7 @@ from oc_ocdm.support.support import get_count
 
 if TYPE_CHECKING:
     from typing import Dict, ClassVar, Tuple, Optional, List
-    from rdflib.query import Result
+    from rdflib import ConjunctiveGraph
 
 from rdflib import Graph, Namespace, URIRef
 
@@ -226,10 +226,10 @@ class GraphSet(AbstractSet):
             if entity.to_be_deleted:
                 query: str = f"CONSTRUCT {{?s ?p ?o}} WHERE {{?s ?p ?o ; ?p_1 <{entity_res}>}}"
                 sparql.setQuery(query)
-                sparql.setMethod('POST')
+                sparql.setMethod('GET')
                 sparql.setReturnFormat(RDFXML)
 
-                result: Result = sparql.query().convert()
+                result: ConjunctiveGraph = sparql.query().convert()
                 if result is not None:
                     imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(self, result, resp_agent)
                     for imported_entity in imported_entities:
