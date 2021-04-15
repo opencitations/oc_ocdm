@@ -164,7 +164,7 @@ class Storer(object):
             if isinstance(entity, ProvEntity):
                 quads: List[Tuple] = []
                 graph_identifier: URIRef = entity.g.identifier
-                for triple in entity.g.triples((None, None, None)):
+                for triple in entity.g.triples((entity.res, None, None)):
                     quads.append((*triple, graph_identifier))
                 stored_g.addN(quads)
             elif isinstance(entity, GraphEntity) or isinstance(entity, MetadataEntity):
@@ -184,7 +184,7 @@ class Storer(object):
                     """
                     quads: List[Tuple] = []
                     graph_identifier: URIRef = entity.g.identifier
-                    for triple in entity.g.triples((None, None, None)):
+                    for triple in entity.g.triples((entity.res, None, None)):
                         quads.append((*triple, graph_identifier))
                     stored_g.addN(quads)
 

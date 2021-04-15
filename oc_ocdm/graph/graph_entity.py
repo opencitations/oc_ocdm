@@ -195,7 +195,7 @@ class GraphEntity(AbstractEntity):
             # It's fundamental that the preexisting graph gets passed as an argument of the constructor:
             # allowing the user to set this value later through a method would mean that the user could
             # set the preexisting graph AFTER having modified self.g (which would not make sense).
-            self.g.remove((None, None, None))
+            self.remove_every_triple()
             for p, o in preexisting_graph.predicate_objects(self.res):
                 self.g.add((self.res, p, o))
                 self.preexisting_graph.add((self.res, p, o))
@@ -242,7 +242,7 @@ class GraphEntity(AbstractEntity):
         if self._to_be_deleted:
             self.remove_every_triple()
         else:
-            for triple in self.g.triples((None, None, None)):
+            for triple in self.g.triples((self.res, None, None)):
                 self.preexisting_graph.add(triple)
         self._to_be_deleted = False
         self._was_merged = False
