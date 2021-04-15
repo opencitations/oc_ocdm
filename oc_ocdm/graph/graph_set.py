@@ -24,7 +24,7 @@ from oc_ocdm.abstract_set import AbstractSet
 from oc_ocdm.support.support import get_count
 
 if TYPE_CHECKING:
-    from typing import Dict, ClassVar, Tuple, Optional, List
+    from typing import Dict, ClassVar, Tuple, Optional, List, Set
     from rdflib import ConjunctiveGraph
 
 from rdflib import Graph, Namespace, URIRef
@@ -219,7 +219,24 @@ class GraphSet(AbstractSet):
 
         return cur_g, count, label
 
-    def sync_with_triplestore(self, ts_url: str, resp_agent: str) -> None:
+    def get_orphans(self) -> List[GraphEntity]:
+        full_set_of_entities: Set[URIRef] = set(self.res_to_entity.keys())
+        referenced_entities: Set[URIRef] = set()
+        for res, entity in self.res_to_entity.items():
+            for obj in entity.g.objects(subject=res, predicate=None):
+                if type(obj) == URIRef:
+                    referenced_entities.add(obj)
+        set_of_orphan_res: Set[URIRef] = full_set_of_entities - referenced_entities
+
+        result_list: List[GraphEntity] = []
+        for orphan_res in set_of_orphan_res:
+            entity: Optional[GraphEntity] = self.get_entity(orphan_res)
+            if entity is not None:
+                result_list.append(entity)
+
+        return result_list
+
+    def remove_orphans_from_triplestore(self, ts_url: str, resp_agent: str) -> None:
         sparql: SPARQLWrapper = SPARQLWrapper(ts_url)
 
         for entity_res, entity in self.res_to_entity.items():
