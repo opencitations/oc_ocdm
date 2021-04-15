@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING
 from oc_ocdm.decorators import accepts_only
 
 if TYPE_CHECKING:
-    from typing import List
+    from typing import List, Dict, Optional
     from rdflib import URIRef
     from oc_ocdm.graph.entities.identifier import Identifier
 from oc_ocdm.graph.graph_entity import GraphEntity
@@ -37,9 +37,15 @@ class BibliographicEntity(GraphEntity):
 
     def merge(self, other: BibliographicEntity) -> None:
         super(BibliographicEntity, self).merge(other)
+
         id_list: List[Identifier] = other.get_identifiers()
         for cur_id in id_list:
             self.has_identifier(cur_id)
+
+        # The special semantics associated to the identifiers
+        # of a bibliographic entity requires them to be uniquely
+        # defined based on their scheme and literal value:
+        self.remove_duplicated_identifiers()
 
     # HAS IDENTIFIER
     def get_identifiers(self) -> List[Identifier]:
@@ -63,3 +69,30 @@ class BibliographicEntity(GraphEntity):
             self.g.remove((self.res, GraphEntity.iri_has_identifier, id_res.res))
         else:
             self.g.remove((self.res, GraphEntity.iri_has_identifier, None))
+
+    def remove_duplicated_identifiers(self) -> None:
+        # Identifiers should be merged based on the
+        # correspondence between both their scheme and literal value!
+        id_list: List[Identifier] = self.get_identifiers()
+        # We remove every identifier from 'self': only unique ones
+        # will be re-associated with 'self'.
+        self.remove_identifier()
+
+        # We use a nested dictionary which associates the 'schema-literal_value'
+        # pair to the corresponding identifier object
+        # (ex. id_dict[ISSN][1234-5678] <- base_iri:id/34).
+        id_dict: Dict[URIRef, Dict[str, Identifier]] = {}
+        for identifier in id_list:
+            schema: Optional[URIRef] = identifier.get_scheme()
+            literal_value: Optional[str] = identifier.get_literal_value()
+            if schema is not None and literal_value is not None:
+                if schema not in id_dict:
+                    id_dict[schema] = {literal_value: identifier}
+                    self.has_identifier(identifier)  # the Identifier is kept!
+                else:
+                    if literal_value not in id_dict[schema]:
+                        id_dict[schema][literal_value] = identifier
+                        self.has_identifier(identifier)  # the Identifier is kept!
+                    else:
+                        id_to_be_kept: Identifier = id_dict[schema][literal_value]
+                        id_to_be_kept.merge(identifier)  # the Identifier is dropped!
