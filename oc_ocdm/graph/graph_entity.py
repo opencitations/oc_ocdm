@@ -221,10 +221,26 @@ class GraphEntity(AbstractEntity):
     def merge_list(self) -> Tuple[GraphEntity]:
         return self._merge_list
 
-    def mark_as_to_be_deleted(self, to_be_deleted: bool = True) -> None:
-        self._to_be_deleted = to_be_deleted
+    def mark_as_to_be_deleted(self) -> None:
+        # Here we must REMOVE triples pointing
+        # to 'self' [THIS CANNOT BE UNDONE]:
+        for res, entity in self.g_set.res_to_entity.items():
+            triples_list: List[Tuple] = list(entity.g.triples((res, None, self.res)))
+            for triple in triples_list:
+                entity.g.remove(triple)
+
+        self._to_be_deleted = True
 
     def merge(self, other: GraphEntity) -> None:
+        # Here we must REDIRECT triples pointing
+        # to 'other' to make them point to 'self':
+        for res, entity in self.g_set.res_to_entity.items():
+            triples_list: List[Tuple] = list(entity.g.triples((res, None, other.res)))
+            for triple in triples_list:
+                entity.g.remove(triple)
+                new_triple = (triple[0], triple[1], self.res)
+                entity.g.add(new_triple)
+
         types: List[URIRef] = other.get_types()
         for cur_type in types:
             self._create_type(cur_type)
@@ -234,8 +250,12 @@ class GraphEntity(AbstractEntity):
             self.create_label(label)
 
         self._was_merged = True
-        other.mark_as_to_be_deleted()
         self._merge_list = (*self._merge_list, other)
+
+        # 'other' must be deleted AFTER the redirection of
+        # triples pointing to it, since mark_as_to_be_deleted
+        # also removes every triple pointing to 'other'
+        other.mark_as_to_be_deleted()
 
     def commit_changes(self):
         self.preexisting_graph = Graph(identifier=self.g.identifier)
