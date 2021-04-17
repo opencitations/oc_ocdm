@@ -137,6 +137,38 @@ class TestGraphSet(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertEqual(iri, result)
 
+    def test_get_orphans(self):
+        br = self.graph_set.add_br(self.__class__.__name__)
+        ar = self.graph_set.add_ar(self.__class__.__name__)
+        ra = self.graph_set.add_ra(self.__class__.__name__)
+
+        with self.subTest("subtest 1"):
+            orphans = self.graph_set.get_orphans()
+            self.assertIsNotNone(orphans)
+
+            orphans_set = {o.res for o in orphans}
+            self.assertSetEqual({br.res, ar.res, ra.res}, orphans_set)
+
+        with self.subTest("subtest 2"):
+            # Here we link br and ar:
+            br.has_contributor(ar)
+
+            orphans = self.graph_set.get_orphans()
+            self.assertIsNotNone(orphans)
+
+            orphans_set = {o.res for o in orphans}
+            self.assertSetEqual({br.res, ra.res}, orphans_set)
+
+        with self.subTest("subtest 3"):
+            # Here we link ar and ra:
+            ar.is_held_by(ra)
+
+            orphans = self.graph_set.get_orphans()
+            self.assertIsNotNone(orphans)
+
+            orphans_set = {o.res for o in orphans}
+            self.assertSetEqual({br.res}, orphans_set)
+
 
 if __name__ == '__main__':
     unittest.main()
