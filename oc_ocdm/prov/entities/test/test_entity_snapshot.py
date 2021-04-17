@@ -23,13 +23,15 @@ from oc_ocdm.prov.prov_set import ProvSet
 
 
 class TestProvEntity(unittest.TestCase):
+    resp_agent = 'http://resp_agent.test/'
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
         cls.prov_set = ProvSet(cls.graph_set, "http://test/", "./info_dir/", False)
 
     def setUp(self):
-        self.prov_subject = self.graph_set.add_br(self.__class__.__name__)
+        self.prov_subject = self.graph_set.add_br(self.resp_agent)
         self.se = self.prov_set.add_se(self.prov_subject)
         self.prev_se = self.prov_set.add_se(self.prov_subject)
 
@@ -54,7 +56,7 @@ class TestProvEntity(unittest.TestCase):
         self.assertIn(triple, self.se.g)
 
     def test_is_snapshot_of(self):
-        ar = self.graph_set.add_ar(self.__class__.__name__)
+        ar = self.graph_set.add_ar(self.resp_agent)
         result = self.se.is_snapshot_of(self.prov_subject)
         self.assertIsNone(result)
 

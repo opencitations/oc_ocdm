@@ -22,12 +22,14 @@ from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestResourceEmbodiment(unittest.TestCase):
+    resp_agent = 'http://resp_agent.test/'
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
 
     def setUp(self):
-        self.re = self.graph_set.add_re(self.__class__.__name__)
+        self.re = self.graph_set.add_re(self.resp_agent)
 
     def test_has_media_type(self):
         media_type = URIRef("http://test/MediaType")

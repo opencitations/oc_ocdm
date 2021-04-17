@@ -22,15 +22,17 @@ from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestDiscourseElement(unittest.TestCase):
+    resp_agent = 'http://resp_agent.test/'
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
 
     def setUp(self):
-        self.rp = self.graph_set.add_rp(self.__class__.__name__)
-        self.pl = self.graph_set.add_pl(self.__class__.__name__)
-        self.de1 = self.graph_set.add_de(self.__class__.__name__)
-        self.de2 = self.graph_set.add_de(self.__class__.__name__)
+        self.rp = self.graph_set.add_rp(self.resp_agent)
+        self.pl = self.graph_set.add_pl(self.resp_agent)
+        self.de1 = self.graph_set.add_de(self.resp_agent)
+        self.de2 = self.graph_set.add_de(self.resp_agent)
 
     def test_has_title(self):
         title = "DiscourseElement"

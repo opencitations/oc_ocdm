@@ -22,12 +22,14 @@ from oc_ocdm.metadata.metadata_entity import MetadataEntity
 
 
 class TestBibliographicResource(unittest.TestCase):
+    resp_agent = 'http://resp_agent.test/'
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.metadata_set = MetadataSet("http://test/", "./info_dir/", False)
 
     def setUp(self):
-        self.di = self.metadata_set.add_di("ocdmTest", self.__class__.__name__)
+        self.di = self.metadata_set.add_di("ocdmTest", self.resp_agent)
 
     def test_has_title(self):
         title = "Resource"

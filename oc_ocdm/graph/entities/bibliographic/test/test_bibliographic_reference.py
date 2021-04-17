@@ -22,14 +22,16 @@ from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestBibliographicReference(unittest.TestCase):
+    resp_agent = 'http://resp_agent.test/'
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
 
     def setUp(self):
-        self.be = self.graph_set.add_be(self.__class__.__name__)
-        self.br = self.graph_set.add_br(self.__class__.__name__)
-        self.an = self.graph_set.add_an(self.__class__.__name__)
+        self.be = self.graph_set.add_be(self.resp_agent)
+        self.br = self.graph_set.add_br(self.resp_agent)
+        self.an = self.graph_set.add_an(self.resp_agent)
 
     def test_has_content(self):
         content = "Content"

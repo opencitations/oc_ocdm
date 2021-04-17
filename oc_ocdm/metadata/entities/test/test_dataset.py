@@ -22,14 +22,16 @@ from oc_ocdm.metadata.metadata_entity import MetadataEntity
 
 
 class TestDataset(unittest.TestCase):
+    resp_agent = 'http://resp_agent.test/'
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.metadata_set = MetadataSet("http://test/", "./info_dir/", False)
 
     def setUp(self):
-        self.dataset = self.metadata_set.add_dataset("ocdmTest", self.__class__.__name__)
-        self.sub_dataset = self.metadata_set.add_dataset("subDataset", self.__class__.__name__)
-        self.di = self.metadata_set.add_di("ocdmTest", self.__class__.__name__)
+        self.dataset = self.metadata_set.add_dataset("ocdmTest", self.resp_agent)
+        self.sub_dataset = self.metadata_set.add_dataset("subDataset", self.resp_agent)
+        self.di = self.metadata_set.add_di("ocdmTest", self.resp_agent)
 
     def test_has_title(self):
         title = "Resource"

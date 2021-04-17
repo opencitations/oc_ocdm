@@ -22,13 +22,15 @@ from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestResponsibleAgent(unittest.TestCase):
+    resp_agent = 'http://resp_agent.test/'
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
 
     def setUp(self):
-        self.ra = self.graph_set.add_ra(self.__class__.__name__)
-        self.ar = self.graph_set.add_ar(self.__class__.__name__)
+        self.ra = self.graph_set.add_ra(self.resp_agent)
+        self.ar = self.graph_set.add_ar(self.resp_agent)
 
     def test_has_name(self):
         name = "Name"

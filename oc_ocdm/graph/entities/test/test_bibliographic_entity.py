@@ -22,13 +22,15 @@ from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestBibliographicEntity(unittest.TestCase):
+    resp_agent = 'http://resp_agent.test/'
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
 
     def setUp(self):
-        self.entity = self.graph_set.add_ar(self.__class__.__name__)
-        self.identifier = self.graph_set.add_id(self.__class__.__name__)
+        self.entity = self.graph_set.add_ar(self.resp_agent)
+        self.identifier = self.graph_set.add_id(self.resp_agent)
 
     def test_has_identifier(self):
         result = self.entity.has_identifier(self.identifier)
@@ -38,10 +40,10 @@ class TestBibliographicEntity(unittest.TestCase):
         self.assertIn(triple, self.entity.g)
 
     def test_remove_duplicated_identifiers(self):
-        id1 = self.graph_set.add_id(self.__class__.__name__)
-        id2 = self.graph_set.add_id(self.__class__.__name__)
-        id3 = self.graph_set.add_id(self.__class__.__name__)
-        id4 = self.graph_set.add_id(self.__class__.__name__)
+        id1 = self.graph_set.add_id(self.resp_agent)
+        id2 = self.graph_set.add_id(self.resp_agent)
+        id3 = self.graph_set.add_id(self.resp_agent)
+        id4 = self.graph_set.add_id(self.resp_agent)
 
         id1.create_issn('1111-2222')
         id2.create_doi('1111-2222')

@@ -20,15 +20,17 @@ from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestReferenceAnnotation(unittest.TestCase):
+    resp_agent = 'http://resp_agent.test/'
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
 
     def setUp(self):
-        self.an = self.graph_set.add_an(self.__class__.__name__)
-        self.br1 = self.graph_set.add_br(self.__class__.__name__)
-        self.br2 = self.graph_set.add_br(self.__class__.__name__)
-        self.ci = self.graph_set.add_ci(self.__class__.__name__)
+        self.an = self.graph_set.add_an(self.resp_agent)
+        self.br1 = self.graph_set.add_br(self.resp_agent)
+        self.br2 = self.graph_set.add_br(self.resp_agent)
+        self.ci = self.graph_set.add_ci(self.resp_agent)
 
     def test_has_body_annotation(self):
         result = self.an.has_body_annotation(self.ci)

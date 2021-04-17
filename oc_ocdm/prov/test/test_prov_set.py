@@ -23,13 +23,14 @@ from oc_ocdm.prov.entities.entity_snapshot import EntitySnapshot
 
 
 class TestProvSet(unittest.TestCase):
+    resp_agent = 'http://resp_agent.test/'
 
     def setUp(self):
         self.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
         self.prov_set = ProvSet(self.graph_set, "http://test/", "./info_dir/", False)
 
     def test_add_se(self):
-        prov_subj = self.graph_set.add_br(self.__class__.__name__)
+        prov_subj = self.graph_set.add_br(self.resp_agent)
         se = self.prov_set.add_se(prov_subj)
 
         self.assertIsNotNone(se)
@@ -41,8 +42,8 @@ class TestProvSet(unittest.TestCase):
         cur_time_str = '2020-12-07T22:17:39'
 
         with self.subTest('Creation [Merged entity]'):
-            a = self.graph_set.add_br(self.__class__.__name__)
-            b = self.graph_set.add_br(self.__class__.__name__)
+            a = self.graph_set.add_br(self.resp_agent)
+            b = self.graph_set.add_br(self.resp_agent)
             a.merge(b)
 
             result = self.prov_set.generate_provenance(cur_time)
@@ -60,8 +61,8 @@ class TestProvSet(unittest.TestCase):
 
             self.assertEqual(f"The entity '{a.res}' has been created.", se_a.get_description())
         with self.subTest('No snapshot [Merged entity]'):
-            a = self.graph_set.add_br(self.__class__.__name__)
-            b = self.graph_set.add_br(self.__class__.__name__)
+            a = self.graph_set.add_br(self.resp_agent)
+            b = self.graph_set.add_br(self.resp_agent)
             a.merge(b)
             se_a_1 = self.prov_set.add_se(a)
 
@@ -76,8 +77,8 @@ class TestProvSet(unittest.TestCase):
             self.assertIsNone(se_a_2)
         with self.subTest('Modification [Merged entity]'):
             title = "TEST TITLE"
-            a = self.graph_set.add_br(self.__class__.__name__)
-            b = self.graph_set.add_br(self.__class__.__name__)
+            a = self.graph_set.add_br(self.resp_agent)
+            b = self.graph_set.add_br(self.resp_agent)
             b.has_title(title)
             a.merge(b)
             se_a_1 = self.prov_set.add_se(a)
@@ -101,9 +102,9 @@ class TestProvSet(unittest.TestCase):
             self.assertIsNotNone(se_a_2.get_update_action())
             self.assertEqual(f"The entity '{a.res}' has been modified.", se_a_2.get_description())
         with self.subTest('Merge [Merged entity]'):
-            a = self.graph_set.add_br(self.__class__.__name__)
-            b = self.graph_set.add_br(self.__class__.__name__)
-            c = self.graph_set.add_br(self.__class__.__name__)
+            a = self.graph_set.add_br(self.resp_agent)
+            b = self.graph_set.add_br(self.resp_agent)
+            c = self.graph_set.add_br(self.resp_agent)
             a.merge(b)
             a.merge(c)
             se_a_1 = self.prov_set.add_se(a)
@@ -127,7 +128,7 @@ class TestProvSet(unittest.TestCase):
             self.assertSetEqual({se_a_1, se_b_1}, set(se_a_2.get_derives_from()))
             self.assertEqual(f"The entity '{a.res}' has been merged with '{b.res}'.", se_a_2.get_description())
         with self.subTest('Creation [Non-Merged entity]'):
-            a = self.graph_set.add_br(self.__class__.__name__)
+            a = self.graph_set.add_br(self.resp_agent)
 
             result = self.prov_set.generate_provenance(cur_time)
             self.assertIsNone(result)
@@ -144,7 +145,7 @@ class TestProvSet(unittest.TestCase):
 
             self.assertEqual(f"The entity '{a.res}' has been created.", se_a.get_description())
         with self.subTest('No snapshot [Non-Merged entity] (Scenario 1)'):
-            a = self.graph_set.add_br(self.__class__.__name__)
+            a = self.graph_set.add_br(self.resp_agent)
             a.mark_as_to_be_deleted()
 
             result = self.prov_set.generate_provenance(cur_time)
@@ -153,7 +154,7 @@ class TestProvSet(unittest.TestCase):
             se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
             self.assertIsNone(se_a)
         with self.subTest('No snapshot [Merged entity] (Scenario 2)'):
-            a = self.graph_set.add_br(self.__class__.__name__)
+            a = self.graph_set.add_br(self.resp_agent)
             se_a_1 = self.prov_set.add_se(a)
 
             # This avoids that the presence of the mandatory rdf:type gets interpreted
@@ -166,7 +167,7 @@ class TestProvSet(unittest.TestCase):
             se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
             self.assertIsNone(se_a_2)
         with self.subTest('Deletion [Non-Merged entity]'):
-            a = self.graph_set.add_br(self.__class__.__name__)
+            a = self.graph_set.add_br(self.resp_agent)
             se_a_1 = self.prov_set.add_se(a)
             a.has_title('ciao')
             a.mark_as_to_be_deleted()
@@ -190,7 +191,7 @@ class TestProvSet(unittest.TestCase):
             self.assertEqual(f"The entity '{a.res}' has been deleted.", se_a_2.get_description())
         with self.subTest('Modification [Non-Merged entity]'):
             title = "TEST TITLE"
-            a = self.graph_set.add_br(self.__class__.__name__)
+            a = self.graph_set.add_br(self.resp_agent)
             se_a_1 = self.prov_set.add_se(a)
             a.has_title(title)
 
@@ -214,7 +215,7 @@ class TestProvSet(unittest.TestCase):
             self.assertEqual(f"The entity '{a.res}' has been modified.", se_a_2.get_description())
 
     def test_retrieve_last_snapshot(self):
-        br = self.graph_set.add_br(self.__class__.__name__)
+        br = self.graph_set.add_br(self.resp_agent)
         br_res = br.res
         result = self.prov_set._retrieve_last_snapshot(br_res)
         self.assertIsNone(result)

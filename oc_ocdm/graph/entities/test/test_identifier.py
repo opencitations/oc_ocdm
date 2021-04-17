@@ -22,12 +22,14 @@ from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestIdentifier(unittest.TestCase):
+    resp_agent = 'http://resp_agent.test/'
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
 
     def setUp(self):
-        self.id = self.graph_set.add_id(self.__class__.__name__)
+        self.id = self.graph_set.add_id(self.resp_agent)
 
     def test_create_orcid(self):
         orcid = "abcdefghi"
