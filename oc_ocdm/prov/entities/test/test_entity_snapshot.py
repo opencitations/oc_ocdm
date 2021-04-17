@@ -26,7 +26,7 @@ class TestProvEntity(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
-        cls.prov_set = ProvSet(cls.graph_set, "http://test/", "./info_dir/", "070", False)
+        cls.prov_set = ProvSet(cls.graph_set, "http://test/", "./info_dir/", False)
 
     def setUp(self):
         self.prov_subject = self.graph_set.add_br(self.__class__.__name__)

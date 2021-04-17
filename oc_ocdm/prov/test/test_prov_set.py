@@ -26,7 +26,7 @@ class TestProvSet(unittest.TestCase):
 
     def setUp(self):
         self.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
-        self.prov_set = ProvSet(self.graph_set, "http://test/", "./info_dir/", "070", False)
+        self.prov_set = ProvSet(self.graph_set, "http://test/", "./info_dir/", False)
 
     def test_add_se(self):
         prov_subj = self.graph_set.add_br(self.__class__.__name__)

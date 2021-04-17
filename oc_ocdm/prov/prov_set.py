@@ -43,13 +43,12 @@ class ProvSet(AbstractSet):
     }
 
     def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, info_dir: str = "",
-                 supplier_prefix: str = "", wanted_label: bool = True) -> None:
+                 wanted_label: bool = True) -> None:
         super(ProvSet, self).__init__()
         self.prov_g: GraphSet = prov_subj_graph_set
         # The following variable maps a URIRef with the related provenance entity
         self.res_to_entity: Dict[URIRef, ProvEntity] = {}
         self.base_iri: str = base_iri
-        self.supplier_prefix: str = supplier_prefix
         self.wanted_label: bool = wanted_label
 
         if info_dir is not None and info_dir != "":
