@@ -205,7 +205,7 @@ class Storer(object):
 
         # If some graphs were not stored properly, then no one will be uploaded to the triplestore
         # Anyway, we should highlight those ones that could have been added in principle, by
-        # mentioning them with a ".notupdloaded" marker
+        # mentioning them with a ".notuploaded" marker
         if None in stored_graph_path:
             for file_path in stored_graph_path:
                 if file_path is not None:
@@ -219,8 +219,7 @@ class Storer(object):
 
     def _dir_and_file_paths(self, res: URIRef, base_dir: str, base_iri: str) -> Tuple[str, str]:
         is_json: bool = (self.output_format == "json-ld")
-        return find_paths(
-            str(res), base_dir, base_iri, self.default_dir, self.dir_split, self.n_file_item, is_json=is_json)
+        return find_paths(res, base_dir, base_iri, self.default_dir, self.dir_split, self.n_file_item, is_json=is_json)
 
     @staticmethod
     def _class_to_entity_type(entity: AbstractEntity) -> Optional[str]:

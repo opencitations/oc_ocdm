@@ -21,20 +21,21 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Optional, List, Tuple, Match, Dict
+    from typing import Optional, List, Tuple, Match, Dict, Set
+    from rdflib import URIRef, Graph
     from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import BibliographicResource
     from oc_ocdm.graph.entities.bibliographic.responsible_agent import ResponsibleAgent
     from oc_ocdm.graph.entities.bibliographic.agent_role import AgentRole
 
 from urllib.parse import quote
 
-from rdflib import Literal, RDF, URIRef, XSD, Graph
+from rdflib import Literal, RDF, XSD
 
 
 def create_date(date_list: List[Optional[int]] = None) -> Optional[str]:
-    string = None
+    string: Optional[str] = None
     if date_list is not None:
-        l_date_list = len(date_list)
+        l_date_list: int = len(date_list)
         if l_date_list != 0 and date_list[0] is not None:
             if l_date_list == 3 and \
                     ((date_list[1] is not None and date_list[1] != 1) or
@@ -70,7 +71,7 @@ def get_ordered_contributors_from_br(br: BibliographicResource,
 
     ar_list: List[AgentRole] = br.get_contributors()
 
-    list_id = 0
+    list_id: int = 0
     heads: Dict[URIRef, Dict] = {}
     tails: Dict[URIRef, Dict] = {}
     sub_lists: List[Dict] = []
@@ -86,13 +87,13 @@ def get_ordered_contributors_from_br(br: BibliographicResource,
 
         if role_type is not None and role_type == contributor_type and ra is not None:
             if next_ar_res is not None and next_ar_res in heads:
-                sub_list = heads[next_ar_res]
+                sub_list: Dict = heads[next_ar_res]
                 sub_list['list'].insert(0, ra)
                 del heads[next_ar_res]
                 heads[ar.res] = sub_list
                 from_id_to_res_in_heads[sub_list['id']] = ar.res
             elif ar.res is not None and ar.res in tails:
-                sub_list = tails[ar.res]
+                sub_list: Dict = tails[ar.res]
                 sub_list['list'].append(ra)
                 del tails[ar.res]
 
@@ -101,7 +102,7 @@ def get_ordered_contributors_from_br(br: BibliographicResource,
             else:
                 # This AR cannot be inserted into any list, so
                 # we need to create an entirely new list for it:
-                sub_list = {'id': list_id, 'list': [ra]}
+                sub_list: Dict = {'id': list_id, 'list': [ra]}
                 list_id += 1
                 sub_lists.append(sub_list)
 
@@ -110,25 +111,25 @@ def get_ordered_contributors_from_br(br: BibliographicResource,
                 if next_ar_res is not None:
                     tails[next_ar_res] = sub_list
 
-    ids_in_heads = {val['id'] for val in heads.values()}
-    ids_in_tails = {val['id'] for val in tails.values()}
-    diff_set = ids_in_heads - ids_in_tails
+    ids_in_heads: Set[int] = {val['id'] for val in heads.values()}
+    ids_in_tails: Set[int] = {val['id'] for val in tails.values()}
+    diff_set: Set[int] = ids_in_heads - ids_in_tails
     if len(diff_set) == 0:
         # No contributor was found!
         return []
     elif len(diff_set) != 1:
         raise ValueError('A malformed list of AgentRole entities was given.')
     else:
-        result_list = []
-        cur_id = diff_set.pop()
-        already_merged_list_ids = set()
-        finished = False
+        result_list: List[ResponsibleAgent] = []
+        cur_id: int = diff_set.pop()
+        already_merged_list_ids: Set[int] = set()
+        finished: bool = False
         while not finished:
-            found = False
+            found: bool = False
             if cur_id in from_id_to_res_in_heads:
-                res = from_id_to_res_in_heads[cur_id]
-                subl = heads[res]
-                subl_id = subl['id']
+                res: URIRef = from_id_to_res_in_heads[cur_id]
+                subl: Dict = heads[res]
+                subl_id: int = subl['id']
                 if subl_id not in already_merged_list_ids:
                     found = True
                     already_merged_list_ids.add(subl_id)
@@ -143,7 +144,7 @@ def get_ordered_contributors_from_br(br: BibliographicResource,
             if not found:
                 raise ValueError('A malformed list of AgentRole entities was given.')
 
-        unmerged_list_ids = ids_in_heads - already_merged_list_ids
+        unmerged_list_ids: Set[int] = ids_in_heads - already_merged_list_ids
         if len(unmerged_list_ids) != 0:
             raise ValueError('A malformed list of AgentRole entities was given.')
 
@@ -155,9 +156,8 @@ def encode_url(u: str) -> str:
 
 
 def create_literal(g: Graph, res: URIRef, p: URIRef, s: str, dt: URIRef = None, nor: bool = True) -> None:
-    string = s
-    if not is_string_empty(string):
-        g.add((res, p, Literal(string, datatype=dt, normalize=nor)))
+    if not is_string_empty(s):
+        g.add((res, p, Literal(s, datatype=dt, normalize=nor)))
 
 
 def create_type(g: Graph, res: URIRef, res_type: URIRef) -> None:
@@ -182,7 +182,7 @@ def _get_match(regex: str, group: int, string: str) -> str:
 
 
 def get_base_iri(res: URIRef) -> str:
-    string_iri = str(res)
+    string_iri: str = str(res)
     if "/prov/" in string_iri:
         return _get_match(prov_regex, 1, string_iri)
     else:
@@ -190,7 +190,7 @@ def get_base_iri(res: URIRef) -> str:
 
 
 def get_short_name(res: URIRef) -> str:
-    string_iri = str(res)
+    string_iri: str = str(res)
     if "/prov/" in string_iri:
         return _get_match(prov_regex, 5, string_iri)
     else:
@@ -198,7 +198,7 @@ def get_short_name(res: URIRef) -> str:
 
 
 def get_prov_subject_short_name(prov_res: URIRef) -> str:
-    string_iri = str(prov_res)
+    string_iri: str = str(prov_res)
     if "/prov/" in string_iri:
         return _get_match(prov_regex, 2, string_iri)
     else:
@@ -206,7 +206,7 @@ def get_prov_subject_short_name(prov_res: URIRef) -> str:
 
 
 def get_prefix(res: URIRef) -> str:
-    string_iri = str(res)
+    string_iri: str = str(res)
     if "/prov/" in string_iri:
         return ""  # provenance entities cannot have a supplier prefix
     else:
@@ -214,7 +214,7 @@ def get_prefix(res: URIRef) -> str:
 
 
 def get_prov_subject_prefix(prov_res: URIRef) -> str:
-    string_iri = str(prov_res)
+    string_iri: str = str(prov_res)
     if "/prov/" in string_iri:
         return _get_match(prov_regex, 3, string_iri)
     else:
@@ -222,7 +222,7 @@ def get_prov_subject_prefix(prov_res: URIRef) -> str:
 
 
 def get_count(res: URIRef) -> str:
-    string_iri = str(res)
+    string_iri: str = str(res)
     if "/prov/" in string_iri:
         return _get_match(prov_regex, 6, string_iri)
     else:
@@ -230,14 +230,15 @@ def get_count(res: URIRef) -> str:
 
 
 def get_prov_subject_count(prov_res: URIRef) -> str:
-    string_iri = str(prov_res)
+    string_iri: str = str(prov_res)
     if "/prov/" in string_iri:
         return _get_match(prov_regex, 4, string_iri)
     else:
         return ""  # non-provenance entities do not have a prov_subject!
 
 
-def get_resource_number(string_iri: str) -> int:
+def get_resource_number(res: URIRef) -> int:
+    string_iri: str = str(res)
     if "/prov/" in string_iri:
         return int(_get_match(prov_regex, 4, string_iri))
     else:
@@ -245,9 +246,9 @@ def get_resource_number(string_iri: str) -> int:
 
 
 def find_local_line_id(res: URIRef, n_file_item: int = 1) -> int:
-    cur_number = get_resource_number(str(res))
+    cur_number: int = get_resource_number(res)
 
-    cur_file_split = 0
+    cur_file_split: int = 0
     while True:
         if cur_number > cur_file_split:
             cur_file_split += n_file_item
@@ -258,7 +259,7 @@ def find_local_line_id(res: URIRef, n_file_item: int = 1) -> int:
     return cur_number - cur_file_split
 
 
-def find_paths(string_iri: str, base_dir: str, base_iri: str, default_dir: str, dir_split: int,
+def find_paths(res: URIRef, base_dir: str, base_iri: str, default_dir: str, dir_split: int,
                n_file_item: int, is_json: bool = True) -> Tuple[str, str]:
     """
     This function is responsible for looking for the correct JSON file that contains the data related to the
@@ -266,21 +267,23 @@ def find_paths(string_iri: str, base_dir: str, base_iri: str, default_dir: str, 
     directories and files, as well as the particular supplier prefix for bibliographic entities, if specified.
     In case no supplier prefix is specified, the 'default_dir' (usually set to "_") is used instead.
     """
-    if is_json:
-        format_string = ".json"
-    else:
-        format_string = ".ttl"
+    string_iri: str = str(res)
 
-    if is_dataset(string_iri):
-        cur_dir_path = (base_dir + re.sub(r"^%s(.*)$" % base_iri, r"\1", string_iri))[:-1]
+    if is_json:
+        format_string: str = ".json"
+    else:
+        format_string: str = ".ttl"
+
+    if is_dataset(res):
+        cur_dir_path: str = (base_dir + re.sub(r"^%s(.*)$" % base_iri, r"\1", string_iri))[:-1]
         # In case of dataset, the file path is different from regular files, e.g.
         # /corpus/br/index.json
-        cur_file_path = cur_dir_path + os.sep + "index.json"
+        cur_file_path: str = cur_dir_path + os.sep + "index.json"
     else:
-        cur_number = get_resource_number(string_iri)
+        cur_number: int = get_resource_number(res)
 
         # Find the correct file number where to save the resources
-        cur_file_split = 0
+        cur_file_split: int = 0
         while True:
             if cur_number > cur_file_split:
                 cur_file_split += n_file_item
@@ -291,7 +294,7 @@ def find_paths(string_iri: str, base_dir: str, base_iri: str, default_dir: str, 
         # with the provenance data of the whole corpus (e.g. provenance agents)
         if dir_split and not string_iri.startswith(base_iri + "prov/"):
             # Find the correct directory number where to save the file
-            cur_split = 0
+            cur_split: int = 0
             while True:
                 if cur_number > cur_split:
                     cur_split += dir_split
@@ -299,65 +302,61 @@ def find_paths(string_iri: str, base_dir: str, base_iri: str, default_dir: str, 
                     break
 
             if "/prov/" in string_iri:  # provenance file of a bibliographic entity
-                res = URIRef(string_iri)
-                subj_short_name = get_prov_subject_short_name(res)
-                short_name = get_short_name(res)
-                sub_folder = get_prov_subject_prefix(res)
+                subj_short_name: str = get_prov_subject_short_name(res)
+                short_name: str = get_short_name(res)
+                sub_folder: str = get_prov_subject_prefix(res)
                 if sub_folder == "":
                     sub_folder = default_dir
 
-                cur_dir_path = base_dir + subj_short_name + os.sep + sub_folder + \
+                cur_dir_path: str = base_dir + subj_short_name + os.sep + sub_folder + \
                     os.sep + str(cur_split) + os.sep + str(cur_file_split) + os.sep + "prov"
-                cur_file_path = cur_dir_path + os.sep + short_name + format_string
+                cur_file_path: str = cur_dir_path + os.sep + short_name + format_string
             else:  # regular bibliographic entity
-                res = URIRef(string_iri)
-                short_name = get_short_name(res)
-                sub_folder = get_prefix(res)
+                short_name: str = get_short_name(res)
+                sub_folder: str = get_prefix(res)
                 if sub_folder == "":
                     sub_folder = default_dir
 
-                cur_dir_path = base_dir + short_name + os.sep + sub_folder + \
+                cur_dir_path: str = base_dir + short_name + os.sep + sub_folder + \
                     os.sep + str(cur_split)
-                cur_file_path = cur_dir_path + os.sep + str(cur_file_split) + format_string
+                cur_file_path: str = cur_dir_path + os.sep + str(cur_file_split) + format_string
         # Enter here if no split is needed
         elif dir_split == 0:
             if "/prov/" in string_iri:
-                res = URIRef(string_iri)
-                subj_short_name = get_prov_subject_short_name(res)
-                short_name = get_short_name(res)
-                sub_folder = get_prov_subject_prefix(res)
+                subj_short_name: str = get_prov_subject_short_name(res)
+                short_name: str = get_short_name(res)
+                sub_folder: str = get_prov_subject_prefix(res)
                 if sub_folder == "":
                     sub_folder = default_dir
 
-                cur_dir_path = base_dir + subj_short_name + os.sep + sub_folder + \
+                cur_dir_path: str = base_dir + subj_short_name + os.sep + sub_folder + \
                     os.sep + str(cur_file_split) + os.sep + "prov"
-                cur_file_path = cur_dir_path + os.sep + short_name + format_string
+                cur_file_path: str = cur_dir_path + os.sep + short_name + format_string
             else:
-                res = URIRef(string_iri)
-                short_name = get_short_name(res)
-                sub_folder = get_prefix(res)
+                short_name: str = get_short_name(res)
+                sub_folder: str = get_prefix(res)
                 if sub_folder == "":
                     sub_folder = default_dir
 
-                cur_dir_path = base_dir + short_name + os.sep + sub_folder
-                cur_file_path = cur_dir_path + os.sep + str(cur_file_split) + format_string
-        # Enter here if the data is about a provenance agent, e.g.,
-        # /corpus/prov/
+                cur_dir_path: str = base_dir + short_name + os.sep + sub_folder
+                cur_file_path: str = cur_dir_path + os.sep + str(cur_file_split) + format_string
+        # Enter here if the data is about a provenance agent, e.g. /corpus/prov/
         else:
-            res = URIRef(string_iri)
-            short_name = get_short_name(res)
-            prefix = get_prefix(res)
-            count = get_count(res)
+            short_name: str = get_short_name(res)
+            prefix: str = get_prefix(res)
+            count: str = get_count(res)
 
-            cur_dir_path = base_dir + short_name
-            cur_file_path = cur_dir_path + os.sep + prefix + count + format_string
+            cur_dir_path: str = base_dir + short_name
+            cur_file_path: str = cur_dir_path + os.sep + prefix + count + format_string
 
     return cur_dir_path, cur_file_path
 
 
-def has_supplier_prefix(string_iri: str, base_iri: str) -> bool:
+def has_supplier_prefix(res: URIRef, base_iri: str) -> bool:
+    string_iri: str = str(res)
     return re.search(r"^%s[a-z][a-z]/0" % base_iri, string_iri) is not None
 
 
-def is_dataset(string_iri: str) -> bool:
+def is_dataset(res: URIRef) -> bool:
+    string_iri: str = str(res)
     return re.search(r"^.+/[0-9]+(-[0-9]+)?(/[0-9]+)?$", string_iri) is None
