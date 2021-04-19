@@ -65,7 +65,7 @@ class MetadataSet(AbstractSet):
         # Here we use a fictitious short name for Dataset, since the OCDM document doesn't specify
         # any particular short name for this type of entity. It's only used internally to distinguish
         # between different metadata entities but it's meaningless outside of this scope.
-        cur_g, count, label = self._add_metadata(res, "_dataset_", dataset_name)
+        cur_g, count, label = self._add_metadata("_dataset_", dataset_name, res)
         return Dataset(cur_g, self.base_iri, dataset_name, self, res,
                        MetadataEntity.iri_dataset, resp_agent,
                        source, count, label, "_dataset_", preexisting_graph)
@@ -74,13 +74,13 @@ class MetadataSet(AbstractSet):
                res: URIRef = None, preexisting_graph: Graph = None) -> Distribution:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add_metadata(res, "di", dataset_name)
+        cur_g, count, label = self._add_metadata("di", dataset_name, res)
         return Distribution(cur_g, self.base_iri, dataset_name, self, res,
                             MetadataEntity.iri_datafile, resp_agent,
                             source, count, label, "di", preexisting_graph)
 
-    def _add_metadata(self, res: URIRef, short_name: str,
-                      dataset_name: str) -> Tuple[Graph, Optional[str], Optional[str]]:
+    def _add_metadata(self, short_name: str, dataset_name: str,
+                      res: URIRef = None) -> Tuple[Graph, Optional[str], Optional[str]]:
         cur_g: Graph = Graph()
         self._set_ns(cur_g)
 

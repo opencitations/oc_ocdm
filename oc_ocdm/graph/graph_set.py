@@ -100,7 +100,7 @@ class GraphSet(AbstractSet):
                preexisting_graph: Graph = None) -> ReferenceAnnotation:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(self.g_an, res, "an")
+        cur_g, count, label = self._add(self.g_an, "an", res)
         return ReferenceAnnotation(cur_g, self, res, GraphEntity.iri_note,
                                    resp_agent, source, count, label, "an",
                                    preexisting_graph)
@@ -109,7 +109,7 @@ class GraphSet(AbstractSet):
                preexisting_graph: Graph = None) -> AgentRole:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(self.g_ar, res, "ar")
+        cur_g, count, label = self._add(self.g_ar, "ar", res)
         return AgentRole(cur_g, self, res, GraphEntity.iri_role_in_time,
                          resp_agent, source, count, label, "ar",
                          preexisting_graph)
@@ -118,7 +118,7 @@ class GraphSet(AbstractSet):
                preexisting_graph: Graph = None) -> BibliographicReference:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(self.g_be, res, "be")
+        cur_g, count, label = self._add(self.g_be, "be", res)
         return BibliographicReference(cur_g, self, res,
                                       GraphEntity.iri_bibliographic_reference,
                                       resp_agent, source, count, label, "be",
@@ -128,7 +128,7 @@ class GraphSet(AbstractSet):
                preexisting_graph: Graph = None) -> BibliographicResource:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(self.g_br, res, "br")
+        cur_g, count, label = self._add(self.g_br, "br", res)
         return BibliographicResource(cur_g, self, res, GraphEntity.iri_expression,
                                      resp_agent, source, count, label, "br",
                                      preexisting_graph)
@@ -137,7 +137,7 @@ class GraphSet(AbstractSet):
                preexisting_graph: Graph = None) -> Citation:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(self.g_ci, res, "ci")
+        cur_g, count, label = self._add(self.g_ci, "ci", res)
         return Citation(cur_g, self, res, GraphEntity.iri_citation,
                         resp_agent, source, count, label, "ci",
                         preexisting_graph)
@@ -146,7 +146,7 @@ class GraphSet(AbstractSet):
                preexisting_graph: Graph = None) -> DiscourseElement:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(self.g_de, res, "de")
+        cur_g, count, label = self._add(self.g_de, "de", res)
         return DiscourseElement(cur_g, self, res, GraphEntity.iri_discourse_element,
                                 resp_agent, source, count, label, "de",
                                 preexisting_graph)
@@ -155,7 +155,7 @@ class GraphSet(AbstractSet):
                preexisting_graph: Graph = None) -> Identifier:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(self.g_id, res, "id")
+        cur_g, count, label = self._add(self.g_id, "id", res)
         return Identifier(cur_g, self, res, GraphEntity.iri_identifier,
                           resp_agent, source, count, label, "id",
                           preexisting_graph)
@@ -164,7 +164,7 @@ class GraphSet(AbstractSet):
                preexisting_graph: Graph = None) -> PointerList:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(self.g_pl, res, "pl")
+        cur_g, count, label = self._add(self.g_pl, "pl", res)
         return PointerList(cur_g, self, res, GraphEntity.iri_singleloc_pointer_list,
                            resp_agent, source, count, label, "pl",
                            preexisting_graph)
@@ -173,7 +173,7 @@ class GraphSet(AbstractSet):
                preexisting_graph: Graph = None) -> ReferencePointer:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(self.g_rp, res, "rp")
+        cur_g, count, label = self._add(self.g_rp, "rp", res)
         return ReferencePointer(cur_g, self, res, GraphEntity.iri_intextref_pointer,
                                 resp_agent, source, count, label, "rp",
                                 preexisting_graph)
@@ -182,7 +182,7 @@ class GraphSet(AbstractSet):
                preexisting_graph: Graph = None) -> ResponsibleAgent:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(self.g_ra, res, "ra")
+        cur_g, count, label = self._add(self.g_ra, "ra", res)
         return ResponsibleAgent(cur_g, self, res, GraphEntity.iri_agent,
                                 resp_agent, source, count, label, "ra",
                                 preexisting_graph)
@@ -191,12 +191,12 @@ class GraphSet(AbstractSet):
                preexisting_graph: Graph = None) -> ResourceEmbodiment:
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
-        cur_g, count, label = self._add(self.g_re, res, "re")
+        cur_g, count, label = self._add(self.g_re, "re", res)
         return ResourceEmbodiment(cur_g, self, res, GraphEntity.iri_manifestation,
                                   resp_agent, source, count, label, "re",
                                   preexisting_graph)
 
-    def _add(self, graph_url: str, res: URIRef, short_name: str) -> Tuple[Graph, Optional[str], Optional[str]]:
+    def _add(self, graph_url: str, short_name: str, res: URIRef = None) -> Tuple[Graph, Optional[str], Optional[str]]:
         cur_g: Graph = Graph(identifier=graph_url)
         self._set_ns(cur_g)
 

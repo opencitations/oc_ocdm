@@ -64,7 +64,7 @@ class ProvSet(AbstractSet):
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         g_prov: str = str(prov_subject) + "/prov/"
-        cur_g, count, label = self._add_prov(g_prov, res, "se", prov_subject)
+        cur_g, count, label = self._add_prov(g_prov, "se", prov_subject, res)
         return EntitySnapshot(prov_subject, cur_g, self, res, prov_subject.resp_agent,
                               prov_subject.source, ProvEntity.iri_entity, count, label, "se")
 
@@ -183,8 +183,8 @@ class ProvSet(AbstractSet):
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been modified.")
                     cur_snapshot.has_update_action(update_query)
 
-    def _add_prov(self, graph_url: str, res: URIRef, short_name: str,
-                  prov_subject: GraphEntity) -> Tuple[Graph, Optional[str], Optional[str]]:
+    def _add_prov(self, graph_url: str, short_name: str, prov_subject: GraphEntity,
+                  res: URIRef = None) -> Tuple[Graph, Optional[str], Optional[str]]:
         cur_g: Graph = Graph(identifier=graph_url)
         self._set_ns(cur_g)
 
