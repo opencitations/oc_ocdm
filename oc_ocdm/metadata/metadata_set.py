@@ -22,7 +22,7 @@ from oc_ocdm.counter_handler.filesystem_counter_handler import FilesystemCounter
 from oc_ocdm.counter_handler.in_memory_counter_handler import InMemoryCounterHandler
 from oc_ocdm.metadata.entities.dataset import Dataset
 from oc_ocdm.metadata.entities.distribution import Distribution
-from oc_ocdm.support.support import get_count
+from oc_ocdm.support.support import get_count, is_dataset, get_short_name
 
 if TYPE_CHECKING:
     from typing import Dict, Optional, Tuple, ClassVar
@@ -60,6 +60,8 @@ class MetadataSet(AbstractSet):
 
     def add_dataset(self, dataset_name: str, resp_agent: str, source: str = None, res: URIRef = None,
                     preexisting_graph: Graph = None) -> Dataset:
+        if res is not None and not is_dataset(res):
+            raise ValueError(f"Given res: <{res}> is inappropriate for a Dataset entity.")
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         # Here we use a fictitious short name for Dataset, since the OCDM document doesn't specify
@@ -72,6 +74,8 @@ class MetadataSet(AbstractSet):
 
     def add_di(self, dataset_name: str, resp_agent: str, source: str = None,
                res: URIRef = None, preexisting_graph: Graph = None) -> Distribution:
+        if res is not None and get_short_name(res) != "di":
+            raise ValueError(f"Given res: <{res}> is inappropriate for a Distribution entity.")
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         cur_g, count, label = self._add_metadata("di", dataset_name, res)

@@ -21,7 +21,7 @@ from SPARQLWrapper import SPARQLWrapper, RDFXML
 
 from oc_ocdm.reader import Reader
 from oc_ocdm.abstract_set import AbstractSet
-from oc_ocdm.support.support import get_count
+from oc_ocdm.support.support import get_count, get_short_name
 
 if TYPE_CHECKING:
     from typing import Dict, ClassVar, Tuple, Optional, List, Set
@@ -98,6 +98,8 @@ class GraphSet(AbstractSet):
     # Add resources related to bibliographic entities
     def add_an(self, resp_agent: str, source: str = None, res: URIRef = None,
                preexisting_graph: Graph = None) -> ReferenceAnnotation:
+        if res is not None and get_short_name(res) != "an":
+            raise ValueError(f"Given res: <{res}> is inappropriate for a ReferenceAnnotation entity.")
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         cur_g, count, label = self._add(self.g_an, "an", res)
@@ -107,6 +109,8 @@ class GraphSet(AbstractSet):
 
     def add_ar(self, resp_agent: str, source: str = None, res: URIRef = None,
                preexisting_graph: Graph = None) -> AgentRole:
+        if res is not None and get_short_name(res) != "ar":
+            raise ValueError(f"Given res: <{res}> is inappropriate for an AgentRole entity.")
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         cur_g, count, label = self._add(self.g_ar, "ar", res)
@@ -116,16 +120,19 @@ class GraphSet(AbstractSet):
 
     def add_be(self, resp_agent: str, source: str = None, res: URIRef = None,
                preexisting_graph: Graph = None) -> BibliographicReference:
+        if res is not None and get_short_name(res) != "be":
+            raise ValueError(f"Given res: <{res}> is inappropriate for a BibliographicReference entity.")
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         cur_g, count, label = self._add(self.g_be, "be", res)
-        return BibliographicReference(cur_g, self, res,
-                                      GraphEntity.iri_bibliographic_reference,
+        return BibliographicReference(cur_g, self, res, GraphEntity.iri_bibliographic_reference,
                                       resp_agent, source, count, label, "be",
                                       preexisting_graph)
 
     def add_br(self, resp_agent: str, source: str = None, res: URIRef = None,
                preexisting_graph: Graph = None) -> BibliographicResource:
+        if res is not None and get_short_name(res) != "br":
+            raise ValueError(f"Given res: <{res}> is inappropriate for a BibliographicResource entity.")
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         cur_g, count, label = self._add(self.g_br, "br", res)
@@ -135,6 +142,8 @@ class GraphSet(AbstractSet):
 
     def add_ci(self, resp_agent: str, source: str = None, res: URIRef = None,
                preexisting_graph: Graph = None) -> Citation:
+        if res is not None and get_short_name(res) != "ci":
+            raise ValueError(f"Given res: <{res}> is inappropriate for a Citation entity.")
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         cur_g, count, label = self._add(self.g_ci, "ci", res)
@@ -144,6 +153,8 @@ class GraphSet(AbstractSet):
 
     def add_de(self, resp_agent: str, source: str = None, res: URIRef = None,
                preexisting_graph: Graph = None) -> DiscourseElement:
+        if res is not None and get_short_name(res) != "de":
+            raise ValueError(f"Given res: <{res}> is inappropriate for a DiscourseElement entity.")
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         cur_g, count, label = self._add(self.g_de, "de", res)
@@ -153,6 +164,8 @@ class GraphSet(AbstractSet):
 
     def add_id(self, resp_agent: str, source: str = None, res: URIRef = None,
                preexisting_graph: Graph = None) -> Identifier:
+        if res is not None and get_short_name(res) != "id":
+            raise ValueError(f"Given res: <{res}> is inappropriate for an Identifier entity.")
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         cur_g, count, label = self._add(self.g_id, "id", res)
@@ -162,6 +175,8 @@ class GraphSet(AbstractSet):
 
     def add_pl(self, resp_agent: str, source: str = None, res: URIRef = None,
                preexisting_graph: Graph = None) -> PointerList:
+        if res is not None and get_short_name(res) != "pl":
+            raise ValueError(f"Given res: <{res}> is inappropriate for a PointerList entity.")
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         cur_g, count, label = self._add(self.g_pl, "pl", res)
@@ -171,6 +186,8 @@ class GraphSet(AbstractSet):
 
     def add_rp(self, resp_agent: str, source: str = None, res: URIRef = None,
                preexisting_graph: Graph = None) -> ReferencePointer:
+        if res is not None and get_short_name(res) != "rp":
+            raise ValueError(f"Given res: <{res}> is inappropriate for a ReferencePointer entity.")
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         cur_g, count, label = self._add(self.g_rp, "rp", res)
@@ -180,6 +197,8 @@ class GraphSet(AbstractSet):
 
     def add_ra(self, resp_agent: str, source: str = None, res: URIRef = None,
                preexisting_graph: Graph = None) -> ResponsibleAgent:
+        if res is not None and get_short_name(res) != "ra":
+            raise ValueError(f"Given res: <{res}> is inappropriate for a ResponsibleAgent entity.")
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         cur_g, count, label = self._add(self.g_ra, "ra", res)
@@ -189,6 +208,8 @@ class GraphSet(AbstractSet):
 
     def add_re(self, resp_agent: str, source: str = None, res: URIRef = None,
                preexisting_graph: Graph = None) -> ResourceEmbodiment:
+        if res is not None and get_short_name(res) != "re":
+            raise ValueError(f"Given res: <{res}> is inappropriate for a ResourceEmbodiment entity.")
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         cur_g, count, label = self._add(self.g_re, "re", res)

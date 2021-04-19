@@ -61,6 +61,8 @@ class ProvSet(AbstractSet):
             return self.res_to_entity[res]
 
     def add_se(self, prov_subject: GraphEntity, res: URIRef = None) -> EntitySnapshot:
+        if res is not None and get_short_name(res) != "se":
+            raise ValueError(f"Given res: <{res}> is inappropriate for an EntitySnapshot entity.")
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         g_prov: str = str(prov_subject) + "/prov/"
