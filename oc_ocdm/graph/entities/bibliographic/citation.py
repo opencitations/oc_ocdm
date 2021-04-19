@@ -66,7 +66,7 @@ class Citation(BibliographicEntity):
 
     # HAS CITING DOCUMENT (BibliographicResource)
     def get_citing_entity(self) -> Optional[BibliographicResource]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_citing_entity)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_citing_entity, 'br')
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source, uri)
 
@@ -82,7 +82,7 @@ class Citation(BibliographicEntity):
 
     # HAS CITED DOCUMENT (BibliographicResource)
     def get_cited_entity(self) -> Optional[BibliographicResource]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_cited_entity)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_cited_entity, 'br')
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source, uri)
 

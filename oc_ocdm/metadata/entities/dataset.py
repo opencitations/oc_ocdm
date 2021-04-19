@@ -145,7 +145,8 @@ class Dataset(MetadataEntity):
 
     # HAS SUBJECT
     def get_subjects(self) -> List[URIRef]:
-        return self._get_multiple_uri_references(MetadataEntity.iri_subject)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(MetadataEntity.iri_subject)
+        return uri_list
 
     @accepts_only('thing')
     def has_subject(self, thing_res: URIRef) -> None:
@@ -174,7 +175,7 @@ class Dataset(MetadataEntity):
 
     # HAS SUB-DATASET
     def get_sub_datasets(self) -> List[Dataset]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(MetadataEntity.iri_subset)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(MetadataEntity.iri_subset, '_dataset_')
         result: List[Dataset] = []
         for uri in uri_list:
             result.append(self.m_set.add_dataset(self.resp_agent, self.source, uri))
@@ -194,7 +195,8 @@ class Dataset(MetadataEntity):
 
     # HAS SPARQL ENDPOINT
     def get_sparql_endpoint(self) -> Optional[URIRef]:
-        return self._get_uri_reference(MetadataEntity.iri_sparql_endpoint)
+        uri: Optional[URIRef] = self._get_uri_reference(MetadataEntity.iri_sparql_endpoint)
+        return uri
 
     @accepts_only('thing')
     def has_sparql_endpoint(self, thing_res: URIRef) -> None:
@@ -207,7 +209,7 @@ class Dataset(MetadataEntity):
 
     # HAS DISTRIBUTION (Distribution)
     def get_distributions(self) -> List[Distribution]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(MetadataEntity.iri_distribution)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(MetadataEntity.iri_distribution, 'di')
         result: List[Distribution] = []
         for uri in uri_list:
             result.append(self.m_set.add_di(self.resp_agent, self.source, uri))

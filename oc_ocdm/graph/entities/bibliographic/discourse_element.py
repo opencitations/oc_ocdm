@@ -82,7 +82,7 @@ class DiscourseElement(BibliographicEntity):
     
     # HAS PART (DiscourseElement)
     def get_contained_discourse_elements(self) -> List[DiscourseElement]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_de)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_de, 'de')
         result: List[DiscourseElement] = []
         for uri in uri_list:
             result.append(self.g_set.add_de(self.resp_agent, self.source, uri))
@@ -104,7 +104,7 @@ class DiscourseElement(BibliographicEntity):
 
     # HAS NEXT (DiscourseElement)
     def get_next_de(self) -> Optional[DiscourseElement]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_next)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_next, 'de')
         if uri is not None:
             return self.g_set.add_de(self.resp_agent, self.source, uri)
 
@@ -120,7 +120,7 @@ class DiscourseElement(BibliographicEntity):
 
     # IS CONTEXT OF (ReferencePointer)
     def get_is_context_of_rp(self) -> List[ReferencePointer]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of, 'rp')
         result: List[ReferencePointer] = []
         for uri in uri_list:
             result.append(self.g_set.add_rp(self.resp_agent, self.source, uri))
@@ -142,7 +142,7 @@ class DiscourseElement(BibliographicEntity):
 
     # IS CONTEXT OF (PointerList)
     def get_is_context_of_pl(self) -> List[PointerList]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of, 'pl')
         result: List[PointerList] = []
         for uri in uri_list:
             result.append(self.g_set.add_pl(self.resp_agent, self.source, uri))

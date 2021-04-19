@@ -117,7 +117,7 @@ class BibliographicResource(BibliographicEntity):
 
     # IS PART OF (BibliographicResource)
     def get_is_part_of(self) -> Optional[BibliographicResource]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_part_of)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_part_of, 'br')
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source, uri)
 
@@ -134,7 +134,7 @@ class BibliographicResource(BibliographicEntity):
 
     # CITES (BibliographicResource)
     def get_citations(self) -> List[BibliographicResource]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_cites)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_cites, 'br')
         result: List[BibliographicResource] = []
         for uri in uri_list:
             result.append(self.g_set.add_br(self.resp_agent, self.source, uri))
@@ -172,7 +172,7 @@ class BibliographicResource(BibliographicEntity):
 
     # IS EMBODIED AS (ResourceEmbodiment)
     def get_formats(self) -> List[ResourceEmbodiment]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_embodiment)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_embodiment, 're')
         result: List[ResourceEmbodiment] = []
         for uri in uri_list:
             result.append(self.g_set.add_re(self.resp_agent, self.source, uri))
@@ -226,7 +226,7 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS PART (BibliographicReference)
     def get_contained_in_reference_lists(self) -> List[BibliographicReference]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_reference)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_reference, 'be')
         result: List[BibliographicReference] = []
         for uri in uri_list:
             result.append(self.g_set.add_be(self.resp_agent, self.source, uri))
@@ -248,7 +248,7 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS PART (DiscourseElement)
     def get_contained_discourse_elements(self) -> List[DiscourseElement]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_de)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_de, 'de')
         result: List[DiscourseElement] = []
         for uri in uri_list:
             result.append(self.g_set.add_de(self.resp_agent, self.source, uri))
@@ -270,7 +270,7 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS CONTRIBUTOR (AgentRole)
     def get_contributors(self) -> List[AgentRole]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_document_context_for)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_document_context_for, 'ar')
         result: List[AgentRole] = []
         for uri in uri_list:
             result.append(self.g_set.add_ar(self.resp_agent, self.source, uri))

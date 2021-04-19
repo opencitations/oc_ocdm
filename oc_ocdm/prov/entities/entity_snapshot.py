@@ -76,7 +76,7 @@ class EntitySnapshot(ProvEntity):
 
     # IS DERIVED FROM
     def get_derives_from(self) -> List[ProvEntity]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(ProvEntity.iri_was_derived_from)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(ProvEntity.iri_was_derived_from, 'se')
         result: List[ProvEntity] = []
         for uri in uri_list:
             # TODO: what is the prov_subject of these snapshots?

@@ -71,7 +71,7 @@ class ReferencePointer(BibliographicEntity):
 
     # HAS NEXT (ReferencePointer)
     def get_next_rp(self) -> Optional[ReferencePointer]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_next)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_next, 'rp')
         if uri is not None:
             return self.g_set.add_rp(self.resp_agent, self.source, uri)
 
@@ -88,7 +88,7 @@ class ReferencePointer(BibliographicEntity):
 
     # DENOTES (BibliographicReference)
     def get_denoted_be(self) -> Optional[BibliographicReference]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_denotes)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_denotes, 'be')
         if uri is not None:
             return self.g_set.add_be(self.resp_agent, self.source, uri)
 
@@ -105,7 +105,7 @@ class ReferencePointer(BibliographicEntity):
 
     # HAS ANNOTATION (ReferenceAnnotation)
     def get_annotations(self) -> List[ReferenceAnnotation]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_annotation)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_annotation, 'an')
         result: List[ReferenceAnnotation] = []
         for uri in uri_list:
             result.append(self.g_set.add_an(self.resp_agent, self.source, uri))

@@ -49,7 +49,7 @@ class BibliographicEntity(GraphEntity):
 
     # HAS IDENTIFIER
     def get_identifiers(self) -> List[Identifier]:
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_identifier)
+        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_identifier, 'id')
         result: List[Identifier] = []
         for uri in uri_list:
             result.append(self.g_set.add_id(self.resp_agent, self.source, uri))

@@ -53,7 +53,7 @@ class AgentRole(BibliographicEntity):
 
     # HAS NEXT (AgentRole)
     def get_next(self) -> Optional[AgentRole]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_next)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_next, 'ar')
         if uri is not None:
             return self.g_set.add_ar(self.resp_agent, self.source, uri)
 
@@ -70,7 +70,7 @@ class AgentRole(BibliographicEntity):
 
     # IS HELD BY (ResponsibleAgent)
     def get_is_held_by(self) -> Optional[ResponsibleAgent]:
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_is_held_by)
+        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_is_held_by, 'ra')
         if uri is not None:
             return self.g_set.add_ra(self.resp_agent, self.source, uri)
 

@@ -18,7 +18,7 @@ from __future__ import annotations
 from abc import ABC
 from typing import TYPE_CHECKING
 
-from oc_ocdm.support.support import create_type, create_literal
+from oc_ocdm.support.support import create_type, create_literal, get_short_name, is_dataset, is_string_empty
 from rdflib import URIRef, RDFS, RDF, Literal, Graph
 
 if TYPE_CHECKING:
@@ -114,17 +114,30 @@ class AbstractEntity(ABC):
                 result.append(str(o))
         return result
 
-    def _get_uri_reference(self, predicate: URIRef) -> Optional[URIRef]:
+    def _get_uri_reference(self, predicate: URIRef, short_name: str = None) -> Optional[URIRef]:
         result: Optional[URIRef] = None
         for o in self.g.objects(self.res, predicate):
             if type(o) == URIRef:
-                result = o
-                break
+                if not is_string_empty(short_name):
+                    # If a particular short_name is explicitly required,
+                    # then the following additional check must be performed:
+                    if (short_name == '_dataset_' and is_dataset(o)) or get_short_name(o) == short_name:
+                        result = o
+                        break
+                else:
+                    result = o
+                    break
         return result
 
-    def _get_multiple_uri_references(self, predicate: URIRef) -> List[URIRef]:
+    def _get_multiple_uri_references(self, predicate: URIRef, short_name: str = None) -> List[URIRef]:
         result: List[URIRef] = []
         for o in self.g.objects(self.res, predicate):
             if type(o) == URIRef:
-                result.append(o)
+                if not is_string_empty(short_name):
+                    # If a particular short_name is explicitly required,
+                    # then the following additional check must be performed:
+                    if (short_name == '_dataset_' and is_dataset(o)) or get_short_name(o) == short_name:
+                        result.append(o)
+                else:
+                    result.append(o)
         return result
