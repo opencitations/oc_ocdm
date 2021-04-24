@@ -4,10 +4,10 @@ oc\_ocdm.prov.entities package
 Submodules
 ----------
 
-oc\_ocdm.prov.entities.entity\_snapshot module
+oc\_ocdm.prov.entities.snapshot\_entity module
 ----------------------------------------------
 
-.. automodule:: oc_ocdm.prov.entities.entity_snapshot
+.. automodule:: oc_ocdm.prov.entities.snapshot_entity
    :members:
    :undoc-members:
    :show-inheritance:
