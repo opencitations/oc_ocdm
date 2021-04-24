@@ -19,7 +19,7 @@ from rdflib import URIRef
 
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
-from oc_ocdm.prov.entities.entity_snapshot import EntitySnapshot
+from oc_ocdm.prov.entities.snapshot_entity import SnapshotEntity
 
 
 class TestProvSet(unittest.TestCase):
@@ -34,7 +34,7 @@ class TestProvSet(unittest.TestCase):
         se = self.prov_set.add_se(prov_subj)
 
         self.assertIsNotNone(se)
-        self.assertIsInstance(se, EntitySnapshot)
+        self.assertIsInstance(se, SnapshotEntity)
         self.assertEqual(str(se.g.identifier), str(prov_subj.res) + "/prov/")
 
     def test_generate_provenance(self):
@@ -51,7 +51,7 @@ class TestProvSet(unittest.TestCase):
 
             se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
             self.assertIsNotNone(se_a)
-            self.assertIsInstance(se_a, EntitySnapshot)
+            self.assertIsInstance(se_a, SnapshotEntity)
             self.assertEqual(a.res, se_a.get_is_snapshot_of())
             self.assertEqual(cur_time_str, se_a.get_generation_time())
             if a.source is not None:
@@ -90,7 +90,7 @@ class TestProvSet(unittest.TestCase):
 
             se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
             self.assertIsNotNone(se_a_2)
-            self.assertIsInstance(se_a_2, EntitySnapshot)
+            self.assertIsInstance(se_a_2, SnapshotEntity)
             self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
             self.assertEqual(cur_time_str, se_a_2.get_generation_time())
             if a.source is not None:
@@ -117,7 +117,7 @@ class TestProvSet(unittest.TestCase):
 
             se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
             self.assertIsNotNone(se_a_2)
-            self.assertIsInstance(se_a_2, EntitySnapshot)
+            self.assertIsInstance(se_a_2, SnapshotEntity)
             self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
             self.assertEqual(cur_time_str, se_a_2.get_generation_time())
             if a.source is not None:
@@ -135,7 +135,7 @@ class TestProvSet(unittest.TestCase):
 
             se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
             self.assertIsNotNone(se_a)
-            self.assertIsInstance(se_a, EntitySnapshot)
+            self.assertIsInstance(se_a, SnapshotEntity)
             self.assertEqual(a.res, se_a.get_is_snapshot_of())
             self.assertEqual(cur_time_str, se_a.get_generation_time())
             if a.source is not None:
@@ -179,7 +179,7 @@ class TestProvSet(unittest.TestCase):
 
             se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
             self.assertIsNotNone(se_a_2)
-            self.assertIsInstance(se_a_2, EntitySnapshot)
+            self.assertIsInstance(se_a_2, SnapshotEntity)
             self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
             self.assertEqual(cur_time_str, se_a_2.get_generation_time())
             if a.source is not None:
@@ -202,7 +202,7 @@ class TestProvSet(unittest.TestCase):
 
             se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
             self.assertIsNotNone(se_a_2)
-            self.assertIsInstance(se_a_2, EntitySnapshot)
+            self.assertIsInstance(se_a_2, SnapshotEntity)
             self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
             self.assertEqual(cur_time_str, se_a_2.get_generation_time())
             if a.source is not None:

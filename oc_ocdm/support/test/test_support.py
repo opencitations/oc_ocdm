@@ -15,11 +15,10 @@
 # SOFTWARE.
 import unittest
 
-from rdflib import URIRef, Namespace
+from rdflib import Namespace
 
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
-from oc_ocdm.prov.entities.entity_snapshot import EntitySnapshot
 from oc_ocdm.support.support import get_ordered_contributors_from_br
 
 

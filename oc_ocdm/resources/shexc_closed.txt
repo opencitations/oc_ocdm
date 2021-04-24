@@ -59,7 +59,7 @@ PREFIX void:     <http://rdfs.org/ns/void#>
                              @:ReferencePointerType OR
                              @:ResourceEmbodimentType OR
                              @:ResponsibleAgentType) ?;
-    ^prov:specializationOf @:EntitySnapshotType *;
+    ^prov:specializationOf @:SnapshotEntityType *;
 }
 
 :BibliographicEntityShape @:AbstractEntityShape AND IRI {
@@ -68,8 +68,8 @@ PREFIX void:     <http://rdfs.org/ns/void#>
 
 ############################# ENTITIES #############################
 
-#EntitySnapshot
-:EntitySnapshotShape @:AbstractEntityShape AND IRI CLOSED {
+#SnapshotEntity
+:SnapshotEntityShape @:AbstractEntityShape AND IRI CLOSED {
     rdf:type [prov:Entity];
     prov:generatedAtTime xsd:dateTime;
     prov:invalidatedAtTime xsd:dateTime?;
@@ -84,13 +84,13 @@ PREFIX void:     <http://rdfs.org/ns/void#>
                            @:ReferencePointerType OR
                            @:ResourceEmbodimentType OR
                            @:ResponsibleAgentType) +;
-    prov:wasDerivedFrom @:EntitySnapshotType *;
+    prov:wasDerivedFrom @:SnapshotEntityType *;
     prov:hadPrimarySource IRI?;
     oco:hasUpdateQuery xsd:string?;
     dcterms:description xsd:string?;
     prov:wasAttributedTo IRI?;
     # Inverse properties:
-    ^prov:wasDerivedFrom @:EntitySnapshotType ?;
+    ^prov:wasDerivedFrom @:SnapshotEntityType ?;
 }
 
 #Dataset
@@ -135,7 +135,7 @@ PREFIX void:     <http://rdfs.org/ns/void#>
     # Inverse properties:
     ^oco:hasNext @:AgentRoleType ?;
     ^pro:isDocumentContextFor @:BibliographicResourceType ?;
-    ^prov:specializationOf @:EntitySnapshotType *;
+    ^prov:specializationOf @:SnapshotEntityType *;
 }
 
 # BibliographicReference
@@ -147,7 +147,7 @@ PREFIX void:     <http://rdfs.org/ns/void#>
     # Inverse properties:
     ^frbr:part @:BibliographicResourceType ?;
     ^c4o:denotes @:ReferencePointerType *;
-    ^prov:specializationOf @:EntitySnapshotType *;
+    ^prov:specializationOf @:SnapshotEntityType *;
 }
 
 # BibliographicResource
@@ -190,7 +190,7 @@ PREFIX void:     <http://rdfs.org/ns/void#>
     ^biro:references @:BibliographicReferenceType *;
     ^cito:hasCitingEntity @:CitationType *;
     ^cito:hasCitedEntity @:CitationType *;
-    ^prov:specializationOf @:EntitySnapshotType *;
+    ^prov:specializationOf @:SnapshotEntityType *;
 }
 AND (NOT { rdf:type [doco:Part fabio:ExpressionCollection] }
      OR { frbr:partOf @:BibliographicResourceType AND {rdf:type [fabio:Book]}? }
@@ -217,7 +217,7 @@ AND (NOT { rdf:type [fabio:Series] }
     cito:hasCitationCharacterisation IRI?;
     # Inverse properties:
     ^oa:hasBody @:ReferenceAnnotationType *;
-    ^prov:specializationOf @:EntitySnapshotType *;
+    ^prov:specializationOf @:SnapshotEntityType *;
 }
 
 # DiscourseElement
@@ -240,7 +240,7 @@ AND (NOT { rdf:type [fabio:Series] }
     # Inverse properties:
     ^frbr:part (@:BibliographicResourceType OR @:DiscourseElementType) ?;
     ^oco:hasNext @:DiscourseElementType ?;
-    ^prov:specializationOf @:EntitySnapshotType *;
+    ^prov:specializationOf @:SnapshotEntityType *;
 }
 
 # PointerList
@@ -250,7 +250,7 @@ AND (NOT { rdf:type [fabio:Series] }
     co:element @:ReferencePointerType *;
     # Inverse properties:
     ^c4o:isContextOf @:DiscourseElementType ?;
-    ^prov:specializationOf @:EntitySnapshotType *;
+    ^prov:specializationOf @:SnapshotEntityType *;
 }
 
 # ReferenceAnnotation
@@ -260,7 +260,7 @@ AND (NOT { rdf:type [fabio:Series] }
     # Inverse properties:
     ^oco:hasAnnotation @:BibliographicReferenceType ?;
     ^oco:hasAnnotation @:ReferencePointerType ?;
-    ^prov:specializationOf @:EntitySnapshotType *;
+    ^prov:specializationOf @:SnapshotEntityType *;
 }
 
 # ReferencePointer
@@ -274,7 +274,7 @@ AND (NOT { rdf:type [fabio:Series] }
     ^oco:hasNext @:ReferencePointerType ?;
     ^c4o:isContextOf @:DiscourseElementType ?;
     ^co:element @:PointerListType ?;
-    ^prov:specializationOf @:EntitySnapshotType *;
+    ^prov:specializationOf @:SnapshotEntityType *;
 }
 
 # ResourceEmbodiment
@@ -288,7 +288,7 @@ AND (NOT { rdf:type [fabio:Series] }
     frbr:exemplar IRI?;
     # Inverse properties:
     ^frbr:embodiment @:BibliographicResourceType *;
-    ^prov:specializationOf @:EntitySnapshotType *;
+    ^prov:specializationOf @:SnapshotEntityType *;
 }
 
 # ResponsibleAgent
@@ -300,7 +300,7 @@ AND (NOT { rdf:type [fabio:Series] }
     dcterms:relation IRI*;
     # Inverse properties:
     ^pro:isHeldBy @:AgentRoleType *;
-    ^prov:specializationOf @:EntitySnapshotType *;
+    ^prov:specializationOf @:SnapshotEntityType *;
 }
 
 ###################################################################
@@ -309,7 +309,7 @@ AND (NOT { rdf:type [fabio:Series] }
     rdf:type [datacite:Identifier] ;
 }
 
-:EntitySnapshotType {
+:SnapshotEntityType {
     rdf:type [prov:Entity] ;
 }
 

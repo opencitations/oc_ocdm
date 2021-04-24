@@ -14,4 +14,4 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 
-from oc_ocdm.prov.entities.entity_snapshot import EntitySnapshot
+from oc_ocdm.prov.entities.snapshot_entity import SnapshotEntity

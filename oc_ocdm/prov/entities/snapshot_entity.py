@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from rdflib import URIRef
 
 
-class EntitySnapshot(ProvEntity):
+class SnapshotEntity(ProvEntity):
     # HAS CREATION DATE
     def get_generation_time(self) -> Optional[str]:
         return self._get_literal(ProvEntity.iri_generated_at_time)
