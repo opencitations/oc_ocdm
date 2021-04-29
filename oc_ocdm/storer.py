@@ -25,7 +25,7 @@ from oc_ocdm.reader import Reader
 from oc_ocdm.support.query_utils import get_update_query
 
 if TYPE_CHECKING:
-    from typing import Dict, List, Tuple, Any, Optional
+    from typing import Dict, List, Tuple, Any, Optional, Set
     from rdflib import URIRef
     from oc_ocdm.abstract_entity import AbstractEntity
     from oc_ocdm.abstract_set import AbstractSet
@@ -44,7 +44,18 @@ class Storer(object):
     def __init__(self, abstract_set: AbstractSet, repok: Reporter = None, reperr: Reporter = None,
                  context_map: Dict[str, Any] = None, default_dir: str = "_", dir_split: int = 0,
                  n_file_item: int = 1, output_format: str = "json-ld") -> None:
-        self.output_format: str = output_format
+        # We only accept format strings that:
+        # 1. are supported by rdflib
+        # 2. correspond to an output format which is effectively either NT or NQ
+        # The only exception to this rule is the 'json-ld' format, which is the default value of 'output_format'.
+        supported_formats: Set[str] = {'application/n-triples', 'ntriples', 'nt', 'nt11',
+                                       'application/n-quads', 'nquads', 'json-ld'}
+        if output_format not in supported_formats:
+            raise ValueError(f"Given output_format '{self.output_format}' is not supported."
+                             f" Available formats: {supported_formats}.")
+        else:
+            self.output_format: str = output_format
+
         self.dir_split: int = dir_split
         self.n_file_item: int = n_file_item
         self.default_dir: str = default_dir if default_dir != "" else "_"

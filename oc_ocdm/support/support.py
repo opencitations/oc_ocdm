@@ -269,11 +269,6 @@ def find_paths(res: URIRef, base_dir: str, base_iri: str, default_dir: str, dir_
     """
     string_iri: str = str(res)
 
-    if is_json:
-        format_string: str = ".json"
-    else:
-        format_string: str = ".ttl"
-
     if is_dataset(res):
         cur_dir_path: str = (base_dir + re.sub(r"^%s(.*)$" % base_iri, r"\1", string_iri))[:-1]
         # In case of dataset, the file path is different from regular files, e.g.
@@ -305,49 +300,61 @@ def find_paths(res: URIRef, base_dir: str, base_iri: str, default_dir: str, dir_
                 subj_short_name: str = get_prov_subject_short_name(res)
                 short_name: str = get_short_name(res)
                 sub_folder: str = get_prov_subject_prefix(res)
+                file_extension: str = '.json' if is_json else '.nq'
                 if sub_folder == "":
                     sub_folder = default_dir
+                if sub_folder == "":
+                    sub_folder = "_"  # enforce default value
 
                 cur_dir_path: str = base_dir + subj_short_name + os.sep + sub_folder + \
                     os.sep + str(cur_split) + os.sep + str(cur_file_split) + os.sep + "prov"
-                cur_file_path: str = cur_dir_path + os.sep + short_name + format_string
+                cur_file_path: str = cur_dir_path + os.sep + short_name + file_extension
             else:  # regular bibliographic entity
                 short_name: str = get_short_name(res)
                 sub_folder: str = get_prefix(res)
+                file_extension: str = '.json' if is_json else '.nt'
                 if sub_folder == "":
                     sub_folder = default_dir
+                if sub_folder == "":
+                    sub_folder = "_"  # enforce default value
 
-                cur_dir_path: str = base_dir + short_name + os.sep + sub_folder + \
-                    os.sep + str(cur_split)
-                cur_file_path: str = cur_dir_path + os.sep + str(cur_file_split) + format_string
+                cur_dir_path: str = base_dir + short_name + os.sep + sub_folder + os.sep + str(cur_split)
+                cur_file_path: str = cur_dir_path + os.sep + str(cur_file_split) + file_extension
         # Enter here if no split is needed
         elif dir_split == 0:
             if "/prov/" in string_iri:
                 subj_short_name: str = get_prov_subject_short_name(res)
                 short_name: str = get_short_name(res)
                 sub_folder: str = get_prov_subject_prefix(res)
+                file_extension: str = '.json' if is_json else '.nq'
                 if sub_folder == "":
                     sub_folder = default_dir
+                if sub_folder == "":
+                    sub_folder = "_"  # enforce default value
 
                 cur_dir_path: str = base_dir + subj_short_name + os.sep + sub_folder + \
                     os.sep + str(cur_file_split) + os.sep + "prov"
-                cur_file_path: str = cur_dir_path + os.sep + short_name + format_string
+                cur_file_path: str = cur_dir_path + os.sep + short_name + file_extension
             else:
                 short_name: str = get_short_name(res)
                 sub_folder: str = get_prefix(res)
+                file_extension: str = '.json' if is_json else '.nt'
                 if sub_folder == "":
                     sub_folder = default_dir
+                if sub_folder == "":
+                    sub_folder = "_"  # enforce default value
 
                 cur_dir_path: str = base_dir + short_name + os.sep + sub_folder
-                cur_file_path: str = cur_dir_path + os.sep + str(cur_file_split) + format_string
+                cur_file_path: str = cur_dir_path + os.sep + str(cur_file_split) + file_extension
         # Enter here if the data is about a provenance agent, e.g. /corpus/prov/
         else:
             short_name: str = get_short_name(res)
             prefix: str = get_prefix(res)
             count: str = get_count(res)
+            file_extension: str = '.json' if is_json else '.nq'
 
             cur_dir_path: str = base_dir + short_name
-            cur_file_path: str = cur_dir_path + os.sep + prefix + count + format_string
+            cur_file_path: str = cur_dir_path + os.sep + prefix + count + file_extension
 
     return cur_dir_path, cur_file_path
 
