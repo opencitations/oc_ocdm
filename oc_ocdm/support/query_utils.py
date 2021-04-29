@@ -69,7 +69,7 @@ def get_update_query(entity: AbstractEntity, entity_type: str = "graph") -> Tupl
         added_triples: int = len(in_second)
 
         if delete_string is not None and insert_string is not None:
-            return delete_string + ' ' + insert_string, added_triples, removed_triples
+            return delete_string + '; ' + insert_string, added_triples, removed_triples
         elif delete_string is not None:
             return delete_string, 0, removed_triples
         elif insert_string is not None:
