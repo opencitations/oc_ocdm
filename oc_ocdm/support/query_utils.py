@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from typing import Optional, Tuple
+    from typing import Tuple
     from rdflib import URIRef
     from rdflib.compare import IsomorphicGraph
     from oc_ocdm.abstract_entity import AbstractEntity
@@ -28,20 +28,28 @@ from rdflib import Graph
 from rdflib.compare import to_isomorphic, graph_diff
 
 
-def get_delete_query(graph_iri: URIRef, data: Graph) -> Optional[str]:
-    if len(data) == 0:
-        return None
-    delete_string: str = f"DELETE DATA {{ GRAPH <{graph_iri}> {{ "
-    delete_string += data.serialize(format="nt11", encoding="utf-8").decode("utf-8")
-    return delete_string.replace('\n\n', '') + "} }"
+def get_delete_query(graph_iri: URIRef, data: Graph) -> Tuple[str, int]:
+    num_of_statements: int = len(data)
+    if num_of_statements <= 0:
+        return "", 0
+    else:
+        statements: str = data.serialize(format="nt11", encoding="utf-8")\
+            .decode("utf-8")\
+            .replace('\n\n', '')
+        delete_string: str = f"DELETE DATA {{ GRAPH <{graph_iri}> {{ {statements} }} }}"
+        return delete_string, num_of_statements
 
 
-def get_insert_query(graph_iri: URIRef, data: Graph) -> Optional[str]:
-    if len(data) == 0:
-        return None
-    insert_string: str = f"INSERT DATA {{ GRAPH <{graph_iri}> {{ "
-    insert_string += data.serialize(format="nt11", encoding="utf-8").decode("utf-8")
-    return insert_string.replace('\n\n', '') + "} }"
+def get_insert_query(graph_iri: URIRef, data: Graph) -> Tuple[str, int]:
+    num_of_statements: int = len(data)
+    if num_of_statements <= 0:
+        return "", 0
+    else:
+        statements: str = data.serialize(format="nt11", encoding="utf-8") \
+            .decode("utf-8") \
+            .replace('\n\n', '')
+        insert_string: str = f"INSERT DATA {{ GRAPH <{graph_iri}> {{ {statements} }} }}"
+        return insert_string, num_of_statements
 
 
 def get_update_query(entity: AbstractEntity, entity_type: str = "graph") -> Tuple[str, int, int]:
@@ -53,26 +61,27 @@ def get_update_query(entity: AbstractEntity, entity_type: str = "graph") -> Tupl
         preexisting_graph: Graph = Graph(identifier=entity.g.identifier)
 
     if to_be_deleted:
-        removed_triples: int = len(entity.g)
-        return get_delete_query(entity.g.identifier, preexisting_graph), 0, removed_triples
+        delete_string, removed_triples = get_delete_query(entity.g.identifier, preexisting_graph)
+        if delete_string != "":
+            return delete_string, 0, removed_triples
+        else:
+            return "", 0, 0
     else:
         preexisting_iso: IsomorphicGraph = to_isomorphic(preexisting_graph)
         current_iso: IsomorphicGraph = to_isomorphic(entity.g)
         if preexisting_iso == current_iso:
             # Both graphs have exactly the same content!
             return "", 0, 0
+
         in_both, in_first, in_second = graph_diff(preexisting_iso, current_iso)
-        delete_string: Optional[str] = get_delete_query(entity.g.identifier, in_first)
-        insert_string: Optional[str] = get_insert_query(entity.g.identifier, in_second)
+        delete_string, removed_triples = get_delete_query(entity.g.identifier, in_first)
+        insert_string, added_triples = get_insert_query(entity.g.identifier, in_second)
 
-        removed_triples: int = len(in_first)
-        added_triples: int = len(in_second)
-
-        if delete_string is not None and insert_string is not None:
+        if delete_string != "" and insert_string != "":
             return delete_string + '; ' + insert_string, added_triples, removed_triples
-        elif delete_string is not None:
+        elif delete_string != "":
             return delete_string, 0, removed_triples
-        elif insert_string is not None:
+        elif insert_string != "":
             return insert_string, added_triples, 0
         else:
             return "", 0, 0
