@@ -64,7 +64,7 @@ class ResponsibleAgent(BibliographicEntity):
         self._create_literal(GraphEntity.iri_name, string)
 
     def remove_name(self) -> None:
-        self.g.remove((self.g, GraphEntity.iri_name, None))
+        self.g.remove((self.res, GraphEntity.iri_name, None))
 
     # HAS GIVEN NAME
     def get_given_name(self) -> Optional[str]:
@@ -78,7 +78,7 @@ class ResponsibleAgent(BibliographicEntity):
         self._create_literal(GraphEntity.iri_given_name, string)
 
     def remove_given_name(self) -> None:
-        self.g.remove((self.g, GraphEntity.iri_given_name, None))
+        self.g.remove((self.res, GraphEntity.iri_given_name, None))
 
     # HAS FAMILY NAME
     def get_family_name(self) -> Optional[str]:
@@ -92,7 +92,7 @@ class ResponsibleAgent(BibliographicEntity):
         self._create_literal(GraphEntity.iri_family_name, string)
 
     def remove_family_name(self) -> None:
-        self.g.remove((self.g, GraphEntity.iri_family_name, None))
+        self.g.remove((self.res, GraphEntity.iri_family_name, None))
 
     # HAS RELATED AGENT
     def get_related_agents(self) -> List[URIRef]:
