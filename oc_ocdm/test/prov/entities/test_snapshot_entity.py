@@ -22,7 +22,7 @@ from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.prov.prov_set import ProvSet
 
 
-class TestProvEntity(unittest.TestCase):
+class TestSnapshotEntity(unittest.TestCase):
     resp_agent = 'http://resp_agent.test/'
 
     @classmethod
