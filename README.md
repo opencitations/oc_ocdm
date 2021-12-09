@@ -1,5 +1,6 @@
 # oc_ocdm
 [![Documentation Status](https://readthedocs.org/projects/oc-ocdm/badge/?version=latest)](https://oc-ocdm.readthedocs.io/en/latest/?badge=latest)
+[![DOI](https://zenodo.org/badge/322327342.svg)](https://zenodo.org/badge/latestdoi/322327342)
 
 Documentation can be found here: [https://oc-ocdm.readthedocs.io](https://oc-ocdm.readthedocs.io).
 
