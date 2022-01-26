@@ -36,6 +36,17 @@ class BibliographicEntity(GraphEntity):
     """The base class for each bibliographic entity of the OpenCitations DataModel (OCDM)."""
 
     def merge(self, other: BibliographicEntity) -> None:
+        """
+        **WARNING:** ``BibliographicEntity`` **is an abstract class that cannot be instantiated at runtime.
+        As such, it's only possible to execute this method on entities generated from**
+        ``BibliographicEntity``'s **subclasses. Please, refer to their documentation of the** `merge` **method.**
+
+        :param other: The entity which will be marked as to be deleted and whose properties will
+         be merged into the current entity.
+        :type other: BibliographicEntity
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         super(BibliographicEntity, self).merge(other)
 
         id_list: List[Identifier] = other.get_identifiers()

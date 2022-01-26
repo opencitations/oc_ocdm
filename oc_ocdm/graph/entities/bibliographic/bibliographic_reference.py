@@ -37,6 +37,24 @@ class BibliographicReference(BibliographicEntity):
 
     @accepts_only('be')
     def merge(self, other: BibliographicReference) -> None:
+        """
+        The merge operation allows combining two ``BibliographicReference`` entities into a single one,
+        by marking the second entity as to be deleted while also copying its data into the current
+        ``BibliographicReference``. Moreover, every triple from the containing ``GraphSet`` referring to the second
+        entity gets "redirected" to the current entity: **every other reference contained inside a
+        different source (e.g. a triplestore) must be manually handled by the user!**
+
+        In case of functional properties, values from the current entity get overwritten
+        by those coming from the second entity while, in all other cases, values from the
+        second entity are simply appended to those of the current entity. In this context,
+        ``rdfs:label`` is considered as a functional property, while ``rdf:type`` is not.
+
+        :param other: The entity which will be marked as to be deleted and whose properties will
+         be merged into the current entity.
+        :type other: BibliographicReference
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         super(BibliographicReference, self).merge(other)
 
         content: Optional[str] = other.get_content()

@@ -132,6 +132,18 @@ class MetadataEntity(AbstractEntity):
         self._to_be_deleted = True
 
     def merge(self, other: MetadataEntity) -> None:
+        """
+        **WARNING:** ``MetadataEntity`` **is an abstract class that cannot be instantiated at runtime.
+        As such, it's only possible to execute this method on entities generated from**
+        ``MetadataEntity``'s **subclasses. Please, refer to their documentation of the** `merge` **method.**
+
+        :param other: The entity which will be marked as to be deleted and whose properties will
+         be merged into the current entity.
+        :type other: MetadataEntity
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
+
         # Here we must REDIRECT triples pointing
         # to 'other' to make them point to 'self':
         for res, entity in self.m_set.res_to_entity.items():
