@@ -89,6 +89,11 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS TITLE
     def get_title(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `dcterms:title` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_title)
 
     @accepts_only('literal')
@@ -103,6 +108,11 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS SUBTITLE
     def get_subtitle(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `fabio:hasSubtitle` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_has_subtitle)
 
     @accepts_only('literal')
@@ -117,6 +127,11 @@ class BibliographicResource(BibliographicEntity):
 
     # IS PART OF (BibliographicResource)
     def get_is_part_of(self) -> Optional[BibliographicResource]:
+        """
+        Getter method corresponding to the `frbr:partOf` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_part_of, 'br')
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source, uri)
@@ -134,6 +149,11 @@ class BibliographicResource(BibliographicEntity):
 
     # CITES (BibliographicResource)
     def get_citations(self) -> List[BibliographicResource]:
+        """
+        Getter method corresponding to the `cito:cites` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_cites, 'br')
         result: List[BibliographicResource] = []
         for uri in uri_list:
@@ -156,6 +176,11 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS PUBLICATION DATE
     def get_pub_date(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `prism:publicationDate` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_has_publication_date)
 
     @accepts_only('literal')
@@ -172,6 +197,11 @@ class BibliographicResource(BibliographicEntity):
 
     # IS EMBODIED AS (ResourceEmbodiment)
     def get_formats(self) -> List[ResourceEmbodiment]:
+        """
+        Getter method corresponding to the `frbr:embodiment` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_embodiment, 're')
         result: List[ResourceEmbodiment] = []
         for uri in uri_list:
@@ -194,6 +224,11 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS NUMBER
     def get_number(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `fabio:hasSequenceIdentifier` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_has_sequence_identifier)
 
     @accepts_only('literal')
@@ -211,6 +246,11 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS EDITION
     def get_edition(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `prism:edition` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_has_edition)
 
     @accepts_only('literal')
@@ -226,6 +266,11 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS PART (BibliographicReference)
     def get_contained_in_reference_lists(self) -> List[BibliographicReference]:
+        """
+        Getter method corresponding to the `frbr:part` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_reference, 'be')
         result: List[BibliographicReference] = []
         for uri in uri_list:
@@ -248,6 +293,11 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS PART (DiscourseElement)
     def get_contained_discourse_elements(self) -> List[DiscourseElement]:
+        """
+        Getter method corresponding to the `frbr:part` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_de, 'de')
         result: List[DiscourseElement] = []
         for uri in uri_list:
@@ -270,6 +320,11 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS CONTRIBUTOR (AgentRole)
     def get_contributors(self) -> List[AgentRole]:
+        """
+        Getter method corresponding to the `pro:isDocumentContextFor` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_document_context_for, 'ar')
         result: List[AgentRole] = []
         for uri in uri_list:
@@ -289,6 +344,11 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS RELATED DOCUMENT
     def get_related_documents(self) -> List[URIRef]:
+        """
+        Getter method corresponding to the `dcterms:relation` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_relation)
         return uri_list
 

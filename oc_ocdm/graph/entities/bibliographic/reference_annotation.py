@@ -46,6 +46,11 @@ class ReferenceAnnotation(BibliographicEntity):
 
     # HAS CITATION (Citation)
     def get_body_annotation(self) -> Optional[Citation]:
+        """
+        Getter method corresponding to the `oa:hasBody` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_body, 'ci')
         if uri is not None:
             return self.g_set.add_ci(self.resp_agent, self.source, uri)

@@ -53,6 +53,11 @@ class AgentRole(BibliographicEntity):
 
     # HAS NEXT (AgentRole)
     def get_next(self) -> Optional[AgentRole]:
+        """
+        Getter method corresponding to the `oco:hasNext` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_next, 'ar')
         if uri is not None:
             return self.g_set.add_ar(self.resp_agent, self.source, uri)
@@ -70,6 +75,11 @@ class AgentRole(BibliographicEntity):
 
     # IS HELD BY (ResponsibleAgent)
     def get_is_held_by(self) -> Optional[ResponsibleAgent]:
+        """
+        Getter method corresponding to the `pro:isHeldBy` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_is_held_by, 'ra')
         if uri is not None:
             return self.g_set.add_ra(self.resp_agent, self.source, uri)
@@ -86,6 +96,11 @@ class AgentRole(BibliographicEntity):
 
     # HAS ROLE TYPE
     def get_role_type(self) -> Optional[URIRef]:
+        """
+        Getter method corresponding to the `pro:withRole` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_with_role)
         return uri
 

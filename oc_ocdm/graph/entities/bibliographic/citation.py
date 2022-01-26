@@ -66,6 +66,11 @@ class Citation(BibliographicEntity):
 
     # HAS CITING DOCUMENT (BibliographicResource)
     def get_citing_entity(self) -> Optional[BibliographicResource]:
+        """
+        Getter method corresponding to the `cito:hasCitingEntity` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_citing_entity, 'br')
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source, uri)
@@ -82,6 +87,11 @@ class Citation(BibliographicEntity):
 
     # HAS CITED DOCUMENT (BibliographicResource)
     def get_cited_entity(self) -> Optional[BibliographicResource]:
+        """
+        Getter method corresponding to the `cito:hasCitedEntity` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_cited_entity, 'br')
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source, uri)
@@ -98,6 +108,11 @@ class Citation(BibliographicEntity):
 
     # HAS CITATION CREATION DATE
     def get_citation_creation_date(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `cito:hasCitationCreationDate` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_has_citation_creation_date)
 
     @accepts_only('literal')
@@ -117,6 +132,11 @@ class Citation(BibliographicEntity):
 
     # HAS CITATION TIME SPAN
     def get_citation_time_span(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `cito:hasCitationTimeSpan` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_has_citation_time_span)
 
     @accepts_only('literal')
@@ -132,6 +152,11 @@ class Citation(BibliographicEntity):
 
     # HAS CITATION CHARACTERIZATION
     def get_citation_characterization(self) -> Optional[URIRef]:
+        """
+        Getter method corresponding to the `cito:hasCitationCharacterisation` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_citation_characterisation)
         return uri
 

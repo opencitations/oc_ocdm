@@ -30,6 +30,11 @@ if TYPE_CHECKING:
 class SnapshotEntity(ProvEntity):
     # HAS CREATION DATE
     def get_generation_time(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `prov:generatedAtTime` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(ProvEntity.iri_generated_at_time)
 
     @accepts_only('literal')
@@ -45,6 +50,11 @@ class SnapshotEntity(ProvEntity):
 
     # HAS INVALIDATION DATE
     def get_invalidation_time(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `prov:invalidatedAtTime` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(ProvEntity.iri_invalidated_at_time)
 
     @accepts_only('literal')
@@ -61,6 +71,11 @@ class SnapshotEntity(ProvEntity):
 
     # IS SNAPSHOT OF
     def get_is_snapshot_of(self) -> Optional[URIRef]:
+        """
+        Getter method corresponding to the `prov:specializationOf` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(ProvEntity.iri_specialization_of)
         return uri
 
@@ -76,6 +91,11 @@ class SnapshotEntity(ProvEntity):
 
     # IS DERIVED FROM
     def get_derives_from(self) -> List[ProvEntity]:
+        """
+        Getter method corresponding to the `prov:wasDerivedFrom` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(ProvEntity.iri_was_derived_from, 'se')
         result: List[ProvEntity] = []
         for uri in uri_list:
@@ -99,6 +119,11 @@ class SnapshotEntity(ProvEntity):
 
     # HAS PRIMARY SOURCE
     def get_primary_source(self) -> Optional[URIRef]:
+        """
+        Getter method corresponding to the `prov:hadPrimarySource` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(ProvEntity.iri_had_primary_source)
         return uri
 
@@ -116,6 +141,11 @@ class SnapshotEntity(ProvEntity):
 
     # HAS UPDATE ACTION
     def get_update_action(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `oco:hasUpdateQuery` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(ProvEntity.iri_has_update_query)
 
     @accepts_only('literal')
@@ -132,6 +162,11 @@ class SnapshotEntity(ProvEntity):
 
     # HAS DESCRIPTION
     def get_description(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `dcterms:description` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(ProvEntity.iri_description)
 
     @accepts_only('literal')
@@ -150,6 +185,11 @@ class SnapshotEntity(ProvEntity):
 
     # IS ATTRIBUTED TO
     def get_resp_agent(self) -> Optional[URIRef]:
+        """
+        Getter method corresponding to the `prov:wasAttributedTo` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(ProvEntity.iri_was_attributed_to)
         return uri
 

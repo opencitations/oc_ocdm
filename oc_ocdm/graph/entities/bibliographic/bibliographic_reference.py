@@ -53,6 +53,11 @@ class BibliographicReference(BibliographicEntity):
 
     # HAS BIBLIOGRAPHIC REFERENCE TEXT
     def get_content(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `c4o:hasContent` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_has_content)
 
     @accepts_only('literal')
@@ -75,6 +80,11 @@ class BibliographicReference(BibliographicEntity):
 
     # HAS ANNOTATION (ReferenceAnnotation)
     def get_annotations(self) -> List[ReferenceAnnotation]:
+        """
+        Getter method corresponding to the `oco:hasAnnotation` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_annotation, 'an')
         result: List[ReferenceAnnotation] = []
         for uri in uri_list:
@@ -97,6 +107,11 @@ class BibliographicReference(BibliographicEntity):
 
     # REFERENCES (BibliographicResource)
     def get_referenced_br(self) -> Optional[BibliographicResource]:
+        """
+        Getter method corresponding to the `biro:references` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_references, 'br')
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source, uri)

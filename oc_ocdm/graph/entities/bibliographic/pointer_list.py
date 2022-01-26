@@ -46,6 +46,11 @@ class PointerList(BibliographicEntity):
 
     # HAS POINTER LIST TEXT
     def get_content(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `c4o:hasContent` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_has_content)
 
     @accepts_only('literal')
@@ -58,6 +63,11 @@ class PointerList(BibliographicEntity):
 
     # HAS ELEMENT (ReferencePointer)
     def get_contained_elements(self) -> List[ReferencePointer]:
+        """
+        Getter method corresponding to the `co:element` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_element, 'rp')
         result: List[ReferencePointer] = []
         for uri in uri_list:

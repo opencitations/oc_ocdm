@@ -53,6 +53,11 @@ class ResourceEmbodiment(BibliographicEntity):
 
     # HAS FORMAT
     def get_media_type(self) -> Optional[URIRef]:
+        """
+        Getter method corresponding to the `dcterms:format` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_format)
         return uri
 
@@ -68,6 +73,11 @@ class ResourceEmbodiment(BibliographicEntity):
 
     # HAS FIRST PAGE
     def get_starting_page(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `prism:startingPage` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_starting_page)
 
     @accepts_only('literal')
@@ -86,6 +96,11 @@ class ResourceEmbodiment(BibliographicEntity):
 
     # HAS LAST PAGE
     def get_ending_page(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `prism:endingPage` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_ending_page)
 
     @accepts_only('literal')
@@ -104,6 +119,11 @@ class ResourceEmbodiment(BibliographicEntity):
 
     # HAS URL
     def get_url(self) -> Optional[URIRef]:
+        """
+        Getter method corresponding to the `frbr:exemplar` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_url)
         return uri
 

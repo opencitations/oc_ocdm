@@ -49,6 +49,11 @@ class BibliographicEntity(GraphEntity):
 
     # HAS IDENTIFIER
     def get_identifiers(self) -> List[Identifier]:
+        """
+        Getter method corresponding to the `datacite:hasIdentifier` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_identifier, 'id')
         result: List[Identifier] = []
         for uri in uri_list:

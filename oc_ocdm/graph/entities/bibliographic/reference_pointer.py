@@ -56,6 +56,11 @@ class ReferencePointer(BibliographicEntity):
 
     # HAS REFERENCE POINTER TEXT
     def get_content(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `c4o:hasContent` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_has_content)
 
     @accepts_only('literal')
@@ -71,6 +76,11 @@ class ReferencePointer(BibliographicEntity):
 
     # HAS NEXT (ReferencePointer)
     def get_next_rp(self) -> Optional[ReferencePointer]:
+        """
+        Getter method corresponding to the `oco:hasNext` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_next, 'rp')
         if uri is not None:
             return self.g_set.add_rp(self.resp_agent, self.source, uri)
@@ -88,6 +98,11 @@ class ReferencePointer(BibliographicEntity):
 
     # DENOTES (BibliographicReference)
     def get_denoted_be(self) -> Optional[BibliographicReference]:
+        """
+        Getter method corresponding to the `c4o:denotes` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_denotes, 'be')
         if uri is not None:
             return self.g_set.add_be(self.resp_agent, self.source, uri)
@@ -105,6 +120,11 @@ class ReferencePointer(BibliographicEntity):
 
     # HAS ANNOTATION (ReferenceAnnotation)
     def get_annotations(self) -> List[ReferenceAnnotation]:
+        """
+        Getter method corresponding to the `oco:hasAnnotation` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_annotation, 'an')
         result: List[ReferenceAnnotation] = []
         for uri in uri_list:

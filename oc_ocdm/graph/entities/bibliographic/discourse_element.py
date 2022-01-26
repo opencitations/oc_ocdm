@@ -68,6 +68,11 @@ class DiscourseElement(BibliographicEntity):
 
     # HAS TITLE
     def get_title(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `dcterms:title` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_title)
 
     @accepts_only('literal')
@@ -82,6 +87,11 @@ class DiscourseElement(BibliographicEntity):
     
     # HAS PART (DiscourseElement)
     def get_contained_discourse_elements(self) -> List[DiscourseElement]:
+        """
+        Getter method corresponding to the `frbr:part` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_de, 'de')
         result: List[DiscourseElement] = []
         for uri in uri_list:
@@ -104,6 +114,11 @@ class DiscourseElement(BibliographicEntity):
 
     # HAS NEXT (DiscourseElement)
     def get_next_de(self) -> Optional[DiscourseElement]:
+        """
+        Getter method corresponding to the `oco:hasNext` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_next, 'de')
         if uri is not None:
             return self.g_set.add_de(self.resp_agent, self.source, uri)
@@ -120,6 +135,11 @@ class DiscourseElement(BibliographicEntity):
 
     # IS CONTEXT OF (ReferencePointer)
     def get_is_context_of_rp(self) -> List[ReferencePointer]:
+        """
+        Getter method corresponding to the `c4o:isContextOf` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of, 'rp')
         result: List[ReferencePointer] = []
         for uri in uri_list:
@@ -142,6 +162,11 @@ class DiscourseElement(BibliographicEntity):
 
     # IS CONTEXT OF (PointerList)
     def get_is_context_of_pl(self) -> List[PointerList]:
+        """
+        Getter method corresponding to the `c4o:isContextOf` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of, 'pl')
         result: List[PointerList] = []
         for uri in uri_list:
@@ -164,6 +189,11 @@ class DiscourseElement(BibliographicEntity):
 
     # HAS CONTENT
     def get_content(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `c4o:hasContent` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_has_content)
 
     @accepts_only('literal')
@@ -178,6 +208,11 @@ class DiscourseElement(BibliographicEntity):
 
     # HAS NUMBER
     def get_number(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `fabio:hasSequenceIdentifier` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_has_sequence_identifier)
 
     @accepts_only('literal')

@@ -53,6 +53,11 @@ class ResponsibleAgent(BibliographicEntity):
 
     # HAS NAME STRING
     def get_name(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `foaf:name` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_name)
 
     @accepts_only('literal')
@@ -68,6 +73,11 @@ class ResponsibleAgent(BibliographicEntity):
 
     # HAS GIVEN NAME
     def get_given_name(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `foaf:givenName` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_given_name)
 
     @accepts_only('literal')
@@ -82,6 +92,11 @@ class ResponsibleAgent(BibliographicEntity):
 
     # HAS FAMILY NAME
     def get_family_name(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `foaf:familyName` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_family_name)
 
     @accepts_only('literal')
@@ -96,6 +111,11 @@ class ResponsibleAgent(BibliographicEntity):
 
     # HAS RELATED AGENT
     def get_related_agents(self) -> List[URIRef]:
+        """
+        Getter method corresponding to the `dcterms:relation` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_relation)
         return uri_list
 

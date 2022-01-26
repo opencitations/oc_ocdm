@@ -65,6 +65,11 @@ class Distribution(MetadataEntity):
 
     # HAS TITLE
     def get_title(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `dcterms:title` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(MetadataEntity.iri_title)
 
     @accepts_only('literal')
@@ -78,6 +83,11 @@ class Distribution(MetadataEntity):
 
     # HAS DESCRIPTION
     def get_description(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `dcterms:description` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(MetadataEntity.iri_description)
 
     @accepts_only('literal')
@@ -91,6 +101,11 @@ class Distribution(MetadataEntity):
 
     # HAS PUBLICATION DATE
     def get_publication_date(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `dcterms:issued` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(MetadataEntity.iri_issued)
 
     @accepts_only('literal')
@@ -104,6 +119,11 @@ class Distribution(MetadataEntity):
 
     # HAS BYTE SIZE
     def get_byte_size(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `dcat:byte_size` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(MetadataEntity.iri_byte_size)
 
     @accepts_only('literal')
@@ -117,6 +137,11 @@ class Distribution(MetadataEntity):
 
     # HAS LICENSE
     def get_license(self) -> Optional[URIRef]:
+        """
+        Getter method corresponding to the `dcterms:license` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(MetadataEntity.iri_license)
 
     @accepts_only('thing')
@@ -130,6 +155,11 @@ class Distribution(MetadataEntity):
 
     # HAS DOWNLOAD URL
     def get_download_url(self) -> Optional[URIRef]:
+        """
+        Getter method corresponding to the `dcat:downloadURL` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(MetadataEntity.iri_download_url)
 
     @accepts_only('thing')
@@ -143,6 +173,11 @@ class Distribution(MetadataEntity):
 
     # HAS_MEDIA_TYPE
     def get_media_type(self) -> Optional[URIRef]:
+        """
+        Getter method corresponding to the `dcat:mediaType` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(MetadataEntity.iri_media_type)
 
     @accepts_only('thing')

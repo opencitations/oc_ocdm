@@ -77,6 +77,11 @@ class Dataset(MetadataEntity):
 
     # HAS TITLE
     def get_title(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `dcterms:title` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(MetadataEntity.iri_title)
 
     @accepts_only('literal')
@@ -90,6 +95,11 @@ class Dataset(MetadataEntity):
 
     # HAS DESCRIPTION
     def get_description(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `dcterms:description` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(MetadataEntity.iri_description)
 
     @accepts_only('literal')
@@ -103,6 +113,11 @@ class Dataset(MetadataEntity):
 
     # HAS PUBLICATION DATE
     def get_publication_date(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `dcterms:issued` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(MetadataEntity.iri_issued)
 
     @accepts_only('literal')
@@ -116,6 +131,11 @@ class Dataset(MetadataEntity):
 
     # HAS MODIFICATION DATE
     def get_modification_date(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `dcterms:modified` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(MetadataEntity.iri_modified)
 
     @accepts_only('literal')
@@ -129,6 +149,11 @@ class Dataset(MetadataEntity):
 
     # HAS KEYWORD
     def get_keywords(self) -> List[str]:
+        """
+        Getter method corresponding to the `dcat:keyword` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         return self._get_multiple_literals(MetadataEntity.iri_keyword)
 
     @accepts_only('literal')
@@ -145,6 +170,11 @@ class Dataset(MetadataEntity):
 
     # HAS SUBJECT
     def get_subjects(self) -> List[URIRef]:
+        """
+        Getter method corresponding to the `dcat:theme` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(MetadataEntity.iri_subject)
         return uri_list
 
@@ -162,6 +192,11 @@ class Dataset(MetadataEntity):
 
     # HAS LANDING PAGE
     def get_landing_page(self) -> Optional[URIRef]:
+        """
+        Getter method corresponding to the `dcat:landingPage` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(MetadataEntity.iri_landing_page)
 
     @accepts_only('thing')
@@ -175,6 +210,11 @@ class Dataset(MetadataEntity):
 
     # HAS SUB-DATASET
     def get_sub_datasets(self) -> List[Dataset]:
+        """
+        Getter method corresponding to the `void:subset` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(MetadataEntity.iri_subset, '_dataset_')
         result: List[Dataset] = []
         for uri in uri_list:
@@ -195,6 +235,11 @@ class Dataset(MetadataEntity):
 
     # HAS SPARQL ENDPOINT
     def get_sparql_endpoint(self) -> Optional[URIRef]:
+        """
+        Getter method corresponding to the `void:sparqlEndpoint` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(MetadataEntity.iri_sparql_endpoint)
         return uri
 
@@ -209,6 +254,11 @@ class Dataset(MetadataEntity):
 
     # HAS DISTRIBUTION (Distribution)
     def get_distributions(self) -> List[Distribution]:
+        """
+        Getter method corresponding to the `dcat:distribution` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(MetadataEntity.iri_distribution, 'di')
         result: List[Distribution] = []
         for uri in uri_list:

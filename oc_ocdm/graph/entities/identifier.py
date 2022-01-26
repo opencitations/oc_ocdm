@@ -50,9 +50,19 @@ class Identifier(GraphEntity):
 
     # HAS LITERAL VALUE and HAS SCHEME
     def get_literal_value(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `literal:hasLiteralValue` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(GraphEntity.iri_has_literal_value)
 
     def get_scheme(self) -> Optional[URIRef]:
+        """
+        Getter method corresponding to the `datacite:usesIdentifierScheme` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_uses_identifier_scheme)
         return uri
 

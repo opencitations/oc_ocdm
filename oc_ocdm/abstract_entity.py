@@ -39,6 +39,11 @@ class AbstractEntity(ABC):
 
     # LABEL
     def get_label(self) -> Optional[str]:
+        """
+        Getter method corresponding to the `rdfs:label` RDF predicate.
+
+        :return: The requested value if found, None otherwise
+        """
         return self._get_literal(RDFS.label)
 
     def create_label(self, string: str) -> None:
@@ -70,6 +75,11 @@ class AbstractEntity(ABC):
 
     # TYPE
     def get_types(self) -> List[URIRef]:
+        """
+        Getter method corresponding to the `rdf:type` RDF predicate.
+
+        :return: A list containing the requested values if found, None otherwise
+        """
         uri_list: List[URIRef] = self._get_multiple_uri_references(RDF.type)
         return uri_list
 
