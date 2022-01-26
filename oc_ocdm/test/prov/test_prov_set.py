@@ -167,9 +167,10 @@ class TestProvSet(unittest.TestCase):
             se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
             self.assertIsNone(se_a_2)
         with self.subTest('Deletion [Non-Merged entity]'):
+            title = "TEST TITLE"
             a = self.graph_set.add_br(self.resp_agent)
             se_a_1 = self.prov_set.add_se(a)
-            a.has_title('ciao')
+            a.has_title(title)
             a.mark_as_to_be_deleted()
 
             result = self.prov_set.generate_provenance(cur_time)
