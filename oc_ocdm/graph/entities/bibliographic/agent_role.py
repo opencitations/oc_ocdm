@@ -82,8 +82,18 @@ class AgentRole(BibliographicEntity):
 
     @accepts_only('ar')
     def has_next(self, ar_res: AgentRole) -> None:
-        """The previous role in a sequence of agent roles of the same type associated with the
-        same bibliographic resource (so as to define, for instance, an ordered list of authors).
+        """
+        Setter method corresponding to the `oco:hasNext` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The previous role in a sequence of agent roles of the same type associated with the
+        same bibliographic resource (so as to define, for instance, an ordered list of authors).`
+
+        :param ar_res: The value that will be set as the object of the property related to this method
+        :type ar_res: AgentRole
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_next()
         self.g.add((self.res, GraphEntity.iri_has_next, ar_res.res))
@@ -104,7 +114,17 @@ class AgentRole(BibliographicEntity):
 
     @accepts_only('ra')
     def is_held_by(self, ra_res: ResponsibleAgent):
-        """The agent holding this role with respect to a particular bibliographic resource.
+        """
+        Setter method corresponding to the `pro:isHeldBy` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The agent holding this role with respect to a particular bibliographic resource.`
+
+        :param ra_res: The value that will be set as the object of the property related to this method
+        :type ra_res: ResponsibleAgent
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_is_held_by()
         self.g.add((self.res, GraphEntity.iri_is_held_by, ra_res.res))
@@ -123,19 +143,43 @@ class AgentRole(BibliographicEntity):
         return uri
 
     def create_publisher(self) -> None:
-        """The specific type of role under consideration (e.g. author, editor or publisher).
+        """
+        Setter method corresponding to the `pro:withRole` RDF predicate.
+        It implicitly sets the object value `pro:publisher`.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The specific type of role under consideration (e.g. author, editor or publisher).`
+
+        :return: None
         """
         self.remove_role_type()
         self.g.add((self.res, GraphEntity.iri_with_role, GraphEntity.iri_publisher))
 
     def create_author(self) -> None:
-        """The specific type of role under consideration (e.g. author, editor or publisher).
+        """
+        Setter method corresponding to the `pro:withRole` RDF predicate.
+        It implicitly sets the object value `pro:author`.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The specific type of role under consideration (e.g. author, editor or publisher).`
+
+        :return: None
         """
         self.remove_role_type()
         self.g.add((self.res, GraphEntity.iri_with_role, GraphEntity.iri_author))
 
     def create_editor(self) -> None:
-        """The specific type of role under consideration (e.g. author, editor or publisher).
+        """
+        Setter method corresponding to the `pro:withRole` RDF predicate.
+        It implicitly sets the object value `pro:editor`.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The specific type of role under consideration (e.g. author, editor or publisher).`
+
+        :return: None
         """
         self.remove_role_type()
         self.g.add((self.res, GraphEntity.iri_with_role, GraphEntity.iri_editor))

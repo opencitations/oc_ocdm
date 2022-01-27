@@ -80,8 +80,18 @@ class ResponsibleAgent(BibliographicEntity):
 
     @accepts_only('literal')
     def has_name(self, string: str) -> None:
-        """The name of an agent (for people, usually in the format: given name followed by family
-        name, separated by a space).
+        """
+        Setter method corresponding to the `foaf:name` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The name of an agent (for people, usually in the format: given name followed by family
+        name, separated by a space).`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_name()
         self._create_literal(GraphEntity.iri_name, string)
@@ -100,7 +110,17 @@ class ResponsibleAgent(BibliographicEntity):
 
     @accepts_only('literal')
     def has_given_name(self, string: str) -> None:
-        """The given name of an agent, if a person.
+        """
+        Setter method corresponding to the `foaf:givenName` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The given name of an agent, if a person.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_given_name()
         self._create_literal(GraphEntity.iri_given_name, string)
@@ -119,7 +139,17 @@ class ResponsibleAgent(BibliographicEntity):
 
     @accepts_only('literal')
     def has_family_name(self, string: str) -> None:
-        """The family name of an agent, if a person.
+        """
+        Setter method corresponding to the `foaf:familyName` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The family name of an agent, if a person.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_family_name()
         self._create_literal(GraphEntity.iri_family_name, string)
@@ -139,8 +169,16 @@ class ResponsibleAgent(BibliographicEntity):
 
     @accepts_only('thing')
     def has_related_agent(self, thing_ref: URIRef) -> None:
-        """An external agent that/who is related in some relevant way with this responsible agent
-        (e.g. for inter-linking purposes).
+        """
+        Setter method corresponding to the `dcterms:relation` RDF predicate.
+
+        `An external agent that/who is related in some relevant way with this responsible agent
+        (e.g. for inter-linking purposes).`
+
+        :param thing_ref: The value that will be set as the object of the property related to this method
+        :type thing_ref: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.g.add((self.res, GraphEntity.iri_relation, thing_ref))
 

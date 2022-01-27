@@ -86,64 +86,259 @@ class Identifier(GraphEntity):
 
     @accepts_only('literal')
     def create_oci(self, string: str) -> None:
+        """
+        Setter method corresponding to both the `literal:hasLiteralValue` and the
+        `datacite:usesIdentifierScheme` RDF predicate.
+        It implicitly sets the object value `datacite:oci` for the
+        `datacite:usesIdentifierScheme` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self._associate_identifier_with_scheme(string, GraphEntity.iri_oci)
 
     @accepts_only('literal')
     def create_orcid(self, string: str) -> None:
+        """
+        Setter method corresponding to both the `literal:hasLiteralValue` and the
+        `datacite:usesIdentifierScheme` RDF predicate.
+        It implicitly sets the object value `datacite:orcid` for the
+        `datacite:usesIdentifierScheme` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self._associate_identifier_with_scheme(string, GraphEntity.iri_orcid)
 
     @accepts_only('literal')
     def create_doi(self, string: str) -> None:
+        """
+        Setter method corresponding to both the `literal:hasLiteralValue` and the
+        `datacite:usesIdentifierScheme` RDF predicate.
+        It implicitly sets the object value `datacite:doi` for the
+        `datacite:usesIdentifierScheme` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self._associate_identifier_with_scheme(string.lower(), GraphEntity.iri_doi)
 
     @accepts_only('literal')
     def create_pmid(self, string: str) -> None:
+        """
+        Setter method corresponding to both the `literal:hasLiteralValue` and the
+        `datacite:usesIdentifierScheme` RDF predicate.
+        It implicitly sets the object value `datacite:pmid` for the
+        `datacite:usesIdentifierScheme` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self._associate_identifier_with_scheme(string, GraphEntity.iri_pmid)
 
     @accepts_only('literal')
     def create_pmcid(self, string: str) -> None:
+        """
+        Setter method corresponding to both the `literal:hasLiteralValue` and the
+        `datacite:usesIdentifierScheme` RDF predicate.
+        It implicitly sets the object value `datacite:pmcid` for the
+        `datacite:usesIdentifierScheme` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self._associate_identifier_with_scheme(string, GraphEntity.iri_pmcid)
 
     @accepts_only('literal')
     def create_issn(self, string: str) -> None:
+        """
+        Setter method corresponding to both the `literal:hasLiteralValue` and the
+        `datacite:usesIdentifierScheme` RDF predicate.
+        It implicitly sets the object value `datacite:issn` for the
+        `datacite:usesIdentifierScheme` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         cur_string = re.sub("–", "-", string)
         if cur_string != "0000-0000":
             self._associate_identifier_with_scheme(string, GraphEntity.iri_issn)
 
     @accepts_only('literal')
     def create_isbn(self, string: str) -> None:
+        """
+        Setter method corresponding to both the `literal:hasLiteralValue` and the
+        `datacite:usesIdentifierScheme` RDF predicate.
+        It implicitly sets the object value `datacite:isbn` for the
+        `datacite:usesIdentifierScheme` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self._associate_identifier_with_scheme(re.sub("–", "-", string), GraphEntity.iri_isbn)
 
     @accepts_only('literal')
     def create_url(self, string: str) -> None:
+        """
+        Setter method corresponding to both the `literal:hasLiteralValue` and the
+        `datacite:usesIdentifierScheme` RDF predicate.
+        It implicitly sets the object value `datacite:url` for the
+        `datacite:usesIdentifierScheme` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self._associate_identifier_with_scheme(encode_url(string.lower()), GraphEntity.iri_url)
 
     @accepts_only('literal')
     def create_xpath(self, string: str) -> None:
+        """
+        Setter method corresponding to both the `literal:hasLiteralValue` and the
+        `datacite:usesIdentifierScheme` RDF predicate.
+        It implicitly sets the object value `datacite:local-resource-identifier-scheme` for the
+        `datacite:usesIdentifierScheme` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self._associate_identifier_with_scheme(string, GraphEntity.iri_xpath)
 
     @accepts_only('literal')
     def create_intrepid(self, string: str) -> None:
+        """
+        Setter method corresponding to both the `literal:hasLiteralValue` and the
+        `datacite:usesIdentifierScheme` RDF predicate.
+        It implicitly sets the object value `datacite:intrepid` for the
+        `datacite:usesIdentifierScheme` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self._associate_identifier_with_scheme(string, GraphEntity.iri_intrepid)
 
     @accepts_only('literal')
     def create_xmlid(self, string: str) -> None:
+        """
+        Setter method corresponding to both the `literal:hasLiteralValue` and the
+        `datacite:usesIdentifierScheme` RDF predicate.
+        It implicitly sets the object value `datacite:local-resource-identifier-scheme` for the
+        `datacite:usesIdentifierScheme` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self._associate_identifier_with_scheme(string, GraphEntity.iri_xmlid)
 
     @accepts_only('literal')
     def create_wikidata(self, string: str) -> None:
+        """
+        Setter method corresponding to both the `literal:hasLiteralValue` and the
+        `datacite:usesIdentifierScheme` RDF predicate.
+        It implicitly sets the object value `datacite:wikidata` for the
+        `datacite:usesIdentifierScheme` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self._associate_identifier_with_scheme(string, GraphEntity.iri_wikidata)
 
     @accepts_only('literal')
     def create_wikipedia(self, string: str) -> None:
+        """
+        Setter method corresponding to both the `literal:hasLiteralValue` and the
+        `datacite:usesIdentifierScheme` RDF predicate.
+        It implicitly sets the object value `datacite:wikipedia` for the
+        `datacite:usesIdentifierScheme` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self._associate_identifier_with_scheme(string, GraphEntity.iri_wikipedia)
 
     @accepts_only('literal')
     def create_crossref(self, string: str) -> None:
+        """
+        Setter method corresponding to both the `literal:hasLiteralValue` and the
+        `datacite:usesIdentifierScheme` RDF predicate.
+        It implicitly sets the object value `datacite:crossref` for the
+        `datacite:usesIdentifierScheme` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self._associate_identifier_with_scheme(string, GraphEntity.iri_crossref)
 
     @accepts_only('literal')
     def create_viaf(self, string: str) -> None:
+        """
+        Setter method corresponding to both the `literal:hasLiteralValue` and the
+        `datacite:usesIdentifierScheme` RDF predicate.
+        It implicitly sets the object value `datacite:viaf` for the
+        `datacite:usesIdentifierScheme` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self._associate_identifier_with_scheme(string, GraphEntity.iri_viaf)
 
     def _associate_identifier_with_scheme(self, string: str, id_type: URIRef) -> None:

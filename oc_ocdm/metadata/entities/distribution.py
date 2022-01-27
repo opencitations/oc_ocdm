@@ -92,7 +92,18 @@ class Distribution(MetadataEntity):
 
     @accepts_only('literal')
     def has_title(self, string: str) -> None:
-        """The title of the distribution."""
+        """
+        Setter method corresponding to the `dcterms:title` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The title of the distribution.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self.remove_title()
         self._create_literal(MetadataEntity.iri_title, string)
 
@@ -110,7 +121,18 @@ class Distribution(MetadataEntity):
 
     @accepts_only('literal')
     def has_description(self, string: str) -> None:
-        """A short textual description of the content of the distribution."""
+        """
+        Setter method corresponding to the `dcterms:description` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `A short textual description of the content of the distribution.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self.remove_description()
         self._create_literal(MetadataEntity.iri_description, string)
 
@@ -128,7 +150,18 @@ class Distribution(MetadataEntity):
 
     @accepts_only('literal')
     def has_publication_date(self, string: str) -> None:
-        """The date of first publication of the distribution."""
+        """
+        Setter method corresponding to the `dcterms:issued` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The date of first publication of the distribution.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self.remove_publication_date()
         self._create_literal(MetadataEntity.iri_issued, string, XSD.dateTime, False)
 
@@ -146,7 +179,18 @@ class Distribution(MetadataEntity):
 
     @accepts_only('literal')
     def has_byte_size(self, string: str) -> None:
-        """The size in bytes of the distribution."""
+        """
+        Setter method corresponding to the `dcat:byte_size` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The size in bytes of the distribution.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self.remove_byte_size()
         self._create_literal(MetadataEntity.iri_byte_size, string, XSD.decimal)
 
@@ -164,7 +208,18 @@ class Distribution(MetadataEntity):
 
     @accepts_only('thing')
     def has_license(self, thing_res: URIRef) -> None:
-        """The resource describing the license associated with the data in the distribution."""
+        """
+        Setter method corresponding to the `dcterms:license` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The resource describing the license associated with the data in the distribution.`
+
+        :param thing_res: The value that will be set as the object of the property related to this method
+        :type thing_res: URIRef
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self.remove_license()
         self.g.add((self.res, MetadataEntity.iri_license, thing_res))
 
@@ -182,7 +237,18 @@ class Distribution(MetadataEntity):
 
     @accepts_only('thing')
     def has_download_url(self, thing_res: URIRef) -> None:
-        """The URL of the document where the distribution is stored."""
+        """
+        Setter method corresponding to the `dcat:downloadURL` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The URL of the document where the distribution is stored.`
+
+        :param thing_res: The value that will be set as the object of the property related to this method
+        :type thing_res: URIRef
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self.remove_download_url()
         self.g.add((self.res, MetadataEntity.iri_download_url, thing_res))
 
@@ -200,7 +266,18 @@ class Distribution(MetadataEntity):
 
     @accepts_only('thing')
     def has_media_type(self, thing_res: URIRef) -> None:
-        """The file type of the representation of the distribution (according to IANA media types)."""
+        """
+        Setter method corresponding to the `dcat:mediaType` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The file type of the representation of the distribution (according to IANA media types).`
+
+        :param thing_res: The value that will be set as the object of the property related to this method
+        :type thing_res: URIRef
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self.remove_media_type()
         self.g.add((self.res, MetadataEntity.iri_media_type, thing_res))
 

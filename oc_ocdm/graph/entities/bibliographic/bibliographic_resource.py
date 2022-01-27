@@ -116,7 +116,17 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('literal')
     def has_title(self, string: str) -> None:
-        """The title of the bibliographic resource.
+        """
+        Setter method corresponding to the `dcterms:title` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The title of the bibliographic resource.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_title()
         self._create_literal(GraphEntity.iri_title, string)
@@ -135,7 +145,17 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('literal')
     def has_subtitle(self, string: str) -> None:
-        """The subtitle of the bibliographic resource.
+        """
+        Setter method corresponding to the `fabio:hasSubtitle` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The subtitle of the bibliographic resource.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_subtitle()
         self._create_literal(GraphEntity.iri_has_subtitle, string)
@@ -156,8 +176,18 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('br')
     def is_part_of(self, br_res: BibliographicResource) -> None:
-        """The corpus identifier of the bibliographic resource (e.g. issue, volume, journal,
-        conference proceedings) that contains the subject bibliographic resource.
+        """
+        Setter method corresponding to the `frbr:partOf` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The corpus identifier of the bibliographic resource (e.g. issue, volume, journal,
+        conference proceedings) that contains the subject bibliographic resource.`
+
+        :param br_res: The value that will be set as the object of the property related to this method
+        :type br_res: BibliographicResource
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_is_part_of()
         self.g.add((self.res, GraphEntity.iri_part_of, br_res.res))
@@ -180,8 +210,16 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('br')
     def has_citation(self, br_res: BibliographicResource) -> None:
-        """The corpus identifier of the bibliographic resource cited by the subject bibliographic
-        resource.
+        """
+        Setter method corresponding to the `cito:cites` RDF predicate.
+
+        `The corpus identifier of the bibliographic resource cited by the subject bibliographic
+        resource.`
+
+        :param br_res: The value that will be set as the object of the property related to this method
+        :type br_res: BibliographicResource
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.g.add((self.res, GraphEntity.iri_cites, br_res.res))
 
@@ -203,7 +241,17 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('literal')
     def has_pub_date(self, string: str) -> None:
-        """The date of publication of the bibliographic resource.
+        """
+        Setter method corresponding to the `prism:publicationDate` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The date of publication of the bibliographic resource.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         cur_type, string = get_datatype_from_iso_8601(string)
         if cur_type is not None and string is not None:
@@ -228,8 +276,16 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('re')
     def has_format(self, re_res: ResourceEmbodiment) -> None:
-        """The corpus identifier of the resource embodiment defining the format in which the
-        bibliographic resource has been embodied, which can be either print or digital.
+        """
+        Setter method corresponding to the `frbr:embodiment` RDF predicate.
+
+        `The corpus identifier of the resource embodiment defining the format in which the
+        bibliographic resource has been embodied, which can be either print or digital.`
+
+        :param re_res: The value that will be set as the object of the property related to this method
+        :type re_res: ResourceEmbodiment
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.g.add((self.res, GraphEntity.iri_embodiment, re_res.res))
 
@@ -251,10 +307,20 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('literal')
     def has_number(self, string: str) -> None:
-        """A literal (for example a number or a letter) that identifies the sequence position of the
+        """
+        Setter method corresponding to the `fabio:hasSequenceIdentifier` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `A literal (for example a number or a letter) that identifies the sequence position of the
         bibliographic resource as a particular item within a larger collection (e.g. an article
         number within a journal issue, a volume number of a journal, a chapter number within
-        a book).
+        a book).`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_number()
         self._create_literal(GraphEntity.iri_has_sequence_identifier, string)
@@ -273,8 +339,18 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('literal')
     def has_edition(self, string: str) -> None:
-        """An identifier for one of several alternative editions of a particular bibliographic
-        resource.
+        """
+        Setter method corresponding to the `prism:edition` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `An identifier for one of several alternative editions of a particular bibliographic
+        resource.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_edition()
         self._create_literal(GraphEntity.iri_has_edition, string)
@@ -297,8 +373,16 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('be')
     def contains_in_reference_list(self, be_res: BibliographicReference) -> None:
-        """A bibliographic reference within the bibliographic resource, or a discourse element
-        wherein the text of the bibliographic resources can be organized.
+        """
+        Setter method corresponding to the `frbr:part` RDF predicate.
+
+        `A bibliographic reference within the bibliographic resource, or a discourse element
+        wherein the text of the bibliographic resources can be organized.`
+
+        :param be_res: The value that will be set as the object of the property related to this method
+        :type be_res: BibliographicReference
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.g.add((self.res, GraphEntity.iri_contains_reference, be_res.res))
 
@@ -324,8 +408,16 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('de')
     def contains_discourse_element(self, de_res: DiscourseElement) -> None:
-        """A bibliographic reference within the bibliographic resource, or a discourse element
-        wherein the text of the bibliographic resources can be organized.
+        """
+        Setter method corresponding to the `frbr:part` RDF predicate.
+
+        `A bibliographic reference within the bibliographic resource, or a discourse element
+        wherein the text of the bibliographic resources can be organized.`
+
+        :param de_res: The value that will be set as the object of the property related to this method
+        :type de_res: DiscourseElement
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.g.add((self.res, GraphEntity.iri_contains_de, de_res.res))
 
@@ -351,6 +443,14 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('ar')
     def has_contributor(self, ar_res: AgentRole):
+        """
+        Setter method corresponding to the `pro:isDocumentContextFor` RDF predicate.
+
+        :param ar_res: The value that will be set as the object of the property related to this method
+        :type ar_res: AgentRole
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self.g.add((self.res, GraphEntity.iri_is_document_context_for, ar_res.res))
 
     @accepts_only('ar')
@@ -372,9 +472,17 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('thing')
     def has_related_document(self, thing_ref: URIRef) -> None:
-        """A document external to the Corpus, that is related to the bibliographic resource (such
+        """
+        Setter method corresponding to the `dcterms:relation` RDF predicate.
+
+        `A document external to the Corpus, that is related to the bibliographic resource (such
         as a version of the bibliographic resource – for example a preprint – recorded in an
-        external database).
+        external database).`
+
+        :param thing_ref: The value that will be set as the object of the property related to this method
+        :type thing_ref: URIRef
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.g.add((self.res, GraphEntity.iri_relation, thing_ref))
 
@@ -387,141 +495,421 @@ class BibliographicResource(BibliographicEntity):
 
     # HAS TYPE
     def create_archival_document(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:ArchivalDocument`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_archival_document)
 
     def create_book(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:Book`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_book)
 
     def create_book_chapter(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:BookChapter`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_book_chapter)
 
     def create_book_part(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `doco:Part`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_part)
 
     def create_book_section(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:ExpressionCollection`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_expression_collection)
 
     def create_book_series(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:BookSeries`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_book_series)
 
     def create_book_set(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:BookSet`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_book_set)
 
     def create_book_track(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:Expression`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_expression)
 
     def create_component(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:Expression`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_expression)
 
     def create_dataset(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:DataFile`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_data_file)
 
     def create_dissertation(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:Thesis`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_thesis)
 
     def create_edited_book(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:Book`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_book)
 
     def create_journal_article(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:JournalArticle`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_journal_article)
 
     def create_issue(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:JournalIssue`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_journal_issue)
 
     def create_volume(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:JournalVolume`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_journal_volume)
 
     def create_journal(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:Journal`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_journal)
 
     def create_monograph(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:Book`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_book)
 
     def create_proceedings_article(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:ProceedingsPaper`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_proceedings_paper)
 
     def create_proceedings(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:AcademicProceedings`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_academic_proceedings)
 
     def create_reference_book(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:ReferenceBook`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_reference_book)
 
     def create_reference_entry(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:ReferenceEntry`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_reference_entry)
 
     def create_report_series(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:Series`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_series)
 
     def create_report(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:ReportDocument`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_report_document)
 
     def create_standard_series(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:Series`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_series)
 
     def create_standard(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:SpecificationDocument`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_specification_document)
 
     def create_series(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:Series`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_series)
 
     def create_expression_collection(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:ExpressionCollection`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_expression_collection)
 
     def create_other(self) -> None:
-        """The type of the bibliographic resource
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:Expression`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_expression)

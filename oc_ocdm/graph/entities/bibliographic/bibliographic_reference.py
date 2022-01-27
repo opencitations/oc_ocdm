@@ -80,7 +80,12 @@ class BibliographicReference(BibliographicEntity):
 
     @accepts_only('literal')
     def has_content(self, string: str) -> None:
-        """The literal text of a bibliographic reference occurring in the reference list (or
+        """
+        Setter method corresponding to the `c4o:hasContent` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The literal text of a bibliographic reference occurring in the reference list (or
         elsewhere) within a bibliographic resource, that references another bibliographic
         resource. The reference text should be recorded “as given” in the citing bibliographic
         resource, including any errors (e.g. mis-spellings of authors’ names, or changes from
@@ -88,7 +93,12 @@ class BibliographicReference(BibliographicEntity):
         omission of the title of the referenced bibliographic resource, or omission of sixth and
         subsequent authors’ names, as required by certain publishers), and in whatever format
         it has been made available. For instance, the reference text can be either as plain text
-        or as a block of XML.
+        or as a block of XML.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_content()
         self._create_literal(GraphEntity.iri_has_content, string)
@@ -111,8 +121,16 @@ class BibliographicReference(BibliographicEntity):
 
     @accepts_only('an')
     def has_annotation(self, an_res: ReferenceAnnotation) -> None:
-        """An annotation characterizing the related citation, in terms of its citation function (the
-        reason for that citation).
+        """
+        Setter method corresponding to the `oco:hasAnnotation` RDF predicate.
+
+        `An annotation characterizing the related citation, in terms of its citation function (the
+        reason for that citation).`
+
+        :param an_res: The value that will be set as the object of the property related to this method
+        :type an_res: ReferenceAnnotation
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.g.add((self.res, GraphEntity.iri_has_annotation, an_res.res))
 
@@ -136,7 +154,17 @@ class BibliographicReference(BibliographicEntity):
 
     @accepts_only('br')
     def references_br(self, br_res: BibliographicResource) -> None:
-        """The bibliographic reference that cites this bibliographic resource.
+        """
+        Setter method corresponding to the `biro:references` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The bibliographic reference that cites this bibliographic resource.`
+
+        :param br_res: The value that will be set as the object of the property related to this method
+        :type br_res: BibliographicResource
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_referenced_br()
         self.g.add((self.res, GraphEntity.iri_references, br_res.res))

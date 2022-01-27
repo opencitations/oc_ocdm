@@ -95,7 +95,17 @@ class Citation(BibliographicEntity):
 
     @accepts_only('br')
     def has_citing_entity(self, citing_res: BibliographicResource) -> None:
-        """The bibliographic resource which acts as the source for the citation.
+        """
+        Setter method corresponding to the `cito:hasCitingEntity` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The bibliographic resource which acts as the source for the citation.`
+
+        :param citing_res: The value that will be set as the object of the property related to this method
+        :type citing_res: BibliographicResource
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_citing_entity()
         self.g.add((self.res, GraphEntity.iri_has_citing_entity, citing_res.res))
@@ -116,7 +126,17 @@ class Citation(BibliographicEntity):
 
     @accepts_only('br')
     def has_cited_entity(self, cited_res: BibliographicResource) -> None:
-        """ The bibliographic resource which acts as the target for the citation.
+        """
+        Setter method corresponding to the `cito:hasCitedEntity` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The bibliographic resource which acts as the target for the citation.`
+
+        :param cited_res: The value that will be set as the object of the property related to this method
+        :type cited_res: BibliographicResource
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_cited_entity()
         self.g.add((self.res, GraphEntity.iri_has_cited_entity, cited_res.res))
@@ -135,10 +155,20 @@ class Citation(BibliographicEntity):
 
     @accepts_only('literal')
     def has_citation_creation_date(self, string: str) -> None:
-        """The date on which the citation was created. This has the same numerical value
+        """
+        Setter method corresponding to the `cito:hasCitationCreationDate` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The date on which the citation was created. This has the same numerical value
         as the publication date of the citing bibliographic resource, but is a property
         of the citation itself. When combined with the citation time span, it permits
-        that citation to be located in history.
+        that citation to be located in history.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         cur_type, string = get_datatype_from_iso_8601(string)
         if cur_type is not None and string is not None:
@@ -159,8 +189,18 @@ class Citation(BibliographicEntity):
 
     @accepts_only('literal')
     def has_citation_time_span(self, string: str) -> None:
-        """The date interval between the publication date of the cited bibliographic resource and
-        the publication date of the citing bibliographic resource.
+        """
+        Setter method corresponding to the `cito:hasCitationTimeSpan` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The date interval between the publication date of the cited bibliographic resource and
+        the publication date of the citing bibliographic resource.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_citation_time_span()
         self._create_literal(GraphEntity.iri_has_citation_time_span, string, XSD.duration, False)
@@ -180,7 +220,17 @@ class Citation(BibliographicEntity):
 
     @accepts_only('thing')
     def has_citation_characterization(self, thing_ref: URIRef) -> None:
-        """The citation function characterizing the purpose of the citation.
+        """
+        Setter method corresponding to the `cito:hasCitationCharacterisation` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The citation function characterizing the purpose of the citation.`
+
+        :param thing_ref: The value that will be set as the object of the property related to this method
+        :type thing_ref: URIRef
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_citation_characterization()
         self.g.add((self.res, GraphEntity.iri_citation_characterisation, thing_ref))
@@ -190,25 +240,105 @@ class Citation(BibliographicEntity):
 
     # HAS TYPE
     def create_self_citation(self) -> None:
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `cito:SelfCitation`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        :return: None
+        """
         self._create_type(GraphEntity.iri_self_citation)
 
     def create_affiliation_self_citation(self) -> None:
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `cito:AffiliationSelfCitation`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        :return: None
+        """
         self._create_type(GraphEntity.iri_affiliation_self_citation)
 
     def create_author_network_self_citation(self) -> None:
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `cito:AuthorNetworkSelfCitation`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        :return: None
+        """
         self._create_type(GraphEntity.iri_author_network_self_citation)
 
     def create_author_self_citation(self) -> None:
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `cito:AuthorSelfCitation`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        :return: None
+        """
         self._create_type(GraphEntity.iri_author_self_citation)
 
     def create_funder_self_citation(self) -> None:
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `cito:FunderSelfCitation`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        :return: None
+        """
         self._create_type(GraphEntity.iri_funder_self_citation)
 
     def create_journal_self_citation(self) -> None:
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `cito:JournalSelfCitation`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        :return: None
+        """
         self._create_type(GraphEntity.iri_journal_self_citation)
 
     def create_journal_cartel_citation(self) -> None:
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `cito:JournalCartelCitation`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        :return: None
+        """
         self._create_type(GraphEntity.iri_journal_cartel_citation)
 
     def create_distant_citation(self) -> None:
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `cito:DistantCitation`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        :return: None
+        """
         self._create_type(GraphEntity.iri_distant_citation)

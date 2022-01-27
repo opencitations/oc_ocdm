@@ -73,6 +73,16 @@ class PointerList(BibliographicEntity):
 
     @accepts_only('literal')
     def has_content(self, string: str) -> None:
+        """
+        Setter method corresponding to the `c4o:hasContent` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self.remove_content()
         self._create_literal(GraphEntity.iri_has_content, string)
 
@@ -94,8 +104,16 @@ class PointerList(BibliographicEntity):
 
     @accepts_only('rp')
     def contains_element(self, rp_res: ReferencePointer) -> None:
-        """The in-text reference pointer that is part of the in-text reference pointer list present at
-        a particular location within the body of the citing work.
+        """
+        Setter method corresponding to the `co:element` RDF predicate.
+
+        `The in-text reference pointer that is part of the in-text reference pointer list present at
+        a particular location within the body of the citing work.`
+
+        :param rp_res: The value that will be set as the object of the property related to this method
+        :type rp_res: ReferencePointer
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.g.add((self.res, GraphEntity.iri_has_element, rp_res.res))
 

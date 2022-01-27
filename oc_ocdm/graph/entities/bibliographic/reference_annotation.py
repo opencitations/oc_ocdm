@@ -75,8 +75,18 @@ class ReferenceAnnotation(BibliographicEntity):
 
     @accepts_only('ci')
     def has_body_annotation(self, ci_res: Citation) -> None:
-        """The citation to which the annotation relates, that is relevant either to a bibliographic
-        reference or to an in-text reference pointer that denotes such a bibliographic reference.
+        """
+        Setter method corresponding to the `oa:hasBody` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The citation to which the annotation relates, that is relevant either to a bibliographic
+        reference or to an in-text reference pointer that denotes such a bibliographic reference.`
+
+        :param ci_res: The value that will be set as the object of the property related to this method
+        :type ci_res: Citation
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_body_annotation()
         self.g.add((self.res, GraphEntity.iri_has_body, ci_res.res))

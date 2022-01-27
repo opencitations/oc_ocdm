@@ -73,9 +73,17 @@ class BibliographicEntity(GraphEntity):
 
     @accepts_only('id')
     def has_identifier(self, id_res: Identifier) -> None:
-        """In addition to the internal dataset identifier assigned to the entity upon initial
+        """
+        Setter method corresponding to the `datacite:hasIdentifier` RDF predicate.
+
+        `In addition to the internal dataset identifier assigned to the entity upon initial
         curation (format: [entity short name]/[local identifier]), other external third-party
-        identifiers can be specified through this attribute (e.g. DOI, ORCID, PubMedID).
+        identifiers can be specified through this attribute (e.g. DOI, ORCID, PubMedID).`
+
+        :param id_res: The value that will be set as the object of the property related to this method
+        :type id_res: Identifier
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.g.add((self.res, GraphEntity.iri_has_identifier, id_res.res))
 

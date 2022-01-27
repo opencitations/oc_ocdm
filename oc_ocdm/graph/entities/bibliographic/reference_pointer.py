@@ -83,8 +83,18 @@ class ReferencePointer(BibliographicEntity):
 
     @accepts_only('literal')
     def has_content(self, string: str) -> None:
-        """The literal text of the textual device forming an in-text reference pointer and denoting
-        a single bibliographic reference (e.g. “[1]”).
+        """
+        Setter method corresponding to the `c4o:hasContent` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The literal text of the textual device forming an in-text reference pointer and denoting
+        a single bibliographic reference (e.g. “[1]”).`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_content()
         self._create_literal(GraphEntity.iri_has_content, string)
@@ -105,8 +115,18 @@ class ReferencePointer(BibliographicEntity):
 
     @accepts_only('rp')
     def has_next_rp(self, rp_res: ReferencePointer) -> None:
-        """The following in-text reference pointer, when included within a single in-text reference
-        pointer list.
+        """
+        Setter method corresponding to the `oco:hasNext` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The following in-text reference pointer, when included within a single in-text reference
+        pointer list.`
+
+        :param rp_res: The value that will be set as the object of the property related to this method
+        :type rp_res: ReferencePointer
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_next_rp()
         self.g.add((self.res, GraphEntity.iri_has_next, rp_res.res))
@@ -127,8 +147,18 @@ class ReferencePointer(BibliographicEntity):
 
     @accepts_only('be')
     def denotes_be(self, be_res: BibliographicReference) -> None:
-        """The bibliographic reference included in the list of bibliographic references, denoted by
-        the in-text reference pointer.
+        """
+        Setter method corresponding to the `c4o:denotes` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The bibliographic reference included in the list of bibliographic references, denoted by
+        the in-text reference pointer.`
+
+        :param be_res: The value that will be set as the object of the property related to this method
+        :type be_res: BibliographicReference
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_denoted_be()
         self.g.add((self.res, GraphEntity.iri_denotes, be_res.res))
@@ -151,9 +181,17 @@ class ReferencePointer(BibliographicEntity):
 
     @accepts_only('an')
     def has_annotation(self, an_res: ReferenceAnnotation) -> None:
-        """An annotation characterizing the citation to which the in-text reference pointer relates
+        """
+        Setter method corresponding to the `oco:hasAnnotation` RDF predicate.
+
+        `An annotation characterizing the citation to which the in-text reference pointer relates
         in terms of its citation function (the reason for that citation) specific to the textual
-        location of that in-text reference pointer within the citing entity.
+        location of that in-text reference pointer within the citing entity.`
+
+        :param an_res: The value that will be set as the object of the property related to this method
+        :type an_res: ReferenceAnnotation
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.g.add((self.res, GraphEntity.iri_has_annotation, an_res.res))
 

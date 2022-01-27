@@ -47,11 +47,14 @@ class AbstractEntity(ABC):
         return self._get_literal(RDFS.label)
 
     def create_label(self, string: str) -> None:
-        """Creates the RDF triple <self.res> rdfs:label <string>
-        inside the graph self.g
+        """
+        Setter method corresponding to the `rdfs:label` RDF predicate.
 
-        :param string: The string to be added as a label for this entity
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
         :type string: str
+        :return: None
         """
         self.remove_label()
         self._create_literal(RDFS.label, string)
@@ -84,12 +87,16 @@ class AbstractEntity(ABC):
         return uri_list
 
     def _create_type(self, res_type: URIRef) -> None:
-        """Creates the RDF triple <self.res> rdf:type <res_type>
-        inside the graph self.g
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
 
-        :param res_type: The RDF class to be associated with this entity
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        :param res_type: The value that will be set as the object of the property related to this method
         :type res_type: URIRef
-        :rtype: None
+        :return: None
         """
         self.remove_type()  # <-- It doesn't remove the main type!
         create_type(self.g, self.res, res_type)

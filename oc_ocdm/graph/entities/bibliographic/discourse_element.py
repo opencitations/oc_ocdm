@@ -95,7 +95,17 @@ class DiscourseElement(BibliographicEntity):
 
     @accepts_only('literal')
     def has_title(self, string: str) -> None:
-        """The title of the discourse element, such as the title of a figure or a section in an article.
+        """
+        Setter method corresponding to the `dcterms:title` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The title of the discourse element, such as the title of a figure or a section in an article.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_title()
         self._create_literal(GraphEntity.iri_title, string)
@@ -118,8 +128,16 @@ class DiscourseElement(BibliographicEntity):
 
     @accepts_only('de')
     def contains_discourse_element(self, de_res: DiscourseElement) -> None:
-        """The discourse element hierarchically nested within the parent element, such as a
-        sentence within a paragraph, or a paragraph within a section.
+        """
+        Setter method corresponding to the `frbr:part` RDF predicate.
+
+        `The discourse element hierarchically nested within the parent element, such as a
+        sentence within a paragraph, or a paragraph within a section.`
+
+        :param de_res: The value that will be set as the object of the property related to this method
+        :type de_res: DiscourseElement
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.g.add((self.res, GraphEntity.iri_contains_de, de_res.res))
 
@@ -143,7 +161,17 @@ class DiscourseElement(BibliographicEntity):
 
     @accepts_only('de')
     def has_next_de(self, de_res: DiscourseElement) -> None:
-        """The following discourse element that includes at least one in-text reference pointer.
+        """
+        Setter method corresponding to the `oco:hasNext` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The following discourse element that includes at least one in-text reference pointer.`
+
+        :param de_res: The value that will be set as the object of the property related to this method
+        :type de_res: DiscourseElement
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_next_de()
         self.g.add((self.res, GraphEntity.iri_has_next, de_res.res))
@@ -166,8 +194,16 @@ class DiscourseElement(BibliographicEntity):
 
     @accepts_only('rp')
     def is_context_of_rp(self, rp_res: ReferencePointer) -> None:
-        """Provides the textual and semantic context of the in-text reference pointer
-        that appears within the discourse element.
+        """
+        Setter method corresponding to the `c4o:isContextOf` RDF predicate.
+
+        `Provides the textual and semantic context of the in-text reference pointer
+        that appears within the discourse element.`
+
+        :param rp_res: The value that will be set as the object of the property related to this method
+        :type rp_res: ReferencePointer
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.g.add((self.res, GraphEntity.iri_is_context_of, rp_res.res))
 
@@ -193,8 +229,16 @@ class DiscourseElement(BibliographicEntity):
 
     @accepts_only('pl')
     def is_context_of_pl(self, pl_res: PointerList) -> None:
-        """Provides the textual and semantic context of the list of
-        in-text reference pointers that appears within the discourse element.
+        """
+        Setter method corresponding to the `c4o:isContextOf` RDF predicate.
+
+        `Provides the textual and semantic context of the list of
+        in-text reference pointers that appears within the discourse element.`
+
+        :param pl_res: The value that will be set as the object of the property related to this method
+        :type pl_res: PointerList
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.g.add((self.res, GraphEntity.iri_is_context_of, pl_res.res))
 
@@ -216,7 +260,17 @@ class DiscourseElement(BibliographicEntity):
 
     @accepts_only('literal')
     def has_content(self, string: str) -> None:
-        """The literal document text contained by the discourse element.
+        """
+        Setter method corresponding to the `c4o:hasContent` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The literal document text contained by the discourse element.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_content()
         self._create_literal(GraphEntity.iri_has_content, string)
@@ -235,6 +289,16 @@ class DiscourseElement(BibliographicEntity):
 
     @accepts_only('literal')
     def has_number(self, string: str) -> None:
+        """
+        Setter method corresponding to the `fabio:hasSequenceIdentifier` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         self.remove_number()
         self._create_literal(GraphEntity.iri_has_sequence_identifier, string)
 
@@ -244,8 +308,18 @@ class DiscourseElement(BibliographicEntity):
     # HAS TYPE
     @accepts_only('thing')
     def create_discourse_element(self, de_class: URIRef) -> None:
-        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
-        “acknowledgements”, “reference list” or “figure”.
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `deo:DiscourseElement`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.`
+
+        :return: None
         """
         if de_class is not None:
             self._create_type(de_class)
@@ -253,49 +327,129 @@ class DiscourseElement(BibliographicEntity):
             self._create_type(GraphEntity.iri_discourse_element)
 
     def create_section(self) -> None:
-        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
-        “acknowledgements”, “reference list” or “figure”.
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `doco:Section`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_section)
 
     def create_section_title(self) -> None:
-        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
-        “acknowledgements”, “reference list” or “figure”.
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `doco:SectionTitle`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_section_title)
 
     def create_paragraph(self) -> None:
-        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
-        “acknowledgements”, “reference list” or “figure”.
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `doco:Paragraph`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_paragraph)
 
     def create_sentence(self) -> None:
-        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
-        “acknowledgements”, “reference list” or “figure”.
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `doco:Sentence`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_sentence)
 
     def create_text_chunk(self) -> None:
-        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
-        “acknowledgements”, “reference list” or “figure”.
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `doco:TextChunk`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_text_chunk)
 
     def create_table(self) -> None:
-        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
-        “acknowledgements”, “reference list” or “figure”.
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `doco:Table`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_table)
 
     def create_footnote(self) -> None:
-        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
-        “acknowledgements”, “reference list” or “figure”.
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `doco:Footnote`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_footnote)
 
     def create_caption(self) -> None:
-        """The type of discourse element – such as “paragraph”, “section”, “sentence”,
-        “acknowledgements”, “reference list” or “figure”.
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `deo:Caption`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of discourse element – such as “paragraph”, “section”, “sentence”,
+        “acknowledgements”, “reference list” or “figure”.`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_caption)

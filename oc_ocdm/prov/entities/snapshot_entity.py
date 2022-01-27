@@ -39,8 +39,18 @@ class SnapshotEntity(ProvEntity):
 
     @accepts_only('literal')
     def has_generation_time(self, string: str) -> None:
-        """The date on which a particular snapshot of a bibliographic entity's metadata was
-        created.
+        """
+        Setter method corresponding to the `prov:generatedAtTime` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The date on which a particular snapshot of a bibliographic entity's metadata was
+        created.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_generation_time()
         self._create_literal(ProvEntity.iri_generated_at_time, string, XSD.dateTime)
@@ -59,9 +69,19 @@ class SnapshotEntity(ProvEntity):
 
     @accepts_only('literal')
     def has_invalidation_time(self, string: str) -> None:
-        """The date on which a snapshot of a bibliographic entity's metadata was invalidated due
+        """
+        Setter method corresponding to the `prov:invalidatedAtTime` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The date on which a snapshot of a bibliographic entity's metadata was invalidated due
         to an update (e.g. a correction, or the addition of some metadata that was not specified
-        in the previous snapshot), or due to a merger of the entity with another one.
+        in the previous snapshot), or due to a merger of the entity with another one.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_invalidation_time()
         self._create_literal(ProvEntity.iri_invalidated_at_time, string, XSD.dateTime)
@@ -80,8 +100,17 @@ class SnapshotEntity(ProvEntity):
         return uri
 
     def is_snapshot_of(self, en_res: GraphEntity) -> None:
-        """This property is used to link a snapshot of entity metadata to the bibliographic entity
-        to which the snapshot refers.
+        """
+        Setter method corresponding to the `prov:specializationOf` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `This property is used to link a snapshot of entity metadata to the bibliographic entity
+        to which the snapshot refers.`
+
+        :param en_res: The value that will be set as the object of the property related to this method
+        :type en_res: GraphEntity
+        :return: None
         """
         self.remove_is_snapshot_of()
         self.g.add((self.res, ProvEntity.iri_specialization_of, en_res.res))
@@ -105,8 +134,16 @@ class SnapshotEntity(ProvEntity):
 
     @accepts_only('se')
     def derives_from(self, se_res: ProvEntity) -> None:
-        """This property is used to identify the immediately previous snapshot of entity metadata
-        associated with the same bibliographic entity.
+        """
+        Setter method corresponding to the `prov:wasDerivedFrom` RDF predicate.
+
+        `This property is used to identify the immediately previous snapshot of entity metadata
+        associated with the same bibliographic entity.`
+
+        :param se_res: The value that will be set as the object of the property related to this method
+        :type se_res: ProvEntity
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.g.add((self.res, ProvEntity.iri_was_derived_from, se_res.res))
 
@@ -129,9 +166,18 @@ class SnapshotEntity(ProvEntity):
 
     @accepts_only('thing')
     def has_primary_source(self, any_res: URIRef) -> None:
-        """This property is used to identify the primary source from which the metadata
+        """
+        Setter method corresponding to the `prov:hadPrimarySource` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `This property is used to identify the primary source from which the metadata
         described in the snapshot are derived (e.g. Crossref, as the result of querying the
-        CrossRef API).
+        CrossRef API).`
+
+        :param any_res: The value that will be set as the object of the property related to this method
+        :type any_res: URIRef
+        :return: None
         """
         self.remove_primary_source()
         self.g.add((self.res, ProvEntity.iri_had_primary_source, any_res))
@@ -150,9 +196,18 @@ class SnapshotEntity(ProvEntity):
 
     @accepts_only('literal')
     def has_update_action(self, string: str) -> None:
-        """The UPDATE SPARQL query that specifies which data, associated to the bibliographic
+        """
+        Setter method corresponding to the `oco:hasUpdateQuery` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The UPDATE SPARQL query that specifies which data, associated to the bibliographic
         entity in consideration, have been modified (e.g. for correcting a mistake) in the
-        current snapshot starting from those associated to the previous snapshot of the entity.
+        current snapshot starting from those associated to the previous snapshot of the entity.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :return: None
         """
         self.remove_update_action()
         self._create_literal(ProvEntity.iri_has_update_query, string)
@@ -171,11 +226,20 @@ class SnapshotEntity(ProvEntity):
 
     @accepts_only('literal')
     def has_description(self, string: str) -> None:
-        """A textual description of the events that have resulted in the current snapshot (e.g. the
+        """
+        Setter method corresponding to the `dcterms:description` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `A textual description of the events that have resulted in the current snapshot (e.g. the
         creation of the initial snapshot, the creation of a new snapshot following the
         modification of the entity to which the metadata relate, or the creation of a new
         snapshot following the merger with another entity of the entity to which the previous
-        snapshot related).
+        snapshot related).`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :return: None
         """
         self.remove_description()
         self._create_literal(ProvEntity.iri_description, string)
@@ -195,7 +259,16 @@ class SnapshotEntity(ProvEntity):
 
     @accepts_only('thing')
     def has_resp_agent(self, se_agent: URIRef) -> None:
-        """The agent responsible for the creation of the current entity snapshot.
+        """
+        Setter method corresponding to the `prov:wasAttributedTo` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The agent responsible for the creation of the current entity snapshot.`
+
+        :param se_agent: The value that will be set as the object of the property related to this method
+        :type se_agent: URIRef
+        :return: None
         """
         self.remove_resp_agent()
         self.g.add((self.res, ProvEntity.iri_was_attributed_to, se_agent))

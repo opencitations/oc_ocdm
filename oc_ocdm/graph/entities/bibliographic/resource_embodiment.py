@@ -81,7 +81,17 @@ class ResourceEmbodiment(BibliographicEntity):
 
     @accepts_only('thing')
     def has_media_type(self, thing_ref: URIRef) -> None:
-        """It allows one to specify the IANA media type of the embodiment.
+        """
+        Setter method corresponding to the `dcterms:format` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `It allows one to specify the IANA media type of the embodiment.`
+
+        :param thing_ref: The value that will be set as the object of the property related to this method
+        :type thing_ref: URIRef
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_media_type()
         self.g.add((self.res, GraphEntity.iri_has_format, thing_ref))
@@ -100,7 +110,17 @@ class ResourceEmbodiment(BibliographicEntity):
 
     @accepts_only('literal')
     def has_starting_page(self, string: str) -> None:
-        """The first page of the bibliographic resource according to the current embodiment.
+        """
+        Setter method corresponding to the `prism:startingPage` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The first page of the bibliographic resource according to the current embodiment.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_starting_page()
         if re.search("[-–]+", string) is None:
@@ -123,7 +143,17 @@ class ResourceEmbodiment(BibliographicEntity):
 
     @accepts_only('literal')
     def has_ending_page(self, string: str) -> None:
-        """The last page of the bibliographic resource according to the current embodiment.
+        """
+        Setter method corresponding to the `prism:endingPage` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The last page of the bibliographic resource according to the current embodiment.`
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_ending_page()
         if re.search("[-–]+", string) is None:
@@ -147,7 +177,17 @@ class ResourceEmbodiment(BibliographicEntity):
 
     @accepts_only('thing')
     def has_url(self, thing_ref: URIRef) -> None:
-        """The URL at which the embodiment of the bibliographic resource is available.
+        """
+        Setter method corresponding to the `frbr:exemplar` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        `The URL at which the embodiment of the bibliographic resource is available.`
+
+        :param thing_ref: The value that will be set as the object of the property related to this method
+        :type thing_ref: URIRef
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
         """
         self.remove_url()
         self.g.add((self.res, GraphEntity.iri_has_url, thing_ref))
@@ -157,11 +197,31 @@ class ResourceEmbodiment(BibliographicEntity):
 
     # HAS TYPE
     def create_digital_embodiment(self) -> None:
-        """It identifies the particular type of the embodiment, either digital or print.
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:DigitalManifestation`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `It identifies the particular type of the embodiment, either digital or print.`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_digital_manifestation)
 
     def create_print_embodiment(self) -> None:
-        """It identifies the particular type of the embodiment, either digital or print.
+        """
+        Setter method corresponding to the `rdf:type` RDF predicate.
+        It implicitly sets the object value `fabio:PrintObject`.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `It identifies the particular type of the embodiment, either digital or print.`
+
+        :return: None
         """
         self._create_type(GraphEntity.iri_print_object)
