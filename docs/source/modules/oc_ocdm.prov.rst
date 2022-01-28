@@ -1,37 +1,18 @@
 oc\_ocdm.prov package
 =====================
 
+Modules
+-------
+.. toctree::
+   :maxdepth: 1
+
+   prov/oc_ocdm.prov.prov_entity
+   prov/oc_ocdm.prov.prov_set
+
 Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 1
 
-   oc_ocdm.prov.entities
-
-Submodules
-----------
-
-oc\_ocdm.prov.prov\_entity module
----------------------------------
-
-.. automodule:: oc_ocdm.prov.prov_entity
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-oc\_ocdm.prov.prov\_set module
-------------------------------
-
-.. automodule:: oc_ocdm.prov.prov_set
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: oc_ocdm.prov
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   prov/oc_ocdm.prov.entities

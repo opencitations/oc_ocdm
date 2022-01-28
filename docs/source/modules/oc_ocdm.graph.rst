@@ -1,37 +1,18 @@
 oc\_ocdm.graph package
 ======================
 
+Modules
+-------
+.. toctree::
+   :maxdepth: 1
+
+   graph/oc_ocdm.graph.graph_entity
+   graph/oc_ocdm.graph.graph_set
+
 Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 1
 
-   oc_ocdm.graph.entities
-
-Submodules
-----------
-
-oc\_ocdm.graph.graph\_entity module
------------------------------------
-
-.. automodule:: oc_ocdm.graph.graph_entity
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-oc\_ocdm.graph.graph\_set module
---------------------------------
-
-.. automodule:: oc_ocdm.graph.graph_set
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: oc_ocdm.graph
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   graph/oc_ocdm.graph.entities

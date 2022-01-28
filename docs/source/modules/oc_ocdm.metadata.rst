@@ -1,37 +1,18 @@
 oc\_ocdm.metadata package
 =========================
 
+Modules
+-------
+.. toctree::
+   :maxdepth: 1
+
+   metadata/oc_ocdm.metadata.metadata_entity
+   metadata/oc_ocdm.metadata.metadata_set
+
 Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 1
 
-   oc_ocdm.metadata.entities
-
-Submodules
-----------
-
-oc\_ocdm.metadata.metadata\_entity module
------------------------------------------
-
-.. automodule:: oc_ocdm.metadata.metadata_entity
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-oc\_ocdm.metadata.metadata\_set module
---------------------------------------
-
-.. automodule:: oc_ocdm.metadata.metadata_set
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: oc_ocdm.metadata
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   metadata/oc_ocdm.metadata.entities

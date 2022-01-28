@@ -43,7 +43,7 @@ autodoc_default_options = {
     "members": True,
     'member-order': 'bysource',
     "undoc-members": False,
-    "private-members": True,
+    "private-members": False,
 }
 
 # Add any paths that contain templates here, relative to this directory.

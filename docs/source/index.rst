@@ -7,11 +7,11 @@ Welcome to oc_ocdm's documentation!
 =======================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
-   modules/modules
-
+   modules/oc_ocdm
+   license
 
 Indices and tables
 ==================
