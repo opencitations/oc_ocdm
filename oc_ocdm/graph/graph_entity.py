@@ -64,7 +64,7 @@ class GraphEntity(AbstractEntity):
     iri_pmcid: ClassVar[URIRef] = DATACITE.pmcid
     iri_orcid: ClassVar[URIRef] = DATACITE.orcid
     iri_xpath: ClassVar[URIRef] = DATACITE["local-resource-identifier-scheme"]
-    iri_intrepid: ClassVar[URIRef] = DATACITE["intrepid"]
+    iri_intrepid: ClassVar[URIRef] = DATACITE.intrepid
     iri_xmlid: ClassVar[URIRef] = DATACITE["local-resource-identifier-scheme"]
     iri_has_identifier: ClassVar[URIRef] = DATACITE.hasIdentifier
     iri_identifier: ClassVar[URIRef] = DATACITE.Identifier

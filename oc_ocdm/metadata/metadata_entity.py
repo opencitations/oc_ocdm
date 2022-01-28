@@ -33,7 +33,7 @@ class MetadataEntity(AbstractEntity):
     iri_dataset = DCAT.Dataset
     iri_datafile = DCAT.Distribution
 
-    iri_title = DCTERMS.title
+    iri_title = DCTERMS["title"]
     iri_description = DCTERMS.description
     iri_issued = DCTERMS.issued
     iri_modified = DCTERMS.modified
