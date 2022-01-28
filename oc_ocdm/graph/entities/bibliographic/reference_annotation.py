@@ -92,4 +92,9 @@ class ReferenceAnnotation(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_has_body, ci_res.res))
 
     def remove_body_annotation(self) -> None:
+        """
+        Remover method corresponding to the `oa:hasBody` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_body, None))

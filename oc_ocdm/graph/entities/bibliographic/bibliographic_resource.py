@@ -132,6 +132,11 @@ class BibliographicResource(BibliographicEntity):
         self._create_literal(GraphEntity.iri_title, string)
 
     def remove_title(self) -> None:
+        """
+        Remover method corresponding to the `dcterms:title` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_title, None))
 
     # HAS SUBTITLE
@@ -161,6 +166,11 @@ class BibliographicResource(BibliographicEntity):
         self._create_literal(GraphEntity.iri_has_subtitle, string)
 
     def remove_subtitle(self) -> None:
+        """
+        Remover method corresponding to the `fabio:hasSubtitle` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_subtitle, None))
 
     # IS PART OF (BibliographicResource)
@@ -193,6 +203,11 @@ class BibliographicResource(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_part_of, br_res.res))
 
     def remove_is_part_of(self) -> None:
+        """
+        Remover method corresponding to the `frbr:partOf` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_part_of, None))
 
     # CITES (BibliographicResource)
@@ -225,6 +240,18 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('br')
     def remove_citation(self, br_res: BibliographicResource = None) -> None:
+        """
+        Remover method corresponding to the `cito:cites` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param br_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type br_res: BibliographicResource
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if br_res is not None:
             self.g.remove((self.res, GraphEntity.iri_cites, br_res.res))
         else:
@@ -259,6 +286,11 @@ class BibliographicResource(BibliographicEntity):
             self._create_literal(GraphEntity.iri_has_publication_date, string, cur_type, False)
 
     def remove_pub_date(self) -> None:
+        """
+        Remover method corresponding to the `prism:publicationDate` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_publication_date, None))
 
     # IS EMBODIED AS (ResourceEmbodiment)
@@ -290,7 +322,19 @@ class BibliographicResource(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_embodiment, re_res.res))
 
     @accepts_only('re')
-    def remove_format(self, re_res: ResourceEmbodiment = None):
+    def remove_format(self, re_res: ResourceEmbodiment = None) -> None:
+        """
+        Remover method corresponding to the `frbr:embodiment` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param re_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type re_res: ResourceEmbodiment
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if re_res is not None:
             self.g.remove((self.res, GraphEntity.iri_embodiment, re_res.res))
         else:
@@ -326,6 +370,11 @@ class BibliographicResource(BibliographicEntity):
         self._create_literal(GraphEntity.iri_has_sequence_identifier, string)
 
     def remove_number(self) -> None:
+        """
+        Remover method corresponding to the `fabio:hasSequenceIdentifier` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_sequence_identifier, None))
 
     # HAS EDITION
@@ -356,6 +405,11 @@ class BibliographicResource(BibliographicEntity):
         self._create_literal(GraphEntity.iri_has_edition, string)
 
     def remove_edition(self) -> None:
+        """
+        Remover method corresponding to the `prism:edition` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_edition, None))
 
     # HAS PART (BibliographicReference)
@@ -388,6 +442,18 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('be')
     def remove_contained_in_reference_list(self, be_res: BibliographicReference = None) -> None:
+        """
+        Remover method corresponding to the `frbr:part` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param be_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type be_res: BibliographicReference
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if be_res is not None:
             self.g.remove((self.res, GraphEntity.iri_contains_reference, be_res.res))
         else:
@@ -423,6 +489,18 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('de')
     def remove_contained_discourse_element(self, de_res: DiscourseElement = None) -> None:
+        """
+        Remover method corresponding to the `frbr:part` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param de_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type de_res: DiscourseElement
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if de_res is not None:
             self.g.remove((self.res, GraphEntity.iri_contains_de, de_res.res))
         else:
@@ -455,6 +533,18 @@ class BibliographicResource(BibliographicEntity):
 
     @accepts_only('ar')
     def remove_contributor(self, ar_res: AgentRole = None):
+        """
+        Remover method corresponding to the `frbr:part` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param ar_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type ar_res: AgentRole
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if ar_res is not None:
             self.g.remove((self.res, GraphEntity.iri_is_document_context_for, ar_res.res))
         else:
@@ -471,7 +561,7 @@ class BibliographicResource(BibliographicEntity):
         return uri_list
 
     @accepts_only('thing')
-    def has_related_document(self, thing_ref: URIRef) -> None:
+    def has_related_document(self, thing_res: URIRef) -> None:
         """
         Setter method corresponding to the `dcterms:relation` RDF predicate.
 
@@ -479,17 +569,29 @@ class BibliographicResource(BibliographicEntity):
         as a version of the bibliographic resource – for example a preprint – recorded in an
         external database).`
 
-        :param thing_ref: The value that will be set as the object of the property related to this method
-        :type thing_ref: URIRef
+        :param thing_res: The value that will be set as the object of the property related to this method
+        :type thing_res: URIRef
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, GraphEntity.iri_relation, thing_ref))
+        self.g.add((self.res, GraphEntity.iri_relation, thing_res))
 
     @accepts_only('thing')
-    def remove_related_document(self, thing_ref: URIRef = None) -> None:
-        if thing_ref is not None:
-            self.g.remove((self.res, GraphEntity.iri_relation, thing_ref))
+    def remove_related_document(self, thing_res: URIRef = None) -> None:
+        """
+        Remover method corresponding to the `dcterms:relation` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param thing_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type thing_res: URIRef
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
+        if thing_res is not None:
+            self.g.remove((self.res, GraphEntity.iri_relation, thing_res))
         else:
             self.g.remove((self.res, GraphEntity.iri_relation, None))
 

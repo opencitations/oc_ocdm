@@ -99,6 +99,11 @@ class AgentRole(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_has_next, ar_res.res))
 
     def remove_next(self) -> None:
+        """
+        Remover method corresponding to the `oco:hasNext` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_next, None))
 
     # IS HELD BY (ResponsibleAgent)
@@ -130,6 +135,11 @@ class AgentRole(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_is_held_by, ra_res.res))
 
     def remove_is_held_by(self) -> None:
+        """
+        Remover method corresponding to the `pro:isHeldBy` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_is_held_by, None))
 
     # HAS ROLE TYPE
@@ -185,4 +195,9 @@ class AgentRole(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_with_role, GraphEntity.iri_editor))
 
     def remove_role_type(self) -> None:
+        """
+        Remover method corresponding to the `pro:withRole` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_with_role, None))

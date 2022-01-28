@@ -80,7 +80,7 @@ class ResourceEmbodiment(BibliographicEntity):
         return uri
 
     @accepts_only('thing')
-    def has_media_type(self, thing_ref: URIRef) -> None:
+    def has_media_type(self, thing_res: URIRef) -> None:
         """
         Setter method corresponding to the `dcterms:format` RDF predicate.
 
@@ -88,15 +88,20 @@ class ResourceEmbodiment(BibliographicEntity):
 
         `It allows one to specify the IANA media type of the embodiment.`
 
-        :param thing_ref: The value that will be set as the object of the property related to this method
-        :type thing_ref: URIRef
+        :param thing_res: The value that will be set as the object of the property related to this method
+        :type thing_res: URIRef
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
         self.remove_media_type()
-        self.g.add((self.res, GraphEntity.iri_has_format, thing_ref))
+        self.g.add((self.res, GraphEntity.iri_has_format, thing_res))
 
     def remove_media_type(self) -> None:
+        """
+        Remover method corresponding to the `dcterms:format` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_format, None))
 
     # HAS FIRST PAGE
@@ -130,6 +135,11 @@ class ResourceEmbodiment(BibliographicEntity):
         self._create_literal(GraphEntity.iri_starting_page, page_number)
 
     def remove_starting_page(self) -> None:
+        """
+        Remover method corresponding to the `prism:startingPage` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_starting_page, None))
 
     # HAS LAST PAGE
@@ -163,6 +173,11 @@ class ResourceEmbodiment(BibliographicEntity):
         self._create_literal(GraphEntity.iri_ending_page, page_number)
 
     def remove_ending_page(self) -> None:
+        """
+        Remover method corresponding to the `prism:endingPage` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_ending_page, None))
 
     # HAS URL
@@ -176,7 +191,7 @@ class ResourceEmbodiment(BibliographicEntity):
         return uri
 
     @accepts_only('thing')
-    def has_url(self, thing_ref: URIRef) -> None:
+    def has_url(self, thing_res: URIRef) -> None:
         """
         Setter method corresponding to the `frbr:exemplar` RDF predicate.
 
@@ -184,15 +199,20 @@ class ResourceEmbodiment(BibliographicEntity):
 
         `The URL at which the embodiment of the bibliographic resource is available.`
 
-        :param thing_ref: The value that will be set as the object of the property related to this method
-        :type thing_ref: URIRef
+        :param thing_res: The value that will be set as the object of the property related to this method
+        :type thing_res: URIRef
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
         self.remove_url()
-        self.g.add((self.res, GraphEntity.iri_has_url, thing_ref))
+        self.g.add((self.res, GraphEntity.iri_has_url, thing_res))
 
     def remove_url(self) -> None:
+        """
+        Remover method corresponding to the `frbr:exemplar` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_url, None))
 
     # HAS TYPE

@@ -87,6 +87,11 @@ class PointerList(BibliographicEntity):
         self._create_literal(GraphEntity.iri_has_content, string)
 
     def remove_content(self) -> None:
+        """
+        Remover method corresponding to the `c4o:hasContent` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_content, None))
 
     # HAS ELEMENT (ReferencePointer)
@@ -119,6 +124,18 @@ class PointerList(BibliographicEntity):
 
     @accepts_only('rp')
     def remove_contained_element(self, rp_res: ReferencePointer = None) -> None:
+        """
+        Remover method corresponding to the `co:element` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param rp_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type rp_res: ReferencePointer
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if rp_res is not None:
             self.g.remove((self.res, GraphEntity.iri_has_element, rp_res.res))
         else:

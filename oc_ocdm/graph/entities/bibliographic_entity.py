@@ -89,6 +89,18 @@ class BibliographicEntity(GraphEntity):
 
     @accepts_only('id')
     def remove_identifier(self, id_res: Identifier = None) -> None:
+        """
+        Remover method corresponding to the `datacite:hasIdentifier` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param id_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type id_res: Identifier
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if id_res is not None:
             self.g.remove((self.res, GraphEntity.iri_has_identifier, id_res.res))
         else:

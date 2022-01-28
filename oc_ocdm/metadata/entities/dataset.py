@@ -120,6 +120,11 @@ class Dataset(MetadataEntity):
         self._create_literal(MetadataEntity.iri_title, string)
 
     def remove_title(self) -> None:
+        """
+        Remover method corresponding to the `dcterms:title` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, MetadataEntity.iri_title, None))
 
     # HAS DESCRIPTION
@@ -149,6 +154,11 @@ class Dataset(MetadataEntity):
         self._create_literal(MetadataEntity.iri_description, string)
 
     def remove_description(self) -> None:
+        """
+        Remover method corresponding to the `dcterms:description` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, MetadataEntity.iri_description, None))
 
     # HAS PUBLICATION DATE
@@ -178,6 +188,11 @@ class Dataset(MetadataEntity):
         self._create_literal(MetadataEntity.iri_issued, string, XSD.dateTime, False)
 
     def remove_publication_date(self) -> None:
+        """
+        Remover method corresponding to the `dcterms:issued` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, MetadataEntity.iri_issued, None))
 
     # HAS MODIFICATION DATE
@@ -207,6 +222,11 @@ class Dataset(MetadataEntity):
         self._create_literal(MetadataEntity.iri_modified, string, XSD.dateTime, False)
 
     def remove_modification_date(self) -> None:
+        """
+        Remover method corresponding to the `dcterms:modified` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, MetadataEntity.iri_modified, None))
 
     # HAS KEYWORD
@@ -234,6 +254,18 @@ class Dataset(MetadataEntity):
 
     @accepts_only('literal')
     def remove_keyword(self, string: str = None) -> None:
+        """
+        Remover method corresponding to the `dcat:keyword` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param string: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if string is not None:
             self.g.remove((self.res, MetadataEntity.iri_keyword, string))
         else:
@@ -265,6 +297,18 @@ class Dataset(MetadataEntity):
 
     @accepts_only('thing')
     def remove_subject(self, thing_res: URIRef = None) -> None:
+        """
+        Remover method corresponding to the `dcat:theme` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param thing_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type thing_res: URIRef
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if thing_res is not None:
             self.g.remove((self.res, MetadataEntity.iri_subject, thing_res))
         else:
@@ -297,6 +341,11 @@ class Dataset(MetadataEntity):
         self.g.add((self.res, MetadataEntity.iri_landing_page, thing_res))
 
     def remove_landing_page(self) -> None:
+        """
+        Remover method corresponding to the `dcat:landingPage` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, MetadataEntity.iri_landing_page, None))
 
     # HAS SUB-DATASET
@@ -328,6 +377,18 @@ class Dataset(MetadataEntity):
 
     @accepts_only('_dataset_')
     def remove_sub_dataset(self, dataset_res: Dataset = None) -> None:
+        """
+        Remover method corresponding to the `void:subset` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param dataset_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type dataset_res: Dataset
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if dataset_res is not None:
             self.g.remove((self.res, MetadataEntity.iri_subset, dataset_res.res))
         else:
@@ -361,6 +422,11 @@ class Dataset(MetadataEntity):
         self.g.add((self.res, MetadataEntity.iri_sparql_endpoint, thing_res))
 
     def remove_sparql_endpoint(self) -> None:
+        """
+        Remover method corresponding to the `void:sparqlEndpoint` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, MetadataEntity.iri_sparql_endpoint, None))
 
     # HAS DISTRIBUTION (Distribution)
@@ -392,6 +458,18 @@ class Dataset(MetadataEntity):
 
     @accepts_only('di')
     def remove_distribution(self, di_res: Distribution = None) -> None:
+        """
+        Remover method corresponding to the `dcat:distribution` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param di_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type di_res: Distribution
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if di_res is not None:
             self.g.remove((self.res, MetadataEntity.iri_distribution, di_res.res))
         else:

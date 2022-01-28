@@ -348,5 +348,11 @@ class Identifier(GraphEntity):
             self.g.add((self.res, GraphEntity.iri_uses_identifier_scheme, id_type))
 
     def remove_identifier_with_scheme(self) -> None:
+        """
+        Remover method corresponding to both the `literal:hasLiteralValue` and the
+        `datacite:usesIdentifierScheme` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_literal_value, None))
         self.g.remove((self.res, GraphEntity.iri_uses_identifier_scheme, None))

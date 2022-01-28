@@ -104,6 +104,11 @@ class BibliographicReference(BibliographicEntity):
         self._create_literal(GraphEntity.iri_has_content, string)
 
     def remove_content(self) -> None:
+        """
+        Remover method corresponding to the `c4o:hasContent` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_content, None))
 
     # HAS ANNOTATION (ReferenceAnnotation)
@@ -136,6 +141,18 @@ class BibliographicReference(BibliographicEntity):
 
     @accepts_only('an')
     def remove_annotation(self, an_res: ReferenceAnnotation = None) -> None:
+        """
+        Remover method corresponding to the `oco:hasAnnotation` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param an_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type an_res: ReferenceAnnotation
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if an_res is not None:
             self.g.remove((self.res, GraphEntity.iri_has_annotation, an_res.res))
         else:
@@ -170,4 +187,9 @@ class BibliographicReference(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_references, br_res.res))
 
     def remove_referenced_br(self) -> None:
+        """
+        Remover method corresponding to the `biro:references` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_references, None))

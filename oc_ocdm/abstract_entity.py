@@ -60,6 +60,11 @@ class AbstractEntity(ABC):
         self._create_literal(RDFS.label, string)
 
     def remove_label(self) -> None:
+        """
+        Remover method corresponding to the `rdfs:label` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, RDFS.label, None))
 
     def _create_literal(self, p: URIRef, s: str, dt: URIRef = None, nor: bool = True) -> None:
@@ -102,6 +107,14 @@ class AbstractEntity(ABC):
         create_type(self.g, self.res, res_type)
 
     def remove_type(self) -> None:
+        """
+        Remover method corresponding to the `rdf:type` RDF predicate.
+
+        **WARNING: the OCDM specification requires at least one type for an entity.
+        This method removes any existing secondary type, without removing the main type.**
+
+        :return: None
+        """
         self.g.remove((self.res, RDF.type, None))
         # Restore the main type IRI
         iri_main_type: URIRef = self.short_name_to_type_iri[self.short_name]

@@ -100,6 +100,11 @@ class ReferencePointer(BibliographicEntity):
         self._create_literal(GraphEntity.iri_has_content, string)
 
     def remove_content(self) -> None:
+        """
+        Remover method corresponding to the `c4o:hasContent` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_content, None))
 
     # HAS NEXT (ReferencePointer)
@@ -132,6 +137,11 @@ class ReferencePointer(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_has_next, rp_res.res))
 
     def remove_next_rp(self) -> None:
+        """
+        Remover method corresponding to the `oco:hasNext` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_next, None))
 
     # DENOTES (BibliographicReference)
@@ -164,6 +174,11 @@ class ReferencePointer(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_denotes, be_res.res))
 
     def remove_denoted_be(self) -> None:
+        """
+        Remover method corresponding to the `c4o:denotes` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_denotes, None))
 
     # HAS ANNOTATION (ReferenceAnnotation)
@@ -197,6 +212,18 @@ class ReferencePointer(BibliographicEntity):
 
     @accepts_only('an')
     def remove_annotation(self, an_res: ReferenceAnnotation = None) -> None:
+        """
+        Remover method corresponding to the `oco:hasAnnotation` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param an_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type an_res: ReferenceAnnotation
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if an_res is not None:
             self.g.remove((self.res, GraphEntity.iri_has_annotation, an_res.res))
         else:

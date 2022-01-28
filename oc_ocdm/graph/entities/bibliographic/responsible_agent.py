@@ -97,6 +97,11 @@ class ResponsibleAgent(BibliographicEntity):
         self._create_literal(GraphEntity.iri_name, string)
 
     def remove_name(self) -> None:
+        """
+        Remover method corresponding to the `foaf:name` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_name, None))
 
     # HAS GIVEN NAME
@@ -126,6 +131,11 @@ class ResponsibleAgent(BibliographicEntity):
         self._create_literal(GraphEntity.iri_given_name, string)
 
     def remove_given_name(self) -> None:
+        """
+        Remover method corresponding to the `foaf:givenName` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_given_name, None))
 
     # HAS FAMILY NAME
@@ -155,6 +165,11 @@ class ResponsibleAgent(BibliographicEntity):
         self._create_literal(GraphEntity.iri_family_name, string)
 
     def remove_family_name(self) -> None:
+        """
+        Remover method corresponding to the `foaf:familyName` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_family_name, None))
 
     # HAS RELATED AGENT
@@ -168,23 +183,35 @@ class ResponsibleAgent(BibliographicEntity):
         return uri_list
 
     @accepts_only('thing')
-    def has_related_agent(self, thing_ref: URIRef) -> None:
+    def has_related_agent(self, thing_res: URIRef) -> None:
         """
         Setter method corresponding to the `dcterms:relation` RDF predicate.
 
         `An external agent that/who is related in some relevant way with this responsible agent
         (e.g. for inter-linking purposes).`
 
-        :param thing_ref: The value that will be set as the object of the property related to this method
-        :type thing_ref: str
+        :param thing_res: The value that will be set as the object of the property related to this method
+        :type thing_res: str
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, GraphEntity.iri_relation, thing_ref))
+        self.g.add((self.res, GraphEntity.iri_relation, thing_res))
 
     @accepts_only('thing')
-    def remove_related_agent(self, thing_ref: URIRef = None) -> None:
-        if thing_ref is not None:
-            self.g.remove((self.res, GraphEntity.iri_relation, thing_ref))
+    def remove_related_agent(self, thing_res: URIRef = None) -> None:
+        """
+        Remover method corresponding to the `dcterms:relation` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param thing_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type thing_res: URIRef
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
+        if thing_res is not None:
+            self.g.remove((self.res, GraphEntity.iri_relation, thing_res))
         else:
             self.g.remove((self.res, GraphEntity.iri_relation, None))

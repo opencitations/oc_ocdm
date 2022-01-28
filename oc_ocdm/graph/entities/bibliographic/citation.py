@@ -111,6 +111,11 @@ class Citation(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_has_citing_entity, citing_res.res))
 
     def remove_citing_entity(self) -> None:
+        """
+        Remover method corresponding to the `cito:hasCitingEntity` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_citing_entity, None))
 
     # HAS CITED DOCUMENT (BibliographicResource)
@@ -142,6 +147,11 @@ class Citation(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_has_cited_entity, cited_res.res))
 
     def remove_cited_entity(self) -> None:
+        """
+        Remover method corresponding to the `c4o:hasCitedEntity` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_cited_entity, None))
 
     # HAS CITATION CREATION DATE
@@ -176,6 +186,11 @@ class Citation(BibliographicEntity):
             self._create_literal(GraphEntity.iri_has_citation_creation_date, string, cur_type, False)
 
     def remove_citation_creation_date(self) -> None:
+        """
+        Remover method corresponding to the `c4o:hasCitationCreationDate` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_citation_creation_date, None))
 
     # HAS CITATION TIME SPAN
@@ -206,6 +221,11 @@ class Citation(BibliographicEntity):
         self._create_literal(GraphEntity.iri_has_citation_time_span, string, XSD.duration, False)
 
     def remove_citation_time_span(self) -> None:
+        """
+        Remover method corresponding to the `c4o:hasCitationTimeSpan` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_citation_time_span, None))
 
     # HAS CITATION CHARACTERIZATION
@@ -219,7 +239,7 @@ class Citation(BibliographicEntity):
         return uri
 
     @accepts_only('thing')
-    def has_citation_characterization(self, thing_ref: URIRef) -> None:
+    def has_citation_characterization(self, thing_res: URIRef) -> None:
         """
         Setter method corresponding to the `cito:hasCitationCharacterisation` RDF predicate.
 
@@ -227,15 +247,20 @@ class Citation(BibliographicEntity):
 
         `The citation function characterizing the purpose of the citation.`
 
-        :param thing_ref: The value that will be set as the object of the property related to this method
-        :type thing_ref: URIRef
+        :param thing_res: The value that will be set as the object of the property related to this method
+        :type thing_res: URIRef
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
         self.remove_citation_characterization()
-        self.g.add((self.res, GraphEntity.iri_citation_characterisation, thing_ref))
+        self.g.add((self.res, GraphEntity.iri_citation_characterisation, thing_res))
 
     def remove_citation_characterization(self) -> None:
+        """
+        Remover method corresponding to the `c4o:hasCitationCharacterisation` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_citation_characterisation, None))
 
     # HAS TYPE

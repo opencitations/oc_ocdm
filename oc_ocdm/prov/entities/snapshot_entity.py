@@ -56,6 +56,11 @@ class SnapshotEntity(ProvEntity):
         self._create_literal(ProvEntity.iri_generated_at_time, string, XSD.dateTime)
 
     def remove_generation_time(self) -> None:
+        """
+        Remover method corresponding to the `prov:generatedAtTime` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, ProvEntity.iri_generated_at_time, None))
 
     # HAS INVALIDATION DATE
@@ -87,6 +92,11 @@ class SnapshotEntity(ProvEntity):
         self._create_literal(ProvEntity.iri_invalidated_at_time, string, XSD.dateTime)
 
     def remove_invalidation_time(self) -> None:
+        """
+        Remover method corresponding to the `prov:invalidatedAtTime` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, ProvEntity.iri_invalidated_at_time, None))
 
     # IS SNAPSHOT OF
@@ -116,6 +126,11 @@ class SnapshotEntity(ProvEntity):
         self.g.add((self.res, ProvEntity.iri_specialization_of, en_res.res))
 
     def remove_is_snapshot_of(self) -> None:
+        """
+        Remover method corresponding to the `prov:specializationOf` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, ProvEntity.iri_specialization_of, None))
 
     # IS DERIVED FROM
@@ -149,6 +164,18 @@ class SnapshotEntity(ProvEntity):
 
     @accepts_only('se')
     def remove_derives_from(self, se_res: ProvEntity = None) -> None:
+        """
+        Remover method corresponding to the `prov:wasDerivedFrom` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param se_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type se_res: SnapshotEntity
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if se_res is not None:
             self.g.remove((self.res, ProvEntity.iri_was_derived_from, se_res.res))
         else:
@@ -183,6 +210,11 @@ class SnapshotEntity(ProvEntity):
         self.g.add((self.res, ProvEntity.iri_had_primary_source, any_res))
 
     def remove_primary_source(self) -> None:
+        """
+        Remover method corresponding to the `prov:hadPrimarySource` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, ProvEntity.iri_had_primary_source, None))
 
     # HAS UPDATE ACTION
@@ -213,6 +245,11 @@ class SnapshotEntity(ProvEntity):
         self._create_literal(ProvEntity.iri_has_update_query, string)
 
     def remove_update_action(self) -> None:
+        """
+        Remover method corresponding to the `oco:hasUpdateQuery` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, ProvEntity.iri_has_update_query, None))
 
     # HAS DESCRIPTION
@@ -245,6 +282,11 @@ class SnapshotEntity(ProvEntity):
         self._create_literal(ProvEntity.iri_description, string)
 
     def remove_description(self) -> None:
+        """
+        Remover method corresponding to the `dcterms:description` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, ProvEntity.iri_description, None))
 
     # IS ATTRIBUTED TO
@@ -274,4 +316,9 @@ class SnapshotEntity(ProvEntity):
         self.g.add((self.res, ProvEntity.iri_was_attributed_to, se_agent))
 
     def remove_resp_agent(self) -> None:
+        """
+        Remover method corresponding to the `prov:wasAttributedTo` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, ProvEntity.iri_was_attributed_to, None))

@@ -108,6 +108,11 @@ class Distribution(MetadataEntity):
         self._create_literal(MetadataEntity.iri_title, string)
 
     def remove_title(self) -> None:
+        """
+        Remover method corresponding to the `dcterms:title` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, MetadataEntity.iri_title, None))
 
     # HAS DESCRIPTION
@@ -137,6 +142,11 @@ class Distribution(MetadataEntity):
         self._create_literal(MetadataEntity.iri_description, string)
 
     def remove_description(self) -> None:
+        """
+        Remover method corresponding to the `dcterms:description` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, MetadataEntity.iri_description, None))
 
     # HAS PUBLICATION DATE
@@ -166,6 +176,11 @@ class Distribution(MetadataEntity):
         self._create_literal(MetadataEntity.iri_issued, string, XSD.dateTime, False)
 
     def remove_publication_date(self) -> None:
+        """
+        Remover method corresponding to the `dcterms:issued` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, MetadataEntity.iri_issued, None))
 
     # HAS BYTE SIZE
@@ -195,6 +210,11 @@ class Distribution(MetadataEntity):
         self._create_literal(MetadataEntity.iri_byte_size, string, XSD.decimal)
 
     def remove_byte_size(self) -> None:
+        """
+        Remover method corresponding to the `dcat:byte_size` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, MetadataEntity.iri_byte_size, None))
 
     # HAS LICENSE
@@ -224,6 +244,11 @@ class Distribution(MetadataEntity):
         self.g.add((self.res, MetadataEntity.iri_license, thing_res))
 
     def remove_license(self) -> None:
+        """
+        Remover method corresponding to the `dcterms:license` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, MetadataEntity.iri_license, None))
 
     # HAS DOWNLOAD URL
@@ -253,6 +278,11 @@ class Distribution(MetadataEntity):
         self.g.add((self.res, MetadataEntity.iri_download_url, thing_res))
 
     def remove_download_url(self) -> None:
+        """
+        Remover method corresponding to the `dcat:downloadURL` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, MetadataEntity.iri_download_url, None))
 
     # HAS_MEDIA_TYPE
@@ -282,4 +312,9 @@ class Distribution(MetadataEntity):
         self.g.add((self.res, MetadataEntity.iri_media_type, thing_res))
 
     def remove_media_type(self) -> None:
+        """
+        Remover method corresponding to the `dcat:mediaType` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, MetadataEntity.iri_media_type, None))

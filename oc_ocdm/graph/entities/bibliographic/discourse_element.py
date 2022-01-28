@@ -111,6 +111,11 @@ class DiscourseElement(BibliographicEntity):
         self._create_literal(GraphEntity.iri_title, string)
 
     def remove_title(self) -> None:
+        """
+        Remover method corresponding to the `dcterms:title` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_title, None))
     
     # HAS PART (DiscourseElement)
@@ -143,6 +148,18 @@ class DiscourseElement(BibliographicEntity):
 
     @accepts_only('de')
     def remove_contained_discourse_element(self, de_res: DiscourseElement = None) -> None:
+        """
+        Remover method corresponding to the `frbr:part` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param de_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type de_res: DiscourseElement
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if de_res is not None:
             self.g.remove((self.res, GraphEntity.iri_contains_de, de_res.res))
         else:
@@ -177,6 +194,11 @@ class DiscourseElement(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_has_next, de_res.res))
 
     def remove_next_de(self) -> None:
+        """
+        Remover method corresponding to the `oco:hasNext` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_next, None))
 
     # IS CONTEXT OF (ReferencePointer)
@@ -209,6 +231,18 @@ class DiscourseElement(BibliographicEntity):
 
     @accepts_only('rp')
     def remove_is_context_of_rp(self, rp_res: ReferencePointer = None) -> None:
+        """
+        Remover method corresponding to the `c4o:isContextOf` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param rp_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type rp_res: ReferencePointer
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if rp_res is not None:
             self.g.remove((self.res, GraphEntity.iri_is_context_of, rp_res.res))
         else:
@@ -244,6 +278,18 @@ class DiscourseElement(BibliographicEntity):
 
     @accepts_only('pl')
     def remove_is_context_of_pl(self, pl_res: PointerList = None) -> None:
+        """
+        Remover method corresponding to the `c4o:isContextOf` RDF predicate.
+
+        **WARNING: this is a non-functional property, hence, if the parameter
+        is None, any existing value will be removed!**
+
+        :param pl_res: If not None, the specific object value that will be removed from the property
+         related to this method (defaults to None)
+        :type pl_res: PointerList
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
         if pl_res is not None:
             self.g.remove((self.res, GraphEntity.iri_is_context_of, pl_res.res))
         else:
@@ -276,6 +322,11 @@ class DiscourseElement(BibliographicEntity):
         self._create_literal(GraphEntity.iri_has_content, string)
 
     def remove_content(self) -> None:
+        """
+        Remover method corresponding to the `c4o:hasContent` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_content, None))
 
     # HAS NUMBER
@@ -303,6 +354,11 @@ class DiscourseElement(BibliographicEntity):
         self._create_literal(GraphEntity.iri_has_sequence_identifier, string)
 
     def remove_number(self) -> None:
+        """
+        Remover method corresponding to the `fabio:hasSequenceIdentifier` RDF predicate.
+
+        :return: None
+        """
         self.g.remove((self.res, GraphEntity.iri_has_sequence_identifier, None))
 
     # HAS TYPE
