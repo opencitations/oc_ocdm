@@ -67,7 +67,10 @@ that same dependency to the `autodoc_mock_imports` list in `docs/source/conf.py`
 ``` bash
     poetry publish --build
 ```
-
+### Install dependencies needed for the documentation
+``` bash
+    pip install Sphinx sphinx_rtd_theme
+```
 ### How to generate the documentation
 ``` bash
     rm ./docs/source/modules/*
