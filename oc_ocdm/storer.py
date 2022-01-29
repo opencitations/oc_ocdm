@@ -84,7 +84,7 @@ class Storer(object):
         else:
             self.reperr: Reporter = reperr
 
-    def store_graphs_in_file(self, file_path: str, context_path: str) -> None:
+    def store_graphs_in_file(self, file_path: str, context_path: str = None) -> None:
         self.repok.new_article()
         self.reperr.new_article()
         self.repok.add_sentence("Store the graphs into a file: starting process")
@@ -95,9 +95,9 @@ class Storer(object):
 
         self._store_in_file(cg, file_path, context_path)
 
-    def _store_in_file(self, cur_g: ConjunctiveGraph, cur_file_path: str, context_path: str) -> None:
+    def _store_in_file(self, cur_g: ConjunctiveGraph, cur_file_path: str, context_path: str = None) -> None:
         # Note: the following lines from here and until 'cur_json_ld' are a sort of hack for including all
-        # the triples of the input graph into the final stored file. Some how, some of them are not written
+        # the triples of the input graph into the final stored file. Somehow, some of them are not written
         # in such file otherwise - in particular the provenance ones.
         new_g: ConjunctiveGraph = ConjunctiveGraph()
         for s, p, o in cur_g.triples((None, None, None)):
@@ -128,7 +128,7 @@ class Storer(object):
 
         self.repok.add_sentence(f"File '{cur_file_path}' added.")
 
-    def store_all(self, base_dir: str, base_iri: str, context_path: str) -> List[str]:
+    def store_all(self, base_dir: str, base_iri: str, context_path: str = None) -> List[str]:
         self.repok.new_article()
         self.reperr.new_article()
 
@@ -146,7 +146,7 @@ class Storer(object):
 
         return stored_graph_path
 
-    def store(self, entity: AbstractEntity, base_dir: str, base_iri: str, context_path: str,
+    def store(self, entity: AbstractEntity, base_dir: str, base_iri: str, context_path: str = None,
               already_processed: Dict[str, ConjunctiveGraph] = None,
               store_now: bool = True) -> Optional[Dict[str, ConjunctiveGraph]]:
         self.repok.new_article()
@@ -210,7 +210,7 @@ class Storer(object):
         except Exception as e:
             self.reperr.add_sentence(f"[1] It was impossible to store the RDF statements in {cur_file_path}. {e}")
 
-    def upload_and_store(self, base_dir: str, triplestore_url: str, base_iri: str, context_path: str,
+    def upload_and_store(self, base_dir: str, triplestore_url: str, base_iri: str, context_path: str = None,
                          batch_size: int = 10) -> None:
         stored_graph_path: List[str] = self.store_all(base_dir, base_iri, context_path)
 
