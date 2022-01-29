@@ -16,7 +16,7 @@ This package can be simply installed with **pip**:
 ``` bash
     pip install oc_ocdm
 ```
-**Please, have a look at the quick start guide which is [available here](https://github.com/opencitations/oc_ocdm/blob/master/quick_start_guide.md).**
+**Please, have a look at the notebooks [available here](https://github.com/opencitations/oc_ocdm/blob/master/notebooks/).**
 
 ## Developer's guide
 
