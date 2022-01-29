@@ -10,7 +10,9 @@ Welcome to oc_ocdm's documentation!
    :maxdepth: 1
    :caption: Contents:
 
+   intro
    modules/oc_ocdm
+   tutorials
    license
 
 Indices and tables
