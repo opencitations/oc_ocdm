@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from typing import BinaryIO, Tuple, List, Dict
 
 from oc_ocdm.counter_handler.counter_handler import CounterHandler
+from oc_ocdm.support.support import is_string_empty
 
 
 class FilesystemCounterHandler(CounterHandler):
@@ -34,7 +35,14 @@ class FilesystemCounterHandler(CounterHandler):
     _trailing_char: str = " "
 
     def __init__(self, info_dir: str) -> None:
-        if info_dir is None or len(info_dir) <= 0:
+        """
+        Constructor of the ``FilesystemCounterHandler`` class.
+
+        :param info_dir: The path to the folder that does/will contain the counter values.
+        :type info_dir: str
+        :raises ValueError: if ``info_dir`` is None or an empty string.
+        """
+        if info_dir is None or is_string_empty(info_dir):
             raise ValueError("info_dir parameter is required!")
 
         if info_dir[-1] != os.sep:
@@ -51,6 +59,23 @@ class FilesystemCounterHandler(CounterHandler):
 
     def set_counter(self, new_value: int, entity_short_name: str, prov_short_name: str = "",
                     identifier: int = 1) -> None:
+        """
+        It allows to set the counter value of graph and provenance entities.
+
+        :param new_value: The new counter value to be set
+        :type new_value: int
+        :param entity_short_name: The short name associated either to the type of the entity itself
+         or, in case of a provenance entity, to the type of the relative graph entity.
+        :type entity_short_name: str
+        :param prov_short_name: In case of a provenance entity, the short name associated to the type
+         of the entity itself. An empty string otherwise.
+        :type prov_short_name: str
+        :param identifier: In case of a provenance entity, the counter value that identifies the relative
+          graph entity. The integer value '1' otherwise.
+        :type identifier: int
+        :raises ValueError: if ``new_value`` is a negative integer or ``identifier`` is less than or equal to zero.
+        :return: None
+        """
         if new_value < 0:
             raise ValueError("new_value must be a non negative integer!")
 
@@ -61,6 +86,21 @@ class FilesystemCounterHandler(CounterHandler):
         self._set_number(new_value, file_path, identifier)
 
     def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
+        """
+        It allows to read the counter value of graph and provenance entities.
+
+        :param entity_short_name: The short name associated either to the type of the entity itself
+         or, in case of a provenance entity, to the type of the relative graph entity.
+        :type entity_short_name: str
+        :param prov_short_name: In case of a provenance entity, the short name associated to the type
+         of the entity itself. An empty string otherwise.
+        :type prov_short_name: str
+        :param identifier: In case of a provenance entity, the counter value that identifies the relative
+          graph entity. The integer value '1' otherwise.
+        :type identifier: int
+        :raises ValueError: if ``identifier`` is less than or equal to zero.
+        :return: The requested counter value.
+        """
         if prov_short_name == "se":
             file_path: str = self._get_prov_path(entity_short_name)
         else:
@@ -68,6 +108,21 @@ class FilesystemCounterHandler(CounterHandler):
         return self._read_number(file_path, identifier)[0]
 
     def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
+        """
+        It allows to increment the counter value of graph and provenance entities by one unit.
+
+        :param entity_short_name: The short name associated either to the type of the entity itself
+         or, in case of a provenance entity, to the type of the relative graph entity.
+        :type entity_short_name: str
+        :param prov_short_name: In case of a provenance entity, the short name associated to the type
+         of the entity itself. An empty string otherwise.
+        :type prov_short_name: str
+        :param identifier: In case of a provenance entity, the counter value that identifies the relative
+          graph entity. The integer value '1' otherwise.
+        :type identifier: int
+        :raises ValueError: if ``identifier`` is less than or equal to zero.
+        :return: The newly-updated (already incremented) counter value.
+        """
         if prov_short_name == "se":
             file_path: str = self._get_prov_path(entity_short_name)
         else:
@@ -225,6 +280,19 @@ class FilesystemCounterHandler(CounterHandler):
                 file.seek(-line_len, os.SEEK_CUR)
 
     def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str) -> None:
+        """
+        It allows to set the counter value of metadata entities.
+
+        :param new_value: The new counter value to be set
+        :type new_value: int
+        :param entity_short_name: The short name associated either to the type of the entity itself.
+        :type entity_short_name: str
+        :param dataset_name: In case of a ``Dataset``, its name. Otherwise, the name of the relative dataset.
+        :type dataset_name: str
+        :raises ValueError: if ``new_value`` is a negative integer, ``dataset_name`` is None or
+          ``entity_short_name`` is not a known metadata short name.
+        :return: None
+        """
         if new_value < 0:
             raise ValueError("new_value must be a non negative integer!")
 
@@ -238,6 +306,16 @@ class FilesystemCounterHandler(CounterHandler):
         return self._set_number(new_value, file_path, 1)
 
     def read_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+        """
+        It allows to read the counter value of metadata entities.
+
+        :param entity_short_name: The short name associated either to the type of the entity itself.
+        :type entity_short_name: str
+        :param dataset_name: In case of a ``Dataset``, its name. Otherwise, the name of the relative dataset.
+        :type dataset_name: str
+        :raises ValueError: if ``dataset_name`` is None or ``entity_short_name`` is not a known metadata short name.
+        :return: The requested counter value.
+        """
         if dataset_name is None:
             raise ValueError("dataset_name must be provided!")
 
@@ -248,6 +326,16 @@ class FilesystemCounterHandler(CounterHandler):
         return self._read_number(file_path, 1)[0]
 
     def increment_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+        """
+        It allows to increment the counter value of metadata entities by one unit.
+
+        :param entity_short_name: The short name associated either to the type of the entity itself.
+        :type entity_short_name: str
+        :param dataset_name: In case of a ``Dataset``, its name. Otherwise, the name of the relative dataset.
+        :type dataset_name: str
+        :raises ValueError: if ``dataset_name`` is None or ``entity_short_name`` is not a known metadata short name.
+        :return: The newly-updated (already incremented) counter value.
+        """
         if dataset_name is None:
             raise ValueError("dataset_name must be provided!")
 

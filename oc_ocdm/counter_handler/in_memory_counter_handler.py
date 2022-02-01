@@ -24,8 +24,13 @@ from oc_ocdm.counter_handler.counter_handler import CounterHandler
 
 
 class InMemoryCounterHandler(CounterHandler):
+    """A concrete implementation of the ``CounterHandler`` interface that temporarily stores
+    the counter values in the volatile system memory."""
 
     def __init__(self) -> None:
+        """
+        Constructor of the ``InMemoryCounterHandler`` class.
+        """
         self.short_names: List[str] = ["an", "ar", "be", "br", "ci", "de", "id", "pl", "ra", "re", "rp"]
         self.prov_short_names: List[str] = ["se"]
         self.metadata_short_names: List[str] = ["di"]
@@ -36,6 +41,24 @@ class InMemoryCounterHandler(CounterHandler):
 
     def set_counter(self, new_value: int, entity_short_name: str, prov_short_name: str = "",
                     identifier: int = 1) -> None:
+        """
+        It allows to set the counter value of graph and provenance entities.
+
+        :param new_value: The new counter value to be set
+        :type new_value: int
+        :param entity_short_name: The short name associated either to the type of the entity itself
+         or, in case of a provenance entity, to the type of the relative graph entity.
+        :type entity_short_name: str
+        :param prov_short_name: In case of a provenance entity, the short name associated to the type
+         of the entity itself. An empty string otherwise.
+        :type prov_short_name: str
+        :param identifier: In case of a provenance entity, the counter value that identifies the relative
+          graph entity. The integer value '1' otherwise.
+        :type identifier: int
+        :raises ValueError: if ``new_value`` is a negative integer, ``identifier`` is less than or equal to zero,
+          ``entity_short_name`` is not a known short name or ``prov_short_name`` is not a known provenance short name.
+        :return: None
+        """
         if new_value < 0:
             raise ValueError("new_value must be a non negative integer!")
 
@@ -60,6 +83,22 @@ class InMemoryCounterHandler(CounterHandler):
             self.entity_counters[entity_short_name] = new_value
 
     def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
+        """
+        It allows to read the counter value of graph and provenance entities.
+
+        :param entity_short_name: The short name associated either to the type of the entity itself
+         or, in case of a provenance entity, to the type of the relative graph entity.
+        :type entity_short_name: str
+        :param prov_short_name: In case of a provenance entity, the short name associated to the type
+         of the entity itself. An empty string otherwise.
+        :type prov_short_name: str
+        :param identifier: In case of a provenance entity, the counter value that identifies the relative
+          graph entity. The integer value '1' otherwise.
+        :type identifier: int
+        :raises ValueError: if ``identifier`` is less than or equal to zero, ``entity_short_name``
+          is not a known short name or ``prov_short_name`` is not a known provenance short name.
+        :return: The requested counter value.
+        """
         if entity_short_name not in self.short_names:
             raise ValueError("entity_short_name is not a known short name!")
 
@@ -81,6 +120,22 @@ class InMemoryCounterHandler(CounterHandler):
             return self.entity_counters[entity_short_name]
 
     def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
+        """
+        It allows to increment the counter value of graph and provenance entities by one unit.
+
+        :param entity_short_name: The short name associated either to the type of the entity itself
+         or, in case of a provenance entity, to the type of the relative graph entity.
+        :type entity_short_name: str
+        :param prov_short_name: In case of a provenance entity, the short name associated to the type
+         of the entity itself. An empty string otherwise.
+        :type prov_short_name: str
+        :param identifier: In case of a provenance entity, the counter value that identifies the relative
+          graph entity. The integer value '1' otherwise.
+        :type identifier: int
+        :raises ValueError: if ``identifier`` is less than or equal to zero, ``entity_short_name``
+          is not a known short name or ``prov_short_name`` is not a known provenance short name.
+        :return: The newly-updated (already incremented) counter value.
+        """
         if entity_short_name not in self.short_names:
             raise ValueError("entity_short_name is not a known short name!")
 
@@ -104,6 +159,19 @@ class InMemoryCounterHandler(CounterHandler):
             return self.entity_counters[entity_short_name]
 
     def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str) -> None:
+        """
+        It allows to set the counter value of metadata entities.
+
+        :param new_value: The new counter value to be set
+        :type new_value: int
+        :param entity_short_name: The short name associated either to the type of the entity itself.
+        :type entity_short_name: str
+        :param dataset_name: In case of a ``Dataset``, its name. Otherwise, the name of the relative dataset.
+        :type dataset_name: str
+        :raises ValueError: if ``new_value`` is a negative integer, ``dataset_name`` is None or
+          ``entity_short_name`` is not a known metadata short name.
+        :return: None
+        """
         if new_value < 0:
             raise ValueError("new_value must be a non negative integer!")
 
@@ -119,6 +187,16 @@ class InMemoryCounterHandler(CounterHandler):
         self.metadata_counters[dataset_name][entity_short_name] = new_value
 
     def read_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+        """
+        It allows to read the counter value of metadata entities.
+
+        :param entity_short_name: The short name associated either to the type of the entity itself.
+        :type entity_short_name: str
+        :param dataset_name: In case of a ``Dataset``, its name. Otherwise, the name of the relative dataset.
+        :type dataset_name: str
+        :raises ValueError: if ``dataset_name`` is None or ``entity_short_name`` is not a known metadata short name.
+        :return: The requested counter value.
+        """
         if dataset_name is None:
             raise ValueError("dataset_name must be provided!")
 
@@ -134,6 +212,16 @@ class InMemoryCounterHandler(CounterHandler):
                 return self.metadata_counters[dataset_name][entity_short_name]
 
     def increment_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+        """
+        It allows to increment the counter value of metadata entities by one unit.
+
+        :param entity_short_name: The short name associated either to the type of the entity itself.
+        :type entity_short_name: str
+        :param dataset_name: In case of a ``Dataset``, its name. Otherwise, the name of the relative dataset.
+        :type dataset_name: str
+        :raises ValueError: if ``dataset_name`` is None or ``entity_short_name`` is not a known metadata short name.
+        :return: The newly-updated (already incremented) counter value.
+        """
         if dataset_name is None:
             raise ValueError("dataset_name must be provided!")
 
