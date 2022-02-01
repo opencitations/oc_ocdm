@@ -27,8 +27,11 @@ from oc_ocdm.counter_handler.counter_handler import CounterHandler
 
 
 class FilesystemCounterHandler(CounterHandler):
-    initial_line_len: int = 3
-    trailing_char: str = " "
+    """A concrete implementation of the ``CounterHandler`` interface that persistently stores
+    the counter values within the filesystem."""
+
+    _initial_line_len: int = 3
+    _trailing_char: str = " "
 
     def __init__(self, info_dir: str) -> None:
         if info_dir is None or len(info_dir) <= 0:
@@ -52,32 +55,32 @@ class FilesystemCounterHandler(CounterHandler):
             raise ValueError("new_value must be a non negative integer!")
 
         if prov_short_name == "se":
-            file_path: str = self.get_prov_path(entity_short_name)
+            file_path: str = self._get_prov_path(entity_short_name)
         else:
-            file_path: str = self.get_info_path(entity_short_name)
+            file_path: str = self._get_info_path(entity_short_name)
         self._set_number(new_value, file_path, identifier)
 
     def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
         if prov_short_name == "se":
-            file_path: str = self.get_prov_path(entity_short_name)
+            file_path: str = self._get_prov_path(entity_short_name)
         else:
-            file_path: str = self.get_info_path(entity_short_name)
+            file_path: str = self._get_info_path(entity_short_name)
         return self._read_number(file_path, identifier)[0]
 
     def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
         if prov_short_name == "se":
-            file_path: str = self.get_prov_path(entity_short_name)
+            file_path: str = self._get_prov_path(entity_short_name)
         else:
-            file_path: str = self.get_info_path(entity_short_name)
+            file_path: str = self._get_info_path(entity_short_name)
         return self._add_number(file_path, identifier)
 
-    def get_info_path(self, short_name: str) -> str:
+    def _get_info_path(self, short_name: str) -> str:
         return self.info_dir + self.info_files[short_name]
 
-    def get_prov_path(self, short_name: str) -> str:
+    def _get_prov_path(self, short_name: str) -> str:
         return self.info_dir + self.prov_files[short_name]
 
-    def get_metadata_path(self, short_name: str, dataset_name: str) -> str:
+    def _get_metadata_path(self, short_name: str, dataset_name: str) -> str:
         return self.datasets_dir + dataset_name + os.sep + 'metadata_' + short_name + '.txt'
 
     def __initialize_file_if_not_existing(self, file_path: str):
@@ -86,7 +89,7 @@ class FilesystemCounterHandler(CounterHandler):
 
         if not os.path.isfile(file_path):
             with open(file_path, "wb") as file:
-                first_line: str = self.trailing_char * (self.initial_line_len - 1) + "\n"
+                first_line: str = self._trailing_char * (self._initial_line_len - 1) + "\n"
                 file.write(first_line.encode("ascii"))
 
     def _read_number(self, file_path: str, line_number: int) -> Tuple[int, int]:
@@ -103,7 +106,7 @@ class FilesystemCounterHandler(CounterHandler):
                 line_offset = (line_number - 1) * cur_line_len
                 file.seek(line_offset)
                 line = file.readline(cur_line_len).decode("ascii")
-                cur_number = int(line.rstrip(self.trailing_char + "\n"))
+                cur_number = int(line.rstrip(self._trailing_char + "\n"))
         except ValueError:
             cur_number = 0
         except Exception as e:
@@ -128,7 +131,7 @@ class FilesystemCounterHandler(CounterHandler):
         with open(file_path, "r+b") as file:
             line_offset: int = (line_number - 1) * cur_line_len
             file.seek(line_offset)
-            line: str = str(cur_number).ljust(cur_line_len - 1, self.trailing_char) + "\n"
+            line: str = str(cur_number).ljust(cur_line_len - 1, self._trailing_char) + "\n"
             file.write(line.encode("ascii"))
             file.seek(-cur_line_len, os.SEEK_CUR)
             self._fix_previous_lines(file, cur_line_len)
@@ -153,7 +156,7 @@ class FilesystemCounterHandler(CounterHandler):
         with open(file_path, "r+b") as file:
             line_offset: int = (line_number - 1) * cur_line_len
             file.seek(line_offset)
-            line: str = str(new_value).ljust(cur_line_len - 1, self.trailing_char) + "\n"
+            line: str = str(new_value).ljust(cur_line_len - 1, self._trailing_char) + "\n"
             file.write(line.encode("ascii"))
             file.seek(-cur_line_len, os.SEEK_CUR)
             self._fix_previous_lines(file, cur_line_len)
@@ -190,8 +193,8 @@ class FilesystemCounterHandler(CounterHandler):
         with os.fdopen(fh, "wb") as new_file:
             with open(file_path, "rt", encoding="ascii") as old_file:
                 for line in old_file:
-                    number: str = line.rstrip(self.trailing_char + "\n")
-                    new_line: str = str(number).ljust(new_length - 1, self.trailing_char) + "\n"
+                    number: str = line.rstrip(self._trailing_char + "\n")
+                    new_line: str = str(number).ljust(new_length - 1, self._trailing_char) + "\n"
                     new_file.write(new_line.encode("ascii"))
 
         # Copy the file permissions from the old file to the new file
@@ -207,8 +210,8 @@ class FilesystemCounterHandler(CounterHandler):
         return (string[-1] == "\n") and ("\0" not in string[:-1])
 
     def _fix_previous_lines(self, file: BinaryIO, line_len: int) -> None:
-        if line_len < self.initial_line_len:
-            raise ValueError("line_len should be at least %d!" % self.initial_line_len)
+        if line_len < self._initial_line_len:
+            raise ValueError("line_len should be at least %d!" % self._initial_line_len)
 
         while file.tell() >= line_len:
             file.seek(-line_len, os.SEEK_CUR)
@@ -217,7 +220,7 @@ class FilesystemCounterHandler(CounterHandler):
                 break
             else:
                 file.seek(-line_len, os.SEEK_CUR)
-                fixed_line: str = (self.trailing_char * (line_len - 1)) + "\n"
+                fixed_line: str = (self._trailing_char * (line_len - 1)) + "\n"
                 file.write(fixed_line.encode("ascii"))
                 file.seek(-line_len, os.SEEK_CUR)
 
@@ -231,7 +234,7 @@ class FilesystemCounterHandler(CounterHandler):
         if entity_short_name not in self.metadata_short_names:
             raise ValueError("entity_short_name is not a known metadata short name!")
 
-        file_path: str = self.get_metadata_path(entity_short_name, dataset_name)
+        file_path: str = self._get_metadata_path(entity_short_name, dataset_name)
         return self._set_number(new_value, file_path, 1)
 
     def read_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
@@ -241,7 +244,7 @@ class FilesystemCounterHandler(CounterHandler):
         if entity_short_name not in self.metadata_short_names:
             raise ValueError("entity_short_name is not a known metadata short name!")
 
-        file_path: str = self.get_metadata_path(entity_short_name, dataset_name)
+        file_path: str = self._get_metadata_path(entity_short_name, dataset_name)
         return self._read_number(file_path, 1)[0]
 
     def increment_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
@@ -251,5 +254,5 @@ class FilesystemCounterHandler(CounterHandler):
         if entity_short_name not in self.metadata_short_names:
             raise ValueError("entity_short_name is not a known metadata short name!")
 
-        file_path: str = self.get_metadata_path(entity_short_name, dataset_name)
+        file_path: str = self._get_metadata_path(entity_short_name, dataset_name)
         return self._add_number(file_path, 1)

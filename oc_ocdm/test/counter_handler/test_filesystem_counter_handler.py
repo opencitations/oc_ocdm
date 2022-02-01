@@ -31,34 +31,34 @@ class TestFilesystemCounterHandler(unittest.TestCase):
 
         if not os.path.isfile(cls.file_path):
             with open(cls.file_path, "wb") as file:
-                first_line = cls.counter_handler.trailing_char * (cls.counter_handler.initial_line_len - 1) + '\n'
+                first_line = cls.counter_handler._trailing_char * (cls.counter_handler._initial_line_len - 1) + '\n'
                 file.write(first_line.encode('ascii'))
 
     def setUp(self):
         # Reset test file content:
         with open(self.file_path, "wb") as file:
-            first_line = self.counter_handler.trailing_char * (self.counter_handler.initial_line_len - 1) + '\n'
+            first_line = self.counter_handler._trailing_char * (self.counter_handler._initial_line_len - 1) + '\n'
             file.write(first_line.encode('ascii'))
 
     def test_get_line_len(self):
         with open(self.file_path, 'rb') as test_file:
             line_len = self.counter_handler._get_line_len(test_file)
             self.assertIsNotNone(line_len)
-            self.assertEqual(line_len, self.counter_handler.initial_line_len)
+            self.assertEqual(line_len, self.counter_handler._initial_line_len)
             self.assertEqual(test_file.tell(), 0)
 
     def test_increase_line_len(self):
         increment = 1
         result = self.counter_handler._increase_line_len(self.file_path,
-                                                         self.counter_handler.initial_line_len + increment)
+                                                         self.counter_handler._initial_line_len + increment)
         self.assertIsNone(result)
         with open(self.file_path, 'rt', encoding='ascii') as test_file:
             for line in test_file:
-                self.assertEqual(len(line), self.counter_handler.initial_line_len + increment)
+                self.assertEqual(len(line), self.counter_handler._initial_line_len + increment)
 
         self.assertRaises(ValueError, self.counter_handler._increase_line_len, self.file_path, -1)
         self.assertRaises(ValueError, self.counter_handler._increase_line_len, self.file_path,
-                          self.counter_handler.initial_line_len - 1)
+                          self.counter_handler._initial_line_len - 1)
 
     def test_is_a_valid_line(self):
         with self.subTest("line is 'abc \\n'"):
@@ -86,14 +86,14 @@ class TestFilesystemCounterHandler(unittest.TestCase):
         with open(self.file_path, "wb") as test_file:
             num_lines = 10
             for i in range(0, num_lines):
-                line = '\0' * self.counter_handler.initial_line_len
+                line = '\0' * self.counter_handler._initial_line_len
                 test_file.write(line.encode('ascii'))
-            last_line = '1'.ljust(self.counter_handler.initial_line_len - 1, self.counter_handler.trailing_char) + '\n'
+            last_line = '1'.ljust(self.counter_handler._initial_line_len - 1, self.counter_handler._trailing_char) + '\n'
             test_file.write(last_line.encode('ascii'))
 
         with open(self.file_path, 'r+b') as test_file:
-            test_file.seek(self.counter_handler.initial_line_len * num_lines)
-            result = self.counter_handler._fix_previous_lines(test_file, self.counter_handler.initial_line_len)
+            test_file.seek(self.counter_handler._initial_line_len * num_lines)
+            result = self.counter_handler._fix_previous_lines(test_file, self.counter_handler._initial_line_len)
             self.assertIsNone(result)
 
         with open(self.file_path, 'rt', encoding='ascii') as test_file:
@@ -108,8 +108,8 @@ class TestFilesystemCounterHandler(unittest.TestCase):
         number = 18
         with open(self.file_path, 'r+b') as test_file:
             num_of_line = 35
-            test_file.seek(self.counter_handler.initial_line_len * (num_of_line - 1))
-            line = str(number).ljust(self.counter_handler.initial_line_len - 1, self.counter_handler.trailing_char) + '\n'
+            test_file.seek(self.counter_handler._initial_line_len * (num_of_line - 1))
+            line = str(number).ljust(self.counter_handler._initial_line_len - 1, self.counter_handler._trailing_char) + '\n'
             test_file.write(line.encode('ascii'))
 
         new_number = 205
@@ -131,15 +131,15 @@ class TestFilesystemCounterHandler(unittest.TestCase):
         number = 18
         with open(self.file_path, 'r+b') as test_file:
             num_of_line = 35
-            test_file.seek(self.counter_handler.initial_line_len * (num_of_line - 1))
-            line = str(number).ljust(self.counter_handler.initial_line_len - 1, self.counter_handler.trailing_char) + '\n'
+            test_file.seek(self.counter_handler._initial_line_len * (num_of_line - 1))
+            line = str(number).ljust(self.counter_handler._initial_line_len - 1, self.counter_handler._trailing_char) + '\n'
             test_file.write(line.encode('ascii'))
 
         read_number, line_len = self.counter_handler._read_number(self.file_path, num_of_line)
         self.assertIsNotNone(read_number)
         self.assertIsNotNone(line_len)
         self.assertEqual(read_number, number)
-        self.assertEqual(line_len, self.counter_handler.initial_line_len)
+        self.assertEqual(line_len, self.counter_handler._initial_line_len)
 
         self.assertRaises(ValueError, self.counter_handler._read_number, self.file_path, -1)
 
@@ -147,8 +147,8 @@ class TestFilesystemCounterHandler(unittest.TestCase):
         number = 18
         with open(self.file_path, 'r+b') as test_file:
             num_of_line = 35
-            test_file.seek(self.counter_handler.initial_line_len * (num_of_line - 1))
-            line = str(number).ljust(self.counter_handler.initial_line_len - 1, self.counter_handler.trailing_char) + '\n'
+            test_file.seek(self.counter_handler._initial_line_len * (num_of_line - 1))
+            line = str(number).ljust(self.counter_handler._initial_line_len - 1, self.counter_handler._trailing_char) + '\n'
             test_file.write(line.encode('ascii'))
 
         read_number = self.counter_handler._add_number(self.file_path, num_of_line)
