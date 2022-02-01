@@ -99,3 +99,11 @@ ___
             make html
         ```
   3. Open the `build/html/index.html` file with a web browser of your choice!
+
+## Acknowledgements
+This work has been funded by the project “Open Biomedical Citations in Context Corpus”
+(Wellcome Trust, Grant n. 214471/Z/18/Z) and the project “Wikipedia Citations in Wikidata”
+(Wikimedia Foundation, https://meta.wikimedia.org/wiki/Wikicite/grant/Wikipedia_Citations_in_Wikidata).
+
+We would like to thank (in alphabetic order) Fabio Mariani (@FabioMariani), Arcangelo
+Massari (@arcangelo7), and Gabriele Pisciotta (@GabrielePisciotta) for the constructive feedback.

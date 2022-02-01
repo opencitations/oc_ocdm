@@ -40,3 +40,12 @@ Useful links
   * PyPi repository: https://pypi.org/project/oc-ocdm
   * Zenodo repository: https://doi.org/10.5281/zenodo.5770646
   * ReadTheDocks documentation: https://oc-ocdm.readthedocs.io/
+
+Acknowledgements
+----------------
+This work has been funded by the project “Open Biomedical Citations in Context Corpus”
+(Wellcome Trust, Grant n. 214471/Z/18/Z) and the project “Wikipedia Citations in Wikidata”
+(Wikimedia Foundation, https://meta.wikimedia.org/wiki/Wikicite/grant/Wikipedia_Citations_in_Wikidata).
+
+We would like to thank (in alphabetic order) `Fabio Mariani <https://github.com/FabioMariani>`_, `Arcangelo
+Massari <https://github.com/arcangelo7>`_, and `Gabriele Pisciotta <https://github.com/GabrielePisciotta>`_ for the constructive feedback.
