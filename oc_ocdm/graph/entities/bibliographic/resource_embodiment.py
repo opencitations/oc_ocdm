@@ -118,11 +118,15 @@ class ResourceEmbodiment(BibliographicEntity):
         """
         Setter method corresponding to the `prism:startingPage` RDF predicate.
 
+        The string gets internally preprocessed by eventually removing dashes and everything
+        that follows them (e.g. '22-45' becomes '22').
+
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
         `The first page of the bibliographic resource according to the current embodiment.`
 
-        :param string: The value that will be set as the object of the property related to this method
+        :param string: The value that will be set as the object of the property related to this method. **It must
+          be a string that starts with an integer number.**
         :type string: str
         :raises TypeError: if the parameter is of the wrong type
         :return: None
@@ -156,11 +160,15 @@ class ResourceEmbodiment(BibliographicEntity):
         """
         Setter method corresponding to the `prism:endingPage` RDF predicate.
 
+        The string gets internally preprocessed by eventually removing dashes and everything
+        that comes before them (e.g. '22-45' becomes '45').
+
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
         `The last page of the bibliographic resource according to the current embodiment.`
 
-        :param string: The value that will be set as the object of the property related to this method
+        :param string: The value that will be set as the object of the property related to this method. **It must
+          be a string that ends with an integer number.**
         :type string: str
         :raises TypeError: if the parameter is of the wrong type
         :return: None

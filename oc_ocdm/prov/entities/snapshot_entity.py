@@ -28,6 +28,11 @@ if TYPE_CHECKING:
 
 
 class SnapshotEntity(ProvEntity):
+    """Snapshot of entity metadata (short: se): a particular snapshot recording the
+    metadata associated with an individual entity (either a bibliographic entity or an
+    identifier) at a particular date and time, including the agent, such as a person,
+    organisation or automated process that created or modified the entity metadata."""
+
     # HAS CREATION DATE
     def get_generation_time(self) -> Optional[str]:
         """
@@ -47,7 +52,8 @@ class SnapshotEntity(ProvEntity):
         `The date on which a particular snapshot of a bibliographic entity's metadata was
         created.`
 
-        :param string: The value that will be set as the object of the property related to this method
+        :param string: The value that will be set as the object of the property related to this method. **It must
+          be a string compliant with the** ``xsd:dateTime`` **datatype.**
         :type string: str
         :raises TypeError: if the parameter is of the wrong type
         :return: None
@@ -83,7 +89,8 @@ class SnapshotEntity(ProvEntity):
         to an update (e.g. a correction, or the addition of some metadata that was not specified
         in the previous snapshot), or due to a merger of the entity with another one.`
 
-        :param string: The value that will be set as the object of the property related to this method
+        :param string: The value that will be set as the object of the property related to this method. **It must
+          be a string compliant with the** ``xsd:dateTime`` **datatype.**
         :type string: str
         :raises TypeError: if the parameter is of the wrong type
         :return: None

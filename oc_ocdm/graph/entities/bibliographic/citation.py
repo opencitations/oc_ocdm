@@ -175,7 +175,8 @@ class Citation(BibliographicEntity):
         of the citation itself. When combined with the citation time span, it permits
         that citation to be located in history.`
 
-        :param string: The value that will be set as the object of the property related to this method
+        :param string: The value that will be set as the object of the property related to this method. **It must
+          be a string compliant with the** ``ISO 8601`` **standard.**
         :type string: str
         :raises TypeError: if the parameter is of the wrong type
         :return: None
@@ -212,7 +213,8 @@ class Citation(BibliographicEntity):
         `The date interval between the publication date of the cited bibliographic resource and
         the publication date of the citing bibliographic resource.`
 
-        :param string: The value that will be set as the object of the property related to this method
+        :param string: The value that will be set as the object of the property related to this method. **It must
+          be a string compliant with the** ``xsd:duration`` **datatype.**
         :type string: str
         :raises TypeError: if the parameter is of the wrong type
         :return: None

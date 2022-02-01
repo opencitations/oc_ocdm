@@ -275,7 +275,8 @@ class BibliographicResource(BibliographicEntity):
 
         `The date of publication of the bibliographic resource.`
 
-        :param string: The value that will be set as the object of the property related to this method
+        :param string: The value that will be set as the object of the property related to this method. **It must
+          be a string compliant with the** ``ISO 8601`` **standard.**
         :type string: str
         :raises TypeError: if the parameter is of the wrong type
         :return: None

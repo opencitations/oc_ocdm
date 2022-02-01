@@ -179,7 +179,8 @@ class Dataset(MetadataEntity):
 
         `The date of first publication of the dataset.`
 
-        :param string: The value that will be set as the object of the property related to this method
+        :param string: The value that will be set as the object of the property related to this method. **It must
+          be a string compliant with the** ``xsd:dateTime`` **datatype.**
         :type string: str
         :raises TypeError: if the parameter is of the wrong type
         :return: None
@@ -213,7 +214,8 @@ class Dataset(MetadataEntity):
 
         `The date on which the dataset has been modified.`
 
-        :param string: The value that will be set as the object of the property related to this method
+        :param string: The value that will be set as the object of the property related to this method. **It must
+          be a string compliant with the** ``xsd:dateTime`` **datatype.**
         :type string: str
         :raises TypeError: if the parameter is of the wrong type
         :return: None

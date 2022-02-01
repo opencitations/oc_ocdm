@@ -167,7 +167,8 @@ class Distribution(MetadataEntity):
 
         `The date of first publication of the distribution.`
 
-        :param string: The value that will be set as the object of the property related to this method
+        :param string: The value that will be set as the object of the property related to this method. **It must
+          be a string compliant with the** ``xsd:dateTime`` **datatype.**
         :type string: str
         :raises TypeError: if the parameter is of the wrong type
         :return: None
@@ -201,7 +202,8 @@ class Distribution(MetadataEntity):
 
         `The size in bytes of the distribution.`
 
-        :param string: The value that will be set as the object of the property related to this method
+        :param string: The value that will be set as the object of the property related to this method. **It must
+          be a string compliant with the** ``xsd:decimal`` **datatype.**
         :type string: str
         :raises TypeError: if the parameter is of the wrong type
         :return: None

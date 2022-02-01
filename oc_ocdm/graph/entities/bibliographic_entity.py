@@ -101,6 +101,17 @@ class BibliographicEntity(GraphEntity):
             self.g.remove((self.res, GraphEntity.iri_has_identifier, None))
 
     def remove_duplicated_identifiers(self) -> None:
+        """
+        Utility function that automatically scans the list of Identifier entities associated to the
+        current bibliographic entity (through the `datacite:hasIdentifier` RDF predicate) and it removes
+        duplicated entries.
+
+        Two distinct ``Identifier`` entities are considered the same if they share both
+        the scheme (`datacite:usesIdentifierScheme`) and the literal value (`literal:hasLiteralValue`).
+
+        :return: None
+        """
+
         # Identifiers should be merged based on the
         # correspondence between both their scheme and literal value!
         id_list: List[Identifier] = self.get_identifiers()

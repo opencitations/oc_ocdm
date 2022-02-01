@@ -35,6 +35,16 @@ class AbstractEntity(ABC):
         self.short_name: str = ""
 
     def remove_every_triple(self) -> None:
+        """
+        Remover method that removes every triple from the current entity.
+
+        **WARNING: the OCDM specification requires that every entity has at least
+        one triple that defines its type (through the** `rdf:type` **RDF predicate). If
+        such triple is not subsequently restored by the user, the entity will be considered
+        as to be deleted since it wouldn't be valid anymore.**
+
+        :return: None
+        """
         self.g.remove((None, None, None))
 
     # LABEL

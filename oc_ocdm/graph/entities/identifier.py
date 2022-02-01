@@ -119,6 +119,9 @@ class Identifier(GraphEntity):
         It implicitly sets the object value `datacite:doi` for the
         `datacite:usesIdentifierScheme` RDF predicate.
 
+        The string gets internally preprocessed by converting it to lowercase
+        (e.g. 'DOI:10.1111/HEX.12487' becomes 'doi:10.1111/hex.12487').
+
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
         :param string: The value that will be set as the object of the property related to this method
@@ -170,9 +173,13 @@ class Identifier(GraphEntity):
         It implicitly sets the object value `datacite:issn` for the
         `datacite:usesIdentifierScheme` RDF predicate.
 
+        The string gets internally preprocessed by eventually replacing long dashes with short ones
+        (e.g. '1522–4501' becomes '1522-4501').
+
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
-        :param string: The value that will be set as the object of the property related to this method
+        :param string: The value that will be set as the object of the property related to this method. **It
+          must be a string different from '0000-0000'.**
         :type string: str
         :raises TypeError: if the parameter is of the wrong type
         :return: None
@@ -188,6 +195,9 @@ class Identifier(GraphEntity):
         `datacite:usesIdentifierScheme` RDF predicate.
         It implicitly sets the object value `datacite:isbn` for the
         `datacite:usesIdentifierScheme` RDF predicate.
+
+        The string gets internally preprocessed by eventually replacing long dashes with short ones
+        (e.g. '817525766–0' becomes '817525766-0').
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -205,6 +215,11 @@ class Identifier(GraphEntity):
         `datacite:usesIdentifierScheme` RDF predicate.
         It implicitly sets the object value `datacite:url` for the
         `datacite:usesIdentifierScheme` RDF predicate.
+
+        The string gets internally preprocessed both by converting it to lowercase
+        (e.g. 'https://OPENCITATIONS.NET/' becomes 'https://opencitations.net/') and by
+        applying `URL encoding` on it (e.g. 'https://opencitations.net/file name.txt'
+        becomes 'https://opencitations.net/file%20name.txt').
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
