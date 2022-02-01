@@ -149,7 +149,7 @@ class AbstractEntity(ABC):
         for o in self.g.objects(self.res, predicate):
             if type(o) == URIRef:
                 if not is_string_empty(short_name):
-                    # If a particular short_name is explicitly required,
+                    # If a particular short_name is explicitly requested,
                     # then the following additional check must be performed:
                     if (short_name == '_dataset_' and is_dataset(o)) or get_short_name(o) == short_name:
                         result = o
@@ -164,7 +164,7 @@ class AbstractEntity(ABC):
         for o in self.g.objects(self.res, predicate):
             if type(o) == URIRef:
                 if not is_string_empty(short_name):
-                    # If a particular short_name is explicitly required,
+                    # If a particular short_name is explicitly requested,
                     # then the following additional check must be performed:
                     if (short_name == '_dataset_' and is_dataset(o)) or get_short_name(o) == short_name:
                         result.append(o)

@@ -287,6 +287,6 @@ class Reader(object):
             imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(g_set, result,
                                                                                      resp_agent, enable_validation)
             if len(imported_entities) <= 0:
-                raise ValueError("The required entity was not found or was not recognized as a proper OCDM entity.")
+                raise ValueError("The requested entity was not found or was not recognized as a proper OCDM entity.")
             else:
                 return imported_entities[0]

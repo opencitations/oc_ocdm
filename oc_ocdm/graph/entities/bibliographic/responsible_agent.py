@@ -69,7 +69,7 @@ class ResponsibleAgent(BibliographicEntity):
         for cur_agent in related_agents:
             self.has_related_agent(cur_agent)
 
-    # HAS NAME STRING
+    # HAS NAME
     def get_name(self) -> Optional[str]:
         """
         Getter method corresponding to the `foaf:name` RDF predicate.

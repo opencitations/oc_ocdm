@@ -363,10 +363,10 @@ class DiscourseElement(BibliographicEntity):
 
     # HAS TYPE
     @accepts_only('thing')
-    def create_discourse_element(self, de_class: URIRef) -> None:
+    def create_discourse_element(self, de_class: URIRef = None) -> None:
         """
         Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `deo:DiscourseElement`.
+        If parameter is None, it implicitly sets the object value `deo:DiscourseElement`.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -375,6 +375,9 @@ class DiscourseElement(BibliographicEntity):
         `The type of discourse element – such as “paragraph”, “section”, “sentence”,
         “acknowledgements”, “reference list” or “figure”.`
 
+        :param de_class: The value that will be set as the object of the property related to this method
+        :type de_class: URIRef
+        :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
         if de_class is not None:
