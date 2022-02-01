@@ -25,12 +25,6 @@ if TYPE_CHECKING:
     from oc_ocdm.graph.entities.identifier import Identifier
 from oc_ocdm.graph.graph_entity import GraphEntity
 
-"""
-Notes about BibliographicEntity:
-
-    Chill down, everything seems OK here!
-"""
-
 
 class BibliographicEntity(GraphEntity):
     """The base class for each bibliographic entity of the OpenCitations DataModel (OCDM)."""
