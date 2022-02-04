@@ -21,8 +21,7 @@ from importlib import resources
 
 from SPARQLWrapper import SPARQLWrapper, RDFXML
 from pyshex import ShExEvaluator
-from rdflib import RDF, Namespace, ConjunctiveGraph, Graph, XSD
-from rdflib.term import _toPythonMapping
+from rdflib import RDF, Namespace, ConjunctiveGraph, Graph
 from typing import TYPE_CHECKING
 
 from oc_ocdm.graph.graph_entity import GraphEntity
@@ -66,9 +65,6 @@ class Reader(object):
 
         loaded_graph: Optional[ConjunctiveGraph] = None
         if os.path.isfile(rdf_file_path):
-            Reader._hack_dates()
-            # The line above has been added for handling gYear and gYearMonth correctly.
-            # More info at https://github.com/RDFLib/rdflib/issues/806.
 
             try:
                 loaded_graph = self._load_graph(rdf_file_path)
@@ -82,13 +78,6 @@ class Reader(object):
                                      f"The file specified ('{rdf_file_path}') doesn't exist.")
 
         return loaded_graph
-
-    @staticmethod
-    def _hack_dates() -> None:
-        if XSD.gYear in _toPythonMapping:
-            _toPythonMapping.pop(XSD.gYear)
-        if XSD.gYearMonth in _toPythonMapping:
-            _toPythonMapping.pop(XSD.gYearMonth)
 
     def _load_graph(self, file_path: str) -> ConjunctiveGraph:
         formats: List[str] = ["json-ld", "rdfxml", "turtle", "trig", "nt11", "nquads"]
