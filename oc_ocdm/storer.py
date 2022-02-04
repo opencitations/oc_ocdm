@@ -111,7 +111,7 @@ class Storer(object):
         if self.output_format == "json-ld":
             if context_path is not None and context_path in self.context_map:
                 cur_json_ld: Any = json.loads(
-                    new_g.serialize(format="json-ld", context=self.context_map[context_path]).decode("utf-8"))
+                    new_g.serialize(format="json-ld", context=self.context_map[context_path]))
 
                 if isinstance(cur_json_ld, dict):
                     cur_json_ld["@context"] = context_path
@@ -119,7 +119,7 @@ class Storer(object):
                     for item in cur_json_ld:
                         item["@context"] = context_path
             else:
-                cur_json_ld: Any = json.loads(new_g.serialize(format="json-ld").decode("utf-8"))
+                cur_json_ld: Any = json.loads(new_g.serialize(format="json-ld"))
 
             with open(cur_file_path, "wt", encoding='utf-8') as f:
                 json.dump(cur_json_ld, f, indent=4, ensure_ascii=False)

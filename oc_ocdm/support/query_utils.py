@@ -33,9 +33,7 @@ def get_delete_query(graph_iri: URIRef, data: Graph) -> Tuple[str, int]:
     if num_of_statements <= 0:
         return "", 0
     else:
-        statements: str = data.serialize(format="nt11", encoding="utf-8")\
-            .decode("utf-8")\
-            .replace('\n\n', '')
+        statements: str = data.serialize(format="nt11").replace('\n\n', '')
         delete_string: str = f"DELETE DATA {{ GRAPH <{graph_iri}> {{ {statements} }} }}"
         return delete_string, num_of_statements
 
@@ -45,9 +43,7 @@ def get_insert_query(graph_iri: URIRef, data: Graph) -> Tuple[str, int]:
     if num_of_statements <= 0:
         return "", 0
     else:
-        statements: str = data.serialize(format="nt11", encoding="utf-8") \
-            .decode("utf-8") \
-            .replace('\n\n', '')
+        statements: str = data.serialize(format="nt11").replace('\n\n', '')
         insert_string: str = f"INSERT DATA {{ GRAPH <{graph_iri}> {{ {statements} }} }}"
         return insert_string, num_of_statements
 
