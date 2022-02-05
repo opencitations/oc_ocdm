@@ -75,7 +75,7 @@ class ReferencePointer(BibliographicEntity):
     # HAS REFERENCE POINTER TEXT
     def get_content(self) -> Optional[str]:
         """
-        Getter method corresponding to the `c4o:hasContent` RDF predicate.
+        Getter method corresponding to the ``c4o:hasContent`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -84,7 +84,7 @@ class ReferencePointer(BibliographicEntity):
     @accepts_only('literal')
     def has_content(self, string: str) -> None:
         """
-        Setter method corresponding to the `c4o:hasContent` RDF predicate.
+        Setter method corresponding to the ``c4o:hasContent`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -101,7 +101,7 @@ class ReferencePointer(BibliographicEntity):
 
     def remove_content(self) -> None:
         """
-        Remover method corresponding to the `c4o:hasContent` RDF predicate.
+        Remover method corresponding to the ``c4o:hasContent`` RDF predicate.
 
         :return: None
         """
@@ -110,7 +110,7 @@ class ReferencePointer(BibliographicEntity):
     # HAS NEXT (ReferencePointer)
     def get_next_rp(self) -> Optional[ReferencePointer]:
         """
-        Getter method corresponding to the `oco:hasNext` RDF predicate.
+        Getter method corresponding to the ``oco:hasNext`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -121,7 +121,7 @@ class ReferencePointer(BibliographicEntity):
     @accepts_only('rp')
     def has_next_rp(self, rp_res: ReferencePointer) -> None:
         """
-        Setter method corresponding to the `oco:hasNext` RDF predicate.
+        Setter method corresponding to the ``oco:hasNext`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -138,7 +138,7 @@ class ReferencePointer(BibliographicEntity):
 
     def remove_next_rp(self) -> None:
         """
-        Remover method corresponding to the `oco:hasNext` RDF predicate.
+        Remover method corresponding to the ``oco:hasNext`` RDF predicate.
 
         :return: None
         """
@@ -147,7 +147,7 @@ class ReferencePointer(BibliographicEntity):
     # DENOTES (BibliographicReference)
     def get_denoted_be(self) -> Optional[BibliographicReference]:
         """
-        Getter method corresponding to the `c4o:denotes` RDF predicate.
+        Getter method corresponding to the ``c4o:denotes`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -158,7 +158,7 @@ class ReferencePointer(BibliographicEntity):
     @accepts_only('be')
     def denotes_be(self, be_res: BibliographicReference) -> None:
         """
-        Setter method corresponding to the `c4o:denotes` RDF predicate.
+        Setter method corresponding to the ``c4o:denotes`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -175,7 +175,7 @@ class ReferencePointer(BibliographicEntity):
 
     def remove_denoted_be(self) -> None:
         """
-        Remover method corresponding to the `c4o:denotes` RDF predicate.
+        Remover method corresponding to the ``c4o:denotes`` RDF predicate.
 
         :return: None
         """
@@ -184,7 +184,7 @@ class ReferencePointer(BibliographicEntity):
     # HAS ANNOTATION (ReferenceAnnotation)
     def get_annotations(self) -> List[ReferenceAnnotation]:
         """
-        Getter method corresponding to the `oco:hasAnnotation` RDF predicate.
+        Getter method corresponding to the ``oco:hasAnnotation`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -197,7 +197,7 @@ class ReferencePointer(BibliographicEntity):
     @accepts_only('an')
     def has_annotation(self, an_res: ReferenceAnnotation) -> None:
         """
-        Setter method corresponding to the `oco:hasAnnotation` RDF predicate.
+        Setter method corresponding to the ``oco:hasAnnotation`` RDF predicate.
 
         `An annotation characterizing the citation to which the in-text reference pointer relates
         in terms of its citation function (the reason for that citation) specific to the textual
@@ -213,7 +213,7 @@ class ReferencePointer(BibliographicEntity):
     @accepts_only('an')
     def remove_annotation(self, an_res: ReferenceAnnotation = None) -> None:
         """
-        Remover method corresponding to the `oco:hasAnnotation` RDF predicate.
+        Remover method corresponding to the ``oco:hasAnnotation`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**

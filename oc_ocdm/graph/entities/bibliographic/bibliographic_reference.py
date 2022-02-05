@@ -72,7 +72,7 @@ class BibliographicReference(BibliographicEntity):
     # HAS BIBLIOGRAPHIC REFERENCE TEXT
     def get_content(self) -> Optional[str]:
         """
-        Getter method corresponding to the `c4o:hasContent` RDF predicate.
+        Getter method corresponding to the ``c4o:hasContent`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -81,7 +81,7 @@ class BibliographicReference(BibliographicEntity):
     @accepts_only('literal')
     def has_content(self, string: str) -> None:
         """
-        Setter method corresponding to the `c4o:hasContent` RDF predicate.
+        Setter method corresponding to the ``c4o:hasContent`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -105,7 +105,7 @@ class BibliographicReference(BibliographicEntity):
 
     def remove_content(self) -> None:
         """
-        Remover method corresponding to the `c4o:hasContent` RDF predicate.
+        Remover method corresponding to the ``c4o:hasContent`` RDF predicate.
 
         :return: None
         """
@@ -114,7 +114,7 @@ class BibliographicReference(BibliographicEntity):
     # HAS ANNOTATION (ReferenceAnnotation)
     def get_annotations(self) -> List[ReferenceAnnotation]:
         """
-        Getter method corresponding to the `oco:hasAnnotation` RDF predicate.
+        Getter method corresponding to the ``oco:hasAnnotation`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -127,7 +127,7 @@ class BibliographicReference(BibliographicEntity):
     @accepts_only('an')
     def has_annotation(self, an_res: ReferenceAnnotation) -> None:
         """
-        Setter method corresponding to the `oco:hasAnnotation` RDF predicate.
+        Setter method corresponding to the ``oco:hasAnnotation`` RDF predicate.
 
         `An annotation characterizing the related citation, in terms of its citation function (the
         reason for that citation).`
@@ -142,7 +142,7 @@ class BibliographicReference(BibliographicEntity):
     @accepts_only('an')
     def remove_annotation(self, an_res: ReferenceAnnotation = None) -> None:
         """
-        Remover method corresponding to the `oco:hasAnnotation` RDF predicate.
+        Remover method corresponding to the ``oco:hasAnnotation`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**
@@ -161,7 +161,7 @@ class BibliographicReference(BibliographicEntity):
     # REFERENCES (BibliographicResource)
     def get_referenced_br(self) -> Optional[BibliographicResource]:
         """
-        Getter method corresponding to the `biro:references` RDF predicate.
+        Getter method corresponding to the ``biro:references`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -172,7 +172,7 @@ class BibliographicReference(BibliographicEntity):
     @accepts_only('br')
     def references_br(self, br_res: BibliographicResource) -> None:
         """
-        Setter method corresponding to the `biro:references` RDF predicate.
+        Setter method corresponding to the ``biro:references`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -188,7 +188,7 @@ class BibliographicReference(BibliographicEntity):
 
     def remove_referenced_br(self) -> None:
         """
-        Remover method corresponding to the `biro:references` RDF predicate.
+        Remover method corresponding to the ``biro:references`` RDF predicate.
 
         :return: None
         """

@@ -108,7 +108,7 @@ class BibliographicResource(BibliographicEntity):
     # HAS TITLE
     def get_title(self) -> Optional[str]:
         """
-        Getter method corresponding to the `dcterms:title` RDF predicate.
+        Getter method corresponding to the ``dcterms:title`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -117,7 +117,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('literal')
     def has_title(self, string: str) -> None:
         """
-        Setter method corresponding to the `dcterms:title` RDF predicate.
+        Setter method corresponding to the ``dcterms:title`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -133,7 +133,7 @@ class BibliographicResource(BibliographicEntity):
 
     def remove_title(self) -> None:
         """
-        Remover method corresponding to the `dcterms:title` RDF predicate.
+        Remover method corresponding to the ``dcterms:title`` RDF predicate.
 
         :return: None
         """
@@ -142,7 +142,7 @@ class BibliographicResource(BibliographicEntity):
     # HAS SUBTITLE
     def get_subtitle(self) -> Optional[str]:
         """
-        Getter method corresponding to the `fabio:hasSubtitle` RDF predicate.
+        Getter method corresponding to the ``fabio:hasSubtitle`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -151,7 +151,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('literal')
     def has_subtitle(self, string: str) -> None:
         """
-        Setter method corresponding to the `fabio:hasSubtitle` RDF predicate.
+        Setter method corresponding to the ``fabio:hasSubtitle`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -167,7 +167,7 @@ class BibliographicResource(BibliographicEntity):
 
     def remove_subtitle(self) -> None:
         """
-        Remover method corresponding to the `fabio:hasSubtitle` RDF predicate.
+        Remover method corresponding to the ``fabio:hasSubtitle`` RDF predicate.
 
         :return: None
         """
@@ -176,7 +176,7 @@ class BibliographicResource(BibliographicEntity):
     # IS PART OF (BibliographicResource)
     def get_is_part_of(self) -> Optional[BibliographicResource]:
         """
-        Getter method corresponding to the `frbr:partOf` RDF predicate.
+        Getter method corresponding to the ``frbr:partOf`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -187,7 +187,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('br')
     def is_part_of(self, br_res: BibliographicResource) -> None:
         """
-        Setter method corresponding to the `frbr:partOf` RDF predicate.
+        Setter method corresponding to the ``frbr:partOf`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -204,7 +204,7 @@ class BibliographicResource(BibliographicEntity):
 
     def remove_is_part_of(self) -> None:
         """
-        Remover method corresponding to the `frbr:partOf` RDF predicate.
+        Remover method corresponding to the ``frbr:partOf`` RDF predicate.
 
         :return: None
         """
@@ -213,7 +213,7 @@ class BibliographicResource(BibliographicEntity):
     # CITES (BibliographicResource)
     def get_citations(self) -> List[BibliographicResource]:
         """
-        Getter method corresponding to the `cito:cites` RDF predicate.
+        Getter method corresponding to the ``cito:cites`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -226,7 +226,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('br')
     def has_citation(self, br_res: BibliographicResource) -> None:
         """
-        Setter method corresponding to the `cito:cites` RDF predicate.
+        Setter method corresponding to the ``cito:cites`` RDF predicate.
 
         `The corpus identifier of the bibliographic resource cited by the subject bibliographic
         resource.`
@@ -241,7 +241,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('br')
     def remove_citation(self, br_res: BibliographicResource = None) -> None:
         """
-        Remover method corresponding to the `cito:cites` RDF predicate.
+        Remover method corresponding to the ``cito:cites`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**
@@ -260,7 +260,7 @@ class BibliographicResource(BibliographicEntity):
     # HAS PUBLICATION DATE
     def get_pub_date(self) -> Optional[str]:
         """
-        Getter method corresponding to the `prism:publicationDate` RDF predicate.
+        Getter method corresponding to the ``prism:publicationDate`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -269,7 +269,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('literal')
     def has_pub_date(self, string: str) -> None:
         """
-        Setter method corresponding to the `prism:publicationDate` RDF predicate.
+        Setter method corresponding to the ``prism:publicationDate`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -288,7 +288,7 @@ class BibliographicResource(BibliographicEntity):
 
     def remove_pub_date(self) -> None:
         """
-        Remover method corresponding to the `prism:publicationDate` RDF predicate.
+        Remover method corresponding to the ``prism:publicationDate`` RDF predicate.
 
         :return: None
         """
@@ -297,7 +297,7 @@ class BibliographicResource(BibliographicEntity):
     # IS EMBODIED AS (ResourceEmbodiment)
     def get_formats(self) -> List[ResourceEmbodiment]:
         """
-        Getter method corresponding to the `frbr:embodiment` RDF predicate.
+        Getter method corresponding to the ``frbr:embodiment`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -310,7 +310,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('re')
     def has_format(self, re_res: ResourceEmbodiment) -> None:
         """
-        Setter method corresponding to the `frbr:embodiment` RDF predicate.
+        Setter method corresponding to the ``frbr:embodiment`` RDF predicate.
 
         `The corpus identifier of the resource embodiment defining the format in which the
         bibliographic resource has been embodied, which can be either print or digital.`
@@ -325,7 +325,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('re')
     def remove_format(self, re_res: ResourceEmbodiment = None) -> None:
         """
-        Remover method corresponding to the `frbr:embodiment` RDF predicate.
+        Remover method corresponding to the ``frbr:embodiment`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**
@@ -344,7 +344,7 @@ class BibliographicResource(BibliographicEntity):
     # HAS NUMBER
     def get_number(self) -> Optional[str]:
         """
-        Getter method corresponding to the `fabio:hasSequenceIdentifier` RDF predicate.
+        Getter method corresponding to the ``fabio:hasSequenceIdentifier`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -353,7 +353,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('literal')
     def has_number(self, string: str) -> None:
         """
-        Setter method corresponding to the `fabio:hasSequenceIdentifier` RDF predicate.
+        Setter method corresponding to the ``fabio:hasSequenceIdentifier`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -372,7 +372,7 @@ class BibliographicResource(BibliographicEntity):
 
     def remove_number(self) -> None:
         """
-        Remover method corresponding to the `fabio:hasSequenceIdentifier` RDF predicate.
+        Remover method corresponding to the ``fabio:hasSequenceIdentifier`` RDF predicate.
 
         :return: None
         """
@@ -381,7 +381,7 @@ class BibliographicResource(BibliographicEntity):
     # HAS EDITION
     def get_edition(self) -> Optional[str]:
         """
-        Getter method corresponding to the `prism:edition` RDF predicate.
+        Getter method corresponding to the ``prism:edition`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -390,7 +390,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('literal')
     def has_edition(self, string: str) -> None:
         """
-        Setter method corresponding to the `prism:edition` RDF predicate.
+        Setter method corresponding to the ``prism:edition`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -407,7 +407,7 @@ class BibliographicResource(BibliographicEntity):
 
     def remove_edition(self) -> None:
         """
-        Remover method corresponding to the `prism:edition` RDF predicate.
+        Remover method corresponding to the ``prism:edition`` RDF predicate.
 
         :return: None
         """
@@ -416,7 +416,7 @@ class BibliographicResource(BibliographicEntity):
     # HAS PART (BibliographicReference)
     def get_contained_in_reference_lists(self) -> List[BibliographicReference]:
         """
-        Getter method corresponding to the `frbr:part` RDF predicate.
+        Getter method corresponding to the ``frbr:part`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -429,7 +429,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('be')
     def contains_in_reference_list(self, be_res: BibliographicReference) -> None:
         """
-        Setter method corresponding to the `frbr:part` RDF predicate.
+        Setter method corresponding to the ``frbr:part`` RDF predicate.
 
         `A bibliographic reference within the bibliographic resource, or a discourse element
         wherein the text of the bibliographic resources can be organized.`
@@ -444,7 +444,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('be')
     def remove_contained_in_reference_list(self, be_res: BibliographicReference = None) -> None:
         """
-        Remover method corresponding to the `frbr:part` RDF predicate.
+        Remover method corresponding to the ``frbr:part`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**
@@ -463,7 +463,7 @@ class BibliographicResource(BibliographicEntity):
     # HAS PART (DiscourseElement)
     def get_contained_discourse_elements(self) -> List[DiscourseElement]:
         """
-        Getter method corresponding to the `frbr:part` RDF predicate.
+        Getter method corresponding to the ``frbr:part`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -476,7 +476,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('de')
     def contains_discourse_element(self, de_res: DiscourseElement) -> None:
         """
-        Setter method corresponding to the `frbr:part` RDF predicate.
+        Setter method corresponding to the ``frbr:part`` RDF predicate.
 
         `A bibliographic reference within the bibliographic resource, or a discourse element
         wherein the text of the bibliographic resources can be organized.`
@@ -491,7 +491,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('de')
     def remove_contained_discourse_element(self, de_res: DiscourseElement = None) -> None:
         """
-        Remover method corresponding to the `frbr:part` RDF predicate.
+        Remover method corresponding to the ``frbr:part`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**
@@ -510,7 +510,7 @@ class BibliographicResource(BibliographicEntity):
     # HAS CONTRIBUTOR (AgentRole)
     def get_contributors(self) -> List[AgentRole]:
         """
-        Getter method corresponding to the `pro:isDocumentContextFor` RDF predicate.
+        Getter method corresponding to the ``pro:isDocumentContextFor`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -523,7 +523,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('ar')
     def has_contributor(self, ar_res: AgentRole):
         """
-        Setter method corresponding to the `pro:isDocumentContextFor` RDF predicate.
+        Setter method corresponding to the ``pro:isDocumentContextFor`` RDF predicate.
 
         :param ar_res: The value that will be set as the object of the property related to this method
         :type ar_res: AgentRole
@@ -535,7 +535,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('ar')
     def remove_contributor(self, ar_res: AgentRole = None):
         """
-        Remover method corresponding to the `frbr:part` RDF predicate.
+        Remover method corresponding to the ``frbr:part`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**
@@ -554,7 +554,7 @@ class BibliographicResource(BibliographicEntity):
     # HAS RELATED DOCUMENT
     def get_related_documents(self) -> List[URIRef]:
         """
-        Getter method corresponding to the `dcterms:relation` RDF predicate.
+        Getter method corresponding to the ``dcterms:relation`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -564,7 +564,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('thing')
     def has_related_document(self, thing_res: URIRef) -> None:
         """
-        Setter method corresponding to the `dcterms:relation` RDF predicate.
+        Setter method corresponding to the ``dcterms:relation`` RDF predicate.
 
         `A document external to the Corpus, that is related to the bibliographic resource (such
         as a version of the bibliographic resource – for example a preprint – recorded in an
@@ -580,7 +580,7 @@ class BibliographicResource(BibliographicEntity):
     @accepts_only('thing')
     def remove_related_document(self, thing_res: URIRef = None) -> None:
         """
-        Remover method corresponding to the `dcterms:relation` RDF predicate.
+        Remover method corresponding to the ``dcterms:relation`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**
@@ -599,8 +599,8 @@ class BibliographicResource(BibliographicEntity):
     # HAS TYPE
     def create_archival_document(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:ArchivalDocument`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:ArchivalDocument``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -614,8 +614,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_book(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:Book`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:Book``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -629,8 +629,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_book_chapter(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:BookChapter`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:BookChapter``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -644,8 +644,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_book_part(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `doco:Part`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``doco:Part``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -659,8 +659,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_book_section(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:ExpressionCollection`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:ExpressionCollection``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -674,8 +674,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_book_series(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:BookSeries`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:BookSeries``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -689,8 +689,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_book_set(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:BookSet`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:BookSet``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -704,8 +704,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_book_track(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:Expression`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:Expression``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -719,8 +719,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_component(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:Expression`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:Expression``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -734,8 +734,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_dataset(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:DataFile`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:DataFile``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -749,8 +749,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_dissertation(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:Thesis`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:Thesis``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -764,8 +764,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_edited_book(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:Book`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:Book``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -779,8 +779,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_journal_article(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:JournalArticle`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:JournalArticle``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -794,8 +794,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_issue(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:JournalIssue`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:JournalIssue``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -809,8 +809,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_volume(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:JournalVolume`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:JournalVolume``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -824,8 +824,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_journal(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:Journal`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:Journal``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -839,8 +839,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_monograph(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:Book`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:Book``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -854,8 +854,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_proceedings_article(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:ProceedingsPaper`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:ProceedingsPaper``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -869,8 +869,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_proceedings(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:AcademicProceedings`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:AcademicProceedings``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -884,8 +884,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_reference_book(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:ReferenceBook`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:ReferenceBook``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -899,8 +899,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_reference_entry(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:ReferenceEntry`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:ReferenceEntry``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -914,8 +914,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_report_series(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:Series`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:Series``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -929,8 +929,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_report(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:ReportDocument`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:ReportDocument``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -944,8 +944,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_standard_series(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:Series`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:Series``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -959,8 +959,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_standard(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:SpecificationDocument`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:SpecificationDocument``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -974,8 +974,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_series(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:Series`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:Series``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -989,8 +989,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_expression_collection(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:ExpressionCollection`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:ExpressionCollection``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -1004,8 +1004,8 @@ class BibliographicResource(BibliographicEntity):
 
     def create_other(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:Expression`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:Expression``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type

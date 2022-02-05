@@ -87,7 +87,7 @@ class DiscourseElement(BibliographicEntity):
     # HAS TITLE
     def get_title(self) -> Optional[str]:
         """
-        Getter method corresponding to the `dcterms:title` RDF predicate.
+        Getter method corresponding to the ``dcterms:title`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -96,7 +96,7 @@ class DiscourseElement(BibliographicEntity):
     @accepts_only('literal')
     def has_title(self, string: str) -> None:
         """
-        Setter method corresponding to the `dcterms:title` RDF predicate.
+        Setter method corresponding to the ``dcterms:title`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -112,7 +112,7 @@ class DiscourseElement(BibliographicEntity):
 
     def remove_title(self) -> None:
         """
-        Remover method corresponding to the `dcterms:title` RDF predicate.
+        Remover method corresponding to the ``dcterms:title`` RDF predicate.
 
         :return: None
         """
@@ -121,7 +121,7 @@ class DiscourseElement(BibliographicEntity):
     # HAS PART (DiscourseElement)
     def get_contained_discourse_elements(self) -> List[DiscourseElement]:
         """
-        Getter method corresponding to the `frbr:part` RDF predicate.
+        Getter method corresponding to the ``frbr:part`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -134,7 +134,7 @@ class DiscourseElement(BibliographicEntity):
     @accepts_only('de')
     def contains_discourse_element(self, de_res: DiscourseElement) -> None:
         """
-        Setter method corresponding to the `frbr:part` RDF predicate.
+        Setter method corresponding to the ``frbr:part`` RDF predicate.
 
         `The discourse element hierarchically nested within the parent element, such as a
         sentence within a paragraph, or a paragraph within a section.`
@@ -149,7 +149,7 @@ class DiscourseElement(BibliographicEntity):
     @accepts_only('de')
     def remove_contained_discourse_element(self, de_res: DiscourseElement = None) -> None:
         """
-        Remover method corresponding to the `frbr:part` RDF predicate.
+        Remover method corresponding to the ``frbr:part`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**
@@ -168,7 +168,7 @@ class DiscourseElement(BibliographicEntity):
     # HAS NEXT (DiscourseElement)
     def get_next_de(self) -> Optional[DiscourseElement]:
         """
-        Getter method corresponding to the `oco:hasNext` RDF predicate.
+        Getter method corresponding to the ``oco:hasNext`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -179,7 +179,7 @@ class DiscourseElement(BibliographicEntity):
     @accepts_only('de')
     def has_next_de(self, de_res: DiscourseElement) -> None:
         """
-        Setter method corresponding to the `oco:hasNext` RDF predicate.
+        Setter method corresponding to the ``oco:hasNext`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -195,7 +195,7 @@ class DiscourseElement(BibliographicEntity):
 
     def remove_next_de(self) -> None:
         """
-        Remover method corresponding to the `oco:hasNext` RDF predicate.
+        Remover method corresponding to the ``oco:hasNext`` RDF predicate.
 
         :return: None
         """
@@ -204,7 +204,7 @@ class DiscourseElement(BibliographicEntity):
     # IS CONTEXT OF (ReferencePointer)
     def get_is_context_of_rp(self) -> List[ReferencePointer]:
         """
-        Getter method corresponding to the `c4o:isContextOf` RDF predicate.
+        Getter method corresponding to the ``c4o:isContextOf`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -217,7 +217,7 @@ class DiscourseElement(BibliographicEntity):
     @accepts_only('rp')
     def is_context_of_rp(self, rp_res: ReferencePointer) -> None:
         """
-        Setter method corresponding to the `c4o:isContextOf` RDF predicate.
+        Setter method corresponding to the ``c4o:isContextOf`` RDF predicate.
 
         `Provides the textual and semantic context of the in-text reference pointer
         that appears within the discourse element.`
@@ -232,7 +232,7 @@ class DiscourseElement(BibliographicEntity):
     @accepts_only('rp')
     def remove_is_context_of_rp(self, rp_res: ReferencePointer = None) -> None:
         """
-        Remover method corresponding to the `c4o:isContextOf` RDF predicate.
+        Remover method corresponding to the ``c4o:isContextOf`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**
@@ -251,7 +251,7 @@ class DiscourseElement(BibliographicEntity):
     # IS CONTEXT OF (PointerList)
     def get_is_context_of_pl(self) -> List[PointerList]:
         """
-        Getter method corresponding to the `c4o:isContextOf` RDF predicate.
+        Getter method corresponding to the ``c4o:isContextOf`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -264,7 +264,7 @@ class DiscourseElement(BibliographicEntity):
     @accepts_only('pl')
     def is_context_of_pl(self, pl_res: PointerList) -> None:
         """
-        Setter method corresponding to the `c4o:isContextOf` RDF predicate.
+        Setter method corresponding to the ``c4o:isContextOf`` RDF predicate.
 
         `Provides the textual and semantic context of the list of
         in-text reference pointers that appears within the discourse element.`
@@ -279,7 +279,7 @@ class DiscourseElement(BibliographicEntity):
     @accepts_only('pl')
     def remove_is_context_of_pl(self, pl_res: PointerList = None) -> None:
         """
-        Remover method corresponding to the `c4o:isContextOf` RDF predicate.
+        Remover method corresponding to the ``c4o:isContextOf`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**
@@ -298,7 +298,7 @@ class DiscourseElement(BibliographicEntity):
     # HAS CONTENT
     def get_content(self) -> Optional[str]:
         """
-        Getter method corresponding to the `c4o:hasContent` RDF predicate.
+        Getter method corresponding to the ``c4o:hasContent`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -307,7 +307,7 @@ class DiscourseElement(BibliographicEntity):
     @accepts_only('literal')
     def has_content(self, string: str) -> None:
         """
-        Setter method corresponding to the `c4o:hasContent` RDF predicate.
+        Setter method corresponding to the ``c4o:hasContent`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -323,7 +323,7 @@ class DiscourseElement(BibliographicEntity):
 
     def remove_content(self) -> None:
         """
-        Remover method corresponding to the `c4o:hasContent` RDF predicate.
+        Remover method corresponding to the ``c4o:hasContent`` RDF predicate.
 
         :return: None
         """
@@ -332,7 +332,7 @@ class DiscourseElement(BibliographicEntity):
     # HAS NUMBER
     def get_number(self) -> Optional[str]:
         """
-        Getter method corresponding to the `fabio:hasSequenceIdentifier` RDF predicate.
+        Getter method corresponding to the ``fabio:hasSequenceIdentifier`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -341,7 +341,7 @@ class DiscourseElement(BibliographicEntity):
     @accepts_only('literal')
     def has_number(self, string: str) -> None:
         """
-        Setter method corresponding to the `fabio:hasSequenceIdentifier` RDF predicate.
+        Setter method corresponding to the ``fabio:hasSequenceIdentifier`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -355,7 +355,7 @@ class DiscourseElement(BibliographicEntity):
 
     def remove_number(self) -> None:
         """
-        Remover method corresponding to the `fabio:hasSequenceIdentifier` RDF predicate.
+        Remover method corresponding to the ``fabio:hasSequenceIdentifier`` RDF predicate.
 
         :return: None
         """
@@ -365,8 +365,8 @@ class DiscourseElement(BibliographicEntity):
     @accepts_only('thing')
     def create_discourse_element(self, de_class: URIRef = None) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        If parameter is None, it implicitly sets the object value `deo:DiscourseElement`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        If parameter is None, it implicitly sets the object value ``deo:DiscourseElement``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -387,8 +387,8 @@ class DiscourseElement(BibliographicEntity):
 
     def create_section(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `doco:Section`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``doco:Section``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -403,8 +403,8 @@ class DiscourseElement(BibliographicEntity):
 
     def create_section_title(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `doco:SectionTitle`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``doco:SectionTitle``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -419,8 +419,8 @@ class DiscourseElement(BibliographicEntity):
 
     def create_paragraph(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `doco:Paragraph`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``doco:Paragraph``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -435,8 +435,8 @@ class DiscourseElement(BibliographicEntity):
 
     def create_sentence(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `doco:Sentence`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``doco:Sentence``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -451,8 +451,8 @@ class DiscourseElement(BibliographicEntity):
 
     def create_text_chunk(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `doco:TextChunk`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``doco:TextChunk``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -467,8 +467,8 @@ class DiscourseElement(BibliographicEntity):
 
     def create_table(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `doco:Table`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``doco:Table``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -483,8 +483,8 @@ class DiscourseElement(BibliographicEntity):
 
     def create_footnote(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `doco:Footnote`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``doco:Footnote``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -499,8 +499,8 @@ class DiscourseElement(BibliographicEntity):
 
     def create_caption(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `deo:Caption`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``deo:Caption``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type

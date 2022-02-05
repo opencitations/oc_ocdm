@@ -47,7 +47,7 @@ class AbstractEntity(ABC):
         Remover method that removes every triple from the current entity.
 
         **WARNING: the OCDM specification requires that every entity has at least
-        one triple that defines its type (through the** `rdf:type` **RDF predicate). If
+        one triple that defines its type (through the** ``rdf:type`` **RDF predicate). If
         such triple is not subsequently restored by the user, the entity will be considered
         as to be deleted since it wouldn't be valid anymore.**
 
@@ -58,7 +58,7 @@ class AbstractEntity(ABC):
     # LABEL
     def get_label(self) -> Optional[str]:
         """
-        Getter method corresponding to the `rdfs:label` RDF predicate.
+        Getter method corresponding to the ``rdfs:label`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -66,7 +66,7 @@ class AbstractEntity(ABC):
 
     def create_label(self, string: str) -> None:
         """
-        Setter method corresponding to the `rdfs:label` RDF predicate.
+        Setter method corresponding to the ``rdfs:label`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -79,7 +79,7 @@ class AbstractEntity(ABC):
 
     def remove_label(self) -> None:
         """
-        Remover method corresponding to the `rdfs:label` RDF predicate.
+        Remover method corresponding to the ``rdfs:label`` RDF predicate.
 
         :return: None
         """
@@ -104,7 +104,7 @@ class AbstractEntity(ABC):
     # TYPE
     def get_types(self) -> List[URIRef]:
         """
-        Getter method corresponding to the `rdf:type` RDF predicate.
+        Getter method corresponding to the ``rdf:type`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -113,7 +113,7 @@ class AbstractEntity(ABC):
 
     def _create_type(self, res_type: URIRef) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -128,7 +128,7 @@ class AbstractEntity(ABC):
 
     def remove_type(self) -> None:
         """
-        Remover method corresponding to the `rdf:type` RDF predicate.
+        Remover method corresponding to the ``rdf:type`` RDF predicate.
 
         **WARNING: the OCDM specification requires at least one type for an entity.
         This method removes any existing secondary type, without removing the main type.**

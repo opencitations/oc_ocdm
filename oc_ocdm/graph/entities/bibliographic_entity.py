@@ -55,7 +55,7 @@ class BibliographicEntity(GraphEntity):
     # HAS IDENTIFIER
     def get_identifiers(self) -> List[Identifier]:
         """
-        Getter method corresponding to the `datacite:hasIdentifier` RDF predicate.
+        Getter method corresponding to the ``datacite:hasIdentifier`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -68,7 +68,7 @@ class BibliographicEntity(GraphEntity):
     @accepts_only('id')
     def has_identifier(self, id_res: Identifier) -> None:
         """
-        Setter method corresponding to the `datacite:hasIdentifier` RDF predicate.
+        Setter method corresponding to the ``datacite:hasIdentifier`` RDF predicate.
 
         `In addition to the internal dataset identifier assigned to the entity upon initial
         curation (format: [entity short name]/[local identifier]), other external third-party
@@ -84,7 +84,7 @@ class BibliographicEntity(GraphEntity):
     @accepts_only('id')
     def remove_identifier(self, id_res: Identifier = None) -> None:
         """
-        Remover method corresponding to the `datacite:hasIdentifier` RDF predicate.
+        Remover method corresponding to the ``datacite:hasIdentifier`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**
@@ -103,11 +103,11 @@ class BibliographicEntity(GraphEntity):
     def remove_duplicated_identifiers(self) -> None:
         """
         Utility function that automatically scans the list of Identifier entities associated to the
-        current bibliographic entity (through the `datacite:hasIdentifier` RDF predicate) and it removes
+        current bibliographic entity (through the ``datacite:hasIdentifier`` RDF predicate) and it removes
         duplicated entries.
 
         Two distinct ``Identifier`` entities are considered the same if they share both
-        the scheme (`datacite:usesIdentifierScheme`) and the literal value (`literal:hasLiteralValue`).
+        the scheme (``datacite:usesIdentifierScheme``) and the literal value (``literal:hasLiteralValue``).
 
         :return: None
         """

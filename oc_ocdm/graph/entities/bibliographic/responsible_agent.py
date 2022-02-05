@@ -72,7 +72,7 @@ class ResponsibleAgent(BibliographicEntity):
     # HAS NAME
     def get_name(self) -> Optional[str]:
         """
-        Getter method corresponding to the `foaf:name` RDF predicate.
+        Getter method corresponding to the ``foaf:name`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -81,7 +81,7 @@ class ResponsibleAgent(BibliographicEntity):
     @accepts_only('literal')
     def has_name(self, string: str) -> None:
         """
-        Setter method corresponding to the `foaf:name` RDF predicate.
+        Setter method corresponding to the ``foaf:name`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -98,7 +98,7 @@ class ResponsibleAgent(BibliographicEntity):
 
     def remove_name(self) -> None:
         """
-        Remover method corresponding to the `foaf:name` RDF predicate.
+        Remover method corresponding to the ``foaf:name`` RDF predicate.
 
         :return: None
         """
@@ -107,7 +107,7 @@ class ResponsibleAgent(BibliographicEntity):
     # HAS GIVEN NAME
     def get_given_name(self) -> Optional[str]:
         """
-        Getter method corresponding to the `foaf:givenName` RDF predicate.
+        Getter method corresponding to the ``foaf:givenName`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -116,7 +116,7 @@ class ResponsibleAgent(BibliographicEntity):
     @accepts_only('literal')
     def has_given_name(self, string: str) -> None:
         """
-        Setter method corresponding to the `foaf:givenName` RDF predicate.
+        Setter method corresponding to the ``foaf:givenName`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -132,7 +132,7 @@ class ResponsibleAgent(BibliographicEntity):
 
     def remove_given_name(self) -> None:
         """
-        Remover method corresponding to the `foaf:givenName` RDF predicate.
+        Remover method corresponding to the ``foaf:givenName`` RDF predicate.
 
         :return: None
         """
@@ -141,7 +141,7 @@ class ResponsibleAgent(BibliographicEntity):
     # HAS FAMILY NAME
     def get_family_name(self) -> Optional[str]:
         """
-        Getter method corresponding to the `foaf:familyName` RDF predicate.
+        Getter method corresponding to the ``foaf:familyName`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -150,7 +150,7 @@ class ResponsibleAgent(BibliographicEntity):
     @accepts_only('literal')
     def has_family_name(self, string: str) -> None:
         """
-        Setter method corresponding to the `foaf:familyName` RDF predicate.
+        Setter method corresponding to the ``foaf:familyName`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -166,7 +166,7 @@ class ResponsibleAgent(BibliographicEntity):
 
     def remove_family_name(self) -> None:
         """
-        Remover method corresponding to the `foaf:familyName` RDF predicate.
+        Remover method corresponding to the ``foaf:familyName`` RDF predicate.
 
         :return: None
         """
@@ -175,7 +175,7 @@ class ResponsibleAgent(BibliographicEntity):
     # HAS RELATED AGENT
     def get_related_agents(self) -> List[URIRef]:
         """
-        Getter method corresponding to the `dcterms:relation` RDF predicate.
+        Getter method corresponding to the ``dcterms:relation`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -185,7 +185,7 @@ class ResponsibleAgent(BibliographicEntity):
     @accepts_only('thing')
     def has_related_agent(self, thing_res: URIRef) -> None:
         """
-        Setter method corresponding to the `dcterms:relation` RDF predicate.
+        Setter method corresponding to the ``dcterms:relation`` RDF predicate.
 
         `An external agent that/who is related in some relevant way with this responsible agent
         (e.g. for inter-linking purposes).`
@@ -200,7 +200,7 @@ class ResponsibleAgent(BibliographicEntity):
     @accepts_only('thing')
     def remove_related_agent(self, thing_res: URIRef = None) -> None:
         """
-        Remover method corresponding to the `dcterms:relation` RDF predicate.
+        Remover method corresponding to the ``dcterms:relation`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**

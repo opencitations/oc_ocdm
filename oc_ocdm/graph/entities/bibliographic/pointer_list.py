@@ -65,7 +65,7 @@ class PointerList(BibliographicEntity):
     # HAS POINTER LIST TEXT
     def get_content(self) -> Optional[str]:
         """
-        Getter method corresponding to the `c4o:hasContent` RDF predicate.
+        Getter method corresponding to the ``c4o:hasContent`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -74,7 +74,7 @@ class PointerList(BibliographicEntity):
     @accepts_only('literal')
     def has_content(self, string: str) -> None:
         """
-        Setter method corresponding to the `c4o:hasContent` RDF predicate.
+        Setter method corresponding to the ``c4o:hasContent`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -88,7 +88,7 @@ class PointerList(BibliographicEntity):
 
     def remove_content(self) -> None:
         """
-        Remover method corresponding to the `c4o:hasContent` RDF predicate.
+        Remover method corresponding to the ``c4o:hasContent`` RDF predicate.
 
         :return: None
         """
@@ -97,7 +97,7 @@ class PointerList(BibliographicEntity):
     # HAS ELEMENT (ReferencePointer)
     def get_contained_elements(self) -> List[ReferencePointer]:
         """
-        Getter method corresponding to the `co:element` RDF predicate.
+        Getter method corresponding to the ``co:element`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -110,7 +110,7 @@ class PointerList(BibliographicEntity):
     @accepts_only('rp')
     def contains_element(self, rp_res: ReferencePointer) -> None:
         """
-        Setter method corresponding to the `co:element` RDF predicate.
+        Setter method corresponding to the ``co:element`` RDF predicate.
 
         `The in-text reference pointer that is part of the in-text reference pointer list present at
         a particular location within the body of the citing work.`
@@ -125,7 +125,7 @@ class PointerList(BibliographicEntity):
     @accepts_only('rp')
     def remove_contained_element(self, rp_res: ReferencePointer = None) -> None:
         """
-        Remover method corresponding to the `co:element` RDF predicate.
+        Remover method corresponding to the ``co:element`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**

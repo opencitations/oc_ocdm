@@ -62,7 +62,7 @@ class Identifier(GraphEntity):
     # HAS LITERAL VALUE and HAS SCHEME
     def get_literal_value(self) -> Optional[str]:
         """
-        Getter method corresponding to the `literal:hasLiteralValue` RDF predicate.
+        Getter method corresponding to the ``literal:hasLiteralValue`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -70,7 +70,7 @@ class Identifier(GraphEntity):
 
     def get_scheme(self) -> Optional[URIRef]:
         """
-        Getter method corresponding to the `datacite:usesIdentifierScheme` RDF predicate.
+        Getter method corresponding to the ``datacite:usesIdentifierScheme`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -80,10 +80,10 @@ class Identifier(GraphEntity):
     @accepts_only('literal')
     def create_oci(self, string: str) -> None:
         """
-        Setter method corresponding to both the `literal:hasLiteralValue` and the
-        `datacite:usesIdentifierScheme` RDF predicate.
-        It implicitly sets the object value `datacite:oci` for the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+        It implicitly sets the object value ``datacite:oci`` for the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -97,10 +97,10 @@ class Identifier(GraphEntity):
     @accepts_only('literal')
     def create_orcid(self, string: str) -> None:
         """
-        Setter method corresponding to both the `literal:hasLiteralValue` and the
-        `datacite:usesIdentifierScheme` RDF predicate.
-        It implicitly sets the object value `datacite:orcid` for the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+        It implicitly sets the object value ``datacite:orcid`` for the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -114,10 +114,10 @@ class Identifier(GraphEntity):
     @accepts_only('literal')
     def create_doi(self, string: str) -> None:
         """
-        Setter method corresponding to both the `literal:hasLiteralValue` and the
-        `datacite:usesIdentifierScheme` RDF predicate.
-        It implicitly sets the object value `datacite:doi` for the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+        It implicitly sets the object value ``datacite:doi`` for the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
 
         The string gets internally preprocessed by converting it to lowercase
         (e.g. 'DOI:10.1111/HEX.12487' becomes 'doi:10.1111/hex.12487').
@@ -134,10 +134,10 @@ class Identifier(GraphEntity):
     @accepts_only('literal')
     def create_pmid(self, string: str) -> None:
         """
-        Setter method corresponding to both the `literal:hasLiteralValue` and the
-        `datacite:usesIdentifierScheme` RDF predicate.
-        It implicitly sets the object value `datacite:pmid` for the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+        It implicitly sets the object value ``datacite:pmid`` for the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -151,10 +151,10 @@ class Identifier(GraphEntity):
     @accepts_only('literal')
     def create_pmcid(self, string: str) -> None:
         """
-        Setter method corresponding to both the `literal:hasLiteralValue` and the
-        `datacite:usesIdentifierScheme` RDF predicate.
-        It implicitly sets the object value `datacite:pmcid` for the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+        It implicitly sets the object value ``datacite:pmcid`` for the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -168,10 +168,10 @@ class Identifier(GraphEntity):
     @accepts_only('literal')
     def create_issn(self, string: str) -> None:
         """
-        Setter method corresponding to both the `literal:hasLiteralValue` and the
-        `datacite:usesIdentifierScheme` RDF predicate.
-        It implicitly sets the object value `datacite:issn` for the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+        It implicitly sets the object value ``datacite:issn`` for the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
 
         The string gets internally preprocessed by eventually replacing long dashes with short ones
         (e.g. '1522–4501' becomes '1522-4501').
@@ -191,10 +191,10 @@ class Identifier(GraphEntity):
     @accepts_only('literal')
     def create_isbn(self, string: str) -> None:
         """
-        Setter method corresponding to both the `literal:hasLiteralValue` and the
-        `datacite:usesIdentifierScheme` RDF predicate.
-        It implicitly sets the object value `datacite:isbn` for the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+        It implicitly sets the object value ``datacite:isbn`` for the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
 
         The string gets internally preprocessed by eventually replacing long dashes with short ones
         (e.g. '817525766–0' becomes '817525766-0').
@@ -211,10 +211,10 @@ class Identifier(GraphEntity):
     @accepts_only('literal')
     def create_url(self, string: str) -> None:
         """
-        Setter method corresponding to both the `literal:hasLiteralValue` and the
-        `datacite:usesIdentifierScheme` RDF predicate.
-        It implicitly sets the object value `datacite:url` for the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+        It implicitly sets the object value ``datacite:url`` for the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
 
         The string gets internally preprocessed both by converting it to lowercase
         (e.g. 'https://OPENCITATIONS.NET/' becomes 'https://opencitations.net/') and by
@@ -233,10 +233,10 @@ class Identifier(GraphEntity):
     @accepts_only('literal')
     def create_xpath(self, string: str) -> None:
         """
-        Setter method corresponding to both the `literal:hasLiteralValue` and the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
         It implicitly sets the object value `datacite:local-resource-identifier-scheme` for the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        ``datacite:usesIdentifierScheme`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -250,10 +250,10 @@ class Identifier(GraphEntity):
     @accepts_only('literal')
     def create_intrepid(self, string: str) -> None:
         """
-        Setter method corresponding to both the `literal:hasLiteralValue` and the
-        `datacite:usesIdentifierScheme` RDF predicate.
-        It implicitly sets the object value `datacite:intrepid` for the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+        It implicitly sets the object value ``datacite:intrepid`` for the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -267,10 +267,10 @@ class Identifier(GraphEntity):
     @accepts_only('literal')
     def create_xmlid(self, string: str) -> None:
         """
-        Setter method corresponding to both the `literal:hasLiteralValue` and the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
         It implicitly sets the object value `datacite:local-resource-identifier-scheme` for the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        ``datacite:usesIdentifierScheme`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -284,10 +284,10 @@ class Identifier(GraphEntity):
     @accepts_only('literal')
     def create_wikidata(self, string: str) -> None:
         """
-        Setter method corresponding to both the `literal:hasLiteralValue` and the
-        `datacite:usesIdentifierScheme` RDF predicate.
-        It implicitly sets the object value `datacite:wikidata` for the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+        It implicitly sets the object value ``datacite:wikidata`` for the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -301,10 +301,10 @@ class Identifier(GraphEntity):
     @accepts_only('literal')
     def create_wikipedia(self, string: str) -> None:
         """
-        Setter method corresponding to both the `literal:hasLiteralValue` and the
-        `datacite:usesIdentifierScheme` RDF predicate.
-        It implicitly sets the object value `datacite:wikipedia` for the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+        It implicitly sets the object value ``datacite:wikipedia`` for the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -318,10 +318,10 @@ class Identifier(GraphEntity):
     @accepts_only('literal')
     def create_crossref(self, string: str) -> None:
         """
-        Setter method corresponding to both the `literal:hasLiteralValue` and the
-        `datacite:usesIdentifierScheme` RDF predicate.
-        It implicitly sets the object value `datacite:crossref` for the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+        It implicitly sets the object value ``datacite:crossref`` for the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -335,10 +335,10 @@ class Identifier(GraphEntity):
     @accepts_only('literal')
     def create_viaf(self, string: str) -> None:
         """
-        Setter method corresponding to both the `literal:hasLiteralValue` and the
-        `datacite:usesIdentifierScheme` RDF predicate.
-        It implicitly sets the object value `datacite:viaf` for the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+        It implicitly sets the object value ``datacite:viaf`` for the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -357,8 +357,8 @@ class Identifier(GraphEntity):
 
     def remove_identifier_with_scheme(self) -> None:
         """
-        Remover method corresponding to both the `literal:hasLiteralValue` and the
-        `datacite:usesIdentifierScheme` RDF predicate.
+        Remover method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
 
         :return: None
         """

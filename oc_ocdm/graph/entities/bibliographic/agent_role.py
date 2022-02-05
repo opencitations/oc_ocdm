@@ -72,7 +72,7 @@ class AgentRole(BibliographicEntity):
     # HAS NEXT (AgentRole)
     def get_next(self) -> Optional[AgentRole]:
         """
-        Getter method corresponding to the `oco:hasNext` RDF predicate.
+        Getter method corresponding to the ``oco:hasNext`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -83,7 +83,7 @@ class AgentRole(BibliographicEntity):
     @accepts_only('ar')
     def has_next(self, ar_res: AgentRole) -> None:
         """
-        Setter method corresponding to the `oco:hasNext` RDF predicate.
+        Setter method corresponding to the ``oco:hasNext`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -100,7 +100,7 @@ class AgentRole(BibliographicEntity):
 
     def remove_next(self) -> None:
         """
-        Remover method corresponding to the `oco:hasNext` RDF predicate.
+        Remover method corresponding to the ``oco:hasNext`` RDF predicate.
 
         :return: None
         """
@@ -109,7 +109,7 @@ class AgentRole(BibliographicEntity):
     # IS HELD BY (ResponsibleAgent)
     def get_is_held_by(self) -> Optional[ResponsibleAgent]:
         """
-        Getter method corresponding to the `pro:isHeldBy` RDF predicate.
+        Getter method corresponding to the ``pro:isHeldBy`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -120,7 +120,7 @@ class AgentRole(BibliographicEntity):
     @accepts_only('ra')
     def is_held_by(self, ra_res: ResponsibleAgent):
         """
-        Setter method corresponding to the `pro:isHeldBy` RDF predicate.
+        Setter method corresponding to the ``pro:isHeldBy`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -136,7 +136,7 @@ class AgentRole(BibliographicEntity):
 
     def remove_is_held_by(self) -> None:
         """
-        Remover method corresponding to the `pro:isHeldBy` RDF predicate.
+        Remover method corresponding to the ``pro:isHeldBy`` RDF predicate.
 
         :return: None
         """
@@ -145,7 +145,7 @@ class AgentRole(BibliographicEntity):
     # HAS ROLE TYPE
     def get_role_type(self) -> Optional[URIRef]:
         """
-        Getter method corresponding to the `pro:withRole` RDF predicate.
+        Getter method corresponding to the ``pro:withRole`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -154,8 +154,8 @@ class AgentRole(BibliographicEntity):
 
     def create_publisher(self) -> None:
         """
-        Setter method corresponding to the `pro:withRole` RDF predicate.
-        It implicitly sets the object value `pro:publisher`.
+        Setter method corresponding to the ``pro:withRole`` RDF predicate.
+        It implicitly sets the object value ``pro:publisher``.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -168,8 +168,8 @@ class AgentRole(BibliographicEntity):
 
     def create_author(self) -> None:
         """
-        Setter method corresponding to the `pro:withRole` RDF predicate.
-        It implicitly sets the object value `pro:author`.
+        Setter method corresponding to the ``pro:withRole`` RDF predicate.
+        It implicitly sets the object value ``pro:author``.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -182,8 +182,8 @@ class AgentRole(BibliographicEntity):
 
     def create_editor(self) -> None:
         """
-        Setter method corresponding to the `pro:withRole` RDF predicate.
-        It implicitly sets the object value `pro:editor`.
+        Setter method corresponding to the ``pro:withRole`` RDF predicate.
+        It implicitly sets the object value ``pro:editor``.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -196,7 +196,7 @@ class AgentRole(BibliographicEntity):
 
     def remove_role_type(self) -> None:
         """
-        Remover method corresponding to the `pro:withRole` RDF predicate.
+        Remover method corresponding to the ``pro:withRole`` RDF predicate.
 
         :return: None
         """

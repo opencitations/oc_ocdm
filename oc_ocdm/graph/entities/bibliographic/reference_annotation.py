@@ -65,7 +65,7 @@ class ReferenceAnnotation(BibliographicEntity):
     # HAS CITATION (Citation)
     def get_body_annotation(self) -> Optional[Citation]:
         """
-        Getter method corresponding to the `oa:hasBody` RDF predicate.
+        Getter method corresponding to the ``oa:hasBody`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -76,7 +76,7 @@ class ReferenceAnnotation(BibliographicEntity):
     @accepts_only('ci')
     def has_body_annotation(self, ci_res: Citation) -> None:
         """
-        Setter method corresponding to the `oa:hasBody` RDF predicate.
+        Setter method corresponding to the ``oa:hasBody`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -93,7 +93,7 @@ class ReferenceAnnotation(BibliographicEntity):
 
     def remove_body_annotation(self) -> None:
         """
-        Remover method corresponding to the `oa:hasBody` RDF predicate.
+        Remover method corresponding to the ``oa:hasBody`` RDF predicate.
 
         :return: None
         """

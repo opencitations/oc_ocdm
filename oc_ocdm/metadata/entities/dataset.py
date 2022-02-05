@@ -96,7 +96,7 @@ class Dataset(MetadataEntity):
     # HAS TITLE
     def get_title(self) -> Optional[str]:
         """
-        Getter method corresponding to the `dcterms:title` RDF predicate.
+        Getter method corresponding to the ``dcterms:title`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -105,7 +105,7 @@ class Dataset(MetadataEntity):
     @accepts_only('literal')
     def has_title(self, string: str) -> None:
         """
-        Setter method corresponding to the `dcterms:title` RDF predicate.
+        Setter method corresponding to the ``dcterms:title`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -121,7 +121,7 @@ class Dataset(MetadataEntity):
 
     def remove_title(self) -> None:
         """
-        Remover method corresponding to the `dcterms:title` RDF predicate.
+        Remover method corresponding to the ``dcterms:title`` RDF predicate.
 
         :return: None
         """
@@ -130,7 +130,7 @@ class Dataset(MetadataEntity):
     # HAS DESCRIPTION
     def get_description(self) -> Optional[str]:
         """
-        Getter method corresponding to the `dcterms:description` RDF predicate.
+        Getter method corresponding to the ``dcterms:description`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -139,7 +139,7 @@ class Dataset(MetadataEntity):
     @accepts_only('literal')
     def has_description(self, string: str) -> None:
         """
-        Setter method corresponding to the `dcterms:description` RDF predicate.
+        Setter method corresponding to the ``dcterms:description`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -155,7 +155,7 @@ class Dataset(MetadataEntity):
 
     def remove_description(self) -> None:
         """
-        Remover method corresponding to the `dcterms:description` RDF predicate.
+        Remover method corresponding to the ``dcterms:description`` RDF predicate.
 
         :return: None
         """
@@ -164,7 +164,7 @@ class Dataset(MetadataEntity):
     # HAS PUBLICATION DATE
     def get_publication_date(self) -> Optional[str]:
         """
-        Getter method corresponding to the `dcterms:issued` RDF predicate.
+        Getter method corresponding to the ``dcterms:issued`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -173,7 +173,7 @@ class Dataset(MetadataEntity):
     @accepts_only('literal')
     def has_publication_date(self, string: str) -> None:
         """
-        Setter method corresponding to the `dcterms:issued` RDF predicate.
+        Setter method corresponding to the ``dcterms:issued`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -190,7 +190,7 @@ class Dataset(MetadataEntity):
 
     def remove_publication_date(self) -> None:
         """
-        Remover method corresponding to the `dcterms:issued` RDF predicate.
+        Remover method corresponding to the ``dcterms:issued`` RDF predicate.
 
         :return: None
         """
@@ -199,7 +199,7 @@ class Dataset(MetadataEntity):
     # HAS MODIFICATION DATE
     def get_modification_date(self) -> Optional[str]:
         """
-        Getter method corresponding to the `dcterms:modified` RDF predicate.
+        Getter method corresponding to the ``dcterms:modified`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -208,7 +208,7 @@ class Dataset(MetadataEntity):
     @accepts_only('literal')
     def has_modification_date(self, string: str) -> None:
         """
-        Setter method corresponding to the `dcterms:modified` RDF predicate.
+        Setter method corresponding to the ``dcterms:modified`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -225,7 +225,7 @@ class Dataset(MetadataEntity):
 
     def remove_modification_date(self) -> None:
         """
-        Remover method corresponding to the `dcterms:modified` RDF predicate.
+        Remover method corresponding to the ``dcterms:modified`` RDF predicate.
 
         :return: None
         """
@@ -234,7 +234,7 @@ class Dataset(MetadataEntity):
     # HAS KEYWORD
     def get_keywords(self) -> List[str]:
         """
-        Getter method corresponding to the `dcat:keyword` RDF predicate.
+        Getter method corresponding to the ``dcat:keyword`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -243,7 +243,7 @@ class Dataset(MetadataEntity):
     @accepts_only('literal')
     def has_keyword(self, string: str) -> None:
         """
-        Setter method corresponding to the `dcat:keyword` RDF predicate.
+        Setter method corresponding to the ``dcat:keyword`` RDF predicate.
 
         `A keyword or phrase describing the content of the dataset.`
 
@@ -257,7 +257,7 @@ class Dataset(MetadataEntity):
     @accepts_only('literal')
     def remove_keyword(self, string: str = None) -> None:
         """
-        Remover method corresponding to the `dcat:keyword` RDF predicate.
+        Remover method corresponding to the ``dcat:keyword`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**
@@ -276,7 +276,7 @@ class Dataset(MetadataEntity):
     # HAS SUBJECT
     def get_subjects(self) -> List[URIRef]:
         """
-        Getter method corresponding to the `dcat:theme` RDF predicate.
+        Getter method corresponding to the ``dcat:theme`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -286,7 +286,7 @@ class Dataset(MetadataEntity):
     @accepts_only('thing')
     def has_subject(self, thing_res: URIRef) -> None:
         """
-        Setter method corresponding to the `dcat:theme` RDF predicate.
+        Setter method corresponding to the ``dcat:theme`` RDF predicate.
 
         `A concept describing the primary subject of the dataset.`
 
@@ -300,7 +300,7 @@ class Dataset(MetadataEntity):
     @accepts_only('thing')
     def remove_subject(self, thing_res: URIRef = None) -> None:
         """
-        Remover method corresponding to the `dcat:theme` RDF predicate.
+        Remover method corresponding to the ``dcat:theme`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**
@@ -319,7 +319,7 @@ class Dataset(MetadataEntity):
     # HAS LANDING PAGE
     def get_landing_page(self) -> Optional[URIRef]:
         """
-        Getter method corresponding to the `dcat:landingPage` RDF predicate.
+        Getter method corresponding to the ``dcat:landingPage`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -328,7 +328,7 @@ class Dataset(MetadataEntity):
     @accepts_only('thing')
     def has_landing_page(self, thing_res: URIRef) -> None:
         """
-        Setter method corresponding to the `dcat:landingPage` RDF predicate.
+        Setter method corresponding to the ``dcat:landingPage`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -344,7 +344,7 @@ class Dataset(MetadataEntity):
 
     def remove_landing_page(self) -> None:
         """
-        Remover method corresponding to the `dcat:landingPage` RDF predicate.
+        Remover method corresponding to the ``dcat:landingPage`` RDF predicate.
 
         :return: None
         """
@@ -353,7 +353,7 @@ class Dataset(MetadataEntity):
     # HAS SUB-DATASET
     def get_sub_datasets(self) -> List[Dataset]:
         """
-        Getter method corresponding to the `void:subset` RDF predicate.
+        Getter method corresponding to the ``void:subset`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -366,7 +366,7 @@ class Dataset(MetadataEntity):
     @accepts_only('_dataset_')
     def has_sub_dataset(self, obj: Dataset) -> None:
         """
-        Setter method corresponding to the `void:subset` RDF predicate.
+        Setter method corresponding to the ``void:subset`` RDF predicate.
 
         `A link to a subset of the present dataset.`
 
@@ -380,7 +380,7 @@ class Dataset(MetadataEntity):
     @accepts_only('_dataset_')
     def remove_sub_dataset(self, dataset_res: Dataset = None) -> None:
         """
-        Remover method corresponding to the `void:subset` RDF predicate.
+        Remover method corresponding to the ``void:subset`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**
@@ -399,7 +399,7 @@ class Dataset(MetadataEntity):
     # HAS SPARQL ENDPOINT
     def get_sparql_endpoint(self) -> Optional[URIRef]:
         """
-        Getter method corresponding to the `void:sparqlEndpoint` RDF predicate.
+        Getter method corresponding to the ``void:sparqlEndpoint`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -409,7 +409,7 @@ class Dataset(MetadataEntity):
     @accepts_only('thing')
     def has_sparql_endpoint(self, thing_res: URIRef) -> None:
         """
-        Setter method corresponding to the `void:sparqlEndpoint` RDF predicate.
+        Setter method corresponding to the ``void:sparqlEndpoint`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -425,7 +425,7 @@ class Dataset(MetadataEntity):
 
     def remove_sparql_endpoint(self) -> None:
         """
-        Remover method corresponding to the `void:sparqlEndpoint` RDF predicate.
+        Remover method corresponding to the ``void:sparqlEndpoint`` RDF predicate.
 
         :return: None
         """
@@ -434,7 +434,7 @@ class Dataset(MetadataEntity):
     # HAS DISTRIBUTION (Distribution)
     def get_distributions(self) -> List[Distribution]:
         """
-        Getter method corresponding to the `dcat:distribution` RDF predicate.
+        Getter method corresponding to the ``dcat:distribution`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -447,7 +447,7 @@ class Dataset(MetadataEntity):
     @accepts_only('di')
     def has_distribution(self, obj: Distribution) -> None:
         """
-        Setter method corresponding to the `dcat:distribution` RDF predicate.
+        Setter method corresponding to the ``dcat:distribution`` RDF predicate.
 
         `A distribution of the dataset.`
 
@@ -461,7 +461,7 @@ class Dataset(MetadataEntity):
     @accepts_only('di')
     def remove_distribution(self, di_res: Distribution = None) -> None:
         """
-        Remover method corresponding to the `dcat:distribution` RDF predicate.
+        Remover method corresponding to the ``dcat:distribution`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**

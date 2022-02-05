@@ -36,7 +36,7 @@ class SnapshotEntity(ProvEntity):
     # HAS CREATION DATE
     def get_generation_time(self) -> Optional[str]:
         """
-        Getter method corresponding to the `prov:generatedAtTime` RDF predicate.
+        Getter method corresponding to the ``prov:generatedAtTime`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -45,7 +45,7 @@ class SnapshotEntity(ProvEntity):
     @accepts_only('literal')
     def has_generation_time(self, string: str) -> None:
         """
-        Setter method corresponding to the `prov:generatedAtTime` RDF predicate.
+        Setter method corresponding to the ``prov:generatedAtTime`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -63,7 +63,7 @@ class SnapshotEntity(ProvEntity):
 
     def remove_generation_time(self) -> None:
         """
-        Remover method corresponding to the `prov:generatedAtTime` RDF predicate.
+        Remover method corresponding to the ``prov:generatedAtTime`` RDF predicate.
 
         :return: None
         """
@@ -72,7 +72,7 @@ class SnapshotEntity(ProvEntity):
     # HAS INVALIDATION DATE
     def get_invalidation_time(self) -> Optional[str]:
         """
-        Getter method corresponding to the `prov:invalidatedAtTime` RDF predicate.
+        Getter method corresponding to the ``prov:invalidatedAtTime`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -81,7 +81,7 @@ class SnapshotEntity(ProvEntity):
     @accepts_only('literal')
     def has_invalidation_time(self, string: str) -> None:
         """
-        Setter method corresponding to the `prov:invalidatedAtTime` RDF predicate.
+        Setter method corresponding to the ``prov:invalidatedAtTime`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -100,7 +100,7 @@ class SnapshotEntity(ProvEntity):
 
     def remove_invalidation_time(self) -> None:
         """
-        Remover method corresponding to the `prov:invalidatedAtTime` RDF predicate.
+        Remover method corresponding to the ``prov:invalidatedAtTime`` RDF predicate.
 
         :return: None
         """
@@ -109,7 +109,7 @@ class SnapshotEntity(ProvEntity):
     # IS SNAPSHOT OF
     def get_is_snapshot_of(self) -> Optional[URIRef]:
         """
-        Getter method corresponding to the `prov:specializationOf` RDF predicate.
+        Getter method corresponding to the ``prov:specializationOf`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -118,7 +118,7 @@ class SnapshotEntity(ProvEntity):
 
     def is_snapshot_of(self, en_res: GraphEntity) -> None:
         """
-        Setter method corresponding to the `prov:specializationOf` RDF predicate.
+        Setter method corresponding to the ``prov:specializationOf`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -134,7 +134,7 @@ class SnapshotEntity(ProvEntity):
 
     def remove_is_snapshot_of(self) -> None:
         """
-        Remover method corresponding to the `prov:specializationOf` RDF predicate.
+        Remover method corresponding to the ``prov:specializationOf`` RDF predicate.
 
         :return: None
         """
@@ -143,7 +143,7 @@ class SnapshotEntity(ProvEntity):
     # IS DERIVED FROM
     def get_derives_from(self) -> List[ProvEntity]:
         """
-        Getter method corresponding to the `prov:wasDerivedFrom` RDF predicate.
+        Getter method corresponding to the ``prov:wasDerivedFrom`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
@@ -157,7 +157,7 @@ class SnapshotEntity(ProvEntity):
     @accepts_only('se')
     def derives_from(self, se_res: ProvEntity) -> None:
         """
-        Setter method corresponding to the `prov:wasDerivedFrom` RDF predicate.
+        Setter method corresponding to the ``prov:wasDerivedFrom`` RDF predicate.
 
         `This property is used to identify the immediately previous snapshot of entity metadata
         associated with the same bibliographic entity.`
@@ -172,7 +172,7 @@ class SnapshotEntity(ProvEntity):
     @accepts_only('se')
     def remove_derives_from(self, se_res: ProvEntity = None) -> None:
         """
-        Remover method corresponding to the `prov:wasDerivedFrom` RDF predicate.
+        Remover method corresponding to the ``prov:wasDerivedFrom`` RDF predicate.
 
         **WARNING: this is a non-functional property, hence, if the parameter
         is None, any existing value will be removed!**
@@ -191,7 +191,7 @@ class SnapshotEntity(ProvEntity):
     # HAS PRIMARY SOURCE
     def get_primary_source(self) -> Optional[URIRef]:
         """
-        Getter method corresponding to the `prov:hadPrimarySource` RDF predicate.
+        Getter method corresponding to the ``prov:hadPrimarySource`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -201,7 +201,7 @@ class SnapshotEntity(ProvEntity):
     @accepts_only('thing')
     def has_primary_source(self, any_res: URIRef) -> None:
         """
-        Setter method corresponding to the `prov:hadPrimarySource` RDF predicate.
+        Setter method corresponding to the ``prov:hadPrimarySource`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -218,7 +218,7 @@ class SnapshotEntity(ProvEntity):
 
     def remove_primary_source(self) -> None:
         """
-        Remover method corresponding to the `prov:hadPrimarySource` RDF predicate.
+        Remover method corresponding to the ``prov:hadPrimarySource`` RDF predicate.
 
         :return: None
         """
@@ -227,7 +227,7 @@ class SnapshotEntity(ProvEntity):
     # HAS UPDATE ACTION
     def get_update_action(self) -> Optional[str]:
         """
-        Getter method corresponding to the `oco:hasUpdateQuery` RDF predicate.
+        Getter method corresponding to the ``oco:hasUpdateQuery`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -236,7 +236,7 @@ class SnapshotEntity(ProvEntity):
     @accepts_only('literal')
     def has_update_action(self, string: str) -> None:
         """
-        Setter method corresponding to the `oco:hasUpdateQuery` RDF predicate.
+        Setter method corresponding to the ``oco:hasUpdateQuery`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -253,7 +253,7 @@ class SnapshotEntity(ProvEntity):
 
     def remove_update_action(self) -> None:
         """
-        Remover method corresponding to the `oco:hasUpdateQuery` RDF predicate.
+        Remover method corresponding to the ``oco:hasUpdateQuery`` RDF predicate.
 
         :return: None
         """
@@ -262,7 +262,7 @@ class SnapshotEntity(ProvEntity):
     # HAS DESCRIPTION
     def get_description(self) -> Optional[str]:
         """
-        Getter method corresponding to the `dcterms:description` RDF predicate.
+        Getter method corresponding to the ``dcterms:description`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -271,7 +271,7 @@ class SnapshotEntity(ProvEntity):
     @accepts_only('literal')
     def has_description(self, string: str) -> None:
         """
-        Setter method corresponding to the `dcterms:description` RDF predicate.
+        Setter method corresponding to the ``dcterms:description`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -290,7 +290,7 @@ class SnapshotEntity(ProvEntity):
 
     def remove_description(self) -> None:
         """
-        Remover method corresponding to the `dcterms:description` RDF predicate.
+        Remover method corresponding to the ``dcterms:description`` RDF predicate.
 
         :return: None
         """
@@ -299,7 +299,7 @@ class SnapshotEntity(ProvEntity):
     # IS ATTRIBUTED TO
     def get_resp_agent(self) -> Optional[URIRef]:
         """
-        Getter method corresponding to the `prov:wasAttributedTo` RDF predicate.
+        Getter method corresponding to the ``prov:wasAttributedTo`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -309,7 +309,7 @@ class SnapshotEntity(ProvEntity):
     @accepts_only('thing')
     def has_resp_agent(self, se_agent: URIRef) -> None:
         """
-        Setter method corresponding to the `prov:wasAttributedTo` RDF predicate.
+        Setter method corresponding to the ``prov:wasAttributedTo`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -324,7 +324,7 @@ class SnapshotEntity(ProvEntity):
 
     def remove_resp_agent(self) -> None:
         """
-        Remover method corresponding to the `prov:wasAttributedTo` RDF predicate.
+        Remover method corresponding to the ``prov:wasAttributedTo`` RDF predicate.
 
         :return: None
         """

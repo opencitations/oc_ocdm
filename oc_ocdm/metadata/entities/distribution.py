@@ -84,7 +84,7 @@ class Distribution(MetadataEntity):
     # HAS TITLE
     def get_title(self) -> Optional[str]:
         """
-        Getter method corresponding to the `dcterms:title` RDF predicate.
+        Getter method corresponding to the ``dcterms:title`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -93,7 +93,7 @@ class Distribution(MetadataEntity):
     @accepts_only('literal')
     def has_title(self, string: str) -> None:
         """
-        Setter method corresponding to the `dcterms:title` RDF predicate.
+        Setter method corresponding to the ``dcterms:title`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -109,7 +109,7 @@ class Distribution(MetadataEntity):
 
     def remove_title(self) -> None:
         """
-        Remover method corresponding to the `dcterms:title` RDF predicate.
+        Remover method corresponding to the ``dcterms:title`` RDF predicate.
 
         :return: None
         """
@@ -118,7 +118,7 @@ class Distribution(MetadataEntity):
     # HAS DESCRIPTION
     def get_description(self) -> Optional[str]:
         """
-        Getter method corresponding to the `dcterms:description` RDF predicate.
+        Getter method corresponding to the ``dcterms:description`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -127,7 +127,7 @@ class Distribution(MetadataEntity):
     @accepts_only('literal')
     def has_description(self, string: str) -> None:
         """
-        Setter method corresponding to the `dcterms:description` RDF predicate.
+        Setter method corresponding to the ``dcterms:description`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -143,7 +143,7 @@ class Distribution(MetadataEntity):
 
     def remove_description(self) -> None:
         """
-        Remover method corresponding to the `dcterms:description` RDF predicate.
+        Remover method corresponding to the ``dcterms:description`` RDF predicate.
 
         :return: None
         """
@@ -152,7 +152,7 @@ class Distribution(MetadataEntity):
     # HAS PUBLICATION DATE
     def get_publication_date(self) -> Optional[str]:
         """
-        Getter method corresponding to the `dcterms:issued` RDF predicate.
+        Getter method corresponding to the ``dcterms:issued`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -161,7 +161,7 @@ class Distribution(MetadataEntity):
     @accepts_only('literal')
     def has_publication_date(self, string: str) -> None:
         """
-        Setter method corresponding to the `dcterms:issued` RDF predicate.
+        Setter method corresponding to the ``dcterms:issued`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -178,7 +178,7 @@ class Distribution(MetadataEntity):
 
     def remove_publication_date(self) -> None:
         """
-        Remover method corresponding to the `dcterms:issued` RDF predicate.
+        Remover method corresponding to the ``dcterms:issued`` RDF predicate.
 
         :return: None
         """
@@ -187,7 +187,7 @@ class Distribution(MetadataEntity):
     # HAS BYTE SIZE
     def get_byte_size(self) -> Optional[str]:
         """
-        Getter method corresponding to the `dcat:byte_size` RDF predicate.
+        Getter method corresponding to the ``dcat:byte_size`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -196,7 +196,7 @@ class Distribution(MetadataEntity):
     @accepts_only('literal')
     def has_byte_size(self, string: str) -> None:
         """
-        Setter method corresponding to the `dcat:byte_size` RDF predicate.
+        Setter method corresponding to the ``dcat:byte_size`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -213,7 +213,7 @@ class Distribution(MetadataEntity):
 
     def remove_byte_size(self) -> None:
         """
-        Remover method corresponding to the `dcat:byte_size` RDF predicate.
+        Remover method corresponding to the ``dcat:byte_size`` RDF predicate.
 
         :return: None
         """
@@ -222,7 +222,7 @@ class Distribution(MetadataEntity):
     # HAS LICENSE
     def get_license(self) -> Optional[URIRef]:
         """
-        Getter method corresponding to the `dcterms:license` RDF predicate.
+        Getter method corresponding to the ``dcterms:license`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -231,7 +231,7 @@ class Distribution(MetadataEntity):
     @accepts_only('thing')
     def has_license(self, thing_res: URIRef) -> None:
         """
-        Setter method corresponding to the `dcterms:license` RDF predicate.
+        Setter method corresponding to the ``dcterms:license`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -247,7 +247,7 @@ class Distribution(MetadataEntity):
 
     def remove_license(self) -> None:
         """
-        Remover method corresponding to the `dcterms:license` RDF predicate.
+        Remover method corresponding to the ``dcterms:license`` RDF predicate.
 
         :return: None
         """
@@ -256,7 +256,7 @@ class Distribution(MetadataEntity):
     # HAS DOWNLOAD URL
     def get_download_url(self) -> Optional[URIRef]:
         """
-        Getter method corresponding to the `dcat:downloadURL` RDF predicate.
+        Getter method corresponding to the ``dcat:downloadURL`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -265,7 +265,7 @@ class Distribution(MetadataEntity):
     @accepts_only('thing')
     def has_download_url(self, thing_res: URIRef) -> None:
         """
-        Setter method corresponding to the `dcat:downloadURL` RDF predicate.
+        Setter method corresponding to the ``dcat:downloadURL`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -281,7 +281,7 @@ class Distribution(MetadataEntity):
 
     def remove_download_url(self) -> None:
         """
-        Remover method corresponding to the `dcat:downloadURL` RDF predicate.
+        Remover method corresponding to the ``dcat:downloadURL`` RDF predicate.
 
         :return: None
         """
@@ -290,7 +290,7 @@ class Distribution(MetadataEntity):
     # HAS_MEDIA_TYPE
     def get_media_type(self) -> Optional[URIRef]:
         """
-        Getter method corresponding to the `dcat:mediaType` RDF predicate.
+        Getter method corresponding to the ``dcat:mediaType`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -299,7 +299,7 @@ class Distribution(MetadataEntity):
     @accepts_only('thing')
     def has_media_type(self, thing_res: URIRef) -> None:
         """
-        Setter method corresponding to the `dcat:mediaType` RDF predicate.
+        Setter method corresponding to the ``dcat:mediaType`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -315,7 +315,7 @@ class Distribution(MetadataEntity):
 
     def remove_media_type(self) -> None:
         """
-        Remover method corresponding to the `dcat:mediaType` RDF predicate.
+        Remover method corresponding to the ``dcat:mediaType`` RDF predicate.
 
         :return: None
         """

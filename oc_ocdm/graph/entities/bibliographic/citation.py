@@ -85,7 +85,7 @@ class Citation(BibliographicEntity):
     # HAS CITING DOCUMENT (BibliographicResource)
     def get_citing_entity(self) -> Optional[BibliographicResource]:
         """
-        Getter method corresponding to the `cito:hasCitingEntity` RDF predicate.
+        Getter method corresponding to the ``cito:hasCitingEntity`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -96,7 +96,7 @@ class Citation(BibliographicEntity):
     @accepts_only('br')
     def has_citing_entity(self, citing_res: BibliographicResource) -> None:
         """
-        Setter method corresponding to the `cito:hasCitingEntity` RDF predicate.
+        Setter method corresponding to the ``cito:hasCitingEntity`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -112,7 +112,7 @@ class Citation(BibliographicEntity):
 
     def remove_citing_entity(self) -> None:
         """
-        Remover method corresponding to the `cito:hasCitingEntity` RDF predicate.
+        Remover method corresponding to the ``cito:hasCitingEntity`` RDF predicate.
 
         :return: None
         """
@@ -121,7 +121,7 @@ class Citation(BibliographicEntity):
     # HAS CITED DOCUMENT (BibliographicResource)
     def get_cited_entity(self) -> Optional[BibliographicResource]:
         """
-        Getter method corresponding to the `cito:hasCitedEntity` RDF predicate.
+        Getter method corresponding to the ``cito:hasCitedEntity`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -132,7 +132,7 @@ class Citation(BibliographicEntity):
     @accepts_only('br')
     def has_cited_entity(self, cited_res: BibliographicResource) -> None:
         """
-        Setter method corresponding to the `cito:hasCitedEntity` RDF predicate.
+        Setter method corresponding to the ``cito:hasCitedEntity`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -148,7 +148,7 @@ class Citation(BibliographicEntity):
 
     def remove_cited_entity(self) -> None:
         """
-        Remover method corresponding to the `c4o:hasCitedEntity` RDF predicate.
+        Remover method corresponding to the ``c4o:hasCitedEntity`` RDF predicate.
 
         :return: None
         """
@@ -157,7 +157,7 @@ class Citation(BibliographicEntity):
     # HAS CITATION CREATION DATE
     def get_citation_creation_date(self) -> Optional[str]:
         """
-        Getter method corresponding to the `cito:hasCitationCreationDate` RDF predicate.
+        Getter method corresponding to the ``cito:hasCitationCreationDate`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -166,7 +166,7 @@ class Citation(BibliographicEntity):
     @accepts_only('literal')
     def has_citation_creation_date(self, string: str) -> None:
         """
-        Setter method corresponding to the `cito:hasCitationCreationDate` RDF predicate.
+        Setter method corresponding to the ``cito:hasCitationCreationDate`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -188,7 +188,7 @@ class Citation(BibliographicEntity):
 
     def remove_citation_creation_date(self) -> None:
         """
-        Remover method corresponding to the `c4o:hasCitationCreationDate` RDF predicate.
+        Remover method corresponding to the ``c4o:hasCitationCreationDate`` RDF predicate.
 
         :return: None
         """
@@ -197,7 +197,7 @@ class Citation(BibliographicEntity):
     # HAS CITATION TIME SPAN
     def get_citation_time_span(self) -> Optional[str]:
         """
-        Getter method corresponding to the `cito:hasCitationTimeSpan` RDF predicate.
+        Getter method corresponding to the ``cito:hasCitationTimeSpan`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -206,7 +206,7 @@ class Citation(BibliographicEntity):
     @accepts_only('literal')
     def has_citation_time_span(self, string: str) -> None:
         """
-        Setter method corresponding to the `cito:hasCitationTimeSpan` RDF predicate.
+        Setter method corresponding to the ``cito:hasCitationTimeSpan`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -224,7 +224,7 @@ class Citation(BibliographicEntity):
 
     def remove_citation_time_span(self) -> None:
         """
-        Remover method corresponding to the `c4o:hasCitationTimeSpan` RDF predicate.
+        Remover method corresponding to the ``c4o:hasCitationTimeSpan`` RDF predicate.
 
         :return: None
         """
@@ -233,7 +233,7 @@ class Citation(BibliographicEntity):
     # HAS CITATION CHARACTERIZATION
     def get_citation_characterization(self) -> Optional[URIRef]:
         """
-        Getter method corresponding to the `cito:hasCitationCharacterisation` RDF predicate.
+        Getter method corresponding to the ``cito:hasCitationCharacterisation`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -243,7 +243,7 @@ class Citation(BibliographicEntity):
     @accepts_only('thing')
     def has_citation_characterization(self, thing_res: URIRef) -> None:
         """
-        Setter method corresponding to the `cito:hasCitationCharacterisation` RDF predicate.
+        Setter method corresponding to the ``cito:hasCitationCharacterisation`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -259,7 +259,7 @@ class Citation(BibliographicEntity):
 
     def remove_citation_characterization(self) -> None:
         """
-        Remover method corresponding to the `c4o:hasCitationCharacterisation` RDF predicate.
+        Remover method corresponding to the ``c4o:hasCitationCharacterisation`` RDF predicate.
 
         :return: None
         """
@@ -268,8 +268,8 @@ class Citation(BibliographicEntity):
     # HAS TYPE
     def create_self_citation(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `cito:SelfCitation`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``cito:SelfCitation``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -281,8 +281,8 @@ class Citation(BibliographicEntity):
 
     def create_affiliation_self_citation(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `cito:AffiliationSelfCitation`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``cito:AffiliationSelfCitation``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -294,8 +294,8 @@ class Citation(BibliographicEntity):
 
     def create_author_network_self_citation(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `cito:AuthorNetworkSelfCitation`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``cito:AuthorNetworkSelfCitation``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -307,8 +307,8 @@ class Citation(BibliographicEntity):
 
     def create_author_self_citation(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `cito:AuthorSelfCitation`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``cito:AuthorSelfCitation``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -320,8 +320,8 @@ class Citation(BibliographicEntity):
 
     def create_funder_self_citation(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `cito:FunderSelfCitation`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``cito:FunderSelfCitation``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -333,8 +333,8 @@ class Citation(BibliographicEntity):
 
     def create_journal_self_citation(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `cito:JournalSelfCitation`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``cito:JournalSelfCitation``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -346,8 +346,8 @@ class Citation(BibliographicEntity):
 
     def create_journal_cartel_citation(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `cito:JournalCartelCitation`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``cito:JournalCartelCitation``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -359,8 +359,8 @@ class Citation(BibliographicEntity):
 
     def create_distant_citation(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `cito:DistantCitation`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``cito:DistantCitation``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type

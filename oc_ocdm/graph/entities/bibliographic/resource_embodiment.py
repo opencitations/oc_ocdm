@@ -72,7 +72,7 @@ class ResourceEmbodiment(BibliographicEntity):
     # HAS FORMAT
     def get_media_type(self) -> Optional[URIRef]:
         """
-        Getter method corresponding to the `dcterms:format` RDF predicate.
+        Getter method corresponding to the ``dcterms:format`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -82,7 +82,7 @@ class ResourceEmbodiment(BibliographicEntity):
     @accepts_only('thing')
     def has_media_type(self, thing_res: URIRef) -> None:
         """
-        Setter method corresponding to the `dcterms:format` RDF predicate.
+        Setter method corresponding to the ``dcterms:format`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -98,7 +98,7 @@ class ResourceEmbodiment(BibliographicEntity):
 
     def remove_media_type(self) -> None:
         """
-        Remover method corresponding to the `dcterms:format` RDF predicate.
+        Remover method corresponding to the ``dcterms:format`` RDF predicate.
 
         :return: None
         """
@@ -107,7 +107,7 @@ class ResourceEmbodiment(BibliographicEntity):
     # HAS FIRST PAGE
     def get_starting_page(self) -> Optional[str]:
         """
-        Getter method corresponding to the `prism:startingPage` RDF predicate.
+        Getter method corresponding to the ``prism:startingPage`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -116,7 +116,7 @@ class ResourceEmbodiment(BibliographicEntity):
     @accepts_only('literal')
     def has_starting_page(self, string: str) -> None:
         """
-        Setter method corresponding to the `prism:startingPage` RDF predicate.
+        Setter method corresponding to the ``prism:startingPage`` RDF predicate.
 
         The string gets internally preprocessed by eventually removing dashes and everything
         that follows them (e.g. '22-45' becomes '22').
@@ -140,7 +140,7 @@ class ResourceEmbodiment(BibliographicEntity):
 
     def remove_starting_page(self) -> None:
         """
-        Remover method corresponding to the `prism:startingPage` RDF predicate.
+        Remover method corresponding to the ``prism:startingPage`` RDF predicate.
 
         :return: None
         """
@@ -149,7 +149,7 @@ class ResourceEmbodiment(BibliographicEntity):
     # HAS LAST PAGE
     def get_ending_page(self) -> Optional[str]:
         """
-        Getter method corresponding to the `prism:endingPage` RDF predicate.
+        Getter method corresponding to the ``prism:endingPage`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -158,7 +158,7 @@ class ResourceEmbodiment(BibliographicEntity):
     @accepts_only('literal')
     def has_ending_page(self, string: str) -> None:
         """
-        Setter method corresponding to the `prism:endingPage` RDF predicate.
+        Setter method corresponding to the ``prism:endingPage`` RDF predicate.
 
         The string gets internally preprocessed by eventually removing dashes and everything
         that comes before them (e.g. '22-45' becomes '45').
@@ -182,7 +182,7 @@ class ResourceEmbodiment(BibliographicEntity):
 
     def remove_ending_page(self) -> None:
         """
-        Remover method corresponding to the `prism:endingPage` RDF predicate.
+        Remover method corresponding to the ``prism:endingPage`` RDF predicate.
 
         :return: None
         """
@@ -191,7 +191,7 @@ class ResourceEmbodiment(BibliographicEntity):
     # HAS URL
     def get_url(self) -> Optional[URIRef]:
         """
-        Getter method corresponding to the `frbr:exemplar` RDF predicate.
+        Getter method corresponding to the ``frbr:exemplar`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
@@ -201,7 +201,7 @@ class ResourceEmbodiment(BibliographicEntity):
     @accepts_only('thing')
     def has_url(self, thing_res: URIRef) -> None:
         """
-        Setter method corresponding to the `frbr:exemplar` RDF predicate.
+        Setter method corresponding to the ``frbr:exemplar`` RDF predicate.
 
         **WARNING: this is a functional property, hence any existing value will be overwritten!**
 
@@ -217,7 +217,7 @@ class ResourceEmbodiment(BibliographicEntity):
 
     def remove_url(self) -> None:
         """
-        Remover method corresponding to the `frbr:exemplar` RDF predicate.
+        Remover method corresponding to the ``frbr:exemplar`` RDF predicate.
 
         :return: None
         """
@@ -226,8 +226,8 @@ class ResourceEmbodiment(BibliographicEntity):
     # HAS TYPE
     def create_digital_embodiment(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:DigitalManifestation`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:DigitalManifestation``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
@@ -241,8 +241,8 @@ class ResourceEmbodiment(BibliographicEntity):
 
     def create_print_embodiment(self) -> None:
         """
-        Setter method corresponding to the `rdf:type` RDF predicate.
-        It implicitly sets the object value `fabio:PrintObject`.
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:PrintObject``.
 
         **WARNING: the OCDM specification admits at most two types for an entity.
         The main type cannot be edited or removed. Any existing secondary type
