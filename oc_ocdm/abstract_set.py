@@ -62,7 +62,7 @@ class AbstractSet(ABC):
         :type res: URIRef
         :return: The requested entity if found, None otherwise
         """
-        pass
+        raise NotImplementedError
 
     @staticmethod
     def get_graph_iri(g: Graph) -> str:
