@@ -26,6 +26,21 @@ from rdflib import URIRef
 
 
 def accepts_only(param_type: str):
+    """
+    A decorator that can be applied to the entity methods such as setters and removers
+    when they accept a parameter. It enforces the right parameter type by raising a
+    ``TypeError`` when the parameter is not None but its type is not the expected one.
+
+    The expected type can be expressed through a short string:
+
+      * 'literal' for the ``str`` type;
+      * 'thing' for the ``URIRef`` type (from ``rdflib``);
+      * '_dataset_' for the ``Dataset`` entities;
+      * the OCDM short name in case of any other entity (e.g. 'br' for ``BibliographicResource``).
+
+    :param param_type: A short string representing the expected type
+    :type param_type: str
+    """
     def accepts_only_decorator(function: Callable):
 
         @wraps(function)

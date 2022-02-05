@@ -22,14 +22,22 @@ from oc_ocdm.support.support import create_type, create_literal, get_short_name,
 from rdflib import URIRef, RDFS, RDF, Literal, Graph
 
 if TYPE_CHECKING:
-    from typing import Optional, List, ClassVar, Dict
+    from typing import Optional, List, ClassVar, Dict, Tuple, Iterable
+    from rdflib import term
 
 
 class AbstractEntity(ABC):
+    """
+    Abstract class which represents a generic entity from the OCDM. It sits
+    at the top of the entity class hierarchy.
+    """
 
     short_name_to_type_iri: ClassVar[Dict[str, URIRef]] = {}
 
     def __init__(self) -> None:
+        """
+        Constructor of the ``AbstractEntity`` class.
+        """
         self.g: Graph = Graph()
         self.res: URIRef = URIRef("")
         self.short_name: str = ""
@@ -78,7 +86,8 @@ class AbstractEntity(ABC):
         self.g.remove((self.res, RDFS.label, None))
 
     def _create_literal(self, p: URIRef, s: str, dt: URIRef = None, nor: bool = True) -> None:
-        """Creates an RDF triple with a literal object inside the graph self.g
+        """
+        Adds an RDF triple with a literal object inside the graph of the entity
 
         :param p: The predicate
         :type p: URIRef
@@ -88,6 +97,7 @@ class AbstractEntity(ABC):
         :type dt: URIRef, optional
         :param nor: Whether to normalize the graph or not
         :type nor: bool, optional
+        :return: None
         """
         create_literal(self.g, self.res, p, s, dt, nor)
 
@@ -134,7 +144,16 @@ class AbstractEntity(ABC):
     def __str__(self) -> str:
         return str(self.res)
 
-    def add_triples(self, iterable_of_triples) -> None:
+    def add_triples(self, iterable_of_triples: Iterable[Tuple[term]]) -> None:
+        """
+        A utility method that allows to add a batch of triples into the graph of the entity.
+
+        **WARNING: Only triples that have this entity as their subject will be imported!**
+
+        :param iterable_of_triples: A collection of triples to be added to the entity
+        :type iterable_of_triples: Iterable[Tuple[term]]
+        :return: None
+        """
         for s, p, o in iterable_of_triples:
             if s == self.res:  # This guarantees that only triples belonging to the resource will be added
                 self.g.add((s, p, o))

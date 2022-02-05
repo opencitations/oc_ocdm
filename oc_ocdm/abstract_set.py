@@ -26,13 +26,26 @@ if TYPE_CHECKING:
 
 
 class AbstractSet(ABC):
+    """
+    Abstract class which represents a generic set of entities.
+    It is the base class for each concrete set of entities.
+    """
 
     short_name_to_type_iri: ClassVar[Dict[str, URIRef]] = {}
 
     def __init__(self) -> None:
+        """
+        Constructor of the ``AbstractSet`` class.
+        """
         self.res_to_entity: Dict[URIRef, AbstractEntity] = {}
 
     def graphs(self) -> List[Graph]:
+        """
+        A utility method that allows to retrieve the list of ``rdflib.Graph``
+        instances corresponding to each entity contained in the set.
+
+        :return: The requested list of graphs
+        """
         result: List[Graph] = []
         for entity in self.res_to_entity.values():
             if len(entity.g) > 0:
@@ -41,8 +54,26 @@ class AbstractSet(ABC):
 
     @abstractmethod
     def get_entity(self, res: URIRef) -> Optional[AbstractEntity]:
+        """
+        Method signature for concrete implementations that allow
+        to retrieve a contained entity identified by its URI.
+
+        :param res: The URI that identifies the requested entity
+        :type res: URIRef
+        :return: The requested entity if found, None otherwise
+        """
         pass
 
     @staticmethod
     def get_graph_iri(g: Graph) -> str:
+        """
+        A utility method that allows to retrieve the IRI which represents
+        the name of a given named graph.
+
+        **NOTE: this is a static function!**
+
+        :param g: The named graph whose name will be returned
+        :type g: Graph
+        :return: The requested string whose content is the IRI associated to the given named graph
+        """
         return str(g.identifier)
