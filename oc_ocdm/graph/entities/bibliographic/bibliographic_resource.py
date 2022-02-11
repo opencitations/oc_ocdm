@@ -852,6 +852,21 @@ class BibliographicResource(BibliographicEntity):
         """
         self._create_type(GraphEntity.iri_book)
 
+    def create_peer_review(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fr:ReviewVersion``.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
+        """
+        self._create_type(GraphEntity.iri_peer_review)
+
     def create_proceedings_article(self) -> None:
         """
         Setter method corresponding to the ``rdf:type`` RDF predicate.
@@ -881,6 +896,21 @@ class BibliographicResource(BibliographicEntity):
         :return: None
         """
         self._create_type(GraphEntity.iri_academic_proceedings)
+
+    def create_proceedings_series(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:Series``.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
+        """
+        self._create_type(GraphEntity.iri_proceedings_series)
 
     def create_reference_book(self) -> None:
         """
@@ -1001,6 +1031,21 @@ class BibliographicResource(BibliographicEntity):
         :return: None
         """
         self._create_type(GraphEntity.iri_expression_collection)
+
+    def create_web_content(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:WebContent``.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
+        """
+        self._create_type(GraphEntity.iri_web_content)
 
     def create_other(self) -> None:
         """
