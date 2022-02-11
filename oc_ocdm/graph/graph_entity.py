@@ -36,6 +36,7 @@ class GraphEntity(AbstractEntity):
     DOCO: ClassVar[Namespace] = Namespace("http://purl.org/spar/doco/")
     FABIO: ClassVar[Namespace] = Namespace("http://purl.org/spar/fabio/")
     FOAF: ClassVar[Namespace] = Namespace("http://xmlns.com/foaf/0.1/")
+    FR: ClassVar[Namespace] = Namespace("http://purl.org/spar/fr/")
     FRBR: ClassVar[Namespace] = Namespace("http://purl.org/vocab/frbr/core#")
     LITERAL: ClassVar[Namespace] = Namespace("http://www.essepuntato.it/2010/06/literalreification/")
     OA: ClassVar[Namespace] = Namespace("http://www.w3.org/ns/oa#")
@@ -97,13 +98,16 @@ class GraphEntity(AbstractEntity):
     iri_journal_issue: ClassVar[URIRef] = FABIO.JournalIssue
     iri_journal_volume: ClassVar[URIRef] = FABIO.JournalVolume
     iri_manifestation: ClassVar[URIRef] = FABIO.Manifestation
+    iri_peer_review: ClassVar[URIRef] = FR.ReviewVersion
     iri_proceedings_paper: ClassVar[URIRef] = FABIO.ProceedingsPaper
+    iri_proceedings_series: ClassVar[URIRef] = FABIO.Series
     iri_reference_book: ClassVar[URIRef] = FABIO.ReferenceBook
     iri_reference_entry: ClassVar[URIRef] = FABIO.ReferenceEntry
     iri_report_document: ClassVar[URIRef] = FABIO.ReportDocument
     iri_series: ClassVar[URIRef] = FABIO.Series
     iri_specification_document: ClassVar[URIRef] = FABIO.SpecificationDocument
     iri_thesis: ClassVar[URIRef] = FABIO.Thesis
+    iri_web_content: ClassVar[URIRef] = FABIO.WebContent
     iri_agent: ClassVar[URIRef] = FOAF.Agent
     iri_family_name: ClassVar[URIRef] = FOAF.familyName
     iri_given_name: ClassVar[URIRef] = FOAF.givenName
