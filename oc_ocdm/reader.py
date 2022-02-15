@@ -88,7 +88,7 @@ class Reader(object):
         for cur_format in formats:
             try:
                 if cur_format == "json-ld":
-                    with open(file_path, "rt") as f:
+                    with open(file_path, "rt", encoding="utf-8") as f:
                         json_ld_file: Any = json.load(f)
                         if isinstance(json_ld_file, dict):
                             json_ld_file: List[Any] = [json_ld_file]
