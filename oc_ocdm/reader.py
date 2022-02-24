@@ -46,7 +46,7 @@ class Reader(object):
             ctx_file_path: Any = self.context_map[context_url]
             if type(ctx_file_path) == str and os.path.isfile(ctx_file_path):
                 # This expensive operation is done only when it's really needed
-                with open(ctx_file_path, "rt") as ctx_f:
+                with open(ctx_file_path, 'rt', encoding='utf-8') as ctx_f:
                     self.context_map[context_url] = json.load(ctx_f)
 
         if repok is None:
@@ -88,7 +88,7 @@ class Reader(object):
         for cur_format in formats:
             try:
                 if cur_format == "json-ld":
-                    with open(file_path, "rt", encoding="utf-8") as f:
+                    with open(file_path, 'rt', encoding='utf-8') as f:
                         json_ld_file: Any = json.load(f)
                         if isinstance(json_ld_file, dict):
                             json_ld_file: List[Any] = [json_ld_file]

@@ -30,13 +30,13 @@ class TestFilesystemCounterHandler(unittest.TestCase):
             os.makedirs(os.path.dirname(cls.file_path))
 
         if not os.path.isfile(cls.file_path):
-            with open(cls.file_path, "wb") as file:
+            with open(cls.file_path, 'wb') as file:
                 first_line = cls.counter_handler._trailing_char * (cls.counter_handler._initial_line_len - 1) + '\n'
                 file.write(first_line.encode('ascii'))
 
     def setUp(self):
         # Reset test file content:
-        with open(self.file_path, "wb") as file:
+        with open(self.file_path, 'wb') as file:
             first_line = self.counter_handler._trailing_char * (self.counter_handler._initial_line_len - 1) + '\n'
             file.write(first_line.encode('ascii'))
 
@@ -83,7 +83,7 @@ class TestFilesystemCounterHandler(unittest.TestCase):
             self.assertFalse(result)
 
     def test_fix_previous_lines(self):
-        with open(self.file_path, "wb") as test_file:
+        with open(self.file_path, 'wb') as test_file:
             num_lines = 10
             for i in range(0, num_lines):
                 line = '\0' * self.counter_handler._initial_line_len

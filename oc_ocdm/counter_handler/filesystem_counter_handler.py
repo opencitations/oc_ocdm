@@ -143,9 +143,9 @@ class FilesystemCounterHandler(CounterHandler):
             os.makedirs(os.path.dirname(file_path))
 
         if not os.path.isfile(file_path):
-            with open(file_path, "wb") as file:
-                first_line: str = self._trailing_char * (self._initial_line_len - 1) + "\n"
-                file.write(first_line.encode("ascii"))
+            with open(file_path, 'wb') as file:
+                first_line: str = self._trailing_char * (self._initial_line_len - 1) + '\n'
+                file.write(first_line.encode('ascii'))
 
     def _read_number(self, file_path: str, line_number: int) -> Tuple[int, int]:
         if line_number <= 0:
@@ -156,12 +156,12 @@ class FilesystemCounterHandler(CounterHandler):
         cur_number: int = 0
         cur_line_len: int = 0
         try:
-            with open(file_path, "rb") as file:
+            with open(file_path, 'rb') as file:
                 cur_line_len = self._get_line_len(file)
                 line_offset = (line_number - 1) * cur_line_len
                 file.seek(line_offset)
-                line = file.readline(cur_line_len).decode("ascii")
-                cur_number = int(line.rstrip(self._trailing_char + "\n"))
+                line = file.readline(cur_line_len).decode('ascii')
+                cur_number = int(line.rstrip(self._trailing_char + '\n'))
         except ValueError:
             cur_number = 0
         except Exception as e:
@@ -183,11 +183,11 @@ class FilesystemCounterHandler(CounterHandler):
             self._increase_line_len(file_path, new_length=cur_number_len)
             cur_line_len = cur_number_len
 
-        with open(file_path, "r+b") as file:
+        with open(file_path, 'r+b') as file:
             line_offset: int = (line_number - 1) * cur_line_len
             file.seek(line_offset)
-            line: str = str(cur_number).ljust(cur_line_len - 1, self._trailing_char) + "\n"
-            file.write(line.encode("ascii"))
+            line: str = str(cur_number).ljust(cur_line_len - 1, self._trailing_char) + '\n'
+            file.write(line.encode('ascii'))
             file.seek(-cur_line_len, os.SEEK_CUR)
             self._fix_previous_lines(file, cur_line_len)
         return cur_number
@@ -208,11 +208,11 @@ class FilesystemCounterHandler(CounterHandler):
             self._increase_line_len(file_path, new_length=cur_number_len)
             cur_line_len = cur_number_len
 
-        with open(file_path, "r+b") as file:
+        with open(file_path, 'r+b') as file:
             line_offset: int = (line_number - 1) * cur_line_len
             file.seek(line_offset)
-            line: str = str(new_value).ljust(cur_line_len - 1, self._trailing_char) + "\n"
-            file.write(line.encode("ascii"))
+            line: str = str(new_value).ljust(cur_line_len - 1, self._trailing_char) + '\n'
+            file.write(line.encode('ascii'))
             file.seek(-cur_line_len, os.SEEK_CUR)
             self._fix_previous_lines(file, cur_line_len)
 
@@ -240,17 +240,17 @@ class FilesystemCounterHandler(CounterHandler):
         if new_length <= 0:
             raise ValueError("new_length must be a positive non-zero integer number!")
 
-        with open(file_path, "rb") as cur_file:
+        with open(file_path, 'rb') as cur_file:
             if self._get_line_len(cur_file) >= new_length:
                 raise ValueError("Current line length is greater than new_length!")
 
         fh, abs_path = mkstemp()
-        with os.fdopen(fh, "wb") as new_file:
-            with open(file_path, "rt", encoding="ascii") as old_file:
+        with os.fdopen(fh, 'wb') as new_file:
+            with open(file_path, 'rt', encoding='ascii') as old_file:
                 for line in old_file:
-                    number: str = line.rstrip(self._trailing_char + "\n")
-                    new_line: str = str(number).ljust(new_length - 1, self._trailing_char) + "\n"
-                    new_file.write(new_line.encode("ascii"))
+                    number: str = line.rstrip(self._trailing_char + '\n')
+                    new_line: str = str(number).ljust(new_length - 1, self._trailing_char) + '\n'
+                    new_file.write(new_line.encode('ascii'))
 
         # Copy the file permissions from the old file to the new file
         copymode(file_path, abs_path)

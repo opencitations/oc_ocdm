@@ -15,7 +15,6 @@
 # SOFTWARE.
 from __future__ import annotations
 
-import codecs
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -59,7 +58,7 @@ class Reporter(object):
         return result
 
     def write_file(self, file_path) -> None:
-        with codecs.open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, 'wt', encoding='utf-8') as f:
             f.write(self.get_articles_as_string())
 
     def is_empty(self) -> bool:

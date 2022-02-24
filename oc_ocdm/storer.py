@@ -15,6 +15,10 @@
 # SOFTWARE.
 from __future__ import annotations
 
+import os
+import json
+from datetime import datetime
+from rdflib import ConjunctiveGraph
 from SPARQLWrapper import SPARQLWrapper
 from typing import TYPE_CHECKING
 
@@ -23,20 +27,14 @@ from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from oc_ocdm.reader import Reader
 from oc_ocdm.support.query_utils import get_update_query
+from oc_ocdm.support.support import find_paths
+from oc_ocdm.support.reporter import Reporter
 
 if TYPE_CHECKING:
     from typing import Dict, List, Tuple, Any, Optional, Set
     from rdflib import URIRef
     from oc_ocdm.abstract_entity import AbstractEntity
     from oc_ocdm.abstract_set import AbstractSet
-
-from oc_ocdm.support.reporter import Reporter
-import os
-from rdflib import ConjunctiveGraph
-import json
-from datetime import datetime
-import io
-from oc_ocdm.support.support import find_paths
 
 
 class Storer(object):
@@ -71,7 +69,7 @@ class Storer(object):
                 ctx_file_path: Any = self.context_map[context_url]
                 if type(ctx_file_path) == str and os.path.isfile(ctx_file_path):
                     # This expensive operation is done only when it's really needed
-                    with open(ctx_file_path, "rt") as ctx_f:
+                    with open(ctx_file_path, 'rt', encoding='utf-8') as ctx_f:
                         self.context_map[context_url] = json.load(ctx_f)
 
         if repok is None:
@@ -121,7 +119,7 @@ class Storer(object):
             else:
                 cur_json_ld: Any = json.loads(new_g.serialize(format="json-ld"))
 
-            with open(cur_file_path, "wt", encoding='utf-8') as f:
+            with open(cur_file_path, 'wt', encoding='utf-8') as f:
                 json.dump(cur_json_ld, f, indent=4, ensure_ascii=False)
         else:
             new_g.serialize(cur_file_path, format=self.output_format, encoding="utf-8")
@@ -221,7 +219,7 @@ class Storer(object):
             for file_path in stored_graph_path:
                 if file_path is not None:
                     # Create a marker for the file not uploaded in the triplestore
-                    open(f"{file_path}.notuploaded", "wt").close()
+                    open(f'{file_path}.notuploaded', 'wt', encoding='utf-8').close()
                     self.reperr.add_sentence("[2] "
                                              f"The statements contained in the JSON-LD file '{file_path}' "
                                              "were not uploaded into the triplestore.")
@@ -325,7 +323,7 @@ class Storer(object):
                         os.makedirs(tp_err_dir)
                     cur_file_err: str = tp_err_dir + os.sep + \
                         datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f_not_uploaded.txt')
-                    with io.open(cur_file_err, "w", encoding="utf-8") as f:
+                    with open(cur_file_err, 'wt', encoding='utf-8') as f:
                         f.write(query_string)
 
         return False
