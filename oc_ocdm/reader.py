@@ -19,6 +19,7 @@ import json
 import os
 from importlib import resources
 
+from filelock import FileLock
 from SPARQLWrapper import SPARQLWrapper, RDFXML
 from pyshex import ShExEvaluator
 from rdflib import RDF, Namespace, ConjunctiveGraph, Graph
@@ -41,7 +42,6 @@ class Reader(object):
             self.context_map: Dict[str, Any] = context_map
         else:
             self.context_map: Dict[str, Any] = {}
-
         for context_url in self.context_map:
             ctx_file_path: Any = self.context_map[context_url]
             if type(ctx_file_path) == str and os.path.isfile(ctx_file_path):
@@ -87,26 +87,27 @@ class Reader(object):
         errors: str = ""
         for cur_format in formats:
             try:
-                if cur_format == "json-ld":
-                    with open(file_path, 'rt', encoding='utf-8') as f:
-                        json_ld_file: Any = json.load(f)
-                        if isinstance(json_ld_file, dict):
-                            json_ld_file: List[Any] = [json_ld_file]
+                lock = FileLock(f"{file_path}.lock")
+                with lock:
+                    if cur_format == "json-ld":
+                        with open(file_path, 'rt', encoding='utf-8') as f:
+                            json_ld_file: Any = json.load(f)
+                            if isinstance(json_ld_file, dict):
+                                json_ld_file: List[Any] = [json_ld_file]
 
-                        for json_ld_resource in json_ld_file:
-                            # Trick to force the use of a pre-loaded context if the format
-                            # specified is JSON-LD
-                            if "@context" in json_ld_resource:
-                                cur_context: str = json_ld_resource["@context"]
-                                if cur_context in self.context_map:
-                                    context_json: Any = self.context_map[cur_context]["@context"]
-                                    json_ld_resource["@context"] = context_json
+                            for json_ld_resource in json_ld_file:
+                                # Trick to force the use of a pre-loaded context if the format
+                                # specified is JSON-LD
+                                if "@context" in json_ld_resource:
+                                    cur_context: str = json_ld_resource["@context"]
+                                    if cur_context in self.context_map:
+                                        context_json: Any = self.context_map[cur_context]["@context"]
+                                        json_ld_resource["@context"] = context_json
 
-                            loaded_graph.parse(data=json.dumps(json_ld_resource, ensure_ascii=False),
-                                               format=cur_format)
-                else:
-                    loaded_graph.parse(file_path, format=cur_format)
-
+                                loaded_graph.parse(data=json.dumps(json_ld_resource, ensure_ascii=False),
+                                                format=cur_format)
+                    else:
+                        loaded_graph.parse(file_path, format=cur_format)
                 return loaded_graph
             except Exception as e:
                 errors += f" | {e}"  # Try another format
