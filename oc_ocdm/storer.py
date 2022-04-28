@@ -14,6 +14,7 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 from __future__ import annotations
+from filelock import FileLock
 
 import os
 import json
@@ -118,9 +119,10 @@ class Storer(object):
                         item["@context"] = context_path
             else:
                 cur_json_ld: Any = json.loads(new_g.serialize(format="json-ld"))
-
-            with open(cur_file_path, 'wt', encoding='utf-8') as f:
-                json.dump(cur_json_ld, f, indent=4, ensure_ascii=False)
+            lock = FileLock(f"{cur_file_path}.lock")
+            with lock:
+                with open(cur_file_path, 'wt', encoding='utf-8') as f:
+                    json.dump(cur_json_ld, f, indent=4, ensure_ascii=False)
         else:
             new_g.serialize(cur_file_path, format=self.output_format, encoding="utf-8")
 
