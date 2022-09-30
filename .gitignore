@@ -1,6 +1,9 @@
 # PyCharm project setting
 .idea
 
+# VSCode project setting
+.vscode/
+
 # build files
 dist/*
 *.pyc

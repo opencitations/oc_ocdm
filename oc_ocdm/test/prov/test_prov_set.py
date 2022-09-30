@@ -39,7 +39,7 @@ class TestProvSet(unittest.TestCase):
 
     def test_generate_provenance(self):
         cur_time = 1607375859.846196
-        cur_time_str = '2020-12-07T22:17:39'
+        cur_time_str = '2020-12-07T21:17:39'
 
         with self.subTest('Creation [Merged entity]'):
             a = self.graph_set.add_br(self.resp_agent)

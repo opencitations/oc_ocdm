@@ -15,7 +15,7 @@
 # SOFTWARE.
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
 from oc_ocdm.abstract_set import AbstractSet
@@ -104,9 +104,9 @@ class ProvSet(AbstractSet):
     def generate_provenance(self, c_time: float = None) -> None:
         time_string: str = '%Y-%m-%dT%H:%M:%S'
         if c_time is None:
-            cur_time: str = datetime.now().strftime(time_string)
+            cur_time: str = datetime.now(tz=timezone.utc).strftime(time_string)
         else:
-            cur_time: str = datetime.fromtimestamp(c_time).strftime(time_string)
+            cur_time: str = datetime.fromtimestamp(c_time, tz=timezone.utc).strftime(time_string)
 
         # MERGED ENTITIES
         for cur_subj in self.prov_g.res_to_entity.values():
