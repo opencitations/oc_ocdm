@@ -34,6 +34,7 @@ rdflib = "^6.0.0"
 PyShEx = "^0.8.0"
 SPARQLWrapper = "^1.8.5"
 filelock = "^3.6.0"
+tzlocal = "^4.2"
 
 [tool.poetry.dev-dependencies]
 Sphinx = "^4.4.0"

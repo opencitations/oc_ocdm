@@ -19,6 +19,7 @@ import os
 import pytz
 import re
 from datetime import datetime
+from tzlocal import get_localzone
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -74,7 +75,7 @@ def get_utc_time_str(naive_time_str:str) -> str:
     :type string: str
     :return: str -- a time string in the format '%Y-%m-%dT%H:%M:%S' localised with the UTC time zone
     """
-    local = pytz.timezone("Europe/Rome")
+    local = pytz.timezone(str(get_localzone()))
     naive = datetime.strptime(naive_time_str, "%Y-%m-%dT%H:%M:%S")
     local_dt = local.localize(naive, is_dst=None)
     return local_dt.astimezone(pytz.utc).strftime("%Y-%m-%dT%H:%M:%S")
