@@ -13,13 +13,14 @@
 # DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
+import os
 import unittest
 
-from rdflib import Namespace
+from rdflib import Namespace, URIRef
 
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
-from oc_ocdm.support.support import get_ordered_contributors_from_br
+from oc_ocdm.support.support import get_ordered_contributors_from_br, find_paths
 
 
 class TestSupport(unittest.TestCase):
@@ -100,6 +101,28 @@ class TestSupport(unittest.TestCase):
             correct_list[64].remove_next()
 
             self.assertRaises(ValueError, get_ordered_contributors_from_br, self.br, self.pro.author)
+    
+    def test_find_paths(self):
+        cur_dir_path, cur_file_path = find_paths(
+            res = URIRef('https://w3id.org/oc/meta/br/060169'),
+            base_dir = os.path.join('support', 'test', 'data', 'rdf'),
+            base_iri = 'https://w3id.org/oc/meta',
+            default_dir = '_',
+            dir_split = 10000,
+            n_file_item = 1000,
+            is_json = True)
+        self.assertEqual((cur_dir_path, cur_file_path), ('support/test/data/rdfbr/060/10000', 'support/test/data/rdfbr/060/10000/1000.json'))
+
+    def test_find_paths_prov(self):
+        cur_dir_path, cur_file_path = find_paths(
+            res = URIRef('https://w3id.org/oc/meta/br/060165/prov/se/1'),
+            base_dir = os.path.join('support', 'test', 'data', 'rdf'),
+            base_iri = 'https://w3id.org/oc/meta',
+            default_dir = '_',
+            dir_split = 10000,
+            n_file_item = 1000,
+            is_json = True)
+        self.assertEqual((cur_dir_path, cur_file_path), ('support/test/data/rdfbr/060/10000/1000/prov', 'support/test/data/rdfbr/060/10000/1000/prov/se.json'))
 
 
 if __name__ == '__main__':

@@ -18,6 +18,7 @@ from __future__ import annotations
 import json
 import os
 from importlib import resources
+from zipfile import ZipFile
 
 from filelock import FileLock
 from SPARQLWrapper import SPARQLWrapper, RDFXML
@@ -89,25 +90,31 @@ class Reader(object):
             try:
                 lock = FileLock(f"{file_path}.lock")
                 with lock:
-                    if cur_format == "json-ld":
-                        with open(file_path, 'rt', encoding='utf-8') as f:
-                            json_ld_file: Any = json.load(f)
-                            if isinstance(json_ld_file, dict):
-                                json_ld_file: List[Any] = [json_ld_file]
-
-                            for json_ld_resource in json_ld_file:
-                                # Trick to force the use of a pre-loaded context if the format
-                                # specified is JSON-LD
-                                if "@context" in json_ld_resource:
-                                    cur_context: str = json_ld_resource["@context"]
-                                    if cur_context in self.context_map:
-                                        context_json: Any = self.context_map[cur_context]["@context"]
-                                        json_ld_resource["@context"] = context_json
-
-                                loaded_graph.parse(data=json.dumps(json_ld_resource, ensure_ascii=False),
-                                                format=cur_format)
+                    if file_path.endswith('.zip'):
+                        with ZipFile(file=file_path, mode="r") as archive:
+                            for zf_name in archive.namelist():
+                                f = archive.open(zf_name)
                     else:
-                        loaded_graph.parse(file_path, format=cur_format)
+                        f = open(file_path, 'rt', encoding='utf-8')
+                    if cur_format == "json-ld":
+                        json_ld_file: Any = json.load(f)
+                        if isinstance(json_ld_file, dict):
+                            json_ld_file: List[Any] = [json_ld_file]
+
+                        for json_ld_resource in json_ld_file:
+                            # Trick to force the use of a pre-loaded context if the format
+                            # specified is JSON-LD
+                            if "@context" in json_ld_resource:
+                                cur_context: str = json_ld_resource["@context"]
+                                if cur_context in self.context_map:
+                                    context_json: Any = self.context_map[cur_context]["@context"]
+                                    json_ld_resource["@context"] = context_json
+
+                            loaded_graph.parse(data=json.dumps(json_ld_resource, ensure_ascii=False),
+                                            format=cur_format)
+                    else:
+                        loaded_graph.parse(file=f, format=cur_format)
+                    f.close()
                 return loaded_graph
             except Exception as e:
                 errors += f" | {e}"  # Try another format
