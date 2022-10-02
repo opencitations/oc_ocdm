@@ -290,9 +290,9 @@ shexjsg = ">=0.8.1"
 
 [[package]]
 name = "pytz"
-version = "2021.3"
+version = "2022.4"
 description = "World timezone definitions, modern and historical"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -614,7 +614,7 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.4"
-content-hash = "7b13860b089dbb5a263f262bf411a64e2225ac056f3a5893384b88151b8753e9"
+content-hash = "bfa073cf4e16f9d0797b7023a2bf5ec559935a1f093b05d421f03d8c1d63867d"
 
 [metadata.files]
 alabaster = [
@@ -824,8 +824,8 @@ pyshexc = [
     {file = "PyShExC-0.9.0.tar.gz", hash = "sha256:86fbd322248dd89b984163227fa81da8d7bceec0c58b49cdac3c21c920c8cafa"},
 ]
 pytz = [
-    {file = "pytz-2021.3-py2.py3-none-any.whl", hash = "sha256:3672058bc3453457b622aab7a1c3bfd5ab0bdae451512f6cf25f64ed37f5b87c"},
-    {file = "pytz-2021.3.tar.gz", hash = "sha256:acad2d8b20a1af07d4e4c9d2e9285c5ed9104354062f275f3fcd88dcef4f1326"},
+    {file = "pytz-2022.4-py2.py3-none-any.whl", hash = "sha256:2c0784747071402c6e99f0bafdb7da0fa22645f06554c7ae06bf6358897e9c91"},
+    {file = "pytz-2022.4.tar.gz", hash = "sha256:48ce799d83b6f8aab2020e369b627446696619e79645419610b9facd909b3174"},
 ]
 pytz-deprecation-shim = [
     {file = "pytz_deprecation_shim-0.1.0.post0-py2.py3-none-any.whl", hash = "sha256:8314c9692a636c8eb3bda879b9f119e350e93223ae83e70e80c31675a0fdc1a6"},

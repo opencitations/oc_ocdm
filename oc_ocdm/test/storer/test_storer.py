@@ -23,7 +23,6 @@ from zipfile import ZipFile
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
 from oc_ocdm.storer import Storer
-from oc_ocdm.support.support import get_utc_time_str
 
 
 class TestStorer(unittest.TestCase):
