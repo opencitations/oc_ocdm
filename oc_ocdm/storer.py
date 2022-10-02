@@ -144,53 +144,50 @@ class Storer(object):
         self.reperr.new_article()
 
         self.repok.add_sentence("Starting the process")
-        stored_graph_path: List[str] = []
-        for entity in self.a_set.res_to_entity.values():
-            cur_file_path = self.store(entity, base_dir, base_iri, context_path, True)
-            stored_graph_path.append(cur_file_path)
-        return stored_graph_path
 
-    def store(self, entity: AbstractEntity, base_dir: str, base_iri: str, context_path: str = None,
-              store_now: bool = True) -> str:
+        relevant_paths: Dict[str, list] = dict()
+        for entity in self.a_set.res_to_entity.values():
+            cur_dir_path, cur_file_path = self._dir_and_file_paths(entity.res, base_dir, base_iri)
+            if not os.path.exists(cur_dir_path):
+                os.makedirs(cur_dir_path)
+            relevant_paths.setdefault(cur_file_path, list())
+            relevant_paths[cur_file_path].append(entity)
+
+        for relevant_path, entities_in_path in relevant_paths.items():
+            stored_g = None
+            # Here we try to obtain a reference to the currently stored graph
+            output_filepath = relevant_path.replace(os.path.splitext(relevant_path)[1], ".zip") if self.zip_output else relevant_path
+            if os.path.exists(output_filepath):
+                stored_g = Reader(context_map=self.context_map).load(output_filepath)
+            if stored_g is None:
+                stored_g = ConjunctiveGraph()
+            for entity_in_path in entities_in_path:
+                self.store(entity_in_path, stored_g, relevant_path, context_path, False)
+            self._store_in_file(stored_g, relevant_path, context_path)
+
+        return list(relevant_paths.keys())
+
+    def store(self, entity: AbstractEntity, destination_g: ConjunctiveGraph, cur_file_path: str, context_path: str = None, store_now: bool = True) -> ConjunctiveGraph:
         self.repok.new_article()
         self.reperr.new_article()
 
-        cur_dir_path, cur_file_path = self._dir_and_file_paths(entity.res, base_dir, base_iri)
-
         try:
-            if not os.path.exists(cur_dir_path):
-                os.makedirs(cur_dir_path)
-
-            stored_g: Optional[ConjunctiveGraph] = None
-
-            if self.zip_output:
-                _, file_extension = os.path.splitext(cur_file_path)
-                output_filepath = cur_file_path.replace(file_extension, ".zip")
-            else:
-                output_filepath = cur_file_path
-            # Here we try to obtain a reference to the currently stored graph
-            if os.path.exists(output_filepath):
-                stored_g = Reader(context_map=self.context_map).load(output_filepath)
-
-            if stored_g is None:
-                stored_g = ConjunctiveGraph()
-
             if isinstance(entity, ProvEntity):
                 quads: List[Tuple] = []
                 graph_identifier: URIRef = entity.g.identifier
                 for triple in entity.g.triples((entity.res, None, None)):
                     quads.append((*triple, graph_identifier))
-                stored_g.addN(quads)
+                destination_g.addN(quads)
             elif isinstance(entity, GraphEntity) or isinstance(entity, MetadataEntity):
                 if entity.to_be_deleted:
-                    stored_g.remove((entity.res, None, None, None))
+                    destination_g.remove((entity.res, None, None, None))
                 else:
                     if len(entity.preexisting_graph) > 0:
                         """
                         We're not in 'append mode', so we need to remove
                         the entity that we're going to overwrite.
                         """
-                        stored_g.remove((entity.res, None, None, None))
+                        destination_g.remove((entity.res, None, None, None))
                     """
                     Here we copy data from the entity into the stored graph.
                     If the entity was marked as to be deleted, then we're
@@ -200,10 +197,12 @@ class Storer(object):
                     graph_identifier: URIRef = entity.g.identifier
                     for triple in entity.g.triples((entity.res, None, None)):
                         quads.append((*triple, graph_identifier))
-                    stored_g.addN(quads)
+                    destination_g.addN(quads)
+
             if store_now:
-                self._store_in_file(stored_g, cur_file_path, context_path)
-            return cur_dir_path
+                self._store_in_file(destination_g, cur_file_path, context_path)
+
+            return destination_g
         except Exception as e:
             self.reperr.add_sentence(f"[1] It was impossible to store the RDF statements in {cur_file_path}. {e}")
 
