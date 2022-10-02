@@ -144,27 +144,16 @@ class Storer(object):
         self.reperr.new_article()
 
         self.repok.add_sentence("Starting the process")
-
-        processed_graphs: Dict[str, ConjunctiveGraph] = {}
-        for entity in self.a_set.res_to_entity.values():
-            processed_graphs = self.store(entity, base_dir, base_iri, context_path,
-                                          processed_graphs, False)
-
         stored_graph_path: List[str] = []
-        for cur_file_path in processed_graphs:
+        for entity in self.a_set.res_to_entity.values():
+            cur_file_path = self.store(entity, base_dir, base_iri, context_path, True)
             stored_graph_path.append(cur_file_path)
-            self._store_in_file(processed_graphs[cur_file_path], cur_file_path, context_path)
-
         return stored_graph_path
 
     def store(self, entity: AbstractEntity, base_dir: str, base_iri: str, context_path: str = None,
-              already_processed: Dict[str, ConjunctiveGraph] = None,
-              store_now: bool = True) -> Optional[Dict[str, ConjunctiveGraph]]:
+              store_now: bool = True) -> str:
         self.repok.new_article()
         self.reperr.new_article()
-
-        if already_processed is None:
-            already_processed: Dict[str, ConjunctiveGraph] = {}
 
         cur_dir_path, cur_file_path = self._dir_and_file_paths(entity.res, base_dir, base_iri)
 
@@ -174,15 +163,13 @@ class Storer(object):
 
             stored_g: Optional[ConjunctiveGraph] = None
 
-            # Here we try to obtain a reference to the currently stored graph
             if self.zip_output:
                 _, file_extension = os.path.splitext(cur_file_path)
                 output_filepath = cur_file_path.replace(file_extension, ".zip")
             else:
                 output_filepath = cur_file_path
-            if cur_file_path in already_processed:
-                stored_g = already_processed[cur_file_path]
-            elif os.path.exists(output_filepath):
+            # Here we try to obtain a reference to the currently stored graph
+            if os.path.exists(output_filepath):
                 stored_g = Reader(context_map=self.context_map).load(output_filepath)
 
             if stored_g is None:
@@ -214,15 +201,9 @@ class Storer(object):
                     for triple in entity.g.triples((entity.res, None, None)):
                         quads.append((*triple, graph_identifier))
                     stored_g.addN(quads)
-
-            # We must ensure that the graph is correctly stored in our cache
-            if cur_file_path not in already_processed:
-                already_processed[cur_file_path] = stored_g
-
             if store_now:
                 self._store_in_file(stored_g, cur_file_path, context_path)
-
-            return already_processed
+            return cur_dir_path
         except Exception as e:
             self.reperr.add_sentence(f"[1] It was impossible to store the RDF statements in {cur_file_path}. {e}")
 
