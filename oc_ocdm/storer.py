@@ -22,7 +22,7 @@ from datetime import datetime
 from rdflib import ConjunctiveGraph
 from SPARQLWrapper import SPARQLWrapper
 from typing import TYPE_CHECKING
-from zipfile import ZipFile
+from zipfile import ZipFile, ZIP_DEFLATED
 
 from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.graph.graph_entity import GraphEntity
@@ -111,7 +111,7 @@ class Storer(object):
         lock = FileLock(f"{zip_file_path}.lock") if self.zip_output else FileLock(f"{cur_file_path}.lock")
         with lock:
             if self.zip_output:
-                zip_file = ZipFile(zip_file_path, mode="w")
+                zip_file = ZipFile(zip_file_path, mode="w", compression=ZIP_DEFLATED, allowZip64=True)
             if self.output_format == "json-ld":
                 if context_path is not None and context_path in self.context_map:
                     cur_json_ld: Any = json.loads(
