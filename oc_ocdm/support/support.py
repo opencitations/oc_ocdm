@@ -16,10 +16,8 @@
 from __future__ import annotations
 
 import os
-import pytz
 import re
 from datetime import datetime
-from tzlocal import get_localzone
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -66,20 +64,6 @@ def get_datatype_from_iso_8601(string: str) -> Tuple[URIRef, str]:
         return XSD.gYearMonth, datetime(*date_parts, 1).strftime('%Y-%m')
     else:
         return XSD.gYear, datetime(*date_parts, 1, 1).strftime('%Y')
-
-def get_utc_time_str(naive_time_str:str) -> str:
-    """
-    Given a naive time string in the format '%Y-%m-%dT%H:%M:%S', returns a time string in the same format localised with the UTC time zone.
-
-    :param naive_time_str: a naive time string in the format '%Y-%m-%dT%H:%M:%S'
-    :type string: str
-    :return: str -- a time string in the format '%Y-%m-%dT%H:%M:%S' localised with the UTC time zone
-    """
-    local = pytz.timezone(str(get_localzone()))
-    naive = datetime.strptime(naive_time_str, "%Y-%m-%dT%H:%M:%S")
-    local_dt = local.localize(naive, is_dst=None)
-    return local_dt.astimezone(pytz.utc).strftime("%Y-%m-%dT%H:%M:%S")
-
 
 def get_ordered_contributors_from_br(br: BibliographicResource,
                                      contributor_type: URIRef):
