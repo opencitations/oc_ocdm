@@ -17,13 +17,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from rdflib import XSD
+
 from oc_ocdm.decorators import accepts_only
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.prov.prov_entity import ProvEntity
-from rdflib import XSD
 
 if TYPE_CHECKING:
-    from typing import Optional, List
+    from typing import List, Optional
+
     from rdflib import URIRef
 
 

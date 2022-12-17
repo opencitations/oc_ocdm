@@ -45,6 +45,7 @@ PREFIX void:     <http://rdfs.org/ns/void#>
                                    datacite:url
                                    datacite:viaf
                                    datacite:crossref
+                                   datacite:datacite
                                    datacite:wikidata
                                    datacite:wikipedia
                                   ];

@@ -22,9 +22,9 @@ if TYPE_CHECKING:
     from typing import Optional
     from rdflib import URIRef
 
-from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.decorators import accepts_only
-from oc_ocdm.support.support import is_string_empty, encode_url
+from oc_ocdm.graph.graph_entity import GraphEntity
+from oc_ocdm.support.support import encode_url, is_string_empty
 
 
 class Identifier(GraphEntity):
@@ -331,6 +331,23 @@ class Identifier(GraphEntity):
         :return: None
         """
         self._associate_identifier_with_scheme(string, GraphEntity.iri_crossref)
+
+    @accepts_only('literal')
+    def create_datacite(self, string: str) -> None:
+        """
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+        It implicitly sets the object value ``datacite:datacite`` for the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
+        self._associate_identifier_with_scheme(string, GraphEntity.iri_datacite)
 
     @accepts_only('literal')
     def create_viaf(self, string: str) -> None:

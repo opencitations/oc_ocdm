@@ -16,9 +16,11 @@
 import json
 import os
 import unittest
-from rdflib import compare, ConjunctiveGraph, URIRef
+from platform import system
 from shutil import rmtree
 from zipfile import ZipFile
+
+from rdflib import ConjunctiveGraph, URIRef, compare
 
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
@@ -38,6 +40,7 @@ class TestStorer(unittest.TestCase):
 
     def test_store_graphs_in_file(self):
         base_dir = os.path.join("oc_ocdm", "test", "storer", "data", "rdf") + os.sep
+        is_unix = system() != "Windows"
         with self.subTest("output_format=json-ld, zip_output=True"):
             storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=True)
             self.prov_set.generate_provenance()
@@ -58,8 +61,9 @@ class TestStorer(unittest.TestCase):
                         'http://purl.org/dc/terms/description': [{'@value': "The entity 'http://test/br/0601' has been created."}], 
                         'http://www.w3.org/ns/prov#specializationOf': [{'@id': 'http://test/br/0601'}], 
                         'http://www.w3.org/ns/prov#wasAttributedTo': [{'@id': 'http://resp_agent.test/'}]}], '@id': 'http://test/br/0601/prov/'}])
-            self.assertTrue(os.path.exists(os.path.join(base_dir, "br", "060", "10000", "1000.zip.lock")))
-            self.assertTrue(os.path.exists(os.path.join(base_dir, "br", "060", "10000", "1000", "prov", "se.zip.lock")))
+            if is_unix:
+                self.assertTrue(os.path.exists(os.path.join(base_dir, "br", "060", "10000", "1000.zip.lock")))
+                self.assertTrue(os.path.exists(os.path.join(base_dir, "br", "060", "10000", "1000", "prov", "se.zip.lock")))
         with self.subTest("output_format=json-ld, zip_output=False"):
             base_dir_1 = os.path.join("oc_ocdm", "test", "storer", "data", "rdf_1") + os.sep
             storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
@@ -79,8 +83,9 @@ class TestStorer(unittest.TestCase):
                     'http://purl.org/dc/terms/description': [{'@value': "The entity 'http://test/br/0601' has been created."}], 
                     'http://www.w3.org/ns/prov#specializationOf': [{'@id': 'http://test/br/0601'}], 
                     'http://www.w3.org/ns/prov#wasAttributedTo': [{'@id': 'http://resp_agent.test/'}]}], '@id': 'http://test/br/0601/prov/'}])
-            self.assertTrue(os.path.exists(os.path.join(base_dir_1, "br", "060", "10000", "1000.json.lock")))
-            self.assertTrue(os.path.exists(os.path.join(base_dir_1, "br", "060", "10000", "1000", "prov", "se.json.lock")))
+            if is_unix:
+                self.assertTrue(os.path.exists(os.path.join(base_dir_1, "br", "060", "10000", "1000.json.lock")))
+                self.assertTrue(os.path.exists(os.path.join(base_dir_1, "br", "060", "10000", "1000", "prov", "se.json.lock")))
         with self.subTest("output_format=nquads, zip_output=True"):
             base_dir_2 = os.path.join("oc_ocdm", "test", "storer", "data", "rdf_2") + os.sep
             storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='nquads', zip_output=True)
@@ -109,8 +114,9 @@ class TestStorer(unittest.TestCase):
                         if p == URIRef("http://www.w3.org/ns/prov#generatedAtTime"):
                             data_g.remove((s, p, o, c))
                     self.assertTrue(compare.isomorphic(data_g, expected_data_g))
-            self.assertTrue(os.path.exists(os.path.join(base_dir_2, "br", "060", "10000", "1000.zip.lock")))
-            self.assertTrue(os.path.exists(os.path.join(base_dir_2, "br", "060", "10000", "1000", "prov", "se.zip.lock")))
+            if is_unix:
+                self.assertTrue(os.path.exists(os.path.join(base_dir_2, "br", "060", "10000", "1000.zip.lock")))
+                self.assertTrue(os.path.exists(os.path.join(base_dir_2, "br", "060", "10000", "1000", "prov", "se.zip.lock")))
         with self.subTest("output_format=nquads, zip_output=False"):
             base_dir_3 = os.path.join("oc_ocdm", "test", "storer", "data", "rdf_3") + os.sep
             storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='nquads', zip_output=False)
@@ -135,8 +141,9 @@ class TestStorer(unittest.TestCase):
                     prov_unzipped.remove((s, p, o, c))
             self.assertEqual(data_unzipped, "<http://test/br/0601> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/spar/fabio/Expression> <http://test/br/> .\n\n")
             self.assertTrue(compare.isomorphic(prov_unzipped, expected_prov_unzipped))
-            self.assertTrue(os.path.exists(os.path.join(base_dir_3, "br", "060", "10000", "1000.nt.lock")))
-            self.assertTrue(os.path.exists(os.path.join(base_dir_3, "br", "060", "10000", "1000", "prov", "se.nq.lock")))
+            if is_unix:
+                self.assertTrue(os.path.exists(os.path.join(base_dir_3, "br", "060", "10000", "1000.nt.lock")))
+                self.assertTrue(os.path.exists(os.path.join(base_dir_3, "br", "060", "10000", "1000", "prov", "se.nq.lock")))
 
 
 if __name__ == '__main__':

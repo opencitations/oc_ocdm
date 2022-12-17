@@ -174,6 +174,17 @@ class TestIdentifier(unittest.TestCase):
         triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_crossref
         self.assertIn(triple, self.id.g)
 
+    def test_create_datacite(self):
+        datacite = "332"
+        result = self.id.create_datacite(datacite)
+        self.assertIsNone(result)
+
+        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(datacite)
+        self.assertIn(triple, self.id.g)
+
+        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_datacite
+        self.assertIn(triple, self.id.g)
+
     def test_create_viaf(self):
         viaf = "abcdefghi"
         result = self.id.create_viaf(viaf)

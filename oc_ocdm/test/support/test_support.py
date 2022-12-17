@@ -20,7 +20,8 @@ from rdflib import Namespace, URIRef
 
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
-from oc_ocdm.support.support import get_ordered_contributors_from_br, find_paths
+from oc_ocdm.support.support import (find_paths,
+                                     get_ordered_contributors_from_br)
 
 
 class TestSupport(unittest.TestCase):
@@ -111,7 +112,8 @@ class TestSupport(unittest.TestCase):
             dir_split = 10000,
             n_file_item = 1000,
             is_json = True)
-        self.assertEqual((cur_dir_path, cur_file_path), ('support/test/data/rdfbr/060/10000', 'support/test/data/rdfbr/060/10000/1000.json'))
+        print(cur_dir_path, cur_file_path)
+        self.assertEqual((cur_dir_path, cur_file_path), (os.path.join('support', 'test', 'data', 'rdfbr', '060', '10000'), os.path.join('support', 'test', 'data', 'rdfbr', '060', '10000', '1000.json')))
 
     def test_find_paths_prov(self):
         cur_dir_path, cur_file_path = find_paths(
@@ -122,7 +124,7 @@ class TestSupport(unittest.TestCase):
             dir_split = 10000,
             n_file_item = 1000,
             is_json = True)
-        self.assertEqual((cur_dir_path, cur_file_path), ('support/test/data/rdfbr/060/10000/1000/prov', 'support/test/data/rdfbr/060/10000/1000/prov/se.json'))
+        self.assertEqual((cur_dir_path, cur_file_path), (os.path.join('support', 'test', 'data', 'rdfbr', '060', '10000', '1000', 'prov'), os.path.join('support', 'test', 'data', 'rdfbr', '060', '10000', '1000', 'prov', 'se.json')))
 
 
 if __name__ == '__main__':

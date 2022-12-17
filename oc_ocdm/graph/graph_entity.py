@@ -16,12 +16,14 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+
 from rdflib import Graph, Namespace, URIRef
 
 from oc_ocdm.abstract_entity import AbstractEntity
 
 if TYPE_CHECKING:
-    from typing import ClassVar, Dict, Tuple, List, Optional
+    from typing import ClassVar, Dict, List, Optional, Tuple
+
     from oc_ocdm.graph.graph_set import GraphSet
 
 
@@ -133,6 +135,7 @@ class GraphEntity(AbstractEntity):
     iri_archival_document: ClassVar[URIRef] = FABIO.ArchivalDocument
     iri_viaf: ClassVar[URIRef] = DATACITE.viaf
     iri_crossref: ClassVar[URIRef] = DATACITE.crossref  # TODO: add to datacite!
+    iri_datacite: ClassVar[URIRef] = DATACITE.datacite  # TODO: add to datacite!
     iri_wikidata: ClassVar[URIRef] = DATACITE.wikidata  # TODO: add to datacite!
     iri_wikipedia: ClassVar[URIRef] = DATACITE.wikipedia  # TODO: add to datacite!
     iri_has_edition: ClassVar[URIRef] = PRISM.edition
