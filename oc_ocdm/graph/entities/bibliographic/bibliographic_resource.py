@@ -595,6 +595,21 @@ class BibliographicResource(BibliographicEntity):
             self.g.remove((self.res, GraphEntity.iri_relation, thing_res))
         else:
             self.g.remove((self.res, GraphEntity.iri_relation, None))
+    
+    def create_abstract(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``doco:Abstract``.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
+        """
+        self._create_type(GraphEntity.iri_abstract)
 
     # HAS TYPE
     def create_archival_document(self) -> None:
@@ -611,6 +626,21 @@ class BibliographicResource(BibliographicEntity):
         :return: None
         """
         self._create_type(GraphEntity.iri_archival_document)
+
+    def create_audio_document(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:AudioDocument``.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
+        """
+        self._create_type(GraphEntity.iri_audio_document)
 
     def create_book(self) -> None:
         """
@@ -732,6 +762,36 @@ class BibliographicResource(BibliographicEntity):
         """
         self._create_type(GraphEntity.iri_expression)
 
+    def create_computer_program(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:ComputerProgram``.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
+        """
+        self._create_type(GraphEntity.iri_computer_program)
+
+    def create_data_management_plan(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:DataManagementPlan``.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
+        """
+        self._create_type(GraphEntity.iri_data_management_plan)
+
     def create_dataset(self) -> None:
         """
         Setter method corresponding to the ``rdf:type`` RDF predicate.
@@ -791,6 +851,21 @@ class BibliographicResource(BibliographicEntity):
         :return: None
         """
         self._create_type(GraphEntity.iri_journal_article)
+
+    def create_journal_editorial(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:JournalEditorial``.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
+        """
+        self._create_type(GraphEntity.iri_journal_editorial)
 
     def create_issue(self) -> None:
         """
@@ -852,6 +927,51 @@ class BibliographicResource(BibliographicEntity):
         """
         self._create_type(GraphEntity.iri_book)
 
+    def create_newspaper_article(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:Newspaper``.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
+        """
+        self._create_type(GraphEntity.iri_newspaper)
+
+    def create_newspaper_editorial(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:NewspaperEditorial``.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
+        """
+        self._create_type(GraphEntity.iri_newspaper_editorial)
+    
+    def create_newspaper_issue(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:NewspaperIssue``.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
+        """
+        self._create_type(GraphEntity.iri_newspaper_issue)
+
     def create_peer_review(self) -> None:
         """
         Setter method corresponding to the ``rdf:type`` RDF predicate.
@@ -866,6 +986,36 @@ class BibliographicResource(BibliographicEntity):
         :return: None
         """
         self._create_type(GraphEntity.iri_peer_review)
+
+    def create_preprint(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:Preprint``.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
+        """
+        self._create_type(GraphEntity.iri_preprint)
+
+    def create_presentation(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:Presentation``.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
+        """
+        self._create_type(GraphEntity.iri_presentation)
 
     def create_proceedings_article(self) -> None:
         """
@@ -971,6 +1121,21 @@ class BibliographicResource(BibliographicEntity):
         :return: None
         """
         self._create_type(GraphEntity.iri_report_document)
+
+    def create_retraction_notice(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``fabio:RetractionNotice``.
+
+        **WARNING: the OCDM specification admits at most two types for an entity.
+        The main type cannot be edited or removed. Any existing secondary type
+        will be overwritten!**
+
+        `The type of the bibliographic resource`
+
+        :return: None
+        """
+        self._create_type(GraphEntity.iri_retraction_notice)
 
     def create_standard_series(self) -> None:
         """
