@@ -15,6 +15,7 @@
 # SOFTWARE.
 from __future__ import annotations
 
+import os
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
@@ -35,7 +36,8 @@ from oc_ocdm.counter_handler.in_memory_counter_handler import \
     InMemoryCounterHandler
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_entity import ProvEntity
-from oc_ocdm.support.support import get_count, get_prefix, get_short_name
+from oc_ocdm.support.support import (get_count, get_prefix, get_short_name,
+                                     has_supplier_prefix)
 
 
 class ProvSet(AbstractSet):
@@ -52,8 +54,8 @@ class ProvSet(AbstractSet):
         self.res_to_entity: Dict[URIRef, ProvEntity] = {}
         self.base_iri: str = base_iri
         self.wanted_label: bool = wanted_label
-
-        if info_dir is not None and info_dir != "":
+        self.info_dir = info_dir
+        if self.info_dir is not None and self.info_dir != "":
             self.counter_handler: CounterHandler = FilesystemCounterHandler(info_dir)
         else:
             self.counter_handler: CounterHandler = InMemoryCounterHandler()
@@ -186,15 +188,29 @@ class ProvSet(AbstractSet):
                     cur_snapshot.derives_from(last_snapshot)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been modified.")
                     cur_snapshot.has_update_action(update_query)
+    
+    def _fix_info_dir(self, prov_subject: URIRef) -> None:
+        if self.info_dir is None or self.info_dir == "":
+            return
+        if has_supplier_prefix(prov_subject, self.base_iri):
+            supplier_prefix = get_prefix(prov_subject)
+            info_dir_folders = os.path.normpath(self.info_dir).split(os.sep)
+            info_dir_prefix = [
+                folder for folder in info_dir_folders 
+                if folder.startswith('0') and folder.endswith('0') and folder.isdigit()][-1]
+            if supplier_prefix != info_dir_prefix:
+                new_info_dir = os.sep.join([folder if folder != info_dir_prefix else supplier_prefix for folder in info_dir_folders])
+                self.info_dir = new_info_dir
+                self.counter_handler: CounterHandler = FilesystemCounterHandler(new_info_dir)
 
     def _add_prov(self, graph_url: str, short_name: str, prov_subject: GraphEntity,
                   res: URIRef = None) -> Tuple[Graph, Optional[str], Optional[str]]:
+        self._fix_info_dir(prov_subject.res)
         cur_g: Graph = Graph(identifier=graph_url)
         self._set_ns(cur_g)
 
         count: Optional[str] = None
         label: Optional[str] = None
-
         if res is not None:
             try:
                 res_count: int = int(get_count(res))
@@ -205,10 +221,8 @@ class ProvSet(AbstractSet):
                 self.counter_handler.set_counter(res_count, prov_subject.short_name, "se",
                                                  int(get_count(prov_subject.res)))
             return cur_g, count, label
-
         count = str(self.counter_handler.increment_counter(
             prov_subject.short_name, "se", int(get_count(prov_subject.res))))
-
         if self.wanted_label:
             cur_short_name = prov_subject.short_name
             cur_entity_count = get_count(prov_subject.res)
@@ -228,6 +242,7 @@ class ProvSet(AbstractSet):
         g.namespace_manager.bind("prov", ProvEntity.PROV)
 
     def _retrieve_last_snapshot(self, prov_subject: URIRef) -> Optional[URIRef]:
+        self._fix_info_dir(prov_subject)
         subj_short_name: str = get_short_name(prov_subject)
         subj_count: str = get_count(prov_subject)
         try:

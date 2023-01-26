@@ -112,7 +112,6 @@ class TestSupport(unittest.TestCase):
             dir_split = 10000,
             n_file_item = 1000,
             is_json = True)
-        print(cur_dir_path, cur_file_path)
         self.assertEqual((cur_dir_path, cur_file_path), (os.path.join('support', 'test', 'data', 'rdfbr', '060', '10000'), os.path.join('support', 'test', 'data', 'rdfbr', '060', '10000', '1000.json')))
 
     def test_find_paths_prov(self):
