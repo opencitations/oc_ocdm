@@ -17,13 +17,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from rdflib import Namespace, URIRef, Graph
+from rdflib import Graph, Namespace, URIRef
 
 from oc_ocdm.abstract_entity import AbstractEntity
 from oc_ocdm.graph.graph_entity import GraphEntity
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict
+
     from oc_ocdm.prov.prov_set import ProvSet
 
 

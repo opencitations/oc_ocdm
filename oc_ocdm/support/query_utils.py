@@ -17,7 +17,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-
 if TYPE_CHECKING:
     from typing import Tuple
     from rdflib import URIRef
@@ -25,7 +24,7 @@ if TYPE_CHECKING:
     from oc_ocdm.abstract_entity import AbstractEntity
 
 from rdflib import Graph
-from rdflib.compare import to_isomorphic, graph_diff
+from rdflib.compare import graph_diff, to_isomorphic
 
 
 def get_delete_query(graph_iri: URIRef, data: Graph) -> Tuple[str, int]:
@@ -68,11 +67,9 @@ def get_update_query(entity: AbstractEntity, entity_type: str = "graph") -> Tupl
         if preexisting_iso == current_iso:
             # Both graphs have exactly the same content!
             return "", 0, 0
-
         in_both, in_first, in_second = graph_diff(preexisting_iso, current_iso)
         delete_string, removed_triples = get_delete_query(entity.g.identifier, in_first)
         insert_string, added_triples = get_insert_query(entity.g.identifier, in_second)
-
         if delete_string != "" and insert_string != "":
             return delete_string + '; ' + insert_string, added_triples, removed_triples
         elif delete_string != "":

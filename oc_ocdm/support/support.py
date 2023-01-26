@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 
 from urllib.parse import quote
 
-from rdflib import Literal, RDF, XSD
+from rdflib import RDF, XSD, Literal
 
 
 def create_date(date_list: List[Optional[int]] = None) -> Optional[str]:
@@ -356,7 +356,6 @@ def find_paths(res: URIRef, base_dir: str, base_iri: str, default_dir: str, dir_
             cur_file_path: str = cur_dir_path + os.sep + prefix + count + file_extension
 
     return cur_dir_path, cur_file_path
-
 
 def has_supplier_prefix(res: URIRef, base_iri: str) -> bool:
     string_iri: str = str(res)

@@ -28,12 +28,14 @@ if TYPE_CHECKING:
 
 from rdflib import Graph, URIRef
 
+from oc_ocdm.counter_handler.counter_handler import CounterHandler
+from oc_ocdm.counter_handler.filesystem_counter_handler import \
+    FilesystemCounterHandler
+from oc_ocdm.counter_handler.in_memory_counter_handler import \
+    InMemoryCounterHandler
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_entity import ProvEntity
-from oc_ocdm.counter_handler.counter_handler import CounterHandler
-from oc_ocdm.counter_handler.filesystem_counter_handler import FilesystemCounterHandler
-from oc_ocdm.counter_handler.in_memory_counter_handler import InMemoryCounterHandler
-from oc_ocdm.support.support import get_short_name, get_count, get_prefix
+from oc_ocdm.support.support import get_count, get_prefix, get_short_name
 
 
 class ProvSet(AbstractSet):
@@ -142,6 +144,7 @@ class ProvSet(AbstractSet):
                     cur_snapshot.derives_from(last_snapshot)
                     for snapshot in snapshots_list:
                         cur_snapshot.derives_from(snapshot)
+                    cur_snapshot.has_update_action(update_query)
                     cur_snapshot.has_description(self._get_merge_description(cur_subj, snapshots_list))
 
         # EVERY OTHER ENTITY

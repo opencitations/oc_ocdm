@@ -18,20 +18,23 @@ from __future__ import annotations
 import json
 import os
 from importlib import resources
+from typing import TYPE_CHECKING
 from zipfile import ZipFile
 
+import rdflib
 from filelock import FileLock
-from SPARQLWrapper import SPARQLWrapper, RDFXML
 from pyshex import ShExEvaluator
-from rdflib import RDF, Namespace, ConjunctiveGraph, Graph
-from typing import TYPE_CHECKING
+from rdflib import RDF, ConjunctiveGraph, Graph, Namespace
+from SPARQLWrapper import RDFXML, SPARQLWrapper
 
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.support.reporter import Reporter
 
 if TYPE_CHECKING:
-    from typing import List, Set, Dict, Any, Optional
+    from typing import Any, Dict, List, Optional, Set
+
     from rdflib import URIRef, term
+
     from oc_ocdm.graph.graph_set import GraphSet
 
 
@@ -125,6 +128,8 @@ class Reader(object):
     def get_graph_from_subject(graph: Graph, subject: URIRef) -> Graph:
         g: Graph = Graph(identifier=graph.identifier)
         for p, o in graph.predicate_objects(subject):
+            if isinstance(o, rdflib.term.Literal):
+                o = rdflib.term.Literal(lexical_or_value=str(o), datatype=None)
             g.add((subject, p, o))
         return g
 
@@ -216,13 +221,11 @@ class Reader(object):
                                    enable_validation: bool = False, closed: bool = False) -> List[GraphEntity]:
         if enable_validation:
             graph = Reader.graph_validation(graph, closed)
-
         imported_entities: List[GraphEntity] = []
         for subject in Reader._extract_subjects(graph):
             types: List[term] = []
             for o in graph.objects(subject, RDF.type):
                 types.append(o)
-
             # ReferenceAnnotation
             if GraphEntity.iri_note in types:
                 imported_entities.append(g_set.add_an(resp_agent=resp_agent, res=subject,
@@ -267,7 +270,6 @@ class Reader(object):
             elif GraphEntity.iri_intextref_pointer in types:
                 imported_entities.append(g_set.add_rp(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
-
         return imported_entities
 
     @staticmethod
@@ -278,7 +280,6 @@ class Reader(object):
         sparql.setQuery(query)
         sparql.setMethod('GET')
         sparql.setReturnFormat(RDFXML)
-
         result: ConjunctiveGraph = sparql.query().convert()
         if result is not None:
             imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(g_set, result,

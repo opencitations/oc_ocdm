@@ -14,27 +14,30 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 from __future__ import annotations
-from filelock import FileLock
 
-import os
 import json
+import os
 from datetime import datetime
+from typing import TYPE_CHECKING
+from zipfile import ZIP_DEFLATED, ZipFile
+
+from filelock import FileLock
 from rdflib import ConjunctiveGraph
 from SPARQLWrapper import SPARQLWrapper
-from typing import TYPE_CHECKING
-from zipfile import ZipFile, ZIP_DEFLATED
 
-from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
+from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.reader import Reader
 from oc_ocdm.support.query_utils import get_update_query
-from oc_ocdm.support.support import find_paths
 from oc_ocdm.support.reporter import Reporter
+from oc_ocdm.support.support import find_paths
 
 if TYPE_CHECKING:
-    from typing import Dict, List, Tuple, Any, Optional, Set
+    from typing import Any, Dict, List, Optional, Set, Tuple
+
     from rdflib import URIRef
+
     from oc_ocdm.abstract_entity import AbstractEntity
     from oc_ocdm.abstract_set import AbstractSet
 
