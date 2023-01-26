@@ -17,10 +17,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from SPARQLWrapper import SPARQLWrapper, RDFXML
+from SPARQLWrapper import RDFXML, SPARQLWrapper
 
-from oc_ocdm.reader import Reader
 from oc_ocdm.abstract_set import AbstractSet
+from oc_ocdm.reader import Reader
 from oc_ocdm.support.support import get_count, get_short_name
 
 if TYPE_CHECKING:
@@ -29,21 +29,30 @@ if TYPE_CHECKING:
 
 from rdflib import Graph, Namespace, URIRef
 
-from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.counter_handler.counter_handler import CounterHandler
-from oc_ocdm.counter_handler.filesystem_counter_handler import FilesystemCounterHandler
-from oc_ocdm.counter_handler.in_memory_counter_handler import InMemoryCounterHandler
-from oc_ocdm.graph.entities.identifier import Identifier
+from oc_ocdm.counter_handler.filesystem_counter_handler import \
+    FilesystemCounterHandler
+from oc_ocdm.counter_handler.in_memory_counter_handler import \
+    InMemoryCounterHandler
 from oc_ocdm.graph.entities.bibliographic.agent_role import AgentRole
-from oc_ocdm.graph.entities.bibliographic.bibliographic_reference import BibliographicReference
-from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import BibliographicResource
+from oc_ocdm.graph.entities.bibliographic.bibliographic_reference import \
+    BibliographicReference
+from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import \
+    BibliographicResource
 from oc_ocdm.graph.entities.bibliographic.citation import Citation
-from oc_ocdm.graph.entities.bibliographic.discourse_element import DiscourseElement
+from oc_ocdm.graph.entities.bibliographic.discourse_element import \
+    DiscourseElement
 from oc_ocdm.graph.entities.bibliographic.pointer_list import PointerList
-from oc_ocdm.graph.entities.bibliographic.reference_annotation import ReferenceAnnotation
-from oc_ocdm.graph.entities.bibliographic.reference_pointer import ReferencePointer
-from oc_ocdm.graph.entities.bibliographic.resource_embodiment import ResourceEmbodiment
-from oc_ocdm.graph.entities.bibliographic.responsible_agent import ResponsibleAgent
+from oc_ocdm.graph.entities.bibliographic.reference_annotation import \
+    ReferenceAnnotation
+from oc_ocdm.graph.entities.bibliographic.reference_pointer import \
+    ReferencePointer
+from oc_ocdm.graph.entities.bibliographic.resource_embodiment import \
+    ResourceEmbodiment
+from oc_ocdm.graph.entities.bibliographic.responsible_agent import \
+    ResponsibleAgent
+from oc_ocdm.graph.entities.identifier import Identifier
+from oc_ocdm.graph.graph_entity import GraphEntity
 
 
 class GraphSet(AbstractSet):
