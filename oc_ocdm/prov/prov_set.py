@@ -197,11 +197,13 @@ class ProvSet(AbstractSet):
             info_dir_folders = os.path.normpath(self.info_dir).split(os.sep)
             info_dir_prefix = [
                 folder for folder in info_dir_folders 
-                if folder.startswith('0') and folder.endswith('0') and folder.isdigit()][-1]
-            if supplier_prefix != info_dir_prefix:
-                new_info_dir = os.sep.join([folder if folder != info_dir_prefix else supplier_prefix for folder in info_dir_folders])
-                self.info_dir = new_info_dir
-                self.counter_handler: CounterHandler = FilesystemCounterHandler(new_info_dir)
+                if folder.startswith('0') and folder.endswith('0') and folder.isdigit()]
+            if info_dir_prefix:
+                info_dir_prefix = info_dir_prefix[-1]
+                if supplier_prefix != info_dir_prefix:
+                    new_info_dir = os.sep.join([folder if folder != info_dir_prefix else supplier_prefix for folder in info_dir_folders])
+                    self.info_dir = new_info_dir
+                    self.counter_handler: CounterHandler = FilesystemCounterHandler(new_info_dir)
 
     def _add_prov(self, graph_url: str, short_name: str, prov_subject: GraphEntity,
                   res: URIRef = None) -> Tuple[Graph, Optional[str], Optional[str]]:
