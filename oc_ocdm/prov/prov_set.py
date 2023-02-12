@@ -146,7 +146,8 @@ class ProvSet(AbstractSet):
                     cur_snapshot.derives_from(last_snapshot)
                     for snapshot in snapshots_list:
                         cur_snapshot.derives_from(snapshot)
-                    cur_snapshot.has_update_action(update_query)
+                    if update_query:
+                        cur_snapshot.has_update_action(update_query)
                     cur_snapshot.has_description(self._get_merge_description(cur_subj, snapshots_list))
 
         # EVERY OTHER ENTITY
@@ -197,7 +198,7 @@ class ProvSet(AbstractSet):
             info_dir_folders = os.path.normpath(self.info_dir).split(os.sep)
             info_dir_prefix = [
                 folder for folder in info_dir_folders 
-                if folder.startswith('0') and folder.endswith('0') and folder.isdigit()]
+                if folder.startswith('0') and folder.endswith('0') and folder.isdigit() and len(folder) > 2]
             if info_dir_prefix:
                 info_dir_prefix = info_dir_prefix[-1]
                 if supplier_prefix != info_dir_prefix:
