@@ -17,14 +17,12 @@ from __future__ import annotations
 
 import json
 import os
-from importlib import resources
 from typing import TYPE_CHECKING
 from zipfile import ZipFile
 
 import rdflib
 from filelock import FileLock
-from pyshex import ShExEvaluator
-from rdflib import RDF, ConjunctiveGraph, Graph, Namespace
+from rdflib import RDF, ConjunctiveGraph, Graph, Namespace, URIRef
 from SPARQLWrapper import RDFXML, SPARQLWrapper
 
 from oc_ocdm.graph.graph_entity import GraphEntity
@@ -33,9 +31,11 @@ from oc_ocdm.support.reporter import Reporter
 if TYPE_CHECKING:
     from typing import Any, Dict, List, Optional, Set
 
-    from rdflib import URIRef, term
+    from rdflib import term
 
     from oc_ocdm.graph.graph_set import GraphSet
+
+from pyshacl import validate
 
 
 class Reader(object):
@@ -134,93 +134,45 @@ class Reader(object):
         return g
 
     @staticmethod
-    def _validate(graph: Graph, shex: str, valid_graph: Graph, focus: URIRef, shape: URIRef) -> bool:
-        node_result = ShExEvaluator().evaluate(rdf=graph, shex=shex, focus=focus, start=shape)[0]
-        if node_result.result:
-            for triple in graph.triples((focus, None, None)):
-                valid_graph.add(triple)
-        return node_result.result
-
-    @staticmethod
     def _extract_subjects(graph: Graph) -> Set[URIRef]:
         subjects: Set[URIRef] = set()
         for s in graph.subjects():
             subjects.add(s)
         return subjects
 
-    @staticmethod
-    def graph_validation(graph: Graph, closed: bool = False) -> Graph:
+    def graph_validation(self, graph: Graph, closed: bool = False) -> Graph:
         valid_graph: Graph = Graph(identifier=graph.identifier)
-
+        sg = Graph()
         if closed:
-            shex = resources.read_text('oc_ocdm.resources', 'shexc_closed.txt')
+            sg.parse(os.path.join('oc_ocdm', 'resources', 'shacle_closed.ttl'))
         else:
-            shex = resources.read_text('oc_ocdm.resources', 'shexc.txt')
-
-        BIRO: Namespace = Namespace("http://purl.org/spar/biro/")
-        C4O: Namespace = Namespace("http://purl.org/spar/c4o/")
-        CITO: Namespace = Namespace("http://purl.org/spar/cito/")
-        DATACITE: Namespace = Namespace("http://purl.org/spar/datacite/")
-        DEO: Namespace = Namespace("http://purl.org/spar/deo/")
-        FABIO: Namespace = Namespace("http://purl.org/spar/fabio/")
-        FOAF: Namespace = Namespace("http://xmlns.com/foaf/0.1/")
-        OA: Namespace = Namespace("http://www.w3.org/ns/oa#")
-        PRO: Namespace = Namespace("http://purl.org/spar/pro/")
-
-        OC: Namespace = Namespace("https://opencitations.net/shex/")
-
-        for subject in Reader._extract_subjects(graph):
-            # ReferenceAnnotation
-            if (subject, RDF.type, OA.Annotation) in graph:
-                Reader._validate(graph, shex, valid_graph, subject, OC.ReferenceAnnotationShape)
-
-            # AgentRole
-            elif (subject, RDF.type, PRO.RoleInTime) in graph:
-                Reader._validate(graph, shex, valid_graph, subject, OC.AgentRoleShape)
-
-            # BibliographicReference
-            elif (subject, RDF.type, BIRO.BibliographicReference) in graph:
-                Reader._validate(graph, shex, valid_graph, subject, OC.BibliographicReferenceShape)
-
-            # BibliographicResource
-            elif (subject, RDF.type, FABIO.Expression) in graph:
-                Reader._validate(graph, shex, valid_graph, subject, OC.BibliographicResourceShape)
-
-            # Citation
-            elif (subject, RDF.type, CITO.Citation) in graph:
-                Reader._validate(graph, shex, valid_graph, subject, OC.CitationShape)
-
-            # DiscourseElement
-            elif (subject, RDF.type, DEO.DiscourseElement) in graph:
-                Reader._validate(graph, shex, valid_graph, subject, OC.DiscourseElementShape)
-
-            # Identifier
-            elif (subject, RDF.type, DATACITE.Identifier) in graph:
-                Reader._validate(graph, shex, valid_graph, subject, OC.IdentifierShape)
-
-            # PointerList
-            elif (subject, RDF.type, C4O.SingleLocationPointerList) in graph:
-                Reader._validate(graph, shex, valid_graph, subject, OC.PointerListShape)
-
-            # ResponsibleAgent
-            elif (subject, RDF.type, FOAF.Agent) in graph:
-                Reader._validate(graph, shex, valid_graph, subject, OC.ResponsibleAgentShape)
-
-            # ResourceEmbodiment
-            elif (subject, RDF.type, FABIO.Manifestation) in graph:
-                Reader._validate(graph, shex, valid_graph, subject, OC.ResourceEmbodimentShape)
-
-            # ReferencePointer
-            elif (subject, RDF.type, C4O.InTextReferencePointer) in graph:
-                Reader._validate(graph, shex, valid_graph, subject, OC.ReferencePointerShape)
-
+            sg.parse(os.path.join('oc_ocdm', 'resources', 'shacle.ttl'))
+        _, report_g, _ = validate(graph,
+            shacl_graph=sg,
+            ont_graph=None,
+            inference=None,
+            abort_on_first=False,
+            allow_infos=False,
+            allow_warnings=False,
+            meta_shacl=False,
+            advanced=False,
+            js=False,
+            debug=False)
+        invalid_nodes = set()
+        for triple in report_g.triples((None, URIRef('http://www.w3.org/ns/shacl#focusNode'), None)):
+            invalid_nodes.add(triple[2])
+        for subject in self._extract_subjects(graph):
+            if subject not in invalid_nodes:
+                for valid_subject_triple in graph.triples((subject, None, None)):
+                    valid_graph.add(valid_subject_triple)
         return valid_graph
 
     @staticmethod
     def import_entities_from_graph(g_set: GraphSet, graph: Graph, resp_agent: str,
                                    enable_validation: bool = False, closed: bool = False) -> List[GraphEntity]:
         if enable_validation:
-            graph = Reader.graph_validation(graph, closed)
+            reader = Reader()
+            graph = reader.graph_validation(graph, closed)
         imported_entities: List[GraphEntity] = []
         for subject in Reader._extract_subjects(graph):
             types: List[term] = []

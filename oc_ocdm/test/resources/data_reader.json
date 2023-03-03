@@ -1,0 +1,180 @@
+[
+    {
+        "@graph": [
+            {
+                "@id": "https://w3id.org/oc/meta/br/060209",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression",
+                    "http://purl.org/spar/fabio/ReportDocument"
+                ],
+                "http://prismstandard.org/namespaces/basic/2.0/publicationDate": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#gYear",
+                        "@value": "2020"
+                    }
+                ],
+                "http://purl.org/dc/terms/title": [
+                    {
+                        "@value": "Distributed Testing Of Graph Isomorphism In The CONGEST Model"
+                    }
+                ],
+                "http://purl.org/spar/datacite/hasIdentifier": [
+                    {
+                        "@id": "https://w3id.org/oc/meta/id/06026491"
+                    }
+                ],
+                "http://purl.org/spar/pro/isDocumentContextFor": [
+                    {
+                        "@id": "https://w3id.org/oc/meta/ar/06034124"
+                    }
+                ],
+                "http://purl.org/vocab/frbr/core#partOf": [
+                    {
+                        "@id": "https://w3id.org/oc/meta/br/060182"
+                    }
+                ]
+            },
+            {
+                "@id": "https://w3id.org/oc/meta/br/060182",
+                "@type": [
+                    "http://purl.org/spar/fabio/Expression",
+                    "http://purl.org/spar/fabio/JournalIssue"
+                ]
+            },
+            {
+                "@id": "https://w3id.org/oc/meta/ar/06034124",
+                "@type": [
+                    "http://purl.org/spar/pro/RoleInTime"
+                ],
+                "http://purl.org/spar/pro/isHeldBy": [
+                    {
+                        "@id": "https://w3id.org/oc/meta/ra/06098"
+                    }
+                ],
+                "http://purl.org/spar/pro/withRole": [
+                    {
+                        "@id": "http://purl.org/spar/pro/author"
+                    }
+                ],
+                "https://w3id.org/oc/ontology/hasNext": [
+                    {
+                        "@id": "https://w3id.org/oc/meta/ar/060128"
+                    }
+                ]
+            },
+            {
+                "@id": "https://w3id.org/oc/meta/ar/060128",
+                "@type": [
+                    "http://purl.org/spar/pro/RoleInTime"
+                ],
+                "http://purl.org/spar/pro/isHeldBy": [
+                    {
+                        "@id": "https://w3id.org/oc/meta/ra/06099"
+                    }
+                ],
+                "http://purl.org/spar/pro/withRole": [
+                    {
+                        "@id": "http://purl.org/spar/pro/author"
+                    }
+                ]
+            },
+            {
+                "@id": "https://w3id.org/oc/meta/id/060313",
+                "@type": [
+                    "http://purl.org/spar/datacite/Identifier"
+                ],
+                "http://purl.org/spar/datacite/usesIdentifierScheme": [
+                    {
+                        "@id": "http://purl.org/spar/datacite/issn"
+                    }
+                ],
+                "http://www.essepuntato.it/2010/06/literalreification/hasLiteralValue": [
+                    {
+                        "@value": "2702-9921"
+                    }
+                ]
+            },
+            {
+                "@id": "https://w3id.org/oc/meta/br/060209/prov/se/1",
+                "@type": [
+                    "http://www.w3.org/ns/prov#Entity"
+                ],
+                "http://purl.org/dc/terms/description": [
+                    {
+                        "@value": "The entity 'https://w3id.org/oc/meta/br/060903' has been created."
+                    }
+                ],
+                "http://www.w3.org/ns/prov#generatedAtTime": [
+                    {
+                        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+                        "@value": "2023-01-23T17:56:32+00:00"
+                    }
+                ],
+                "http://www.w3.org/ns/prov#hadPrimarySource": [
+                    {
+                        "@id": "https://api.datacite.org/"
+                    }
+                ],
+                "http://www.w3.org/ns/prov#specializationOf": [
+                    {
+                        "@id": "https://w3id.org/oc/meta/br/060209"
+                    }
+                ],
+                "http://www.w3.org/ns/prov#wasAttributedTo": [
+                    {
+                        "@id": "https://w3id.org/oc/meta/prov/pa/1"
+                    }
+                ]
+            },
+            {
+                "@id": "https://w3id.org/oc/meta/ra/06098",
+                "@type": [
+                    "http://xmlns.com/foaf/0.1/Agent"
+                ],
+                "http://xmlns.com/foaf/0.1/familyName": [
+                    {
+                        "@value": "Mockler"
+                    }
+                ],
+                "http://xmlns.com/foaf/0.1/givenName": [
+                    {
+                        "@value": "Patricia"
+                    }
+                ]
+            },
+            {
+                "@id": "https://w3id.org/oc/meta/ra/06099",
+                "@type": [
+                    "http://xmlns.com/foaf/0.1/Agent"
+                ],
+                "http://xmlns.com/foaf/0.1/familyName": [
+                    {
+                        "@value": "Arcangelo"
+                    }
+                ],
+                "http://xmlns.com/foaf/0.1/givenName": [
+                    {
+                        "@value": "Massari"
+                    }
+                ]
+            },
+            {
+                "@id": "https://w3id.org/oc/meta/re/06011",
+                "@type": [
+                    "http://purl.org/spar/fabio/Manifestation"
+                ],
+                "http://prismstandard.org/namespaces/basic/2.0/endingPage": [
+                    {
+                        "@value": "1995"
+                    }
+                ],
+                "http://prismstandard.org/namespaces/basic/2.0/startingPage": [
+                    {
+                        "@value": "1985"
+                    }
+                ]
+            }
+         ],
+        "@id": "https://w3id.org/oc/meta/"
+    }
+]

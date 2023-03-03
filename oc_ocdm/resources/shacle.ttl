@@ -1,0 +1,1005 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix biro: <http://purl.org/spar/biro/> .
+@prefix c4o: <http://purl.org/spar/c4o> .
+@prefix cito: <http://purl.org/spar/cito/> .
+@prefix co: <http://purl.org/co/> .
+@prefix datacite: <http://purl.org/spar/datacite/> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix deo: <http://purl.org/spar/deo/> .
+@prefix doco: <http://purl.org/spar/doco/> .
+@prefix fabio: <http://purl.org/spar/fabio/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix frbr: <http://purl.org/vocab/frbr/core#> .
+@prefix literal: <http://www.essepuntato.it/2010/06/literalreification/> .
+@prefix oa: <http://www.w3.org/ns/oa#> .
+@prefix oco: <https://w3id.org/oc/ontology/> .
+@prefix prism: <http://prismstandard.org/namespaces/basic/2.0/> .
+@prefix pro: <http://purl.org/spar/pro/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix void: <http://rdfs.org/ns/void#> .
+
+schema:AbstractEntityShape
+  a sh:NodeShape ;
+  sh:property
+    [
+      sh:path rdf:type ;
+      sh:nodeKind sh:IRI ;
+      sh:minCount 1 ;
+      sh:maxCount 2 ;
+    ],
+    [
+      sh:path rdfs:label ;
+      sh:datatype xsd:string ;
+      sh:minCount 0 ;
+      sh:maxCount 1 ;
+    ] 
+.
+
+schema:IdentifierShape
+  	a sh:NodeShape ;
+    rdfs:subClassOf schema:AbstractEntityShape ;
+    sh:targetClass datacite:Identifier ;
+    sh:property
+    [
+      sh:path rdf:type ;
+      sh:value datacite:Identifier ;
+    ] ;
+    sh:property
+    [
+      sh:path literal:hasLiteralValue ;
+      sh:datatype xsd:string ;
+    ] ;
+    sh:property
+    [
+      sh:path datacite:usesIdentifierScheme ;
+      sh:in (
+        datacite:oci
+        datacite:doi
+        datacite:pmid
+        datacite:pmcid
+        datacite:orcid
+        datacite:local-resource-identifier-scheme
+        datacite:intrepid
+        datacite:isbn
+        datacite:issn
+        datacite:url
+        datacite:viaf
+        datacite:crossref
+        datacite:datacite
+        datacite:wikidata
+        datacite:wikipedia        
+      ) ;
+    ] ;
+    sh:property
+    [
+      sh:path [sh:inversePath datacite:hasIdentifier] ;
+      sh:classIn (
+        biro:BibliographicReference
+        c4o:InTextReferencePointer
+        c4o:SingleLocationPointerList
+        cito:Citation
+        deo:DiscourseElement
+        fabio:BibliographicResource
+        fabio:Expression
+        fabio:Manifestation
+        foaf:Agent
+        oa:Annotation
+        pro:RoleInTime
+      ) ;
+    ] ;
+    sh:property
+    [
+      sh:path [sh:inversePath prov:specializationOf] ;
+      sh:class prov:Entity ;
+    ]
+.
+
+schema:BibliographicEntityShape
+	a sh:NodeShape ;
+	rdfs:subClassOf schema:AbstractEntityShape ;
+  sh:property
+  [
+    sh:path datacite:hasIdentifier ;
+    sh:targetNode datacite:Identifier ;
+    sh:nodeKind sh:IRI ;
+  ]
+.
+
+############################# ENTITIES #############################
+
+#SnapshotEntity
+schema:SnapshotEntityShape
+    a sh:NodeShape ;
+    rdfs:subClassOf schema:AbstractEntityShape ;
+    sh:nodeKind sh:IRI ;
+    sh:targetClass prov:Entity ;
+    sh:property
+    [
+      sh:path rdf:type ;
+      sh:targetNode prov:Entity ;
+      sh:minValue 1 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path prov:generatedAtTime ;
+      sh:datatype xsd:dateTime ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path prov:invalidatedAtTime ;
+      sh:datatype xsd:dateTime ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path prov:specializationOf ;
+      sh:classIn (
+        biro:BibliographicReference
+        c4o:InTextReferencePointer
+        c4o:SingleLocationPointerList
+        cito:Citation
+        datacite:Identifier
+        deo:DiscourseElement
+        fabio:BibliographicResource
+        fabio:Expression
+        fabio:Manifestation
+        foaf:Agent
+        oa:Annotation
+        pro:RoleInTime        
+      ) ;
+      sh:minValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path prov:wasDerivedFrom ;
+      sh:class prov:Entity ;
+      sh:minValue 0 ;
+    ] ;
+    sh:property
+    [
+      sh:path prov:hadPrimarySource ;
+      sh:nodeKind sh:IRI ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path oco:hasUpdateQuery ;
+      sh:datatype xsd:string ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path dcterms:description ;
+      sh:datatype xsd:string ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path prov:wasAttributedTo ;
+      sh:nodeKind sh:IRI ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path [sh:inversePath prov:wasDerivedFrom] ;
+      sh:class prov:Entity ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+.
+
+#Dataset
+schema:SnapshotEntityShape
+    a sh:NodeShape ;
+    rdfs:subClassOf schema:AbstractEntityShape ;
+    sh:nodeKind sh:IRI ;
+    sh:targetClass dcat:Dataset ;
+    sh:property
+    [
+      sh:path rdf:type ;
+      sh:targetNode dcat:Dataset ;
+      sh:minValue 1 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path dcterms:title ;
+      sh:datatype xsd:string ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path dcterms:description ;
+      sh:datatype xsd:string ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path dcterms:issued ;
+      sh:datatype xsd:dateTime ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path dcterms:modified ;
+      sh:datatype xsd:dateTime ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path dcat:keyword ;
+      sh:datatype xsd:string ;
+    ] ;
+    sh:property
+    [
+      sh:path dcat:theme ;
+      sh:nodeKind sh:IRI ;
+    ] ;
+    sh:property
+    [
+      sh:path dcat:landingPage ;
+      sh:nodeKind sh:IRI ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path void:subset ;
+      sh:class dcat:Dataset ;
+    ] ;
+    sh:property
+    [
+      sh:path void:sparqlEndpoint ;
+      sh:nodeKind sh:IRI ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path dcat:distribution ;
+      sh:class dcat:Distribution ;
+    ] ;
+    sh:property
+    [
+      sh:path [sh:inversePath void:subset] ;
+      sh:class dcat:Dataset ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+.
+
+#Distribution
+schema:DistributionShape
+    a sh:NodeShape ;
+    rdfs:subClassOf schema:AbstractEntityShape ;
+    sh:targetClass dcat:Distribution ;
+    sh:nodeKind sh:IRI ;
+    sh:property
+    [
+      sh:path rdf:type ;
+      sh:targetNode dcat:Distribution ;
+      sh:minValue 1 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path dcterms:title ;
+      sh:datatype xsd:string ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path dcterms:description ;
+      sh:datatype xsd:string ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path dcterms:issued ;
+      sh:datatype xsd:dateTime ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path dcat:byte_size ;
+      sh:datatype xsd:decimal ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path dcterms:license ;
+      sh:nodeKind sh:IRI ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path dcat:downloadURL ;
+      sh:nodeKind sh:IRI ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path dcat:mediaType ;
+      sh:nodeKind sh:IRI ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path [sh:inversePath dcat:distribution] ;
+      sh:class dcat:Dataset ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+.
+
+# AgentRole
+schema:AgentRoleShape
+    a sh:NodeShape ;
+    rdfs:subClassOf schema:BibliographicEntityShape ;
+    sh:targetClass pro:RoleInTime ;
+    sh:nodeKind sh:IRI ;
+    sh:property
+    [
+      sh:path rdf:type ;
+      sh:targetNode pro:RoleInTime ;
+      sh:minValue 1 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path oco:hasNext ;
+      sh:class pro:RoleInTime ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path pro:isHeldBy ;
+      sh:class foaf:Agent ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path pro:withRole ;
+      sh:classIn (pro:publisher
+                  pro:author
+                  pro:editor) ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path [sh:inversePath oco:hasNext] ;
+      sh:class pro:RoleInTime ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path [sh:inversePath pro:isDocumentContextFor] ;
+      sh:class fabio:Expression ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path [sh:inversePath prov:specializationOf] ;
+      sh:class prov:Entity ;
+    ] ;
+.
+
+# BibliographicReference
+schema:BibliographicReferenceShape
+    a sh:NodeShape ;
+    rdfs:subClassOf schema:BibliographicEntityShape ;
+    sh:targetClass biro:BibliographicReference ;
+    sh:nodeKind sh:IRI ;
+    sh:property
+    [
+      sh:path rdf:type ;
+      sh:targetNode biro:BibliographicReference ;
+      sh:minValue 1 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path c4o:hasContent ;
+      sh:datatype xsd:string ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path oco:hasAnnotation ;
+      sh:class oa:Annotation ;
+    ] ;
+    sh:property
+    [
+      sh:path biro:references ;
+      sh:class fabio:Expression ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path [sh:inversePath frbr:part] ;
+      sh:class fabio:Expression ;
+      sh:minValue 0 ;
+      sh:maxValue 1 ;
+    ] ;
+    sh:property
+    [
+      sh:path [sh:inversePath c4o:denotes] ;
+      sh:class c4o:InTextReferencePointer ;
+    ] ;
+    sh:property
+    [
+      sh:path [sh:inversePath prov:specializationOf] ;
+      sh:class prov:Entity ;
+    ] ;
+.
+
+# BibliographicResource
+schema:BibliographicResourceShape
+	a sh:NodeShape ;
+  sh:targetClass fabio:Expression ;
+	rdfs:subClassOf schema:BibliographicEntityShape ;
+  sh:property
+	[
+    sh:path rdf:type ;
+    sh:in (fabio:ArchivalDocument
+      fabio:Book
+      fabio:BookChapter
+      doco:Part
+      fabio:Expression
+      fabio:ExpressionCollection
+      fabio:BookSeries
+      fabio:BookSet
+      fabio:DataFile
+      fabio:Thesis
+      fabio:JournalArticle
+      fabio:JournalIssue
+      fabio:JournalVolume
+      fabio:Journal
+      fabio:ProceedingsPaper
+      fabio:AcademicProceedings
+      fabio:ReferenceBook
+      fabio:ReferenceEntry
+      fabio:ReportDocument
+      fabio:Series
+      fabio:SpecificationDocument) ;
+    sh:minValue 1 ;
+    sh:maxValue 2 ;
+  ] ;
+  sh:property
+  [
+    sh:path dcterms:title ;
+    sh:datatype xsd:string ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+  [
+    sh:path fabio:hasSubtitle ;
+    sh:datatype xsd:string ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+  [
+    sh:path frbr:partOf ;
+    sh:class fabio:Expression ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+  [
+    sh:path cito:cites ;
+    sh:class fabio:Expression ;
+  ] ;
+  sh:property
+  [
+    sh:path prism:publicationDate ;
+    sh:datatypeIn (xsd:date xsd:gYearMonth xsd:gYear) ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+  [
+    sh:path frbr:embodiment ;
+    sh:class fabio:ResourceEmbodiment ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+  [
+    sh:path fabio:hasSequenceIdentifier ;
+    sh:datatype xsd:string ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+  [
+    sh:path prism:edition ;
+    sh:datatype xsd:string ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+  [
+    sh:path frbr:part ;
+    sh:classIn (biro:BibliographicReference deo:DiscourseElement );
+  ] ;
+  sh:property
+  [
+    sh:path pro:isDocumentContextFor ;
+    sh:class pro:RoleInTime ;
+  ] ;
+  sh:property
+  [
+    sh:path dcterms:relation ;
+    sh:nodeKind sh:IRI ;
+  ] ;
+  sh:property
+  [
+    sh:path [sh:inversePath frbr:partOf] ;
+    sh:class fabio:Expression ;
+  ] ;
+  sh:property
+  [
+    sh:path [sh:inversePath cito:cites] ;
+    sh:class fabio:Expression ;
+  ] ;
+  sh:property
+  [
+    sh:path [sh:inversePath biro:references] ;
+    sh:class biro:BibliographicReference ;
+  ] ;
+  sh:property
+  [
+    sh:path [sh:inversePath cito:hasCitingEntity] ;
+    sh:class cito:Citation ;
+  ] ;
+  sh:property
+  [
+    sh:path [sh:inversePath cito:hasCitedEntity] ;
+    sh:class cito:Citation ;
+  ] ;
+  sh:property
+  [
+    sh:path [sh:inversePath prov:specializationOf] ;
+    sh:class prov:Entity ;
+  ] ;
+.
+
+# Citation
+schema:BibliographicReferenceShape
+    a sh:NodeShape ;
+    rdfs:subClassOf schema:BibliographicEntityShape ;
+    sh:targetClass cito:Citation ;
+    sh:nodeKind sh:IRI ;
+  sh:property
+	[
+    sh:path rdf:type ;
+    sh:in (
+      cito:Citation
+      cito:SelfCitation
+      cito:AffiliationSelfCitation
+      cito:AuthorNetworkSelfCitation
+      cito:AuthorSelfCitation
+      cito:FunderSelfCitation
+      cito:JournalSelfCitation
+      cito:JournalCartelCitation
+      cito:DistantCitation
+    ) ;
+    sh:minValue 1 ;
+    sh:maxValue 2 ;
+  ] ;
+  sh:property
+  [
+    sh:path cito:hasCitingEntity ;
+    sh:targetNode fabio:Expression ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+  [
+    sh:path cito:hasCitedEntity ;
+    sh:targetNode fabio:Expression ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+  [
+    sh:path cito:hasCitationCreationDate ;
+    sh:datatypeIn (xsd:date xsd:gYearMonth xsd:gYear) ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+  [
+    sh:path cito:hasCitationTimeSpan ;
+    sh:datatype xsd:duration ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+  [
+    sh:path cito:hasCitationCharacterisation ;
+    sh:nodeKind sh:IRI ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+  [
+    sh:path [sh:inversePath oa:hasBody] ;
+    sh:class oa:Annotation ;
+  ] ;
+  sh:property
+  [
+    sh:path [sh:inversePath prov:specializationOf] ;
+    sh:class prov:Entity ;
+  ] ;
+.
+
+# DiscourseElement
+schema:DiscourseElementShape
+  a sh:NodeShape ;
+  rdfs:subClassOf schema:BibliographicEntityShape ;
+  sh:targetClass deo:DiscourseElement ;
+  sh:nodeKind sh:IRI ;
+  sh:property
+	[
+    sh:path rdf:type ;
+    sh:in (
+      deo:DiscourseElement
+      deo:Caption
+      doco:Footnote
+      doco:Paragraph
+      doco:Section
+      doco:SectionTitle
+      doco:Sentence
+      doco:Table
+      doco:TextChunk
+    );
+    sh:minValue 1 ;
+    sh:maxValue 2 ;
+  ] ;
+  sh:property
+	[
+    sh:path dcterms:title ;
+    sh:datatype xsd:string ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path frbr:part ;
+    sh:class deo:DiscourseElement ;
+  ] ;
+  sh:property
+	[
+    sh:path oco:hasNext ;
+    sh:class deo:DiscourseElement ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path c4o:isContextOf ;
+    sh:classIn (c4o:InTextReferencePointer c4o:SingleLocationPointerList) ;
+  ] ;
+  sh:property
+	[
+    sh:path c4o:hasContent ;
+    sh:datatype xsd:string ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path fabio:hasSequenceIdentifier ;
+    sh:datatype xsd:string ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path [sh:inversePath frbr:part] ;
+    sh:classIn (fabio:Expression deo:DiscourseElement) ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path [sh:inversePath oco:hasNext] ;
+    sh:class deo:DiscourseElement ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path [sh:inversePath prov:specializationOf] ;
+    sh:class prov:Entity ;
+  ] ;
+.
+
+# PointerList
+schema:PointerListShape
+  a sh:NodeShape ;
+  rdfs:subClassOf schema:BibliographicEntityShape ;
+  sh:targetClass deo:SingleLocationPointerList ;
+  sh:nodeKind sh:IRI ;
+  sh:property
+	[
+    sh:path rdf:type ;
+    sh:targetNode c4o:SingleLocationPointerList ;
+    sh:minValue 1 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path c4o:hasContent ;
+    xsd:datatype xsd:string ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path co:element ;
+    sh:class c4o:InTextReferencePointer ;
+  ] ;
+  sh:property
+	[
+    sh:path [sh:inversePath c4o:isContextOf] ;
+    sh:class deo:DiscourseElement ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path [sh:inversePath prov:specializationOf] ;
+    sh:class prov:Entity ;
+  ] ;
+.
+
+# ReferenceAnnotation
+schema:PointerListShape
+  a sh:NodeShape ;
+  rdfs:subClassOf schema:BibliographicEntityShape ;
+  sh:targetClass oa:Annotation ;
+  sh:nodeKind sh:IRI ;
+  sh:property
+	[
+    sh:path rdf:type ;
+    sh:targetNode oa:Annotation ;
+    sh:minValue 1 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path oa:hasBody ;
+    sh:class cito:Citation ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path [sh:inversePath oco:hasAnnotation] ;
+    sh:class biro:BibliographicReference ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path [sh:inversePath oco:hasAnnotation] ;
+    sh:class c4o:InTextReferencePointer ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path [sh:inversePath prov:specializationOf] ;
+    sh:class prov:Entity ;
+  ] ;
+.
+
+# ReferencePointer
+schema:ReferencePointerShape
+  a sh:NodeShape ;
+  rdfs:subClassOf schema:BibliographicEntityShape ;
+  sh:targetClass oa:InTextReferencePointer ;
+  sh:nodeKind sh:IRI ;
+  sh:property
+	[
+    sh:path rdf:type ;
+    sh:targetNode oa:InTextReferencePointer ;
+    sh:minValue 1 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path c4o:hasContent ;
+    sh:datatype xsd:string ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path oco:hasNext ;
+    sh:class c4o:InTextReferencePointer ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path c4o:denotes ;
+    sh:class biro:BibliographicReference ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path oco:hasAnnotation ;
+    sh:class oa:Annotation ;
+  ] ;
+  sh:property
+	[
+    sh:path [sh:inversePath oco:hasNext] ;
+    sh:class oa:Annotation ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path [sh:inversePath c4o:isContextOf] ;
+    sh:class deo:DiscourseElement ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path [sh:inversePath co:element] ;
+    sh:class c4o:SingleLocationPointerList ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path [sh:inversePath prov:specializationOf] ;
+    sh:class prov:Entity ;
+  ] ;
+.
+
+# ResourceEmbodiment
+schema:ResourceEmbodimentShape
+  a sh:NodeShape ;
+  rdfs:subClassOf schema:BibliographicEntityShape ;
+  sh:targetClass fabio:Manifestation ;
+  sh:nodeKind sh:IRI ;
+  sh:property
+	[
+    sh:path rdf:type ;
+    sh:in (
+      fabio:Manifestation
+      fabio:DigitalManifestation
+      fabio:PrintObject
+      ) ;
+    sh:minValue 1 ;
+    sh:maxValue 2 ;
+  ] ;
+  sh:property
+	[
+    sh:path dcterms:format ;
+    sh:nodeKind sh:IRI ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path prism:startingPage ;
+    sh:datatype xsd:string ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path prism:endingPage ;
+    sh:datatype xsd:string ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path frbr:exemplar ;
+    sh:nodeKind sh:IRI ;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path [sh:inversePath frbr:embodiment] ;
+    sh:class fabio:Expression ;
+  ] ;
+  sh:property
+	[
+    sh:path [sh:inversePath prov:specializationOf] ;
+    sh:class prov:Entity ;
+  ] ;
+.
+
+# ResponsibleAgent
+schema:ResponsibleAgentShape
+  a sh:NodeShape ;
+  rdfs:subClassOf schema:BibliographicEntityShape ;
+  sh:targetClass foaf:Agent ;
+  sh:nodeKind sh:IRI ;
+  sh:property
+	[
+    sh:path rdf:type ;
+    sh:targetNode foaf:Agent;
+    sh:minValue 1 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path foaf:name ;
+    sh:datatype xsd:string;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path foaf:givenName ;
+    sh:datatype xsd:string;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path foaf:familyName ;
+    sh:datatype xsd:string;
+    sh:minValue 0 ;
+    sh:maxValue 1 ;
+  ] ;
+  sh:property
+	[
+    sh:path dcterms:relation ;
+    sh:nodeKind sh:IRI ;
+  ] ;
+  sh:property
+	[
+    sh:path [sh:inversePath pro:isHeldBy] ;
+    sh:class pro:RoleInTime;
+  ] ;
+  sh:property
+	[
+    sh:path [sh:inversePath prov:specializationOf] ;
+    sh:class prov:Entity;
+  ] ;
+.
