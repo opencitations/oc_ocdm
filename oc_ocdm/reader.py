@@ -23,7 +23,7 @@ from zipfile import ZipFile
 import rdflib
 from filelock import FileLock
 from rdflib import RDF, ConjunctiveGraph, Graph, Namespace, URIRef
-from SPARQLWrapper import RDFXML, SPARQLWrapper
+from SPARQLWrapper import JSONLD, SPARQLWrapper
 
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.support.reporter import Reporter
@@ -231,7 +231,7 @@ class Reader(object):
         query: str = f"CONSTRUCT {{<{res}> ?p ?o}} WHERE {{<{res}> ?p ?o}}"
         sparql.setQuery(query)
         sparql.setMethod('GET')
-        sparql.setReturnFormat(RDFXML)
+        sparql.setReturnFormat(JSONLD)
         result: ConjunctiveGraph = sparql.query().convert()
         if result is not None:
             imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(g_set, result,
