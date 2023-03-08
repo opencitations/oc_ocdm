@@ -20,18 +20,21 @@ from rdflib import URIRef, XSD, Literal, RDF
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
 
+from oc_ocdm.counter_handler.sqlite_counter_handler import SqliteCounterHandler
+
 
 class TestCitation(unittest.TestCase):
     resp_agent = 'http://resp_agent.test/'
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
+        cls.graph_set = GraphSet("https://w3id.org/oc/index/coci/", "./info_dir/", "", False)
 
     def setUp(self):
         self.br1 = self.graph_set.add_br(self.resp_agent)
         self.br2 = self.graph_set.add_br(self.resp_agent)
         self.ci = self.graph_set.add_ci(self.resp_agent)
+        self.ci_oci = self.graph_set.add_ci(self.resp_agent, res=URIRef('https://w3id.org/oc/index/coci/ci/020010000023601000907630001040258020000010008010559090238044008040338381018136312231227010309014203370037122439026325-020010305093619112227370109090937010437073701020309'))
 
     def test_has_citing_entity(self):
         result = self.ci.has_citing_entity(self.br1)
@@ -146,7 +149,6 @@ class TestCitation(unittest.TestCase):
     def test_create_distant_citation(self):
         result = self.ci.create_distant_citation()
         self.assertIsNone(result)
-
         triple = self.ci.res, RDF.type, GraphEntity.iri_distant_citation
         self.assertIn(triple, self.ci.g)
 

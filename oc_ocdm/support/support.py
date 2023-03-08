@@ -168,8 +168,8 @@ def is_string_empty(string: str) -> bool:
 
 
 # Variable used in several functions
-entity_regex: str = r"^(.+)/([a-z][a-z])/(0[1-9]+0)?([1-9][0-9]*)$"
-prov_regex: str = r"^(.+)/([a-z][a-z])/(0[1-9]+0)?([1-9][0-9]*)/prov/([a-z][a-z])/([1-9][0-9]*)$"
+entity_regex: str = r"^(.+)/([a-z][a-z])/(0[1-9]+0)?((?:[1-9][0-9]*)|(?:\d+-\d+))$"
+prov_regex: str = r"^(.+)/([a-z][a-z])/(0[1-9]+0)?((?:[1-9][0-9]*)|(?:\d+-\d+))/prov/([a-z][a-z])/([1-9][0-9]*)$"
 
 
 def _get_match(regex: str, group: int, string: str) -> str:

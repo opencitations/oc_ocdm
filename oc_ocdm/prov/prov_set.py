@@ -34,6 +34,7 @@ from oc_ocdm.counter_handler.filesystem_counter_handler import \
     FilesystemCounterHandler
 from oc_ocdm.counter_handler.in_memory_counter_handler import \
     InMemoryCounterHandler
+from oc_ocdm.counter_handler.sqlite_counter_handler import SqliteCounterHandler
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.support.support import (get_count, get_prefix, get_short_name,
@@ -47,7 +48,7 @@ class ProvSet(AbstractSet):
     }
 
     def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, info_dir: str = "",
-                 wanted_label: bool = True) -> None:
+                 wanted_label: bool = True, custom_counters : dict = dict()) -> None:
         super(ProvSet, self).__init__()
         self.prov_g: GraphSet = prov_subj_graph_set
         # The following variable maps a URIRef with the related provenance entity
@@ -55,10 +56,21 @@ class ProvSet(AbstractSet):
         self.base_iri: str = base_iri
         self.wanted_label: bool = wanted_label
         self.info_dir = info_dir
-        if self.info_dir is not None and self.info_dir != "":
-            self.counter_handler: CounterHandler = FilesystemCounterHandler(info_dir)
+        short_names = ["an", "ar", "be", "br", "ci", "de", "id", "pl", "ra", "re", "rp"]
+        self.counter_handlers : Dict[str, CounterHandler] = dict()
+        self.custom_counters = custom_counters
+        if info_dir is not None and info_dir != "":
+            for short_name in short_names:
+                if short_name not in custom_counters:
+                    self.counter_handlers[short_name] = FilesystemCounterHandler(info_dir)
+                else:
+                    self.counter_handlers[short_name] = custom_counters[short_name]
         else:
-            self.counter_handler: CounterHandler = InMemoryCounterHandler()
+            for short_name in short_names:
+                if short_name not in custom_counters:
+                    self.counter_handlers[short_name] = InMemoryCounterHandler()
+                else:
+                    self.counter_handlers[short_name] = custom_counters[short_name]        
 
     def get_entity(self, res: URIRef) -> Optional[ProvEntity]:
         if res in self.res_to_entity:
@@ -66,7 +78,7 @@ class ProvSet(AbstractSet):
 
     def add_se(self, prov_subject: GraphEntity, res: URIRef = None) -> SnapshotEntity:
         if res is not None and get_short_name(res) != "se":
-            raise ValueError(f"Given res: <{res}> is inappropriate for an SnapshotEntity entity.")
+            raise ValueError(f"Given res: <{res}> is inappropriate for a SnapshotEntity entity.")
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         g_prov: str = str(prov_subject) + "/prov/"
@@ -169,7 +181,6 @@ class ProvSet(AbstractSet):
             else:
                 update_query: str = get_update_query(cur_subj, entity_type="graph")[0]
                 was_modified: bool = (update_query != "")
-
                 if cur_subj.to_be_deleted:
                     # DELETION SNAPSHOT
                     last_snapshot: SnapshotEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
@@ -191,7 +202,10 @@ class ProvSet(AbstractSet):
                     cur_snapshot.has_update_action(update_query)
     
     def _fix_info_dir(self, prov_subject: URIRef) -> None:
-        if self.info_dir is None or self.info_dir == "":
+        short_name = get_short_name(prov_subject)
+        if not short_name or self.info_dir is None or self.info_dir == "":
+            return
+        if not isinstance(self.counter_handlers[short_name], FilesystemCounterHandler):
             return
         if has_supplier_prefix(prov_subject, self.base_iri):
             supplier_prefix = get_prefix(prov_subject)
@@ -204,7 +218,7 @@ class ProvSet(AbstractSet):
                 if supplier_prefix != info_dir_prefix:
                     new_info_dir = os.sep.join([folder if folder != info_dir_prefix else supplier_prefix for folder in info_dir_folders])
                     self.info_dir = new_info_dir
-                    self.counter_handler: CounterHandler = FilesystemCounterHandler(new_info_dir)
+                    self.counter_handlers[short_name]: CounterHandler = FilesystemCounterHandler(new_info_dir)
 
     def _add_prov(self, graph_url: str, short_name: str, prov_subject: GraphEntity,
                   res: URIRef = None) -> Tuple[Graph, Optional[str], Optional[str]]:
@@ -214,18 +228,26 @@ class ProvSet(AbstractSet):
 
         count: Optional[str] = None
         label: Optional[str] = None
+
         if res is not None:
             try:
                 res_count: int = int(get_count(res))
             except ValueError:
                 res_count: int = -1
-            if res_count > self.counter_handler.read_counter(prov_subject.short_name, "se",
-                                                             int(get_count(prov_subject.res))):
-                self.counter_handler.set_counter(res_count, prov_subject.short_name, "se",
-                                                 int(get_count(prov_subject.res)))
+            if isinstance(self.counter_handlers[prov_subject.short_name], SqliteCounterHandler):
+                cur_count: str = self.counter_handlers[prov_subject.short_name].read_counter(prov_subject)
+            else:
+                cur_count: str = self.counter_handlers[prov_subject.short_name].read_counter(prov_subject.short_name, "se", int(get_count(prov_subject.res)))
+            if res_count > cur_count:
+                if isinstance(self.counter_handlers[prov_subject.short_name], SqliteCounterHandler):
+                    self.counter_handlers[prov_subject.short_name].set_counter(int(get_count(prov_subject.res)), prov_subject)
+                else:
+                    self.counter_handlers[prov_subject.short_name].set_counter(res_count, prov_subject.short_name, "se", int(get_count(prov_subject.res)))
             return cur_g, count, label
-        count = str(self.counter_handler.increment_counter(
-            prov_subject.short_name, "se", int(get_count(prov_subject.res))))
+        if isinstance(self.counter_handlers[prov_subject.short_name], SqliteCounterHandler):
+            count = str(self.counter_handlers[prov_subject.short_name].increment_counter(prov_subject))
+        else:
+            count = str(self.counter_handlers[prov_subject.short_name].increment_counter(prov_subject.short_name, "se", int(get_count(prov_subject.res))))
         if self.wanted_label:
             cur_short_name = prov_subject.short_name
             cur_entity_count = get_count(prov_subject.res)
@@ -248,14 +270,17 @@ class ProvSet(AbstractSet):
         self._fix_info_dir(prov_subject)
         subj_short_name: str = get_short_name(prov_subject)
         subj_count: str = get_count(prov_subject)
-        try:
-            if int(subj_count) <= 0:
-                raise ValueError('prov_subject is not a valid URIRef. Extracted count value should be a positive '
-                                 'non-zero integer number!')
-        except ValueError:
-            raise ValueError('prov_subject is not a valid URIRef. Unable to extract the count value!')
-
-        last_snapshot_count: str = str(self.counter_handler.read_counter(subj_short_name, "se", int(subj_count)))
+        if subj_short_name not in self.custom_counters:
+            try:
+                if int(subj_count) <= 0:
+                    raise ValueError('prov_subject is not a valid URIRef. Extracted count value should be a positive '
+                                    'non-zero integer number!')
+            except ValueError:
+                raise ValueError('prov_subject is not a valid URIRef. Unable to extract the count value!')
+        if isinstance(self.counter_handlers[subj_short_name], SqliteCounterHandler):
+            last_snapshot_count: str = str(self.counter_handlers[subj_short_name].read_counter(prov_subject))
+        else:
+            last_snapshot_count: str = str(self.counter_handlers[subj_short_name].read_counter(subj_short_name, "se", int(subj_count)))
         if int(last_snapshot_count) <= 0:
             return None
         else:

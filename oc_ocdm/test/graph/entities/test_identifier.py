@@ -29,172 +29,172 @@ class TestIdentifier(unittest.TestCase):
         cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
 
     def setUp(self):
-        self.id = self.graph_set.add_id(self.resp_agent)
+        self.identifier = self.graph_set.add_id(self.resp_agent)
 
     def test_create_orcid(self):
         orcid = "abcdefghi"
-        result = self.id.create_orcid(orcid)
+        result = self.identifier.create_orcid(orcid)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(orcid)
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_has_literal_value, Literal(orcid)
+        self.assertIn(triple, self.identifier.g)
 
-        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_orcid
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_orcid
+        self.assertIn(triple, self.identifier.g)
 
     def test_create_doi(self):
         doi = "abcdefghi"
-        result = self.id.create_doi(doi)
+        result = self.identifier.create_doi(doi)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(doi)
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_has_literal_value, Literal(doi)
+        self.assertIn(triple, self.identifier.g)
 
-        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_doi
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_doi
+        self.assertIn(triple, self.identifier.g)
 
     def test_create_pmid(self):
         pmid = "abcdefghi"
-        result = self.id.create_pmid(pmid)
+        result = self.identifier.create_pmid(pmid)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(pmid)
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_has_literal_value, Literal(pmid)
+        self.assertIn(triple, self.identifier.g)
 
-        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_pmid
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_pmid
+        self.assertIn(triple, self.identifier.g)
 
     def test_create_pmcid(self):
         pmcid = "abcdefghi"
-        result = self.id.create_pmcid(pmcid)
+        result = self.identifier.create_pmcid(pmcid)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(pmcid)
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_has_literal_value, Literal(pmcid)
+        self.assertIn(triple, self.identifier.g)
 
-        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_pmcid
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_pmcid
+        self.assertIn(triple, self.identifier.g)
 
     def test_create_issn(self):
         issn = "abcdefghi"
-        result = self.id.create_issn(issn)
+        result = self.identifier.create_issn(issn)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(issn)
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_has_literal_value, Literal(issn)
+        self.assertIn(triple, self.identifier.g)
 
-        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_issn
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_issn
+        self.assertIn(triple, self.identifier.g)
 
     def test_create_isbn(self):
         isbn = "abcdefghi"
-        result = self.id.create_isbn(isbn)
+        result = self.identifier.create_isbn(isbn)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(isbn)
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_has_literal_value, Literal(isbn)
+        self.assertIn(triple, self.identifier.g)
 
-        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_isbn
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_isbn
+        self.assertIn(triple, self.identifier.g)
 
     def test_create_url(self):
         url = "abcdefghi"
-        result = self.id.create_url(url)
+        result = self.identifier.create_url(url)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(url)
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_has_literal_value, Literal(url)
+        self.assertIn(triple, self.identifier.g)
 
-        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_url
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_url
+        self.assertIn(triple, self.identifier.g)
 
     def test_create_xpath(self):
         xpath = "abcdefghi"
-        result = self.id.create_xpath(xpath)
+        result = self.identifier.create_xpath(xpath)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(xpath)
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_has_literal_value, Literal(xpath)
+        self.assertIn(triple, self.identifier.g)
 
-        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_xpath
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_xpath
+        self.assertIn(triple, self.identifier.g)
 
     def test_create_intrepid(self):
         intrepid = "abcdefghi"
-        result = self.id.create_intrepid(intrepid)
+        result = self.identifier.create_intrepid(intrepid)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(intrepid)
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_has_literal_value, Literal(intrepid)
+        self.assertIn(triple, self.identifier.g)
 
-        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_intrepid
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_intrepid
+        self.assertIn(triple, self.identifier.g)
 
     def test_create_xmlid(self):
         xmlid = "abcdefghi"
-        result = self.id.create_xmlid(xmlid)
+        result = self.identifier.create_xmlid(xmlid)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(xmlid)
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_has_literal_value, Literal(xmlid)
+        self.assertIn(triple, self.identifier.g)
 
-        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_xmlid
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_xmlid
+        self.assertIn(triple, self.identifier.g)
 
     def test_create_wikidata(self):
         wikidata = "abcdefghi"
-        result = self.id.create_wikidata(wikidata)
+        result = self.identifier.create_wikidata(wikidata)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(wikidata)
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_has_literal_value, Literal(wikidata)
+        self.assertIn(triple, self.identifier.g)
 
-        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_wikidata
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_wikidata
+        self.assertIn(triple, self.identifier.g)
 
     def test_create_wikipedia(self):
         wikipedia = "abcdefghi"
-        result = self.id.create_wikipedia(wikipedia)
+        result = self.identifier.create_wikipedia(wikipedia)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(wikipedia)
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_has_literal_value, Literal(wikipedia)
+        self.assertIn(triple, self.identifier.g)
 
-        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_wikipedia
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_wikipedia
+        self.assertIn(triple, self.identifier.g)
 
     def test_create_crossref(self):
         crossref = "abcdefghi"
-        result = self.id.create_crossref(crossref)
+        result = self.identifier.create_crossref(crossref)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(crossref)
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_has_literal_value, Literal(crossref)
+        self.assertIn(triple, self.identifier.g)
 
-        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_crossref
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_crossref
+        self.assertIn(triple, self.identifier.g)
 
     def test_create_datacite(self):
         datacite = "332"
-        result = self.id.create_datacite(datacite)
+        result = self.identifier.create_datacite(datacite)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(datacite)
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_has_literal_value, Literal(datacite)
+        self.assertIn(triple, self.identifier.g)
 
-        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_datacite
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_datacite
+        self.assertIn(triple, self.identifier.g)
 
     def test_create_viaf(self):
         viaf = "abcdefghi"
-        result = self.id.create_viaf(viaf)
+        result = self.identifier.create_viaf(viaf)
         self.assertIsNone(result)
 
-        triple = self.id.res, GraphEntity.iri_has_literal_value, Literal(viaf)
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_has_literal_value, Literal(viaf)
+        self.assertIn(triple, self.identifier.g)
 
-        triple = self.id.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_viaf
-        self.assertIn(triple, self.id.g)
+        triple = self.identifier.res, GraphEntity.iri_uses_identifier_scheme, GraphEntity.iri_viaf
+        self.assertIn(triple, self.identifier.g)
 
 
 if __name__ == '__main__':

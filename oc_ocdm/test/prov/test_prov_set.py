@@ -15,11 +15,13 @@
 # SOFTWARE.
 import unittest
 
-from rdflib import URIRef
+from rdflib import Graph, Literal, URIRef
 
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
 from oc_ocdm.prov.entities.snapshot_entity import SnapshotEntity
+
+from oc_ocdm.counter_handler.sqlite_counter_handler import SqliteCounterHandler
 
 
 class TestProvSet(unittest.TestCase):
@@ -27,7 +29,7 @@ class TestProvSet(unittest.TestCase):
 
     def setUp(self):
         self.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
-        self.prov_set = ProvSet(self.graph_set, "http://test/", "./info_dir/", False)
+        self.prov_set = ProvSet(self.graph_set, "http://test/", "./info_dir/", False, custom_counters={'ci': SqliteCounterHandler('oc_ocdm/test/prov/prov_counter.db')})
 
     def test_add_se(self):
         prov_subj = self.graph_set.add_br(self.resp_agent)
@@ -236,6 +238,23 @@ class TestProvSet(unittest.TestCase):
         prov_subject = URIRef('https://w3id.org/oc/corpus/br/abc')
         self.assertRaises(ValueError, self.prov_set._retrieve_last_snapshot, prov_subject)
 
+    def test_generate_provenance_for_citations(self):
+        preexisting_graph = Graph()
+        preexisting_graph.add((
+            URIRef('https://w3id.org/oc/index/coci/ci/020010000023601000907630001040258020000010008010559090238044008040338381018136312231227010309014203370037122439026325-020010305093619112227370109090937010437073701020309'),
+            URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),
+            URIRef('http://purl.org/spar/cito/Citation')))
+        preexisting_graph.add((
+            URIRef('https://w3id.org/oc/index/coci/ci/020010000023601000907630001040258020000010008010559090238044008040338381018136312231227010309014203370037122439026325-020010305093619112227370109090937010437073701020309'),
+            URIRef('http://purl.org/spar/cito/hasCitationCreationDate'),
+            Literal('2022', datatype='http://www.w3.org/2001/XMLSchema#gYear')))
+        ci = self.graph_set.add_ci(self.resp_agent, res=URIRef('https://w3id.org/oc/index/coci/ci/020010000023601000907630001040258020000010008010559090238044008040338381018136312231227010309014203370037122439026325-020010305093619112227370109090937010437073701020309'), preexisting_graph=preexisting_graph)
+        self.prov_set.generate_provenance()
+        self.graph_set.commit_changes()
+        ci.has_citation_creation_date('2022')
+        self.prov_set.generate_provenance()
+        prov_entity = self.prov_set._retrieve_last_snapshot(URIRef('https://w3id.org/oc/index/coci/ci/020010000023601000907630001040258020000010008010559090238044008040338381018136312231227010309014203370037122439026325-020010305093619112227370109090937010437073701020309'))
+        self.assertEqual(prov_entity, URIRef('https://w3id.org/oc/index/coci/ci/020010000023601000907630001040258020000010008010559090238044008040338381018136312231227010309014203370037122439026325-020010305093619112227370109090937010437073701020309/prov/se/1'))
 
 if __name__ == '__main__':
     unittest.main()

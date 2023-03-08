@@ -18,7 +18,7 @@ def main():
         url = 'https://github.com/blazegraph/database/releases/download/BLAZEGRAPH_2_1_6_RC/blazegraph.jar'
         wget.download(url=url, out='.')
     launch_blazegraph(9999)
-    time.sleep(5)
+    time.sleep(10)
     Popen(
         ['poetry', 'run', 'python', '-m', 'unittest', 'discover', '-s', 'oc_ocdm/test', '-p', 'test_*.py']
     )
