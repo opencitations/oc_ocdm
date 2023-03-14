@@ -1,0 +1,61 @@
+cff-version: 1.2.0
+title: oc_ocdm
+message: >-
+  If you are using or extending oc_ocdm as part of a scientific
+  publication, we would appreciate a citation of our article.
+type: software
+authors:
+  - given-names: Simone
+    family-names: Persiani
+  - given-names: Marilena
+    family-names: Daquino
+    orcid: 'https://orcid.org/0000-0002-1113-7550'
+  - given-names: Silvio
+    family-names: Peroni
+    orcid: 'https://orcid.org/0000-0003-0530-4305'
+doi: 10.5281/zenodo.5770646
+url: "https://opencitations.net/"
+repository-code: 'https://github.com/opencitations/oc_ocdm'
+license: ISC
+preferred-citation:
+  type: conference-paper
+  authors:
+  - family-names: "Simone"
+    given-names: "Persiani"
+  - family-names: "Marilena"
+    given-names: "Daquino"
+    orcid: 'https://orcid.org/0000-0002-1113-7550'
+  - family-names: "Silvio"
+    given-names: "Peroni"
+    orcid: 'https://orcid.org/0000-0003-0530-4305'
+  doi: "10.1007/978-3-031-06981-9_18"
+  collection-title: "The Semantic Web: 19th International Conference, ESWC 2022, Hersonissos, Crete, Greece, May 29--June 2, 2022, Proceedings"
+  collection-type: proceedings
+  publisher:
+    name: "Springer International Publishing"
+  month: 5 # May
+  start: 305 # First page number
+  end: 322 # Last page number
+  title: "A Programming Interface for Creating Data According to the SPAR Ontologies and the OpenCitations Data Model"
+  year: 2022
+  keywords:
+  - OpenCitations
+  - Python
+  - RDF
+  - rdflib
+  - citation data
+  - bibliographic metadata
+  - SPAR Ontologies
+  abstract: >-
+    The OpenCitations Data Model (OCDM) is a data model for
+    bibliographic metadata and citations based on the SPAR
+    Ontologies and developed by OpenCitations to expose all
+    the data of its collections as sets of RDF statements
+    compliant with an ontology named OpenCitations Ontology.
+    In this paper, we introduce oc_ocdm, i.e. a Python library
+    developed for creating OCDM-compliant RDF data even if the
+    programmer has no expertise in Semantic Web technologies.
+    After an introduction of the library and its main
+    characteristics, we show a number of projects within the
+    OpenCitations infrastructure that adopt it as their
+    building block unit.
