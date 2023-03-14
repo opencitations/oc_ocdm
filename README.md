@@ -103,6 +103,20 @@ ___
         ```
   3. Open the `build/html/index.html` file with a web browser of your choice!
 
+## Citation
+If you are using or extending `oc_ocdm` as part of a scientific publication, we would appreciate a citation of our [article](https://link.springer.com/chapter/10.1007/978-3-031-06981-9_18).
+
+```bibtex
+@inproceedings{persiani2022programming,
+  title={{A} {P}rogramming {I}nterface for {C}reating {D}ata {A}ccording to the {SPAR} {O}ntologies and the {O}pen{C}itations {D}ata {M}odel},
+  author={Persiani, Simone and Daquino, Marilena and Peroni, Silvio},
+  booktitle={The Semantic Web: 19th International Conference, ESWC 2022, Hersonissos, Crete, Greece, May 29--June 2, 2022, Proceedings},
+  pages={305--322},
+  year={2022},
+  organization={Springer}
+}
+```
+
 ## Acknowledgements
 This work has been funded by the project “Open Biomedical Citations in Context Corpus”
 (Wellcome Trust, Grant n. 214471/Z/18/Z) and the project “Wikipedia Citations in Wikidata”
