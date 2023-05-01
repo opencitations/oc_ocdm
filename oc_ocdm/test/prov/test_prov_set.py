@@ -17,11 +17,10 @@ import unittest
 
 from rdflib import Graph, Literal, URIRef
 
-from oc_ocdm.graph.graph_set import GraphSet
-from oc_ocdm.prov.prov_set import ProvSet
-from oc_ocdm.prov.entities.snapshot_entity import SnapshotEntity
-
 from oc_ocdm.counter_handler.sqlite_counter_handler import SqliteCounterHandler
+from oc_ocdm.graph.graph_set import GraphSet
+from oc_ocdm.prov.entities.snapshot_entity import SnapshotEntity
+from oc_ocdm.prov.prov_set import ProvSet
 
 
 class TestProvSet(unittest.TestCase):
@@ -49,7 +48,6 @@ class TestProvSet(unittest.TestCase):
             a.merge(b)
 
             result = self.prov_set.generate_provenance(cur_time)
-            self.assertIsNone(result)
 
             se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
             self.assertIsNotNone(se_a)
@@ -73,7 +71,7 @@ class TestProvSet(unittest.TestCase):
             a.remove_every_triple()
 
             result = self.prov_set.generate_provenance(cur_time)
-            self.assertIsNone(result)
+            
 
             se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
             self.assertIsNone(se_a_2)
@@ -86,7 +84,7 @@ class TestProvSet(unittest.TestCase):
             se_a_1 = self.prov_set.add_se(a)
 
             result = self.prov_set.generate_provenance(cur_time)
-            self.assertIsNone(result)
+            
             self.assertEqual(cur_time_str, se_a_1.get_invalidation_time())
 
             se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
@@ -114,7 +112,7 @@ class TestProvSet(unittest.TestCase):
             se_b_1 = self.prov_set.add_se(b)
 
             result = self.prov_set.generate_provenance(cur_time)
-            self.assertIsNone(result)
+            
 
             self.assertEqual(cur_time_str, se_a_1.get_invalidation_time())
 
@@ -134,7 +132,7 @@ class TestProvSet(unittest.TestCase):
             a = self.graph_set.add_br(self.resp_agent)
 
             result = self.prov_set.generate_provenance(cur_time)
-            self.assertIsNone(result)
+            
 
             se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
             self.assertIsNotNone(se_a)
@@ -152,7 +150,7 @@ class TestProvSet(unittest.TestCase):
             a.mark_as_to_be_deleted()
 
             result = self.prov_set.generate_provenance(cur_time)
-            self.assertIsNone(result)
+            
 
             se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
             self.assertIsNone(se_a)
@@ -165,7 +163,7 @@ class TestProvSet(unittest.TestCase):
             a.remove_every_triple()
 
             result = self.prov_set.generate_provenance(cur_time)
-            self.assertIsNone(result)
+            
 
             se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
             self.assertIsNone(se_a_2)
@@ -177,7 +175,7 @@ class TestProvSet(unittest.TestCase):
             a.mark_as_to_be_deleted()
 
             result = self.prov_set.generate_provenance(cur_time)
-            self.assertIsNone(result)
+            
 
             self.assertEqual(cur_time_str, se_a_1.get_invalidation_time())
 
@@ -200,7 +198,7 @@ class TestProvSet(unittest.TestCase):
             a.has_title(title)
 
             result = self.prov_set.generate_provenance(cur_time)
-            self.assertIsNone(result)
+            
 
             self.assertEqual(cur_time_str, se_a_1.get_invalidation_time())
 

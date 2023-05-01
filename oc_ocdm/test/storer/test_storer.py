@@ -42,9 +42,9 @@ class TestStorer(unittest.TestCase):
         base_dir = os.path.join("oc_ocdm", "test", "storer", "data", "rdf") + os.sep
         is_unix = system() != "Windows"
         with self.subTest("output_format=json-ld, zip_output=True"):
-            storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=True)
-            self.prov_set.generate_provenance()
+            modified_entities = self.prov_set.generate_provenance()
             prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=True)
+            storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=True, modified_entities=modified_entities)
             storer.store_all(base_dir, self.base_iri)
             prov_storer.store_all(base_dir, self.base_iri)
             self.graph_set.commit_changes()

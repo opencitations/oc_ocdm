@@ -117,7 +117,9 @@ class ProvSet(AbstractSet):
         merge_description += "."
         return merge_description
 
-    def generate_provenance(self, c_time: float = None) -> None:
+    def generate_provenance(self, c_time: float = None) -> set:
+        modified_entities = set()
+
         if c_time is None:
             cur_time: str = datetime.now(tz=timezone.utc).replace(microsecond=0).isoformat(sep="T")
         else:
@@ -135,6 +137,7 @@ class ProvSet(AbstractSet):
                 # CREATION SNAPSHOT
                 cur_snapshot: SnapshotEntity = self._create_snapshot(cur_subj, cur_time)
                 cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
+                modified_entities.add(cur_subj.res)
             else:
                 update_query: str = get_update_query(cur_subj, entity_type="graph")[0]
                 was_modified: bool = (update_query != "")
@@ -149,6 +152,7 @@ class ProvSet(AbstractSet):
                     cur_snapshot.derives_from(last_snapshot)
                     cur_snapshot.has_update_action(update_query)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been modified.")
+                    modified_entities.add(cur_subj.res)
                 elif len(snapshots_list) > 0:
                     # MERGE SNAPSHOT
                     last_snapshot: SnapshotEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
@@ -161,6 +165,7 @@ class ProvSet(AbstractSet):
                     if update_query:
                         cur_snapshot.has_update_action(update_query)
                     cur_snapshot.has_description(self._get_merge_description(cur_subj, snapshots_list))
+                    modified_entities.add(cur_subj.res)
 
         # EVERY OTHER ENTITY
         for cur_subj in self.prov_g.res_to_entity.values():
@@ -178,6 +183,7 @@ class ProvSet(AbstractSet):
                     # CREATION SNAPSHOT
                     cur_snapshot: SnapshotEntity = self._create_snapshot(cur_subj, cur_time)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
+                    modified_entities.add(cur_subj.res)
             else:
                 update_query: str = get_update_query(cur_subj, entity_type="graph")[0]
                 was_modified: bool = (update_query != "")
@@ -191,6 +197,7 @@ class ProvSet(AbstractSet):
                     cur_snapshot.has_invalidation_time(cur_time)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been deleted.")
                     cur_snapshot.has_update_action(update_query)
+                    modified_entities.add(cur_subj.res)
                 elif was_modified:
                     # MODIFICATION SNAPSHOT
                     last_snapshot: SnapshotEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
@@ -200,6 +207,8 @@ class ProvSet(AbstractSet):
                     cur_snapshot.derives_from(last_snapshot)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been modified.")
                     cur_snapshot.has_update_action(update_query)
+                    modified_entities.add(cur_subj.res)
+        return modified_entities
     
     def _fix_info_dir(self, prov_subject: URIRef) -> None:
         short_name = get_short_name(prov_subject)

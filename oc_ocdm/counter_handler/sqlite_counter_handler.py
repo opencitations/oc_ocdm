@@ -16,7 +16,7 @@
 
 import sqlite3
 
-from counter_handler.counter_handler import CounterHandler
+from oc_ocdm.counter_handler.counter_handler import CounterHandler
 
 
 class SqliteCounterHandler(CounterHandler):

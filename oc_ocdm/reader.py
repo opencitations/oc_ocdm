@@ -22,17 +22,14 @@ from zipfile import ZipFile
 
 import rdflib
 from filelock import FileLock
-from rdflib import RDF, ConjunctiveGraph, Graph, Namespace, URIRef
-from SPARQLWrapper import JSONLD, SPARQLWrapper
+from rdflib import RDF, ConjunctiveGraph, Graph, URIRef
+from SPARQLWrapper import XML, SPARQLWrapper
 
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.support.reporter import Reporter
 
 if TYPE_CHECKING:
     from typing import Any, Dict, List, Optional, Set
-
-    from rdflib import term
-
     from oc_ocdm.graph.graph_set import GraphSet
 
 from pyshacl import validate
@@ -175,7 +172,7 @@ class Reader(object):
             graph = reader.graph_validation(graph, closed)
         imported_entities: List[GraphEntity] = []
         for subject in Reader._extract_subjects(graph):
-            types: List[term] = []
+            types = []
             for o in graph.objects(subject, RDF.type):
                 types.append(o)
             # ReferenceAnnotation
@@ -231,8 +228,8 @@ class Reader(object):
         query: str = f"CONSTRUCT {{<{res}> ?p ?o}} WHERE {{<{res}> ?p ?o}}"
         sparql.setQuery(query)
         sparql.setMethod('GET')
-        sparql.setReturnFormat(JSONLD)
-        result: ConjunctiveGraph = sparql.query().convert()
+        sparql.setReturnFormat(XML)
+        result: ConjunctiveGraph = sparql.queryAndConvert()
         if result is not None:
             imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(g_set, result,
                                                                                      resp_agent, enable_validation)

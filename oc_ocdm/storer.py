@@ -46,7 +46,7 @@ class Storer(object):
 
     def __init__(self, abstract_set: AbstractSet, repok: Reporter = None, reperr: Reporter = None,
                  context_map: Dict[str, Any] = None, default_dir: str = "_", dir_split: int = 0,
-                 n_file_item: int = 1, output_format: str = "json-ld", zip_output: bool = False) -> None:
+                 n_file_item: int = 1, output_format: str = "json-ld", zip_output: bool = False, modified_entities: set = None) -> None:
         # We only accept format strings that:
         # 1. are supported by rdflib
         # 2. correspond to an output format which is effectively either NT or NQ
@@ -63,6 +63,7 @@ class Storer(object):
         self.n_file_item: int = n_file_item
         self.default_dir: str = default_dir if default_dir != "" else "_"
         self.a_set: AbstractSet = abstract_set
+        self.modified_entities = modified_entities
 
         if context_map is not None:
             self.context_map: Dict[str, Any] = context_map
@@ -150,11 +151,15 @@ class Storer(object):
 
         relevant_paths: Dict[str, list] = dict()
         for entity in self.a_set.res_to_entity.values():
-            cur_dir_path, cur_file_path = self._dir_and_file_paths(entity.res, base_dir, base_iri)
-            if not os.path.exists(cur_dir_path):
-                os.makedirs(cur_dir_path)
-            relevant_paths.setdefault(cur_file_path, list())
-            relevant_paths[cur_file_path].append(entity)
+            is_relevant = True
+            if self.modified_entities is not None and entity.res not in self.modified_entities:
+                is_relevant = False
+            if is_relevant:
+                cur_dir_path, cur_file_path = self._dir_and_file_paths(entity.res, base_dir, base_iri)
+                if not os.path.exists(cur_dir_path):
+                    os.makedirs(cur_dir_path)
+                relevant_paths.setdefault(cur_file_path, list())
+                relevant_paths[cur_file_path].append(entity)
 
         for relevant_path, entities_in_path in relevant_paths.items():
             stored_g = None
