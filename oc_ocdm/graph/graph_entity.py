@@ -108,8 +108,8 @@ class GraphEntity(AbstractEntity):
     iri_manifestation: ClassVar[URIRef] = FABIO.Manifestation
     iri_newspaper: ClassVar[URIRef] = FABIO.Newspaper
     iri_newspaper_article: ClassVar[URIRef] = FABIO.NewspaperArticle
-    iri_newspaper_issue: ClassVar[URIRef] = FABIO.NewspaperIssue
     iri_newspaper_editorial: ClassVar[URIRef] = FABIO.NewspaperEditorial
+    iri_newspaper_issue: ClassVar[URIRef] = FABIO.NewspaperIssue
     iri_peer_review: ClassVar[URIRef] = FR.ReviewVersion
     iri_preprint: ClassVar[URIRef] = FABIO.Preprint
     iri_presentation: ClassVar[URIRef] = FABIO.Presentation
@@ -149,6 +149,7 @@ class GraphEntity(AbstractEntity):
     iri_viaf: ClassVar[URIRef] = DATACITE.viaf
     iri_crossref: ClassVar[URIRef] = DATACITE.crossref  # TODO: add to datacite!
     iri_datacite: ClassVar[URIRef] = DATACITE.datacite  # TODO: add to datacite!
+    iri_jid: ClassVar[URIRef] = DATACITE.jid # TODO: add to datacite!
     iri_wikidata: ClassVar[URIRef] = DATACITE.wikidata  # TODO: add to datacite!
     iri_wikipedia: ClassVar[URIRef] = DATACITE.wikipedia  # TODO: add to datacite!
     iri_has_edition: ClassVar[URIRef] = PRISM.edition

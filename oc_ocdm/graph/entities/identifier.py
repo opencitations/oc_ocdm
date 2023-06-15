@@ -132,6 +132,23 @@ class Identifier(GraphEntity):
         self._associate_identifier_with_scheme(string.lower(), GraphEntity.iri_doi)
 
     @accepts_only('literal')
+    def create_jid(self, string: str) -> None:
+        """
+        Setter method corresponding to both the ``literal:hasLiteralValue`` and the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+        It implicitly sets the object value ``datacite:jid`` for the
+        ``datacite:usesIdentifierScheme`` RDF predicate.
+
+        **WARNING: this is a functional property, hence any existing value will be overwritten!**
+
+        :param string: The value that will be set as the object of the property related to this method
+        :type string: str
+        :raises TypeError: if the parameter is of the wrong type
+        :return: None
+        """
+        self._associate_identifier_with_scheme(string, GraphEntity.iri_jid)
+
+    @accepts_only('literal')
     def create_pmid(self, string: str) -> None:
         """
         Setter method corresponding to both the ``literal:hasLiteralValue`` and the
