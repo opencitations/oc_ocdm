@@ -61,6 +61,7 @@ class GraphEntity(AbstractEntity):
     iri_citation_characterisation: ClassVar[URIRef] = CITO.hasCitationCharacterisation
     iri_has_citing_entity: ClassVar[URIRef] = CITO.hasCitingEntity
     iri_has_cited_entity: ClassVar[URIRef] = CITO.hasCitedEntity
+    iri_arxiv: ClassVar[URIRef] = DATACITE.arxiv
     iri_oci: ClassVar[URIRef] = DATACITE.oci
     iri_doi: ClassVar[URIRef] = DATACITE.doi
     iri_pmid: ClassVar[URIRef] = DATACITE.pmid
