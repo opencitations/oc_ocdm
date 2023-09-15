@@ -30,11 +30,12 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7.4"
+python = "^3.8"
 rdflib = "^6.0.0"
 SPARQLWrapper = "2.0.0"
 filelock = "^3.6.0"
 pyshacl = "0.23.0"
+setuptools = "^68.2.2"
 
 [tool.poetry.dev-dependencies]
 Sphinx = "^4.4.0"
