@@ -109,39 +109,44 @@ class Storer(object):
             for g_context in cur_g.contexts((s, p, o)):
                 g_iri = g_context.identifier
                 break
-
             new_g.addN([(s, p, o, g_iri)])
+
         zip_file_path = cur_file_path.replace(os.path.splitext(cur_file_path)[1], ".zip")
-        lock = FileLock(f"{zip_file_path}.lock") if self.zip_output else FileLock(f"{cur_file_path}.lock")
-        with lock:
-            if self.zip_output:
-                zip_file = ZipFile(zip_file_path, mode="w", compression=ZIP_DEFLATED, allowZip64=True)
-            if self.output_format == "json-ld":
-                if context_path is not None and context_path in self.context_map:
-                    cur_json_ld: Any = json.loads(
-                        new_g.serialize(format="json-ld", context=self.context_map[context_path]))
-                    if isinstance(cur_json_ld, dict):
-                        cur_json_ld["@context"] = context_path
-                    else:  # it is a list
-                        for item in cur_json_ld:
-                            item["@context"] = context_path
-                else:
-                    cur_json_ld: Any = json.loads(new_g.serialize(format="json-ld"))
-                    if self.zip_output:
-                        dumped_json: bytes = json.dumps(cur_json_ld, ensure_ascii=False).encode('utf-8')
-                        zip_file.writestr(zinfo_or_arcname=os.path.basename(cur_file_path), data=dumped_json)
-                    else:
-                        with open(cur_file_path, 'wt', encoding='utf-8') as f:
-                            json.dump(cur_json_ld, f, ensure_ascii=False)
-            else:
-                if self.zip_output:
-                    rdf_serialization: bytes = new_g.serialize(destination=None, format=self.output_format, encoding="utf-8")
-                    zip_file.writestr(zinfo_or_arcname=os.path.basename(cur_file_path), data=rdf_serialization)
-                else:
-                    new_g.serialize(destination=cur_file_path, format=self.output_format, encoding="utf-8")
-            if self.zip_output:
-                zip_file.close()
+        
+        if self.zip_output:
+            with ZipFile(zip_file_path, mode="w", compression=ZIP_DEFLATED, allowZip64=True) as zip_file:
+                self._write_graph(new_g, zip_file, cur_file_path, context_path)
+        else:
+            # Handle non-zipped output directly to a file
+            self._write_graph(new_g, None, cur_file_path, context_path)
+
         self.repok.add_sentence(f"File '{cur_file_path}' added.")
+
+    def _write_graph(self, graph: ConjunctiveGraph, zip_file: ZipFile, cur_file_path, context_path):
+        if self.output_format == "json-ld":
+            # Serialize the graph in JSON-LD format
+            cur_json_ld = json.loads(graph.serialize(format="json-ld", context=self.context_map.get(context_path)))
+            if context_path is not None and context_path in self.context_map:
+                if isinstance(cur_json_ld, dict):
+                    cur_json_ld["@context"] = context_path
+                else:  # When cur_json_ld is a list
+                    for item in cur_json_ld:
+                        item["@context"] = context_path
+
+            # Determine how to write based on zip file presence
+            if zip_file is not None:
+                dumped_json = json.dumps(cur_json_ld, ensure_ascii=False).encode('utf-8')
+                zip_file.writestr(zinfo_or_arcname=os.path.basename(cur_file_path), data=dumped_json)
+            else:
+                with open(cur_file_path, 'wt', encoding='utf-8') as f:
+                    json.dump(cur_json_ld, f, ensure_ascii=False)
+        else:
+            # Handle other RDF formats
+            if zip_file is not None:
+                rdf_serialization = graph.serialize(destination=None, format=self.output_format, encoding="utf-8")
+                zip_file.writestr(zinfo_or_arcname=os.path.basename(cur_file_path), data=rdf_serialization)
+            else:
+                graph.serialize(destination=cur_file_path, format=self.output_format, encoding="utf-8")
 
     def store_all(self, base_dir: str, base_iri: str, context_path: str = None) -> List[str]:
         self.repok.new_article()
@@ -165,13 +170,15 @@ class Storer(object):
             stored_g = None
             # Here we try to obtain a reference to the currently stored graph
             output_filepath = relevant_path.replace(os.path.splitext(relevant_path)[1], ".zip") if self.zip_output else relevant_path
-            if os.path.exists(output_filepath):
-                stored_g = Reader(context_map=self.context_map).load(output_filepath)
-            if stored_g is None:
-                stored_g = ConjunctiveGraph()
-            for entity_in_path in entities_in_path:
-                self.store(entity_in_path, stored_g, relevant_path, context_path, False)
-            self._store_in_file(stored_g, relevant_path, context_path)
+            lock = FileLock(f"{output_filepath}.lock")
+            with lock:
+                if os.path.exists(output_filepath):
+                    stored_g = Reader(context_map=self.context_map).load(output_filepath)
+                if stored_g is None:
+                    stored_g = ConjunctiveGraph()
+                for entity_in_path in entities_in_path:
+                    self.store(entity_in_path, stored_g, relevant_path, context_path, False)
+                self._store_in_file(stored_g, relevant_path, context_path)
 
         return list(relevant_paths.keys())
 

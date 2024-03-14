@@ -17,26 +17,30 @@ import json
 import os
 import unittest
 from platform import system
-from shutil import rmtree
 from zipfile import ZipFile
+from multiprocessing import Pool
+from SPARQLWrapper import POST, SPARQLWrapper
 
 from rdflib import ConjunctiveGraph, URIRef, compare
 
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
 from oc_ocdm.storer import Storer
+from oc_ocdm.reader import Reader
 
 
 class TestStorer(unittest.TestCase):
     def setUp(self):
         self.resp_agent = "http://resp_agent.test/"
         self.base_iri = "http://test/"
+        self.ts = 'http://127.0.0.1:9999/blazegraph/sparql'
         self.graph_set = GraphSet(self.base_iri, "", "060", False)
         self.prov_set = ProvSet(self.graph_set, self.base_iri, "", False)
         self.br = self.graph_set.add_br(self.resp_agent)
+        self.info_dir = os.path.join("oc_ocdm", "test", "storer", "test_provenance", "info_dir")
 
-    def tearDown(self):
-        rmtree(os.path.join("oc_ocdm", "test", "storer", "data"))
+    # def tearDown(self):
+    #     rmtree(os.path.join("oc_ocdm", "test", "storer", "data"))
 
     def test_store_graphs_in_file(self):
         base_dir = os.path.join("oc_ocdm", "test", "storer", "data", "rdf") + os.sep
@@ -51,6 +55,7 @@ class TestStorer(unittest.TestCase):
             with ZipFile(os.path.join(base_dir, "br", "060", "10000", "1000.zip"), mode="r") as archive:
                 with archive.open("1000.json") as f:
                     data = json.load(f)
+                    print(data)
                     self.assertEqual(data, [{'@graph': [{'@id': 'http://test/br/0601', '@type': ['http://purl.org/spar/fabio/Expression']}], '@id': 'http://test/br/'}])
             with ZipFile(os.path.join(base_dir, "br", "060", "10000", "1000", "prov", "se.zip"), mode="r") as archive:
                 with archive.open("se.json") as f:
@@ -144,6 +149,44 @@ class TestStorer(unittest.TestCase):
             if is_unix:
                 self.assertTrue(os.path.exists(os.path.join(base_dir_3, "br", "060", "10000", "1000.nt.lock")))
                 self.assertTrue(os.path.exists(os.path.join(base_dir_3, "br", "060", "10000", "1000", "prov", "se.nq.lock")))
+
+    def test_provenance(self):
+        ts = SPARQLWrapper(self.ts)
+        ts.setQuery('delete{?x ?y ?z} where{?x ?y ?z}')
+        ts.setMethod(POST)
+        ts.query()
+        graph_set = GraphSet(self.base_iri, "", "060", False)
+        prov_set = ProvSet(graph_set, self.base_iri, info_dir=self.info_dir)
+        base_dir = os.path.join("oc_ocdm", "test", "storer", "test_provenance") + os.sep
+        graph_set.add_br(self.resp_agent)
+        graph_set.add_br(self.resp_agent)
+        graph_set.add_br(self.resp_agent)
+        prov_set.generate_provenance()
+        storer = Storer(graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+        prov_storer = Storer(prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+        prov_storer.store_all(base_dir, self.base_iri)
+        storer.upload_all(self.ts, base_dir)
+        graph_set.commit_changes()
+        entities_to_process = [('http://test/br/0601',), ('http://test/br/0602',), ('http://test/br/0603',)]
+        with Pool(processes=3) as pool:
+            pool.starmap(process_entity, entities_to_process)
+
+def process_entity(entity):
+    base_iri = "http://test/"
+    ts = 'http://127.0.0.1:9999/blazegraph/sparql'
+    resp_agent = "http://resp_agent.test/"
+    base_dir = os.path.join("oc_ocdm", "test", "storer", "test_provenance") + os.sep
+    info_dir = os.path.join("oc_ocdm", "test", "storer", "test_provenance", "info_dir")
+    graph_set = GraphSet(base_iri, "", "060", False)
+    Reader.import_entity_from_triplestore(graph_set, ts, URIRef(entity), resp_agent)
+    br = graph_set.get_entity(URIRef(entity))
+    br.has_title("Hola")
+    prov_set = ProvSet(graph_set, base_iri, info_dir=info_dir)
+    prov_set.generate_provenance()
+    storer = Storer(graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+    prov_storer = Storer(prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+    prov_storer.store_all(base_dir, base_iri)
+    storer.upload_all(ts, base_dir)
 
 
 if __name__ == '__main__':

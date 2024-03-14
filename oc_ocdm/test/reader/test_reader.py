@@ -16,10 +16,12 @@
 
 import os
 import unittest
-from SPARQLWrapper import JSON, SPARQLWrapper
-from oc_ocdm.reader import Reader
-from oc_ocdm.graph import GraphSet
+
 from rdflib import URIRef
+from SPARQLWrapper import JSON, SPARQLWrapper
+
+from oc_ocdm.graph import GraphSet
+from oc_ocdm.reader import Reader
 
 
 class TestReader(unittest.TestCase):

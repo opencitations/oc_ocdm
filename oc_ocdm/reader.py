@@ -21,7 +21,6 @@ from typing import TYPE_CHECKING
 from zipfile import ZipFile
 
 import rdflib
-from filelock import FileLock
 from rdflib import RDF, ConjunctiveGraph, Graph, URIRef
 from SPARQLWrapper import XML, SPARQLWrapper
 
@@ -81,45 +80,47 @@ class Reader(object):
         return loaded_graph
 
     def _load_graph(self, file_path: str) -> ConjunctiveGraph:
-        formats: List[str] = ["json-ld", "rdfxml", "turtle", "trig", "nt11", "nquads"]
+        formats = ["json-ld", "rdfxml", "turtle", "trig", "nt11", "nquads"]
+        loaded_graph = ConjunctiveGraph()
 
-        loaded_graph: ConjunctiveGraph = ConjunctiveGraph()
-
-        errors: str = ""
-        for cur_format in formats:
+        if file_path.endswith('.zip'):
             try:
-                lock = FileLock(f"{file_path}.lock")
-                with lock:
-                    if file_path.endswith('.zip'):
-                        with ZipFile(file=file_path, mode="r") as archive:
-                            for zf_name in archive.namelist():
-                                f = archive.open(zf_name)
-                    else:
-                        f = open(file_path, 'rt', encoding='utf-8')
-                    if cur_format == "json-ld":
-                        json_ld_file: Any = json.load(f)
-                        if isinstance(json_ld_file, dict):
-                            json_ld_file: List[Any] = [json_ld_file]
-
-                        for json_ld_resource in json_ld_file:
-                            # Trick to force the use of a pre-loaded context if the format
-                            # specified is JSON-LD
-                            if "@context" in json_ld_resource:
-                                cur_context: str = json_ld_resource["@context"]
-                                if cur_context in self.context_map:
-                                    context_json: Any = self.context_map[cur_context]["@context"]
-                                    json_ld_resource["@context"] = context_json
-
-                            loaded_graph.parse(data=json.dumps(json_ld_resource, ensure_ascii=False),
-                                            format=cur_format)
-                    else:
-                        loaded_graph.parse(file=f, format=cur_format)
-                    f.close()
-                return loaded_graph
+                with ZipFile(file=file_path, mode="r") as archive:
+                    for zf_name in archive.namelist():
+                        with archive.open(zf_name) as f:
+                            if self._try_parse(loaded_graph, f, formats):
+                                return loaded_graph
             except Exception as e:
-                errors += f" | {e}"  # Try another format
+                raise IOError(f"Error opening or reading zip file '{file_path}': {e}")
+        else:
+            try:
+                with open(file_path, 'rt', encoding='utf-8') as f:
+                    if self._try_parse(loaded_graph, f, formats):
+                        return loaded_graph
+            except Exception as e:
+                raise IOError(f"Error opening or reading file '{file_path}': {e}")
 
-        raise IOError("1", f"It was impossible to handle the format used for storing the file '{file_path}'{errors}")
+        raise IOError(f"It was impossible to load the file '{file_path}' with supported formats.")
+
+    def _try_parse(self, graph: ConjunctiveGraph, file_obj, formats: List[str]) -> bool:
+        for cur_format in formats:
+            file_obj.seek(0)  # Reset file pointer to the beginning for each new attempt
+            try:
+                if cur_format == "json-ld":
+                    json_ld_file = json.load(file_obj)
+                    if isinstance(json_ld_file, dict):
+                        json_ld_file = [json_ld_file]
+                    for json_ld_resource in json_ld_file:
+                        if "@context" in json_ld_resource and json_ld_resource["@context"] in self.context_map:
+                            json_ld_resource["@context"] = self.context_map[json_ld_resource["@context"]]["@context"]
+                    data = json.dumps(json_ld_file, ensure_ascii=False)
+                    graph.parse(data=data, format=cur_format)
+                else:
+                    graph.parse(file=file_obj, format=cur_format)
+                return True  # Success, no need to try other formats
+            except Exception as e:
+                continue  # Try the next format
+        return False  # None of the formats succeeded
 
     @staticmethod
     def get_graph_from_subject(graph: Graph, subject: URIRef) -> Graph:
