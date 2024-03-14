@@ -38,6 +38,11 @@ jobs:
       run: |
         pip3 install poetry
         poetry install
+    - name: Run Blazegraph
+      run: |
+        wget https://github.com/blazegraph/database/releases/download/BLAZEGRAPH_2_1_6_RC/blazegraph.jar
+        java -server -jar blazegraph.jar &
+        python3 -c 'import time; time.sleep(15)'
     - name: Check the overage
       run: |
         poetry run coverage run --rcfile=oc_ocdm/test/coverage/.coveragerc
