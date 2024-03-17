@@ -34,7 +34,7 @@ class FilesystemCounterHandler(CounterHandler):
     _initial_line_len: int = 3
     _trailing_char: str = " "
 
-    def __init__(self, info_dir: str) -> None:
+    def __init__(self, info_dir: str, supplier_prefix: str = "") -> None:
         """
         Constructor of the ``FilesystemCounterHandler`` class.
 
@@ -49,6 +49,7 @@ class FilesystemCounterHandler(CounterHandler):
             info_dir += os.sep
 
         self.info_dir: str = info_dir
+        self.supplier_prefix: str = supplier_prefix
         self.datasets_dir: str = info_dir + 'datasets' + os.sep
         self.short_names: List[str] = ["an", "ar", "be", "br", "ci", "de", "id", "pl", "ra", "re", "rp"]
         self.metadata_short_names: List[str] = ["di"]
@@ -58,7 +59,7 @@ class FilesystemCounterHandler(CounterHandler):
                                            for key in self.short_names}
 
     def set_counter(self, new_value: int, entity_short_name: str, prov_short_name: str = "",
-                    identifier: int = 1) -> None:
+                    identifier: int = 1, supplier_prefix: str = "") -> None:
         """
         It allows to set the counter value of graph and provenance entities.
 
@@ -80,12 +81,12 @@ class FilesystemCounterHandler(CounterHandler):
             raise ValueError("new_value must be a non negative integer!")
 
         if prov_short_name == "se":
-            file_path: str = self._get_prov_path(entity_short_name)
+            file_path: str = self._get_prov_path(entity_short_name, supplier_prefix)
         else:
-            file_path: str = self._get_info_path(entity_short_name)
+            file_path: str = self._get_info_path(entity_short_name, supplier_prefix)
         self._set_number(new_value, file_path, identifier)
 
-    def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
+    def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
         """
         It allows to read the counter value of graph and provenance entities.
 
@@ -102,12 +103,12 @@ class FilesystemCounterHandler(CounterHandler):
         :return: The requested counter value.
         """
         if prov_short_name == "se":
-            file_path: str = self._get_prov_path(entity_short_name)
+            file_path: str = self._get_prov_path(entity_short_name, supplier_prefix)
         else:
-            file_path: str = self._get_info_path(entity_short_name)
+            file_path: str = self._get_info_path(entity_short_name, supplier_prefix)
         return self._read_number(file_path, identifier)[0]
 
-    def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
+    def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
         """
         It allows to increment the counter value of graph and provenance entities by one unit.
 
@@ -124,16 +125,18 @@ class FilesystemCounterHandler(CounterHandler):
         :return: The newly-updated (already incremented) counter value.
         """
         if prov_short_name == "se":
-            file_path: str = self._get_prov_path(entity_short_name)
+            file_path: str = self._get_prov_path(entity_short_name, supplier_prefix)
         else:
-            file_path: str = self._get_info_path(entity_short_name)
+            file_path: str = self._get_info_path(entity_short_name, supplier_prefix)
         return self._add_number(file_path, identifier)
 
-    def _get_info_path(self, short_name: str) -> str:
-        return self.info_dir + self.info_files[short_name]
+    def _get_info_path(self, short_name: str, supplier_prefix: str) -> str:
+        directory = self.info_dir if supplier_prefix == self.supplier_prefix else self.info_dir.replace(self.supplier_prefix, supplier_prefix, 1)
+        return directory + self.info_files[short_name]
 
-    def _get_prov_path(self, short_name: str) -> str:
-        return self.info_dir + self.prov_files[short_name]
+    def _get_prov_path(self, short_name: str, supplier_prefix: str) -> str:
+        directory = self.info_dir if supplier_prefix == self.supplier_prefix else self.info_dir.replace(self.supplier_prefix, supplier_prefix, 1)
+        return directory + self.prov_files[short_name]
 
     def _get_metadata_path(self, short_name: str, dataset_name: str) -> str:
         return self.datasets_dir + dataset_name + os.sep + 'metadata_' + short_name + '.txt'

@@ -28,7 +28,7 @@ class TestProvSet(unittest.TestCase):
 
     def setUp(self):
         self.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
-        self.prov_set = ProvSet(self.graph_set, "http://test/", "./info_dir/", False, custom_counters={'ci': SqliteCounterHandler('oc_ocdm/test/prov/prov_counter.db')})
+        self.prov_set = ProvSet(self.graph_set, "http://test/", "./info_dir/", False, custom_counters={'ci': SqliteCounterHandler('oc_ocdm/test/prov/prov_counter.db')}, supplier_prefix="")
 
     def test_add_se(self):
         prov_subj = self.graph_set.add_br(self.resp_agent)

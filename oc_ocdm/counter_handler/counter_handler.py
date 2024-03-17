@@ -21,7 +21,7 @@ class CounterHandler(ABC):
 
     @abstractmethod
     def set_counter(self, new_value: int, entity_short_name: str, prov_short_name: str = "",
-                    identifier: int = 1) -> None:
+                    identifier: int = 1, supplier_prefix: str = "") -> None:
         """
         Method signature for concrete implementations that allow setting the counter value
         of graph and provenance entities.
@@ -43,7 +43,7 @@ class CounterHandler(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
+    def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
         """
         Method signature for concrete implementations that allow reading the counter value
         of graph and provenance entities.
@@ -63,7 +63,7 @@ class CounterHandler(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
+    def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
         """
         Method signature for concrete implementations that allow incrementing by one unit
         the counter value of graph and provenance entities.

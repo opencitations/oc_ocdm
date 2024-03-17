@@ -40,7 +40,7 @@ class InMemoryCounterHandler(CounterHandler):
         self.metadata_counters: Dict[str, Dict[str, int]] = {}
 
     def set_counter(self, new_value: int, entity_short_name: str, prov_short_name: str = "",
-                    identifier: int = 1) -> None:
+                    identifier: int = 1, supplier_prefix: str = "") -> None:
         """
         It allows to set the counter value of graph and provenance entities.
 
@@ -82,7 +82,7 @@ class InMemoryCounterHandler(CounterHandler):
             # It's an entity!
             self.entity_counters[entity_short_name] = new_value
 
-    def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
+    def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
         """
         It allows to read the counter value of graph and provenance entities.
 
@@ -119,7 +119,7 @@ class InMemoryCounterHandler(CounterHandler):
             # It's an entity!
             return self.entity_counters[entity_short_name]
 
-    def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1) -> int:
+    def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
         """
         It allows to increment the counter value of graph and provenance entities by one unit.
 

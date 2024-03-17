@@ -48,7 +48,7 @@ class ProvSet(AbstractSet):
     }
 
     def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, info_dir: str = "",
-                 wanted_label: bool = True, custom_counters : dict = dict()) -> None:
+                 wanted_label: bool = True, custom_counters : dict = dict(), supplier_prefix: str = "") -> None:
         super(ProvSet, self).__init__()
         self.prov_g: GraphSet = prov_subj_graph_set
         # The following variable maps a URIRef with the related provenance entity
@@ -59,10 +59,11 @@ class ProvSet(AbstractSet):
         short_names = ["an", "ar", "be", "br", "ci", "de", "id", "pl", "ra", "re", "rp"]
         self.counter_handlers : Dict[str, CounterHandler] = dict()
         self.custom_counters = custom_counters
+        self.supplier_prefix = supplier_prefix
         if info_dir is not None and info_dir != "":
             for short_name in short_names:
                 if short_name not in custom_counters:
-                    self.counter_handlers[short_name] = FilesystemCounterHandler(info_dir)
+                    self.counter_handlers[short_name] = FilesystemCounterHandler(info_dir, supplier_prefix=supplier_prefix)
                 else:
                     self.counter_handlers[short_name] = custom_counters[short_name]
         else:
@@ -82,7 +83,8 @@ class ProvSet(AbstractSet):
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         g_prov: str = str(prov_subject) + "/prov/"
-        cur_g, count, label = self._add_prov(g_prov, "se", prov_subject, res)
+        supplier_prefix = get_prefix(res) if res is not None else self.supplier_prefix
+        cur_g, count, label = self._add_prov(g_prov, "se", prov_subject, res, supplier_prefix)
         return SnapshotEntity(prov_subject, cur_g, self, res, prov_subject.resp_agent,
                               prov_subject.source, ProvEntity.iri_entity, count, label, "se")
 
@@ -210,28 +212,27 @@ class ProvSet(AbstractSet):
                     modified_entities.add(cur_subj.res)
         return modified_entities
     
-    def _fix_info_dir(self, prov_subject: URIRef) -> None:
-        short_name = get_short_name(prov_subject)
-        if not short_name or self.info_dir is None or self.info_dir == "":
-            return
-        if not isinstance(self.counter_handlers[short_name], FilesystemCounterHandler):
-            return
-        if has_supplier_prefix(prov_subject, self.base_iri):
-            supplier_prefix = get_prefix(prov_subject)
-            info_dir_folders = os.path.normpath(self.info_dir).split(os.sep)
-            info_dir_prefix = [
-                folder for folder in info_dir_folders 
-                if folder.startswith('0') and folder.endswith('0') and folder.isdigit() and len(folder) > 2]
-            if info_dir_prefix:
-                info_dir_prefix = info_dir_prefix[-1]
-                if supplier_prefix != info_dir_prefix:
-                    new_info_dir = os.sep.join([folder if folder != info_dir_prefix else supplier_prefix for folder in info_dir_folders])
-                    self.info_dir = new_info_dir
-                    self.counter_handlers[short_name]: CounterHandler = FilesystemCounterHandler(new_info_dir)
+    # def _fix_info_dir(self, prov_subject: URIRef) -> None:
+    #     short_name = get_short_name(prov_subject)
+    #     if not short_name or self.info_dir is None or self.info_dir == "":
+    #         return
+    #     if not isinstance(self.counter_handlers[short_name], FilesystemCounterHandler):
+    #         return
+    #     if has_supplier_prefix(prov_subject, self.base_iri):
+    #         supplier_prefix = get_prefix(prov_subject)
+    #         info_dir_folders = os.path.normpath(self.info_dir).split(os.sep)
+    #         info_dir_prefix = [
+    #             folder for folder in info_dir_folders 
+    #             if folder.startswith('0') and folder.endswith('0') and folder.isdigit() and len(folder) > 2]
+    #         if info_dir_prefix:
+    #             info_dir_prefix = info_dir_prefix[-1]
+    #             if supplier_prefix != info_dir_prefix:
+    #                 new_info_dir = os.sep.join([folder if folder != info_dir_prefix else supplier_prefix for folder in info_dir_folders])
+    #                 self.info_dir = new_info_dir
+    #                 self.counter_handlers[short_name]: CounterHandler = FilesystemCounterHandler(new_info_dir)
 
     def _add_prov(self, graph_url: str, short_name: str, prov_subject: GraphEntity,
-                  res: URIRef = None) -> Tuple[Graph, Optional[str], Optional[str]]:
-        self._fix_info_dir(prov_subject.res)
+                  res: URIRef = None, supplier_prefix: str = "") -> Tuple[Graph, Optional[str], Optional[str]]:
         cur_g: Graph = Graph(identifier=graph_url)
         self._set_ns(cur_g)
 
@@ -244,19 +245,19 @@ class ProvSet(AbstractSet):
             except ValueError:
                 res_count: int = -1
             if isinstance(self.counter_handlers[prov_subject.short_name], SqliteCounterHandler):
-                cur_count: str = self.counter_handlers[prov_subject.short_name].read_counter(prov_subject)
+                cur_count: str = self.counter_handlers[prov_subject.short_name].read_counter(prov_subject, supplier_prefix=supplier_prefix)
             else:
-                cur_count: str = self.counter_handlers[prov_subject.short_name].read_counter(prov_subject.short_name, "se", int(get_count(prov_subject.res)))
+                cur_count: str = self.counter_handlers[prov_subject.short_name].read_counter(prov_subject.short_name, "se", int(get_count(prov_subject.res)), supplier_prefix=supplier_prefix)
             if res_count > cur_count:
                 if isinstance(self.counter_handlers[prov_subject.short_name], SqliteCounterHandler):
-                    self.counter_handlers[prov_subject.short_name].set_counter(int(get_count(prov_subject.res)), prov_subject)
+                    self.counter_handlers[prov_subject.short_name].set_counter(int(get_count(prov_subject.res)), prov_subject, supplier_prefix=supplier_prefix)
                 else:
-                    self.counter_handlers[prov_subject.short_name].set_counter(res_count, prov_subject.short_name, "se", int(get_count(prov_subject.res)))
+                    self.counter_handlers[prov_subject.short_name].set_counter(res_count, prov_subject.short_name, "se", int(get_count(prov_subject.res)), supplier_prefix=supplier_prefix)
             return cur_g, count, label
         if isinstance(self.counter_handlers[prov_subject.short_name], SqliteCounterHandler):
-            count = str(self.counter_handlers[prov_subject.short_name].increment_counter(prov_subject))
+            count = str(self.counter_handlers[prov_subject.short_name].increment_counter(prov_subject, supplier_prefix=supplier_prefix))
         else:
-            count = str(self.counter_handlers[prov_subject.short_name].increment_counter(prov_subject.short_name, "se", int(get_count(prov_subject.res))))
+            count = str(self.counter_handlers[prov_subject.short_name].increment_counter(prov_subject.short_name, "se", int(get_count(prov_subject.res)), supplier_prefix=supplier_prefix))
         if self.wanted_label:
             cur_short_name = prov_subject.short_name
             cur_entity_count = get_count(prov_subject.res)
@@ -276,11 +277,10 @@ class ProvSet(AbstractSet):
         g.namespace_manager.bind("prov", ProvEntity.PROV)
 
     def _retrieve_last_snapshot(self, prov_subject: URIRef) -> Optional[URIRef]:
-        self._fix_info_dir(prov_subject)
         subj_short_name: str = get_short_name(prov_subject)
-        subj_count: str = get_count(prov_subject)
         if subj_short_name not in self.custom_counters:
             try:
+                subj_count: str = get_count(prov_subject)
                 if int(subj_count) <= 0:
                     raise ValueError('prov_subject is not a valid URIRef. Extracted count value should be a positive '
                                     'non-zero integer number!')

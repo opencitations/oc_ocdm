@@ -21,7 +21,7 @@ from SPARQLWrapper import RDFXML, SPARQLWrapper
 
 from oc_ocdm.abstract_set import AbstractSet
 from oc_ocdm.reader import Reader
-from oc_ocdm.support.support import get_count, get_short_name
+from oc_ocdm.support.support import get_count, get_short_name, get_prefix
 
 if TYPE_CHECKING:
     from typing import Dict, ClassVar, Tuple, Optional, List, Set
@@ -77,6 +77,7 @@ class GraphSet(AbstractSet):
         # The following variable maps a URIRef with the related graph entity
         self.res_to_entity: Dict[URIRef, GraphEntity] = {}
         self.base_iri: str = base_iri
+        self.info_dir: str = info_dir
         self.supplier_prefix: str = supplier_prefix
         self.wanted_label: bool = wanted_label
         # Graphs
@@ -96,7 +97,7 @@ class GraphSet(AbstractSet):
         self.g_rp: str = base_iri + "rp/"
 
         if info_dir is not None and info_dir != "":
-            self.counter_handler: CounterHandler = FilesystemCounterHandler(info_dir)
+            self.counter_handler: CounterHandler = FilesystemCounterHandler(info_dir, supplier_prefix)
         else:
             self.counter_handler: CounterHandler = InMemoryCounterHandler()
 
@@ -232,17 +233,18 @@ class GraphSet(AbstractSet):
 
         count: Optional[str] = None
         label: Optional[str] = None
+        supplier_prefix = get_prefix(res) if res is not None else self.supplier_prefix
 
         if res is not None:
             try:
                 res_count: int = int(get_count(res))
             except ValueError:
                 res_count: int = -1
-            if res_count > self.counter_handler.read_counter(short_name):
-                self.counter_handler.set_counter(res_count, short_name)
+            if res_count > self.counter_handler.read_counter(short_name, supplier_prefix=supplier_prefix):
+                self.counter_handler.set_counter(res_count, short_name, supplier_prefix=supplier_prefix)
             return cur_g, count, label
 
-        count = self.supplier_prefix + str(self.counter_handler.increment_counter(short_name))
+        count = supplier_prefix + str(self.counter_handler.increment_counter(short_name, supplier_prefix=supplier_prefix))
 
         if self.wanted_label:
             label = "%s %s [%s/%s]" % (self.labels[short_name], count, short_name, count)
