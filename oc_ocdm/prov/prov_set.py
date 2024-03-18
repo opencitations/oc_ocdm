@@ -245,17 +245,17 @@ class ProvSet(AbstractSet):
             except ValueError:
                 res_count: int = -1
             if isinstance(self.counter_handlers[prov_subject.short_name], SqliteCounterHandler):
-                cur_count: str = self.counter_handlers[prov_subject.short_name].read_counter(prov_subject, supplier_prefix=supplier_prefix)
+                cur_count: str = self.counter_handlers[prov_subject.short_name].read_counter(prov_subject)
             else:
                 cur_count: str = self.counter_handlers[prov_subject.short_name].read_counter(prov_subject.short_name, "se", int(get_count(prov_subject.res)), supplier_prefix=supplier_prefix)
             if res_count > cur_count:
                 if isinstance(self.counter_handlers[prov_subject.short_name], SqliteCounterHandler):
-                    self.counter_handlers[prov_subject.short_name].set_counter(int(get_count(prov_subject.res)), prov_subject, supplier_prefix=supplier_prefix)
+                    self.counter_handlers[prov_subject.short_name].set_counter(int(get_count(prov_subject.res)), prov_subject)
                 else:
                     self.counter_handlers[prov_subject.short_name].set_counter(res_count, prov_subject.short_name, "se", int(get_count(prov_subject.res)), supplier_prefix=supplier_prefix)
             return cur_g, count, label
         if isinstance(self.counter_handlers[prov_subject.short_name], SqliteCounterHandler):
-            count = str(self.counter_handlers[prov_subject.short_name].increment_counter(prov_subject, supplier_prefix=supplier_prefix))
+            count = str(self.counter_handlers[prov_subject.short_name].increment_counter(prov_subject))
         else:
             count = str(self.counter_handlers[prov_subject.short_name].increment_counter(prov_subject.short_name, "se", int(get_count(prov_subject.res)), supplier_prefix=supplier_prefix))
         if self.wanted_label:
@@ -289,7 +289,8 @@ class ProvSet(AbstractSet):
         if isinstance(self.counter_handlers[subj_short_name], SqliteCounterHandler):
             last_snapshot_count: str = str(self.counter_handlers[subj_short_name].read_counter(prov_subject))
         else:
-            last_snapshot_count: str = str(self.counter_handlers[subj_short_name].read_counter(subj_short_name, "se", int(subj_count)))
+            supplier_prefix = get_prefix(str(prov_subject))
+            last_snapshot_count: str = str(self.counter_handlers[subj_short_name].read_counter(subj_short_name, "se", int(subj_count), supplier_prefix=supplier_prefix))
         if int(last_snapshot_count) <= 0:
             return None
         else:
