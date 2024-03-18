@@ -83,7 +83,7 @@ class ProvSet(AbstractSet):
         if res is not None and res in self.res_to_entity:
             return self.res_to_entity[res]
         g_prov: str = str(prov_subject) + "/prov/"
-        supplier_prefix = get_prefix(res) if res is not None else self.supplier_prefix
+        supplier_prefix = get_prefix(str(prov_subject.res))
         cur_g, count, label = self._add_prov(g_prov, "se", prov_subject, res, supplier_prefix)
         return SnapshotEntity(prov_subject, cur_g, self, res, prov_subject.resp_agent,
                               prov_subject.source, ProvEntity.iri_entity, count, label, "se")
@@ -144,7 +144,6 @@ class ProvSet(AbstractSet):
                 update_query: str = get_update_query(cur_subj, entity_type="graph")[0]
                 was_modified: bool = (update_query != "")
                 snapshots_list: List[SnapshotEntity] = self._get_snapshots_from_merge_list(cur_subj)
-
                 if was_modified and len(snapshots_list) <= 0:
                     # MODIFICATION SNAPSHOT
                     last_snapshot: SnapshotEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
@@ -159,7 +158,6 @@ class ProvSet(AbstractSet):
                     # MERGE SNAPSHOT
                     last_snapshot: SnapshotEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
                     last_snapshot.has_invalidation_time(cur_time)
-
                     cur_snapshot: SnapshotEntity = self._create_snapshot(cur_subj, cur_time)
                     cur_snapshot.derives_from(last_snapshot)
                     for snapshot in snapshots_list:
