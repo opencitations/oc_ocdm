@@ -21,7 +21,6 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from filelock import FileLock
 from rdflib import ConjunctiveGraph
 from SPARQLWrapper import SPARQLWrapper
 
@@ -148,7 +147,7 @@ class Storer(object):
             else:
                 graph.serialize(destination=cur_file_path, format=self.output_format, encoding="utf-8")
 
-    def store_all(self, base_dir: str, base_iri: str, context_path: str = None) -> List[str]:
+    def store_all(self, base_dir: str, base_iri: str, context_path: str = None, process_id: int|str = None) -> List[str]:
         self.repok.new_article()
         self.reperr.new_article()
 
@@ -160,7 +159,7 @@ class Storer(object):
             if self.modified_entities is not None and entity.res not in self.modified_entities:
                 is_relevant = False
             if is_relevant:
-                cur_dir_path, cur_file_path = self._dir_and_file_paths(entity.res, base_dir, base_iri)
+                cur_dir_path, cur_file_path = self._dir_and_file_paths(entity.res, base_dir, base_iri, process_id)
                 if not os.path.exists(cur_dir_path):
                     os.makedirs(cur_dir_path)
                 relevant_paths.setdefault(cur_file_path, list())
@@ -170,15 +169,13 @@ class Storer(object):
             stored_g = None
             # Here we try to obtain a reference to the currently stored graph
             output_filepath = relevant_path.replace(os.path.splitext(relevant_path)[1], ".zip") if self.zip_output else relevant_path
-            lock = FileLock(f"{output_filepath}.lock")
-            with lock:
-                if os.path.exists(output_filepath):
-                    stored_g = Reader(context_map=self.context_map).load(output_filepath)
-                if stored_g is None:
-                    stored_g = ConjunctiveGraph()
-                for entity_in_path in entities_in_path:
-                    self.store(entity_in_path, stored_g, relevant_path, context_path, False)
-                self._store_in_file(stored_g, relevant_path, context_path)
+            if os.path.exists(output_filepath):
+                stored_g = Reader(context_map=self.context_map).load(output_filepath)
+            if stored_g is None:
+                stored_g = ConjunctiveGraph()
+            for entity_in_path in entities_in_path:
+                self.store(entity_in_path, stored_g, relevant_path, context_path, False)
+            self._store_in_file(stored_g, relevant_path, context_path)
 
         return list(relevant_paths.keys())
 
@@ -239,9 +236,9 @@ class Storer(object):
         else:  # All the files have been stored
             self.upload_all(triplestore_url, base_dir, batch_size)
 
-    def _dir_and_file_paths(self, res: URIRef, base_dir: str, base_iri: str) -> Tuple[str, str]:
+    def _dir_and_file_paths(self, res: URIRef, base_dir: str, base_iri: str, process_id: int|str = None) -> Tuple[str, str]:
         is_json: bool = (self.output_format == "json-ld")
-        return find_paths(res, base_dir, base_iri, self.default_dir, self.dir_split, self.n_file_item, is_json=is_json)
+        return find_paths(res, base_dir, base_iri, self.default_dir, self.dir_split, self.n_file_item, is_json=is_json, process_id=process_id)
 
     @staticmethod
     def _class_to_entity_type(entity: AbstractEntity) -> Optional[str]:

@@ -259,7 +259,7 @@ def find_local_line_id(res: URIRef, n_file_item: int = 1) -> int:
 
 
 def find_paths(res: URIRef, base_dir: str, base_iri: str, default_dir: str, dir_split: int,
-               n_file_item: int, is_json: bool = True) -> Tuple[str, str]:
+               n_file_item: int, is_json: bool = True, process_id: int|str = None) -> Tuple[str, str]:
     """
     This function is responsible for looking for the correct JSON file that contains the data related to the
     resource identified by the variable 'string_iri'. This search takes into account the organisation in
@@ -267,12 +267,13 @@ def find_paths(res: URIRef, base_dir: str, base_iri: str, default_dir: str, dir_
     In case no supplier prefix is specified, the 'default_dir' (usually set to "_") is used instead.
     """
     string_iri: str = str(res)
+    process_id_str: str = f"_{process_id}" if process_id else ""
 
     if is_dataset(res):
         cur_dir_path: str = (base_dir + re.sub(r"^%s(.*)$" % base_iri, r"\1", string_iri))[:-1]
         # In case of dataset, the file path is different from regular files, e.g.
         # /corpus/br/index.json
-        cur_file_path: str = cur_dir_path + os.sep + "index.json"
+        cur_file_path: str = cur_dir_path + os.sep + "index" + process_id_str + ".json"
     else:
         cur_number: int = get_resource_number(res)
 
@@ -307,7 +308,7 @@ def find_paths(res: URIRef, base_dir: str, base_iri: str, default_dir: str, dir_
 
                 cur_dir_path: str = base_dir + subj_short_name + os.sep + sub_folder + \
                     os.sep + str(cur_split) + os.sep + str(cur_file_split) + os.sep + "prov"
-                cur_file_path: str = cur_dir_path + os.sep + short_name + file_extension
+                cur_file_path: str = cur_dir_path + os.sep + short_name + process_id_str + file_extension
             else:  # regular bibliographic entity
                 short_name: str = get_short_name(res)
                 sub_folder: str = get_prefix(res)
@@ -318,7 +319,7 @@ def find_paths(res: URIRef, base_dir: str, base_iri: str, default_dir: str, dir_
                     sub_folder = "_"  # enforce default value
 
                 cur_dir_path: str = base_dir + short_name + os.sep + sub_folder + os.sep + str(cur_split)
-                cur_file_path: str = cur_dir_path + os.sep + str(cur_file_split) + file_extension
+                cur_file_path: str = cur_dir_path + os.sep + str(cur_file_split) + process_id_str + file_extension
         # Enter here if no split is needed
         elif dir_split == 0:
             if "/prov/" in string_iri:
@@ -333,7 +334,7 @@ def find_paths(res: URIRef, base_dir: str, base_iri: str, default_dir: str, dir_
 
                 cur_dir_path: str = base_dir + subj_short_name + os.sep + sub_folder + \
                     os.sep + str(cur_file_split) + os.sep + "prov"
-                cur_file_path: str = cur_dir_path + os.sep + short_name + file_extension
+                cur_file_path: str = cur_dir_path + os.sep + short_name + process_id_str + file_extension
             else:
                 short_name: str = get_short_name(res)
                 sub_folder: str = get_prefix(res)
@@ -344,7 +345,7 @@ def find_paths(res: URIRef, base_dir: str, base_iri: str, default_dir: str, dir_
                     sub_folder = "_"  # enforce default value
 
                 cur_dir_path: str = base_dir + short_name + os.sep + sub_folder
-                cur_file_path: str = cur_dir_path + os.sep + str(cur_file_split) + file_extension
+                cur_file_path: str = cur_dir_path + os.sep + str(cur_file_split) + process_id_str + file_extension
         # Enter here if the data is about a provenance agent, e.g. /corpus/prov/
         else:
             short_name: str = get_short_name(res)
@@ -353,7 +354,7 @@ def find_paths(res: URIRef, base_dir: str, base_iri: str, default_dir: str, dir_
             file_extension: str = '.json' if is_json else '.nq'
 
             cur_dir_path: str = base_dir + short_name
-            cur_file_path: str = cur_dir_path + os.sep + prefix + count + file_extension
+            cur_file_path: str = cur_dir_path + os.sep + prefix + count + process_id_str + file_extension
 
     return cur_dir_path, cur_file_path
 

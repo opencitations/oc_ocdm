@@ -132,12 +132,12 @@ class FilesystemCounterHandler(CounterHandler):
 
     def _get_info_path(self, short_name: str, supplier_prefix: str) -> str:
         supplier_prefix = "" if supplier_prefix is None else supplier_prefix
-        directory = self.info_dir if supplier_prefix == self.supplier_prefix else self.info_dir.replace(self.supplier_prefix, supplier_prefix, 1)
+        directory = self.info_dir if supplier_prefix == self.supplier_prefix or not self.supplier_prefix else self.info_dir.replace(self.supplier_prefix, supplier_prefix, 1)
         return directory + self.info_files[short_name]
 
     def _get_prov_path(self, short_name: str, supplier_prefix: str) -> str:
         supplier_prefix = "" if supplier_prefix is None else supplier_prefix
-        directory = self.info_dir if supplier_prefix == self.supplier_prefix else self.info_dir.replace(self.supplier_prefix, supplier_prefix, 1)
+        directory = self.info_dir if supplier_prefix == self.supplier_prefix or not self.supplier_prefix else self.info_dir.replace(self.supplier_prefix, supplier_prefix, 1)
         return directory + self.prov_files[short_name]
 
     def _get_metadata_path(self, short_name: str, dataset_name: str) -> str:

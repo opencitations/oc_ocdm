@@ -234,7 +234,6 @@ class GraphSet(AbstractSet):
         count: Optional[str] = None
         label: Optional[str] = None
         supplier_prefix = get_prefix(res) if res is not None else self.supplier_prefix
-
         if res is not None:
             try:
                 res_count: int = int(get_count(res))
