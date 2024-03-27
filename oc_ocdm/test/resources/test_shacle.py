@@ -2,7 +2,7 @@ import os
 import unittest
 
 from pyshacl import validate
-from rdflib import ConjunctiveGraph, Graph
+from rdflib import ConjunctiveGraph, Graph, URIRef
 
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.reader import Reader
@@ -33,7 +33,15 @@ class TestShacle(unittest.TestCase):
       g_set = GraphSet(base_iri='https://w3id.org/oc/meta/')
       g = ConjunctiveGraph()
       g.parse(source=os.path.join('oc_ocdm', 'test', 'resources', 'data_reader.json'))
-      reader.import_entities_from_graph(g_set, g, resp_agent='https://orcid.org/0000-0002-8420-0696', enable_validation=True, closed=False)
+      results = []
+      for triple in g:
+        o = triple[2]
+        o_type = 'uri' if isinstance(o, URIRef) else 'literal'
+        if o_type == 'literal' and o.datatype:
+          results.append({'s': {'type': 'uri', 'value': str(triple[0])}, 'p': {'type': 'uri', 'value': str(triple[1])}, 'o': {'type': o_type, 'value': str(triple[2]), 'datatype': str(o.datatype)}})
+        else:
+          results.append({'s': {'type': 'uri', 'value': str(triple[0])}, 'p': {'type': 'uri', 'value': str(triple[1])}, 'o': {'type': o_type, 'value': str(triple[2])}})
+      reader.import_entities_from_graph(g_set, results, resp_agent='https://orcid.org/0000-0002-8420-0696', enable_validation=True, closed=False)
       self.assertEqual(set(str(s) for s in g_set.res_to_entity.keys()), {
          'https://w3id.org/oc/meta/br/060209',
          'https://w3id.org/oc/meta/br/060182', 
@@ -49,7 +57,15 @@ class TestShacle(unittest.TestCase):
       g_set = GraphSet(base_iri='https://w3id.org/oc/meta/')
       g = ConjunctiveGraph()
       g.parse(source=os.path.join('oc_ocdm', 'test', 'resources', 'data_reader_invalid.json'))
-      reader.import_entities_from_graph(g_set, g, resp_agent='https://orcid.org/0000-0002-8420-0696', enable_validation=True, closed=False)
+      results = []
+      for triple in g:
+        o = triple[2]
+        o_type = 'uri' if isinstance(o, URIRef) else 'literal'
+        if o_type == 'literal' and o.datatype:
+          results.append({'s': {'type': 'uri', 'value': str(triple[0])}, 'p': {'type': 'uri', 'value': str(triple[1])}, 'o': {'type': o_type, 'value': str(triple[2]), 'datatype': str(o.datatype)}})
+        else:
+          results.append({'s': {'type': 'uri', 'value': str(triple[0])}, 'p': {'type': 'uri', 'value': str(triple[1])}, 'o': {'type': o_type, 'value': str(triple[2])}})
+      reader.import_entities_from_graph(g_set, results, resp_agent='https://orcid.org/0000-0002-8420-0696', enable_validation=True, closed=False)
       self.assertEqual(set(str(s) for s in g_set.res_to_entity.keys()), {
          'https://w3id.org/oc/meta/br/060182', 
          'https://w3id.org/oc/meta/ar/06034124', 

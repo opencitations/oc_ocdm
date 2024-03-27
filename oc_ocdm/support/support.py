@@ -19,10 +19,10 @@ import os
 import re
 from datetime import datetime
 from typing import TYPE_CHECKING
+from rdflib import URIRef, Graph
 
 if TYPE_CHECKING:
     from typing import Optional, List, Tuple, Match, Dict, Set
-    from rdflib import URIRef, Graph
     from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import BibliographicResource
     from oc_ocdm.graph.entities.bibliographic.responsible_agent import ResponsibleAgent
     from oc_ocdm.graph.entities.bibliographic.agent_role import AgentRole
@@ -361,6 +361,20 @@ def find_paths(res: URIRef, base_dir: str, base_iri: str, default_dir: str, dir_
 def has_supplier_prefix(res: URIRef, base_iri: str) -> bool:
     string_iri: str = str(res)
     return re.search(r"^%s[a-z][a-z]/0" % base_iri, string_iri) is not None
+
+def build_graph_from_results(results: List[Dict]) -> Graph:
+    graph = Graph()
+    for triple in results:
+        s = URIRef(triple['s']['value'])
+        p = URIRef(triple['p']['value'])
+        if triple['o']['type'] == 'uri':
+            o = URIRef(triple['o']['value'])
+        else:
+            datatype = triple['o'].get('datatype', None)
+            datatype = URIRef(datatype) if datatype is not None else None
+            o = Literal(triple['o']['value'], datatype=datatype)
+        graph.add((s, p, o))
+    return graph
 
 
 def is_dataset(res: URIRef) -> bool:

@@ -22,10 +22,11 @@ from zipfile import ZipFile
 
 import rdflib
 from rdflib import RDF, ConjunctiveGraph, Graph, URIRef
-from SPARQLWrapper import XML, SPARQLWrapper
+from SPARQLWrapper import JSON, SPARQLWrapper
 
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.support.reporter import Reporter
+from oc_ocdm.support.support import build_graph_from_results
 
 if TYPE_CHECKING:
     from typing import Any, Dict, List, Optional, Set
@@ -125,16 +126,14 @@ class Reader(object):
     @staticmethod
     def get_graph_from_subject(graph: Graph, subject: URIRef) -> Graph:
         g: Graph = Graph(identifier=graph.identifier)
-        for p, o in graph.predicate_objects(subject):
-            if isinstance(o, rdflib.term.Literal):
-                o = rdflib.term.Literal(lexical_or_value=str(o), datatype=None)
+        for p, o in graph.predicate_objects(subject, unique=True):
             g.add((subject, p, o))
         return g
 
     @staticmethod
     def _extract_subjects(graph: Graph) -> Set[URIRef]:
         subjects: Set[URIRef] = set()
-        for s in graph.subjects():
+        for s in graph.subjects(unique=True):
             subjects.add(s)
         return subjects
 
@@ -166,8 +165,9 @@ class Reader(object):
         return valid_graph
 
     @staticmethod
-    def import_entities_from_graph(g_set: GraphSet, graph: Graph, resp_agent: str,
+    def import_entities_from_graph(g_set: GraphSet, results: List[Dict], resp_agent: str,
                                    enable_validation: bool = False, closed: bool = False) -> List[GraphEntity]:
+        graph = build_graph_from_results(results)
         if enable_validation:
             reader = Reader()
             graph = reader.graph_validation(graph, closed)
@@ -226,12 +226,12 @@ class Reader(object):
     def import_entity_from_triplestore(g_set: GraphSet, ts_url: str, res: URIRef, resp_agent: str,
                                        enable_validation: bool = False) -> GraphEntity:
         sparql: SPARQLWrapper = SPARQLWrapper(ts_url)
-        query: str = f"CONSTRUCT {{<{res}> ?p ?o}} WHERE {{<{res}> ?p ?o}}"
+        query: str = f"SELECT ?s ?p ?o WHERE {{BIND (<{res}> AS ?s). ?s ?p ?o.}}"
         sparql.setQuery(query)
         sparql.setMethod('GET')
-        sparql.setReturnFormat(XML)
-        result: ConjunctiveGraph = sparql.queryAndConvert()
-        if result is not None:
+        sparql.setReturnFormat(JSON)
+        result: ConjunctiveGraph = sparql.queryAndConvert()['results']['bindings']
+        if result:
             imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(g_set, result,
                                                                                      resp_agent, enable_validation)
             if len(imported_entities) <= 0:
