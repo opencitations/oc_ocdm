@@ -27,7 +27,6 @@ from SPARQLWrapper import JSON, SPARQLWrapper
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import build_graph_from_results
-
 if TYPE_CHECKING:
     from typing import Any, Dict, List, Optional, Set
     from oc_ocdm.graph.graph_set import GraphSet

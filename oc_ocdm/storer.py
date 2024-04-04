@@ -31,6 +31,7 @@ from oc_ocdm.reader import Reader
 from oc_ocdm.support.query_utils import get_update_query
 from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import find_paths
+from filelock import FileLock
 
 if TYPE_CHECKING:
     from typing import Any, Dict, List, Optional, Set, Tuple
@@ -169,13 +170,15 @@ class Storer(object):
             stored_g = None
             # Here we try to obtain a reference to the currently stored graph
             output_filepath = relevant_path.replace(os.path.splitext(relevant_path)[1], ".zip") if self.zip_output else relevant_path
-            if os.path.exists(output_filepath):
-                stored_g = Reader(context_map=self.context_map).load(output_filepath)
-            if stored_g is None:
-                stored_g = ConjunctiveGraph()
-            for entity_in_path in entities_in_path:
-                self.store(entity_in_path, stored_g, relevant_path, context_path, False)
-            self._store_in_file(stored_g, relevant_path, context_path)
+            lock = FileLock(f"{output_filepath}.lock")
+            with lock:
+                if os.path.exists(output_filepath):
+                    stored_g = Reader(context_map=self.context_map).load(output_filepath)
+                if stored_g is None:
+                    stored_g = ConjunctiveGraph()
+                for entity_in_path in entities_in_path:
+                    self.store(entity_in_path, stored_g, relevant_path, context_path, False)
+                self._store_in_file(stored_g, relevant_path, context_path)
 
         return list(relevant_paths.keys())
 
