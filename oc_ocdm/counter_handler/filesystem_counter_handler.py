@@ -86,6 +86,39 @@ class FilesystemCounterHandler(CounterHandler):
             file_path: str = self._get_info_path(entity_short_name, supplier_prefix)
         self._set_number(new_value, file_path, identifier)
 
+    def set_counters_batch(self, updates: Dict[Tuple[str, str], Dict[int, int]], supplier_prefix: str) -> None:
+        """
+        Updates counters in batch for multiple files.
+        `updates` is a dictionary where the key is a tuple (entity_short_name, prov_short_name)
+        and the value is a dictionary of line numbers to new counter values.
+        """
+        for (entity_short_name, prov_short_name), file_updates in updates.items():
+            file_path = self._get_prov_path(entity_short_name, supplier_prefix) if prov_short_name == "se" else self._get_info_path(entity_short_name, supplier_prefix)
+            self._set_numbers(file_path, file_updates)
+
+    def _set_numbers(self, file_path: str, updates: Dict[int, int]) -> None:
+        """
+        Apply multiple counter updates to a single file.
+        `updates` is a dictionary where the key is the line number (identifier)
+        and the value is the new counter value.
+        """
+        self.__initialize_file_if_not_existing(file_path)
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+        max_line_number = max(updates.keys())
+
+        # Ensure the lines list is long enough
+        while len(lines) < max_line_number + 1:
+            lines.append("  \n")  # Default counter value
+
+        # Apply updates
+        for line_number, new_value in updates.items():
+            lines[line_number-1] = str(new_value).rstrip() + " \n"
+
+        # Write updated lines back to file
+        with open(file_path, 'w') as file:
+            file.writelines(lines)
+
     def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
         """
         It allows to read the counter value of graph and provenance entities.
