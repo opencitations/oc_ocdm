@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from datetime import datetime
 from typing import TYPE_CHECKING
 from zipfile import ZIP_DEFLATED, ZipFile
@@ -311,32 +312,46 @@ class Storer(object):
         return self._query(query_string, triplestore_url)
 
     def _query(self, query_string: str, triplestore_url: str, base_dir: str = None,
-               added_statements: int = 0, removed_statements: int = 0) -> bool:
+            added_statements: int = 0, removed_statements: int = 0) -> bool:
         if query_string != "":
-            try:
-                sparql: SPARQLWrapper = SPARQLWrapper(triplestore_url)
-                sparql.setQuery(query_string)
-                sparql.setMethod('POST')
+            attempt = 0
+            max_attempts = 3
+            wait_time = 5  # Initial wait time in seconds
 
-                sparql.query()
+            while attempt < max_attempts:
+                try:
+                    sparql: SPARQLWrapper = SPARQLWrapper(triplestore_url)
+                    sparql.setQuery(query_string)
+                    sparql.setMethod('POST')
 
-                self.repok.add_sentence(
-                    f"Triplestore updated with {added_statements} added statements and "
-                    f"with {removed_statements} removed statements.")
+                    sparql.query()
 
-                return True
+                    self.repok.add_sentence(
+                        f"Triplestore updated with {added_statements} added statements and "
+                        f"with {removed_statements} removed statements.")
 
-            except Exception as e:
-                self.reperr.add_sentence("[3] "
-                                         "Graph was not loaded into the "
-                                         f"triplestore due to communication problems: {e}")
-                if base_dir is not None:
-                    tp_err_dir: str = base_dir + os.sep + "tp_err"
-                    if not os.path.exists(tp_err_dir):
-                        os.makedirs(tp_err_dir)
-                    cur_file_err: str = tp_err_dir + os.sep + \
-                        datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f_not_uploaded.txt')
-                    with open(cur_file_err, 'wt', encoding='utf-8') as f:
-                        f.write(query_string)
+                    return True
+
+                except Exception as e:
+                    attempt += 1
+                    self.reperr.add_sentence("[3] "
+                                            f"Attempt {attempt} failed. Graph was not loaded into the "
+                                            f"triplestore due to communication problems: {e}")
+                    if attempt < max_attempts:
+                        self.reperr.add_sentence(f"Retrying in {wait_time} seconds...")
+                        time.sleep(wait_time)
+                        wait_time *= 2  # Double the wait time for the next attempt
+
+                    if base_dir is not None and attempt == max_attempts:
+                        self.reperr.add_sentence("[3] "
+                                                "Graph was not loaded into the "
+                                                f"triplestore due to communication problems: {e}")
+                        tp_err_dir: str = base_dir + os.sep + "tp_err"
+                        if not os.path.exists(tp_err_dir):
+                            os.makedirs(tp_err_dir)
+                        cur_file_err: str = tp_err_dir + os.sep + \
+                            datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f_not_uploaded.txt')
+                        with open(cur_file_err, 'wt', encoding='utf-8') as f:
+                            f.write(query_string)
 
         return False
