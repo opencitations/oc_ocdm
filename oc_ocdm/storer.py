@@ -22,7 +22,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from rdflib import ConjunctiveGraph
+from rdflib import ConjunctiveGraph, URIRef
 from SPARQLWrapper import SPARQLWrapper
 
 from oc_ocdm.graph.graph_entity import GraphEntity
@@ -36,8 +36,6 @@ from filelock import FileLock
 
 if TYPE_CHECKING:
     from typing import Any, Dict, List, Optional, Set, Tuple
-
-    from rdflib import URIRef
 
     from oc_ocdm.abstract_entity import AbstractEntity
     from oc_ocdm.abstract_set import AbstractSet
@@ -158,7 +156,7 @@ class Storer(object):
         relevant_paths: Dict[str, list] = dict()
         for entity in self.a_set.res_to_entity.values():
             is_relevant = True
-            if self.modified_entities is not None and entity.res not in self.modified_entities:
+            if self.modified_entities is not None and URIRef(entity.res.split('/prov/se/')[0]) not in self.modified_entities:
                 is_relevant = False
             if is_relevant:
                 cur_dir_path, cur_file_path = self._dir_and_file_paths(entity.res, base_dir, base_iri, process_id)
