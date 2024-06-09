@@ -253,7 +253,7 @@ class Storer(object):
         else:
             return None
 
-    def upload_all(self, triplestore_url: str, base_dir: str = None, batch_size: int = 10) -> bool:
+    def upload_all(self, triplestore_url: str, base_dir: str = None, batch_size: int = 10, save_queries: bool = False) -> bool:
         self.repok.new_article()
         self.reperr.new_article()
 
@@ -265,6 +265,10 @@ class Storer(object):
         removed_statements: int = 0
         skipped_queries: int = 0
         result: bool = True
+
+        if save_queries:
+            to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
+            os.makedirs(to_be_uploaded_dir, exist_ok=True)
 
         for idx, entity in enumerate(self.a_set.res_to_entity.values()):
             update_query, n_added, n_removed = get_update_query(entity, entity_type=self._class_to_entity_type(entity))
@@ -280,7 +284,10 @@ class Storer(object):
                     removed_statements = n_removed
                 elif index % batch_size == 0:
                     # batch_size-multiple query
-                    result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
+                    if save_queries:
+                        self._save_query(query_string, to_be_uploaded_dir, added_statements, removed_statements)
+                    else:
+                        result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
                     query_string = update_query
                     added_statements = n_added
                     removed_statements = n_removed
@@ -291,10 +298,20 @@ class Storer(object):
                     removed_statements += n_removed
 
         if query_string != "":
-            result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
+            if save_queries:
+                self._save_query(query_string, to_be_uploaded_dir, added_statements, removed_statements)
+            else:
+                result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
 
         return result
 
+    def _save_query(self, query_string: str, directory: str, added_statements: int, removed_statements: int) -> None:
+        timestamp = datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f')
+        file_name = f"{timestamp}_add{added_statements}_remove{removed_statements}.sparql"
+        file_path = os.path.join(directory, file_name)
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(query_string)
+            
     def upload(self, entity: AbstractEntity, triplestore_url: str, base_dir: str = None) -> bool:
         self.repok.new_article()
         self.reperr.new_article()

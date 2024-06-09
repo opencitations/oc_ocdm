@@ -16,7 +16,6 @@
 import json
 import os
 import unittest
-from platform import system
 from zipfile import ZipFile
 from multiprocessing import Pool
 from SPARQLWrapper import POST, SPARQLWrapper
@@ -181,6 +180,30 @@ class TestStorer(unittest.TestCase):
         entities_to_process = [('http://test/br/0601',), ('http://test/br/0602',), ('http://test/br/0603',)]
         with Pool(processes=3) as pool:
             pool.starmap(process_entity, entities_to_process)
+
+    def test_store_graphs_save_queries(self):
+        base_dir = os.path.join("oc_ocdm", "test", "storer", "data", "rdf_save_queries") + os.sep
+        storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+        self.prov_set.generate_provenance()
+        prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+        storer.store_all(base_dir, self.base_iri)
+        prov_storer.store_all(base_dir, self.base_iri)
+        
+        to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
+        storer.upload_all(self.ts, base_dir, save_queries=True)
+        
+        # Controlla che la directory to_be_uploaded esista
+        self.assertTrue(os.path.exists(to_be_uploaded_dir))
+        
+        # Controlla che ci sia almeno un file nella directory to_be_uploaded
+        saved_queries = os.listdir(to_be_uploaded_dir)
+        self.assertGreater(len(saved_queries), 0)
+        
+        # Controlla il contenuto di uno dei file salvati
+        query_file = os.path.join(to_be_uploaded_dir, saved_queries[0])
+        with open(query_file, 'r', encoding='utf-8') as f:
+            query_content = f.read()
+            self.assertIn("INSERT DATA", query_content)  # Verifica che ci sia una query di inserimento
 
 def process_entity(entity):
     base_iri = "http://test/"
