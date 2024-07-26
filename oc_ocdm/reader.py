@@ -15,12 +15,12 @@
 # SOFTWARE.
 from __future__ import annotations
 
+import time
 import json
 import os
 from typing import TYPE_CHECKING
 from zipfile import ZipFile
 
-import rdflib
 from rdflib import RDF, ConjunctiveGraph, Graph, URIRef
 from SPARQLWrapper import JSON, SPARQLWrapper
 
@@ -224,16 +224,35 @@ class Reader(object):
     @staticmethod
     def import_entity_from_triplestore(g_set: GraphSet, ts_url: str, res: URIRef, resp_agent: str,
                                        enable_validation: bool = False) -> GraphEntity:
-        sparql: SPARQLWrapper = SPARQLWrapper(ts_url)
         query: str = f"SELECT ?s ?p ?o WHERE {{BIND (<{res}> AS ?s). ?s ?p ?o.}}"
-        sparql.setQuery(query)
-        sparql.setMethod('GET')
-        sparql.setReturnFormat(JSON)
-        result: ConjunctiveGraph = sparql.queryAndConvert()['results']['bindings']
-        if result:
-            imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(g_set, result,
-                                                                                     resp_agent, enable_validation)
-            if len(imported_entities) <= 0:
-                raise ValueError("The requested entity was not found or was not recognized as a proper OCDM entity.")
-            else:
-                return imported_entities[0]
+        attempt = 0
+        max_attempts = 3
+        wait_time = 5  # Initial wait time in seconds
+
+        while attempt < max_attempts:
+            try:
+                sparql: SPARQLWrapper = SPARQLWrapper(ts_url)
+                sparql.setQuery(query)
+                sparql.setMethod('GET')
+                sparql.setReturnFormat(JSON)
+                result = sparql.queryAndConvert()['results']['bindings']
+                
+                if result:
+                    imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(g_set, result, resp_agent, enable_validation)
+                    if len(imported_entities) <= 0:
+                        raise ValueError("The requested entity was not found or was not recognized as a proper OCDM entity.")
+                    else:
+                        return imported_entities[0]
+
+            except Exception as e:
+                attempt += 1
+                if attempt < max_attempts:
+                    print(f"[3] Attempt {attempt} failed. Could not import entity due to communication problems: {e}")
+                    print(f"Retrying in {wait_time} seconds...")
+                    time.sleep(wait_time)
+                    wait_time *= 2  # Double the wait time for the next attempt
+                else:
+                    print(f"[3] All {max_attempts} attempts failed. Could not import entity due to communication problems: {e}")
+                    raise
+
+        raise Exception("Max attempts reached. Failed to import entity from triplestore.")
