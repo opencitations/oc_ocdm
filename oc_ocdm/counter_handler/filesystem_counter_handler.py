@@ -109,11 +109,11 @@ class FilesystemCounterHandler(CounterHandler):
 
         # Ensure the lines list is long enough
         while len(lines) < max_line_number + 1:
-            lines.append("  \n")  # Default counter value
+            lines.append("\n")  # Default counter value
 
         # Apply updates
         for line_number, new_value in updates.items():
-            lines[line_number-1] = str(new_value).rstrip() + " \n"
+            lines[line_number-1] = str(new_value).rstrip() + "\n"
 
         # Write updated lines back to file
         with open(file_path, 'w') as file:
@@ -139,7 +139,7 @@ class FilesystemCounterHandler(CounterHandler):
             file_path: str = self._get_prov_path(entity_short_name, supplier_prefix)
         else:
             file_path: str = self._get_info_path(entity_short_name, supplier_prefix)
-        return self._read_number(file_path, identifier)[0]
+        return self._read_number(file_path, identifier)
 
     def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
         """
@@ -181,31 +181,33 @@ class FilesystemCounterHandler(CounterHandler):
             os.makedirs(os.path.dirname(file_path))
 
         if not os.path.isfile(file_path):
-            with open(file_path, 'wb') as file:
-                first_line: str = self._trailing_char * (self._initial_line_len - 1) + '\n'
-                file.write(first_line.encode('ascii'))
+            with open(file_path, 'w') as file:
+                file.write("\n")
 
-    def _read_number(self, file_path: str, line_number: int) -> Tuple[int, int]:
+    def _read_number(self, file_path: str, line_number: int) -> int:
         if line_number <= 0:
             raise ValueError("line_number must be a positive non-zero integer number!")
 
         self.__initialize_file_if_not_existing(file_path)
 
         cur_number: int = 0
-        cur_line_len: int = 0
         try:
-            with open(file_path, 'rb') as file:
-                cur_line_len = self._get_line_len(file)
-                line_offset = (line_number - 1) * cur_line_len
-                file.seek(line_offset)
-                line = file.readline(cur_line_len).decode('ascii')
-                cur_number = int(line.rstrip(self._trailing_char + '\n'))
-        except ValueError:
+            with open(file_path, 'r') as file:
+                for i, line in enumerate(file, 1):
+                    if i == line_number:
+                        line = line.strip()
+                        if line:
+                            cur_number = int(line)
+                        break
+                else:
+                    print(file_path)
+                    print(f"WARNING: Line {line_number} not found in file")
+        except ValueError as e:
+            print(f"ValueError: {e}")
             cur_number = 0
         except Exception as e:
-            print(e)
-
-        return cur_number, cur_line_len
+            print(f"Unexpected error: {e}")
+        return cur_number
 
     def _add_number(self, file_path: str, line_number: int = 1) -> int:
         if line_number <= 0:
@@ -213,22 +215,10 @@ class FilesystemCounterHandler(CounterHandler):
 
         self.__initialize_file_if_not_existing(file_path)
 
-        cur_number, cur_line_len = self._read_number(file_path, line_number)
-        cur_number += 1
-
-        cur_number_len: int = len(str(cur_number)) + 1
-        if cur_number_len > cur_line_len:
-            self._increase_line_len(file_path, new_length=cur_number_len)
-            cur_line_len = cur_number_len
-
-        with open(file_path, 'r+b') as file:
-            line_offset: int = (line_number - 1) * cur_line_len
-            file.seek(line_offset)
-            line: str = str(cur_number).ljust(cur_line_len - 1, self._trailing_char) + '\n'
-            file.write(line.encode('ascii'))
-            file.seek(-cur_line_len, os.SEEK_CUR)
-            self._fix_previous_lines(file, cur_line_len)
-        return cur_number
+        current_value = self._read_number(file_path, line_number)
+        new_value = current_value + 1
+        self._set_number(new_value, file_path, line_number)
+        return new_value
 
     def _set_number(self, new_value: int, file_path: str, line_number: int = 1) -> None:
         if new_value < 0:
@@ -239,83 +229,21 @@ class FilesystemCounterHandler(CounterHandler):
 
         self.__initialize_file_if_not_existing(file_path)
 
-        cur_line_len = self._read_number(file_path, line_number)[1]
+        lines = []
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
 
-        cur_number_len: int = len(str(new_value)) + 1
-        if cur_number_len > cur_line_len:
-            self._increase_line_len(file_path, new_length=cur_number_len)
-            cur_line_len = cur_number_len
+        # Ensure the file has enough lines
+        while len(lines) < line_number:
+            lines.append("\n")
 
-        with open(file_path, 'r+b') as file:
-            line_offset: int = (line_number - 1) * cur_line_len
-            file.seek(line_offset)
-            line: str = str(new_value).ljust(cur_line_len - 1, self._trailing_char) + '\n'
-            file.write(line.encode('ascii'))
-            file.seek(-cur_line_len, os.SEEK_CUR)
-            self._fix_previous_lines(file, cur_line_len)
+        # Update the specific line
+        lines[line_number - 1] = f"{new_value}\n"
 
-    @staticmethod
-    def _get_line_len(file: BinaryIO) -> int:
-        cur_char: str = file.read(1).decode("ascii")
-        count: int = 1
-        while cur_char is not None and len(cur_char) == 1 and cur_char != "\0":
-            cur_char = file.read(1).decode("ascii")
-            count += 1
-            if cur_char == "\n":
-                break
+        # Write back to the file
+        with open(file_path, 'w') as file:
+            file.writelines(lines)
 
-        # Undo I/O pointer updates
-        file.seek(0)
-
-        if cur_char is None:
-            raise EOFError("Reached end-of-file without encountering a line separator!")
-        elif cur_char == "\0":
-            raise ValueError("Encountered a NULL byte!")
-        else:
-            return count
-
-    def _increase_line_len(self, file_path: str, new_length: int = 0) -> None:
-        if new_length <= 0:
-            raise ValueError("new_length must be a positive non-zero integer number!")
-
-        with open(file_path, 'rb') as cur_file:
-            if self._get_line_len(cur_file) >= new_length:
-                raise ValueError("Current line length is greater than new_length!")
-
-        fh, abs_path = mkstemp()
-        with os.fdopen(fh, 'wb') as new_file:
-            with open(file_path, 'rt', encoding='ascii') as old_file:
-                for line in old_file:
-                    number: str = line.rstrip(self._trailing_char + '\n')
-                    new_line: str = str(number).ljust(new_length - 1, self._trailing_char) + '\n'
-                    new_file.write(new_line.encode('ascii'))
-
-        # Copy the file permissions from the old file to the new file
-        copymode(file_path, abs_path)
-
-        # Replace original file
-        os.remove(file_path)
-        move(abs_path, file_path)
-
-    @staticmethod
-    def _is_a_valid_line(buf: bytes) -> bool:
-        string: str = buf.decode("ascii")
-        return (string[-1] == "\n") and ("\0" not in string[:-1])
-
-    def _fix_previous_lines(self, file: BinaryIO, line_len: int) -> None:
-        if line_len < self._initial_line_len:
-            raise ValueError("line_len should be at least %d!" % self._initial_line_len)
-
-        while file.tell() >= line_len:
-            file.seek(-line_len, os.SEEK_CUR)
-            buf: bytes = file.read(line_len)
-            if self._is_a_valid_line(buf) or len(buf) < line_len:
-                break
-            else:
-                file.seek(-line_len, os.SEEK_CUR)
-                fixed_line: str = (self._trailing_char * (line_len - 1)) + "\n"
-                file.write(fixed_line.encode("ascii"))
-                file.seek(-line_len, os.SEEK_CUR)
 
     def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str) -> None:
         """
@@ -361,7 +289,7 @@ class FilesystemCounterHandler(CounterHandler):
             raise ValueError("entity_short_name is not a known metadata short name!")
 
         file_path: str = self._get_metadata_path(entity_short_name, dataset_name)
-        return self._read_number(file_path, 1)[0]
+        return self._read_number(file_path, 1)
 
     def increment_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
         """

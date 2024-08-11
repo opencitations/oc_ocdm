@@ -164,9 +164,9 @@ class Reader(object):
         return valid_graph
 
     @staticmethod
-    def import_entities_from_graph(g_set: GraphSet, results: List[Dict], resp_agent: str,
+    def import_entities_from_graph(g_set: GraphSet, results: List[Dict]|Graph, resp_agent: str,
                                    enable_validation: bool = False, closed: bool = False) -> List[GraphEntity]:
-        graph = build_graph_from_results(results)
+        graph = build_graph_from_results(results) if isinstance(results, list) else results
         if enable_validation:
             reader = Reader()
             graph = reader.graph_validation(graph, closed)
