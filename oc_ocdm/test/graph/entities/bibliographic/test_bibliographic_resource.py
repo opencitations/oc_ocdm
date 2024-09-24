@@ -343,6 +343,16 @@ class TestBibliographicResource(unittest.TestCase):
         triple = self.br1.res, RDF.type, GraphEntity.iri_expression
         self.assertIn(triple, self.br1.g)
 
+    def test_assign_more_types_br(self):
+        result1 = self.br1.create_series()
+        self.assertIsNone(result1)
+        result2 = self.br1.create_preprint()
+        self.assertIsNone(result2)
+
+        triple1 = self.br1.res, RDF.type, GraphEntity.iri_series
+        triple2 = self.br1.res, RDF.type, GraphEntity.iri_preprint
+        self.assertIn(triple2, self.br1.g) and not self.assertIn(triple1, self.br1.g)
+
 
 if __name__ == '__main__':
     unittest.main()

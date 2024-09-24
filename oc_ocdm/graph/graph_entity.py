@@ -84,6 +84,13 @@ class GraphEntity(AbstractEntity):
     iri_paragraph: ClassVar[URIRef] = DOCO.Paragraph
     iri_part: ClassVar[URIRef] = DOCO.Part
     iri_section: ClassVar[URIRef] = DOCO.Section
+    iri_introduction: ClassVar[URIRef] = DEO.Introduction
+    iri_methods: ClassVar[URIRef] = DEO.Methods
+    iri_materials: ClassVar[URIRef] = DEO.Materials
+    iri_related_work: ClassVar[URIRef] = DEO.RelatedWork
+    iri_results: ClassVar[URIRef] = DEO.Results
+    iri_discussion: ClassVar[URIRef] = DEO.Discussion
+    iri_conclusion: ClassVar[URIRef] = DEO.Conclusion
     iri_section_title: ClassVar[URIRef] = DOCO.SectionTitle
     iri_sentence: ClassVar[URIRef] = DOCO.Sentence
     iri_table: ClassVar[URIRef] = DOCO.Table
