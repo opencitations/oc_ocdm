@@ -44,13 +44,13 @@ def accepts_only(param_type: str):
     def accepts_only_decorator(function: Callable):
 
         @wraps(function)
-        def accepts_only_wrapper(self, param: Any = None):
+        def accepts_only_wrapper(self, param: Any = None, **kwargs):
             lowercase_type = param_type.lower()
             if param is None or \
-                    (lowercase_type == 'literal' and type(param) == str) or \
-                    (lowercase_type == 'thing' and type(param) == URIRef) or \
+                    (lowercase_type == 'literal' and isinstance(param, str)) or \
+                    (lowercase_type == 'thing' and isinstance(param, URIRef)) or \
                     (isinstance(param, AbstractEntity) and param.short_name == lowercase_type):
-                function(self, param)
+                return function(self, param, **kwargs)
             else:
                 raise TypeError('[%s.%s] Expected argument type: %s. Provided argument type: %s.' %
                                 (self.__class__.__name__, function.__name__, lowercase_type, type(param).__name__))

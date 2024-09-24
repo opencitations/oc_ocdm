@@ -36,26 +36,28 @@ class BibliographicResource(BibliographicEntity):
        cited by another published bibliographic resource."""
 
     @accepts_only('br')
-    def merge(self, other: BibliographicResource) -> None:
+    def merge(self, other: BibliographicResource, prefer_self: bool = False) -> None:
         """
-        The merge operation allows combining two ``BibliographicResource`` entities into a single one,
+        The merge operation allows combining two `BibliographicResource` entities into a single one,
         by marking the second entity as to be deleted while also copying its data into the current
-        ``BibliographicResource``. Moreover, every triple from the containing ``GraphSet`` referring to the second
+        `BibliographicResource`. Moreover, every triple from the containing `GraphSet` referring to the second
         entity gets "redirected" to the current entity: **every other reference contained inside a
         different source (e.g. a triplestore) must be manually handled by the user!**
 
         In case of functional properties, values from the current entity get overwritten
         by those coming from the second entity while, in all other cases, values from the
         second entity are simply appended to those of the current entity. In this context,
-        ``rdfs:label`` is considered as a functional property, while ``rdf:type`` is not.
+        `rdfs:label` is considered as a functional property, while `rdf:type` is not.
 
         :param other: The entity which will be marked as to be deleted and whose properties will
-         be merged into the current entity.
+        be merged into the current entity.
         :type other: BibliographicResource
+        :param prefer_self: If True, prefer values from the current entity for non-functional properties
+        :type prefer_self: bool
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        super(BibliographicResource, self).merge(other)
+        super(BibliographicResource, self).merge(other, prefer_self=prefer_self)
 
         title: Optional[str] = other.get_title()
         if title is not None:
@@ -70,16 +72,18 @@ class BibliographicResource(BibliographicEntity):
             self.is_part_of(container)
 
         citations_list: List[BibliographicResource] = other.get_citations()
-        for cur_citation in citations_list:
-            self.has_citation(cur_citation)
+        if not (prefer_self and self.get_citations()):
+            for cur_citation in citations_list:
+                self.has_citation(cur_citation)
 
         pub_date: Optional[str] = other.get_pub_date()
         if pub_date is not None:
             self.has_pub_date(pub_date)
 
         re_list: List[ResourceEmbodiment] = other.get_formats()
-        for cur_format in re_list:
-            self.has_format(cur_format)
+        if not (prefer_self and self.get_formats()):
+            for cur_format in re_list:
+                self.has_format(cur_format)
 
         number: Optional[str] = other.get_number()
         if number is not None:
@@ -90,21 +94,25 @@ class BibliographicResource(BibliographicEntity):
             self.has_edition(edition)
 
         be_list: List[BibliographicReference] = other.get_contained_in_reference_lists()
-        for reference in be_list:
-            self.contains_in_reference_list(reference)
+        if not (prefer_self and self.get_contained_in_reference_lists()):
+            for reference in be_list:
+                self.contains_in_reference_list(reference)
 
         de_list: List[DiscourseElement] = other.get_contained_discourse_elements()
-        for discourse_element in de_list:
-            self.contains_discourse_element(discourse_element)
+        if not (prefer_self and self.get_contained_discourse_elements()):
+            for discourse_element in de_list:
+                self.contains_discourse_element(discourse_element)
 
         ar_list: List[AgentRole] = other.get_contributors()
-        for agent_role in ar_list:
-            self.has_contributor(agent_role)
+        if not (prefer_self and self.get_contributors()):
+            for agent_role in ar_list:
+                self.has_contributor(agent_role)
 
         related_doc_list: List[URIRef] = other.get_related_documents()
-        for doc in related_doc_list:
-            self.has_related_document(doc)
-
+        if not (prefer_self and self.get_related_documents()):
+            for doc in related_doc_list:
+                self.has_related_document(doc)
+                
     # HAS TITLE
     def get_title(self) -> Optional[str]:
         """

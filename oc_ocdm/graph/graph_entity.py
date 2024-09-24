@@ -261,7 +261,7 @@ class GraphEntity(AbstractEntity):
 
         self._to_be_deleted = True
 
-    def merge(self, other: GraphEntity) -> None:
+    def merge(self, other: GraphEntity, prefer_self: bool = False) -> None:
         """
         **WARNING:** ``GraphEntity`` **is an abstract class that cannot be instantiated at runtime.
         As such, it's only possible to execute this method on entities generated from**

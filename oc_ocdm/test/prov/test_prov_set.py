@@ -49,7 +49,8 @@ class TestProvSet(unittest.TestCase):
         with self.subTest('Creation [Merged entity]'):
             a = self.graph_set.add_br(self.resp_agent)
             b = self.graph_set.add_br(self.resp_agent)
-            a.merge(b)
+
+            a.merge(b, prefer_self=True)
 
             result = self.prov_set.generate_provenance(cur_time)
 

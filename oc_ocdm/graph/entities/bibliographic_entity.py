@@ -29,7 +29,7 @@ from oc_ocdm.graph.graph_entity import GraphEntity
 class BibliographicEntity(GraphEntity):
     """The base class for each bibliographic entity of the OpenCitations DataModel (OCDM)."""
 
-    def merge(self, other: BibliographicEntity) -> None:
+    def merge(self, other: BibliographicEntity, prefer_self: bool = False) -> None:
         """
         **WARNING:** ``BibliographicEntity`` **is an abstract class that cannot be instantiated at runtime.
         As such, it's only possible to execute this method on entities generated from**
@@ -41,7 +41,7 @@ class BibliographicEntity(GraphEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        super(BibliographicEntity, self).merge(other)
+        super(BibliographicEntity, self).merge(other, prefer_self=prefer_self)
 
         id_list: List[Identifier] = other.get_identifiers()
         for cur_id in id_list:

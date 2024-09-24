@@ -201,7 +201,6 @@ class FilesystemCounterHandler(CounterHandler):
                         break
                 else:
                     print(file_path)
-                    print(f"WARNING: Line {line_number} not found in file")
         except ValueError as e:
             print(f"ValueError: {e}")
             cur_number = 0
