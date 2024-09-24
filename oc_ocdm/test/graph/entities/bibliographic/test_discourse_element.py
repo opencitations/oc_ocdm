@@ -134,6 +134,26 @@ class TestDiscourseElement(unittest.TestCase):
         triple = self.de1.res, RDF.type, GraphEntity.iri_caption
         self.assertIn(triple, self.de1.g)
 
+    def test_assign_more_structural_types_de(self):
+        result1 = self.de1.create_table()
+        self.assertIsNone(result1)
+        result2 = self.de1.create_footnote()
+        self.assertIsNone(result2)
+
+        triple1 = self.de1.res, RDF.type, GraphEntity.iri_table
+        triple2 = self.de1.res, RDF.type, GraphEntity.iri_footnote
+        self.assertIn(triple2, self.de1.g) and not self.assertIn(triple1, self.de1.g)
+
+    def test_assign_more_rhetorical_types_de(self):
+        result1 = self.de1.create_materials()
+        self.assertIsNone(result1)
+        result2 = self.de1.create_methods()
+        self.assertIsNone(result2)
+
+        triple1 = self.de1.res, RDF.type, GraphEntity.iri_materials
+        triple2 = self.de1.res, RDF.type, GraphEntity.iri_methods
+        self.assertIn(triple2, self.de1.g) and self.assertIn(triple1, self.de1.g)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -26,6 +26,7 @@ if TYPE_CHECKING:
     from oc_ocdm.graph.entities.bibliographic.pointer_list import PointerList
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
+from oc_ocdm.support.support import create_type
 
 
 class DiscourseElement(BibliographicEntity):
@@ -512,3 +513,68 @@ class DiscourseElement(BibliographicEntity):
         :return: None
         """
         self._create_type(GraphEntity.iri_caption)
+
+
+    def create_introduction(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``deo:Introduction``.
+
+        **WARNING: any existing rhetorical type WILL NOT be overwritten.**
+        """
+
+        create_type(self.g, self.res, GraphEntity.iri_introduction)
+
+    def create_methods(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``deo:Methods``.
+
+        **WARNING: any existing rhetorical type WILL NOT be overwritten.**
+        """
+        create_type(self.g, self.res, GraphEntity.iri_methods)
+
+    def create_materials(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``deo:Materials``.
+
+        **WARNING: any existing rhetorical type WILL NOT be overwritten.**
+        """
+        create_type(self.g, self.res, GraphEntity.iri_materials)
+
+    def create_related_work(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``deo:RelatedWork``.
+
+        **WARNING: any existing rhetorical type WILL NOT be overwritten.**
+        """
+        create_type(self.g, self.res, GraphEntity.iri_related_work)
+
+    def create_results(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``deo:Results``.
+
+        **WARNING: any existing rhetorical type WILL NOT be overwritten.**
+        """
+        create_type(self.g, self.res, GraphEntity.iri_results)
+
+    def create_discussion(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``deo:Discussion``.
+
+        **WARNING: any existing rhetorical type WILL NOT be overwritten.**
+        """
+        create_type(self.g, self.res, GraphEntity.iri_discussion)
+
+    def create_conclusion(self) -> None:
+        """
+        Setter method corresponding to the ``rdf:type`` RDF predicate.
+        It implicitly sets the object value ``deo:Conclusion``.
+
+        **WARNING: any existing rhetorical type WILL NOT be overwritten.**
+        """
+        create_type(self.g, self.res, GraphEntity.iri_conclusion)
