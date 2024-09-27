@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "oc_ocdm"
-version = "8.4.0"
+version = "8.4.1"
 description = "Object mapping library for manipulating RDF graphs that are compliant with the OpenCitations datamodel."
 authors = [
     "Silvio Peroni <essepuntato@gmail.com>",
@@ -36,7 +36,7 @@ SPARQLWrapper = "2.0.0"
 filelock = "^3.6.0"
 pyshacl = "0.23.0"
 setuptools = "^68.2.2"
-redis = "^5.0.8"
+redis = "^4.5.5"
 
 [tool.poetry.dev-dependencies]
 Sphinx = "^4.4.0"
