@@ -14,9 +14,11 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 
-from typing import Optional, Union
+from typing import Dict, Optional, Tuple, Union
 
 import redis
+from tqdm import tqdm
+
 from oc_ocdm.counter_handler.counter_handler import CounterHandler
 
 
@@ -186,3 +188,37 @@ class RedisCounterHandler(CounterHandler):
             key_parts.append(str(identifier))
             key_parts.append(prov_short_name)
         return ':'.join(filter(None, key_parts))
+
+    def batch_update_counters(self, updates: Dict[str, Dict[Tuple[str, str], Dict[int, int]]]) -> None:
+        """
+        Perform batch updates of counters, processing 1 million at a time with a progress bar.
+
+        :param updates: A dictionary structure containing the updates.
+            The structure is as follows:
+            {
+                supplier_prefix: {
+                    (short_name, prov_short_name): {
+                        identifier: counter_value
+                    }
+                }
+            }
+        :type updates: Dict[str, Dict[Tuple[str, str], Dict[int, int]]]
+        """
+        all_updates = []
+        for supplier_prefix, value in updates.items():
+            for (short_name, prov_short_name), counters in value.items():
+                for identifier, counter_value in counters.items():
+                    key = self._get_key(short_name, prov_short_name, identifier, supplier_prefix)
+                    all_updates.append((key, counter_value))
+        
+        total_updates = len(all_updates)
+        batch_size = 1_000_000
+
+        with tqdm(total=total_updates, desc="Updating counters") as pbar:
+            for i in range(0, total_updates, batch_size):
+                batch = all_updates[i:i+batch_size]
+                pipeline = self.redis.pipeline()
+                for key, value in batch:
+                    pipeline.set(key, value)
+                pipeline.execute()
+                pbar.update(len(batch))
