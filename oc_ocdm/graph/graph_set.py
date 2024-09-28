@@ -72,7 +72,7 @@ class GraphSet(AbstractSet):
     }
 
     def __init__(self, base_iri: str, info_dir: str = "", supplier_prefix: str = "",
-                 wanted_label: bool = True) -> None:
+                 wanted_label: bool = True, custom_counter_handler: CounterHandler = None) -> None:
         super(GraphSet, self).__init__()
         # The following variable maps a URIRef with the related graph entity
         self.res_to_entity: Dict[URIRef, GraphEntity] = {}
@@ -96,10 +96,12 @@ class GraphSet(AbstractSet):
         self.g_re: str = base_iri + "re/"
         self.g_rp: str = base_iri + "rp/"
 
-        if info_dir is not None and info_dir != "":
-            self.counter_handler: CounterHandler = FilesystemCounterHandler(info_dir, supplier_prefix)
+        if custom_counter_handler:
+            self.counter_handler = custom_counter_handler
+        elif info_dir is not None and info_dir != "":
+            self.counter_handler = FilesystemCounterHandler(info_dir, supplier_prefix)
         else:
-            self.counter_handler: CounterHandler = InMemoryCounterHandler()
+            self.counter_handler = InMemoryCounterHandler()
 
     def get_entity(self, res: URIRef) -> Optional[GraphEntity]:
         if res in self.res_to_entity:
