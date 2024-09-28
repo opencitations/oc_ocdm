@@ -64,7 +64,6 @@ class RedisCounterHandler(CounterHandler):
             raise ValueError("new_value must be a non negative integer!")
 
         key = self._get_key(entity_short_name, prov_short_name, identifier, supplier_prefix)
-        print(key)
         self.redis.set(key, new_value)
 
     def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
