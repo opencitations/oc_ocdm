@@ -22,9 +22,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from rdflib import ConjunctiveGraph, URIRef
-from SPARQLWrapper import SPARQLWrapper
-
+from filelock import FileLock
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from oc_ocdm.prov.prov_entity import ProvEntity
@@ -32,7 +30,8 @@ from oc_ocdm.reader import Reader
 from oc_ocdm.support.query_utils import get_update_query
 from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import find_paths
-from filelock import FileLock
+from rdflib import ConjunctiveGraph, URIRef
+from SPARQLWrapper import SPARQLWrapper
 
 if TYPE_CHECKING:
     from typing import Any, Dict, List, Optional, Set, Tuple

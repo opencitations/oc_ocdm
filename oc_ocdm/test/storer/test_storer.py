@@ -110,7 +110,7 @@ class TestStorer(unittest.TestCase):
                         <http://test/br/0601/prov/se/1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> <http://test/br/0601/prov/> .
                         <http://test/br/0601/prov/se/1> <http://www.w3.org/ns/prov#specializationOf> <http://test/br/0601> <http://test/br/0601/prov/> .
                         <http://test/br/0601/prov/se/1> <http://www.w3.org/ns/prov#wasAttributedTo> <http://resp_agent.test/> <http://test/br/0601/prov/> .
-                        <http://test/br/0601/prov/se/1> <http://purl.org/dc/terms/description> "The entity 'http://test/br/0601' has been created." <http://test/br/0601/prov/> .
+                        <http://test/br/0601/prov/se/1> <http://purl.org/dc/terms/description> "The entity 'http://test/br/0601' has been created."^^<http://www.w3.org/2001/XMLSchema#string> <http://test/br/0601/prov/> .
                     """, format="nquads")
                     for s, p, o, c in data_g.quads():
                         if p == URIRef("http://www.w3.org/ns/prov#generatedAtTime"):
@@ -133,7 +133,7 @@ class TestStorer(unittest.TestCase):
                 <http://test/br/0601/prov/se/1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> <http://test/br/0601/prov/> .
                 <http://test/br/0601/prov/se/1> <http://www.w3.org/ns/prov#specializationOf> <http://test/br/0601> <http://test/br/0601/prov/> .
                 <http://test/br/0601/prov/se/1> <http://www.w3.org/ns/prov#wasAttributedTo> <http://resp_agent.test/> <http://test/br/0601/prov/> .
-                <http://test/br/0601/prov/se/1> <http://purl.org/dc/terms/description> "The entity 'http://test/br/0601' has been created." <http://test/br/0601/prov/> .
+                <http://test/br/0601/prov/se/1> <http://purl.org/dc/terms/description> "The entity 'http://test/br/0601' has been created."^^<http://www.w3.org/2001/XMLSchema#string> <http://test/br/0601/prov/> .
             """, format="nquads")
             for s, p, o, c in prov_unzipped.quads():
                 if p == URIRef("http://www.w3.org/ns/prov#generatedAtTime"):

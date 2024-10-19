@@ -15,10 +15,9 @@
 # SOFTWARE.
 import unittest
 
-from rdflib import Literal
-
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
+from rdflib import XSD, Literal
 
 
 class TestReferencePointer(unittest.TestCase):
@@ -39,7 +38,7 @@ class TestReferencePointer(unittest.TestCase):
         result = self.rp1.has_content(content)
         self.assertIsNone(result)
 
-        triple = self.rp1.res, GraphEntity.iri_has_content, Literal(content)
+        triple = self.rp1.res, GraphEntity.iri_has_content, Literal(content, datatype=XSD.string)
         self.assertIn(triple, self.rp1.g)
 
     def test_has_next_rp(self):

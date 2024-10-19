@@ -83,7 +83,7 @@ class TestSnapshotEntity(unittest.TestCase):
         result = self.se.has_update_action(update_query)
         self.assertIsNone(result)
 
-        triple = self.se.res, ProvEntity.iri_has_update_query, Literal(update_query)
+        triple = self.se.res, ProvEntity.iri_has_update_query, Literal(update_query, datatype=XSD.string)
         self.assertIn(triple, self.se.g)
 
     def test_has_description(self):
@@ -91,7 +91,7 @@ class TestSnapshotEntity(unittest.TestCase):
         result = self.se.has_description(description)
         self.assertIsNone(result)
 
-        triple = self.se.res, ProvEntity.iri_description, Literal(description)
+        triple = self.se.res, ProvEntity.iri_description, Literal(description, datatype=XSD.string)
         self.assertIn(triple, self.se.g)
 
     def test_has_resp_agent(self):

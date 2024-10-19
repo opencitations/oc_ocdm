@@ -15,10 +15,9 @@
 # SOFTWARE.
 import unittest
 
-from rdflib import URIRef, Literal, RDF
-
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
+from rdflib import RDF, XSD, Literal, URIRef
 
 
 class TestResourceEmbodiment(unittest.TestCase):
@@ -44,7 +43,7 @@ class TestResourceEmbodiment(unittest.TestCase):
         result = self.re.has_starting_page(starting_page)
         self.assertIsNone(result)
 
-        triple = self.re.res, GraphEntity.iri_starting_page, Literal(starting_page)
+        triple = self.re.res, GraphEntity.iri_starting_page, Literal(starting_page, datatype=XSD.string)
         self.assertIn(triple, self.re.g)
 
     def test_has_ending_page(self):
@@ -52,7 +51,7 @@ class TestResourceEmbodiment(unittest.TestCase):
         result = self.re.has_ending_page(ending_page)
         self.assertIsNone(result)
 
-        triple = self.re.res, GraphEntity.iri_ending_page, Literal(ending_page)
+        triple = self.re.res, GraphEntity.iri_ending_page, Literal(ending_page, datatype=XSD.string)
         self.assertIn(triple, self.re.g)
 
     def test_has_url(self):

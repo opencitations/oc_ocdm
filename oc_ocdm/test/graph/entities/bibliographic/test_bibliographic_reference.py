@@ -15,10 +15,9 @@
 # SOFTWARE.
 import unittest
 
-from rdflib import Literal
-
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
+from rdflib import XSD, Literal
 
 
 class TestBibliographicReference(unittest.TestCase):
@@ -38,7 +37,7 @@ class TestBibliographicReference(unittest.TestCase):
         result = self.be.has_content(content)
         self.assertIsNone(result)
 
-        triple = self.be.res, GraphEntity.iri_has_content, Literal(content)
+        triple = self.be.res, GraphEntity.iri_has_content, Literal(content, datatype=XSD.string)
         self.assertIn(triple, self.be.g)
 
     def test_has_annotation(self):

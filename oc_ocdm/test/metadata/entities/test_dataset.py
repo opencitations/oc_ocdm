@@ -15,10 +15,9 @@
 # SOFTWARE.
 import unittest
 
-from rdflib import URIRef, Literal, XSD
-
-from oc_ocdm.metadata.metadata_set import MetadataSet
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
+from oc_ocdm.metadata.metadata_set import MetadataSet
+from rdflib import XSD, Literal, URIRef
 
 
 class TestDataset(unittest.TestCase):
@@ -38,7 +37,7 @@ class TestDataset(unittest.TestCase):
         result = self.dataset.has_title(title)
         self.assertIsNone(result)
 
-        triple = self.dataset.res, MetadataEntity.iri_title, Literal(title)
+        triple = self.dataset.res, MetadataEntity.iri_title, Literal(title, datatype=XSD.string)
         self.assertIn(triple, self.dataset.g)
 
     def test_has_description(self):
@@ -46,7 +45,7 @@ class TestDataset(unittest.TestCase):
         result = self.dataset.has_description(description)
         self.assertIsNone(result)
 
-        triple = self.dataset.res, MetadataEntity.iri_description, Literal(description)
+        triple = self.dataset.res, MetadataEntity.iri_description, Literal(description, datatype=XSD.string)
         self.assertIn(triple, self.dataset.g)
 
     def test_has_publication_date(self):
@@ -72,7 +71,7 @@ class TestDataset(unittest.TestCase):
         result = self.dataset.has_keyword(keyword)
         self.assertIsNone(result)
 
-        triple = self.dataset.res, MetadataEntity.iri_keyword, Literal(keyword)
+        triple = self.dataset.res, MetadataEntity.iri_keyword, Literal(keyword, datatype=XSD.string)
         self.assertIn(triple, self.dataset.g)
 
     def test_has_subject(self):

@@ -41,7 +41,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.br1.has_title(title)
         self.assertIsNone(result)
 
-        triple = self.br1.res, GraphEntity.iri_title, Literal(title)
+        triple = self.br1.res, GraphEntity.iri_title, Literal(title, datatype=XSD.string)
         self.assertIn(triple, self.br1.g)
 
     def test_has_subtitle(self):
@@ -49,7 +49,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.br1.has_subtitle(subtitle)
         self.assertIsNone(result)
 
-        triple = self.br1.res, GraphEntity.iri_has_subtitle, Literal(subtitle)
+        triple = self.br1.res, GraphEntity.iri_has_subtitle, Literal(subtitle, datatype=XSD.string)
         self.assertIn(triple, self.br1.g)
 
     def test_is_part_of(self):
@@ -107,7 +107,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.br1.has_number(number)
         self.assertIsNone(result)
 
-        triple = self.br1.res, GraphEntity.iri_has_sequence_identifier, Literal(number)
+        triple = self.br1.res, GraphEntity.iri_has_sequence_identifier, Literal(number, datatype=XSD.string)
         self.assertIn(triple, self.br1.g)
 
     def test_has_edition(self):
@@ -115,7 +115,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.br1.has_edition(edition)
         self.assertIsNone(result)
 
-        triple = self.br1.res, GraphEntity.iri_has_edition, Literal(edition)
+        triple = self.br1.res, GraphEntity.iri_has_edition, Literal(edition, datatype=XSD.string)
         self.assertIn(triple, self.br1.g)
 
     def test_contains_in_reference_list(self):

@@ -15,10 +15,9 @@
 # SOFTWARE.
 import unittest
 
-from rdflib import Literal
-
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
+from rdflib import XSD, Literal
 
 
 class TestPointerList(unittest.TestCase):
@@ -37,7 +36,7 @@ class TestPointerList(unittest.TestCase):
         result = self.pl.has_content(content)
         self.assertIsNone(result)
 
-        triple = self.pl.res, GraphEntity.iri_has_content, Literal(content)
+        triple = self.pl.res, GraphEntity.iri_has_content, Literal(content, datatype=XSD.string)
         self.assertIn(triple, self.pl.g)
 
     def test_contains_element(self):

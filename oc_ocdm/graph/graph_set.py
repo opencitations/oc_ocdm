@@ -17,17 +17,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from SPARQLWrapper import RDFXML, SPARQLWrapper
-
 from oc_ocdm.abstract_set import AbstractSet
 from oc_ocdm.reader import Reader
-from oc_ocdm.support.support import get_count, get_short_name, get_prefix
+from oc_ocdm.support.support import get_count, get_prefix, get_short_name
+from SPARQLWrapper import RDFXML, SPARQLWrapper
 
 if TYPE_CHECKING:
     from typing import Dict, ClassVar, Tuple, Optional, List, Set
     from rdflib import ConjunctiveGraph
-
-from rdflib import Graph, Namespace, URIRef
 
 from oc_ocdm.counter_handler.counter_handler import CounterHandler
 from oc_ocdm.counter_handler.filesystem_counter_handler import \
@@ -53,6 +50,7 @@ from oc_ocdm.graph.entities.bibliographic.responsible_agent import \
     ResponsibleAgent
 from oc_ocdm.graph.entities.identifier import Identifier
 from oc_ocdm.graph.graph_entity import GraphEntity
+from rdflib import Graph, Namespace, URIRef
 
 
 class GraphSet(AbstractSet):

@@ -36,7 +36,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.di.has_title(title)
         self.assertIsNone(result)
 
-        triple = self.di.res, MetadataEntity.iri_title, Literal(title)
+        triple = self.di.res, MetadataEntity.iri_title, Literal(title, datatype=XSD.string)
         self.assertIn(triple, self.di.g)
 
     def test_has_description(self):
@@ -44,7 +44,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.di.has_description(description)
         self.assertIsNone(result)
 
-        triple = self.di.res, MetadataEntity.iri_description, Literal(description)
+        triple = self.di.res, MetadataEntity.iri_description, Literal(description, datatype=XSD.string)
         self.assertIn(triple, self.di.g)
 
     def test_has_publication_date(self):

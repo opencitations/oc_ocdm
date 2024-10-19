@@ -156,6 +156,7 @@ def encode_url(u: str) -> str:
 
 def create_literal(g: Graph, res: URIRef, p: URIRef, s: str, dt: URIRef = None, nor: bool = True) -> None:
     if not is_string_empty(s):
+        dt = dt if dt is not None else XSD.string
         g.add((res, p, Literal(s, datatype=dt, normalize=nor)))
 
 
@@ -371,7 +372,7 @@ def build_graph_from_results(results: List[Dict]) -> Graph:
             o = URIRef(triple['o']['value'])
         else:
             datatype = triple['o'].get('datatype', None)
-            datatype = URIRef(datatype) if datatype is not None else None
+            datatype = URIRef(datatype) if datatype is not None else XSD.string
             o = Literal(triple['o']['value'], datatype=datatype)
         graph.add((s, p, o))
     return graph

@@ -15,10 +15,9 @@
 # SOFTWARE.
 import unittest
 
-from rdflib import Literal, RDF
-
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
+from rdflib import RDF, XSD, Literal
 
 
 class TestDiscourseElement(unittest.TestCase):
@@ -39,7 +38,7 @@ class TestDiscourseElement(unittest.TestCase):
         result = self.de1.has_title(title)
         self.assertIsNone(result)
 
-        triple = self.de1.res, GraphEntity.iri_title, Literal(title)
+        triple = self.de1.res, GraphEntity.iri_title, Literal(title, datatype=XSD.string)
         self.assertIn(triple, self.de1.g)
 
     def test_contains_discourse_element(self):
@@ -75,7 +74,7 @@ class TestDiscourseElement(unittest.TestCase):
         result = self.de1.has_content(content)
         self.assertIsNone(result)
 
-        triple = self.de1.res, GraphEntity.iri_has_content, Literal(content)
+        triple = self.de1.res, GraphEntity.iri_has_content, Literal(content, datatype=XSD.string)
         self.assertIn(triple, self.de1.g)
 
     def test_create_section(self):
