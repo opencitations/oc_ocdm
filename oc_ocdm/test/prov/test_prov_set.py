@@ -31,7 +31,10 @@ class TestProvSet(unittest.TestCase):
 
     def setUp(self):
         self.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
-        self.prov_set = ProvSet(self.graph_set, "http://test/", "./info_dir/", False, custom_counter_handler=SqliteCounterHandler('oc_ocdm/test/prov/prov_counter.db'), supplier_prefix="")
+        counter_db_path = 'oc_ocdm/test/prov/prov_counter.db'
+        if os.path.exists(counter_db_path):
+            os.remove(counter_db_path)
+        self.prov_set = ProvSet(self.graph_set, "http://test/", "./info_dir/", False, custom_counter_handler=SqliteCounterHandler(counter_db_path), supplier_prefix="")
         self.cur_time = 1607375859.846196
         self.cur_time_str = '2020-12-07T21:17:39+00:00'
 

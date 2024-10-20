@@ -22,3 +22,4 @@ docs/build/*
 
 blazegraph*
 rules.log
+oc_ocdm/test/prov/prov_counter.db
