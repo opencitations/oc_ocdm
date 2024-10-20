@@ -30,7 +30,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.8,<3.14"
 rdflib = "^6.0.0"
 SPARQLWrapper = "2.0.0"
 filelock = "^3.6.0"

@@ -39,6 +39,10 @@ from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.support.support import (get_count, get_prefix, get_short_name)
 
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 class ProvSet(AbstractSet):
     # Labels
@@ -118,25 +122,35 @@ class ProvSet(AbstractSet):
         else:
             cur_time: str = datetime.fromtimestamp(c_time, tz=timezone.utc).replace(microsecond=0).isoformat(sep="T")
 
+        logger.debug(f"Starting generate_provenance with cur_time: {cur_time}")
+
         # MERGED ENTITIES
         for cur_subj in self.prov_g.res_to_entity.values():
+            logger.debug(f"Processing entity: {cur_subj}")
             if cur_subj is None or (not cur_subj.was_merged or cur_subj.to_be_deleted):
-                # Here we must skip every entity that was not merged or that must be deleted.
+                logger.debug(f"Skipping entity: {cur_subj}")
                 continue
 
             # Previous snapshot
             last_snapshot_res: Optional[URIRef] = self._retrieve_last_snapshot(cur_subj.res)
+            logger.debug(f"Last snapshot for {cur_subj.res}: {last_snapshot_res}")
+
             if last_snapshot_res is None:
                 # CREATION SNAPSHOT
+                logger.debug(f"Creating new snapshot for {cur_subj.res}")
                 cur_snapshot: SnapshotEntity = self._create_snapshot(cur_subj, cur_time)
                 cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
                 modified_entities.add(cur_subj.res)
             else:
                 update_query: str = get_update_query(cur_subj, entity_type="graph")[0]
                 was_modified: bool = (update_query != "")
+                logger.debug(f"Entity {cur_subj.res} was_modified: {was_modified}")
                 snapshots_list: List[SnapshotEntity] = self._get_snapshots_from_merge_list(cur_subj)
+                logger.debug(f"Snapshots from merge list: {snapshots_list}")
+
                 if was_modified and len(snapshots_list) <= 0:
                     # MODIFICATION SNAPSHOT
+                    logger.debug(f"Creating modification snapshot for {cur_subj.res}")
                     last_snapshot: SnapshotEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
                     last_snapshot.has_invalidation_time(cur_time)
 
@@ -147,6 +161,7 @@ class ProvSet(AbstractSet):
                     modified_entities.add(cur_subj.res)
                 elif len(snapshots_list) > 0:
                     # MERGE SNAPSHOT
+                    logger.debug(f"Creating merge snapshot for {cur_subj.res}")
                     last_snapshot: SnapshotEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
                     last_snapshot.has_invalidation_time(cur_time)
                     cur_snapshot: SnapshotEntity = self._create_snapshot(cur_subj, cur_time)
@@ -199,6 +214,7 @@ class ProvSet(AbstractSet):
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been modified.")
                     cur_snapshot.has_update_action(update_query)
                     modified_entities.add(cur_subj.res)
+        logger.debug(f"Finished generate_provenance. Modified entities: {modified_entities}")
         return modified_entities
     
     def _add_prov(self, graph_url: str, short_name: str, prov_subject: GraphEntity,
