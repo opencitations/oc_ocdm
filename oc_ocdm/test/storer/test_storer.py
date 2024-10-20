@@ -29,17 +29,28 @@ from oc_ocdm.reader import Reader
 
 from shutil import rmtree
 
+
 class TestStorer(unittest.TestCase):
+    ts = 'http://127.0.0.1:8804/sparql'
+
+    def reset_server(self, server:str=ts) -> None:
+        ts = SPARQLWrapper(server)
+        for graph in {'https://w3id.org/oc/meta/br/', 'https://w3id.org/oc/meta/ra/', 'https://w3id.org/oc/meta/re/', 'https://w3id.org/oc/meta/id/', 'https://w3id.org/oc/meta/ar/', 'http://default.graph/'}:
+            ts.setQuery(f'CLEAR GRAPH <{graph}>')
+            ts.setMethod(POST)
+            ts.query()
+
     def setUp(self):
         self.resp_agent = "http://resp_agent.test/"
         self.base_iri = "http://test/"
-        self.ts = 'http://127.0.0.1:9999/blazegraph/sparql'
+        self.ts = self.ts
         self.graph_set = GraphSet(self.base_iri, "", "060", False)
         self.prov_set = ProvSet(self.graph_set, self.base_iri, "", False)
         self.br = self.graph_set.add_br(self.resp_agent)
         self.data_dir = os.path.join("oc_ocdm", "test", "storer", "data")
         self.prov_dir = os.path.join("oc_ocdm", "test", "storer", "test_provenance")
         self.info_dir = os.path.join(self.prov_dir, "info_dir")
+        self.reset_server()
 
     def tearDown(self):
         if os.path.exists(self.data_dir):
@@ -161,10 +172,6 @@ class TestStorer(unittest.TestCase):
                 'http://www.w3.org/ns/prov#wasAttributedTo': [{'@id': 'http://resp_agent.test/'}]}], '@id': 'http://test/br/0601/prov/'}])
 
     def test_provenance(self):
-        ts = SPARQLWrapper(self.ts)
-        ts.setQuery('delete{?x ?y ?z} where{?x ?y ?z}')
-        ts.setMethod(POST)
-        ts.query()
         graph_set = GraphSet(self.base_iri, "", "060", False)
         prov_set = ProvSet(graph_set, self.base_iri, info_dir=self.info_dir)
         base_dir = os.path.join("oc_ocdm", "test", "storer", "test_provenance") + os.sep
@@ -207,7 +214,7 @@ class TestStorer(unittest.TestCase):
 
 def process_entity(entity):
     base_iri = "http://test/"
-    ts = 'http://127.0.0.1:9999/blazegraph/sparql'
+    ts = 'http://127.0.0.1:8804/sparql'
     resp_agent = "http://resp_agent.test/"
     base_dir = os.path.join("oc_ocdm", "test", "storer", "test_provenance") + os.sep
     info_dir = os.path.join("oc_ocdm", "test", "storer", "test_provenance", "info_dir")

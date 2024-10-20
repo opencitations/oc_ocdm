@@ -1,0 +1,878 @@
+
+		Thu Jul 18 2024
+16:02:17 { Loading plugin 1: Type `plain', file `wikiv' in `../hosting'
+16:02:17   WikiV version 0.6 from OpenLink Software
+16:02:17   Support functions for WikiV collaboration tool
+16:02:17   SUCCESS plugin 1: loaded from ../hosting/wikiv.so }
+16:02:17 { Loading plugin 2: Type `plain', file `mediawiki' in `../hosting'
+16:02:17   MediaWiki version 0.1 from OpenLink Software
+16:02:17   Support functions for MediaWiki collaboration tool
+16:02:17   SUCCESS plugin 2: loaded from ../hosting/mediawiki.so }
+16:02:17 { Loading plugin 3: Type `plain', file `creolewiki' in `../hosting'
+16:02:17   CreoleWiki version 0.1 from OpenLink Software
+16:02:17   Support functions for CreoleWiki collaboration tool
+16:02:17   SUCCESS plugin 3: loaded from ../hosting/creolewiki.so }
+16:02:17 { Loading plugin 4: Type `plain', file `im' in `../hosting'
+16:02:17   IM version 0.62 from OpenLink Software
+16:02:17   Support functions for Image Magick 6.9.12
+16:02:17   SUCCESS plugin 4: loaded from ../hosting/im.so }
+16:02:17 { Loading plugin 6: Type `plain', file `proj4' in `../hosting'
+16:02:17   plain version 1.1.3239 from OpenLink Software
+16:02:17   Cartographic Projections support based on Frank Warmerdam's proj4 library
+16:02:17   SUCCESS plugin 6: loaded from ../hosting/proj4.so }
+16:02:17 { Loading plugin 7: Type `plain', file `geos' in `../hosting'
+16:02:17   plain version 1.2.3239 from OpenLink Software
+16:02:17   GEOS plugin based on Geometry Engine Open Source library from Open Source Geospatial Foundation
+16:02:17   SUCCESS plugin 7: loaded from ../hosting/geos.so }
+16:02:17 { Loading plugin 8: Type `plain', file `shapefileio' in `../hosting'
+16:02:17   ShapefileIO version 0.1virt71 from OpenLink Software
+16:02:17   Shapefile support based on Frank Warmerdam's Shapelib
+16:02:17   SUCCESS plugin 8: loaded from ../hosting/shapefileio.so }
+16:02:17 { Loading plugin 9: Type `plain', file `graphql' in `../hosting'
+16:02:17   GraphQL/SPARQL Bridge version 0.9.3 (d698f21712) from OpenLink Software
+16:02:17   Support functions for GraphQL/SPARQL Bridge
+16:02:17   SUCCESS plugin 9: loaded from ../hosting/graphql.so }
+16:02:17 OpenLink Virtuoso Universal Server
+16:02:17 Version 07.20.3239-pthreads for Linux as of Feb 13 2024 (d698f21712)
+16:02:17 uses OpenSSL 1.0.2u  20 Dec 2019
+16:02:17 uses parts of PCRE, Html Tidy
+16:02:17 Database version 3126
+16:02:17 SQL Optimizer enabled (max 1000 layouts)
+16:02:18 Compiler unit is timed at 0.000089 msec
+16:02:19 Roll forward started
+16:02:19 Roll forward complete
+16:02:19 Checkpoint started
+16:02:19 Checkpoint finished, log reused
+16:02:19 Checkpoint started
+16:02:19 Checkpoint finished, log reused
+16:02:19 HTTP/WebDAV server online at 8805
+16:02:19 Server online at 1105 (pid 32682)
+16:03:30 Server received signal 2
+16:03:30 Initiating normal shutdown
+16:03:30 Checkpoint started
+16:03:30 Checkpoint finished, log reused
+16:03:30 Server shutdown complete
+
+		Fri Jul 26 2024
+20:28:16 { Loading plugin 1: Type `plain', file `wikiv' in `../hosting'
+20:28:16   WikiV version 0.6 from OpenLink Software
+20:28:16   Support functions for WikiV collaboration tool
+20:28:16   SUCCESS plugin 1: loaded from ../hosting/wikiv.so }
+20:28:16 { Loading plugin 2: Type `plain', file `mediawiki' in `../hosting'
+20:28:16   MediaWiki version 0.1 from OpenLink Software
+20:28:16   Support functions for MediaWiki collaboration tool
+20:28:16   SUCCESS plugin 2: loaded from ../hosting/mediawiki.so }
+20:28:16 { Loading plugin 3: Type `plain', file `creolewiki' in `../hosting'
+20:28:16   CreoleWiki version 0.1 from OpenLink Software
+20:28:16   Support functions for CreoleWiki collaboration tool
+20:28:16   SUCCESS plugin 3: loaded from ../hosting/creolewiki.so }
+20:28:16 { Loading plugin 4: Type `plain', file `im' in `../hosting'
+20:28:16   IM version 0.62 from OpenLink Software
+20:28:16   Support functions for Image Magick 6.9.12
+20:28:16   SUCCESS plugin 4: loaded from ../hosting/im.so }
+20:28:16 { Loading plugin 6: Type `plain', file `proj4' in `../hosting'
+20:28:16   plain version 1.1.3239 from OpenLink Software
+20:28:16   Cartographic Projections support based on Frank Warmerdam's proj4 library
+20:28:16   SUCCESS plugin 6: loaded from ../hosting/proj4.so }
+20:28:16 { Loading plugin 7: Type `plain', file `geos' in `../hosting'
+20:28:16   plain version 1.2.3239 from OpenLink Software
+20:28:16   GEOS plugin based on Geometry Engine Open Source library from Open Source Geospatial Foundation
+20:28:16   SUCCESS plugin 7: loaded from ../hosting/geos.so }
+20:28:16 { Loading plugin 8: Type `plain', file `shapefileio' in `../hosting'
+20:28:16   ShapefileIO version 0.1virt71 from OpenLink Software
+20:28:16   Shapefile support based on Frank Warmerdam's Shapelib
+20:28:16   SUCCESS plugin 8: loaded from ../hosting/shapefileio.so }
+20:28:16 { Loading plugin 9: Type `plain', file `graphql' in `../hosting'
+20:28:16   GraphQL/SPARQL Bridge version 0.9.3 (d698f21712) from OpenLink Software
+20:28:16   Support functions for GraphQL/SPARQL Bridge
+20:28:16   SUCCESS plugin 9: loaded from ../hosting/graphql.so }
+20:28:16 OpenLink Virtuoso Universal Server
+20:28:16 Version 07.20.3239-pthreads for Linux as of Feb 13 2024 (d698f21712)
+20:28:16 uses OpenSSL 1.0.2u  20 Dec 2019
+20:28:16 uses parts of PCRE, Html Tidy
+20:28:16 Database version 3126
+20:28:16 SQL Optimizer enabled (max 1000 layouts)
+20:28:17 Compiler unit is timed at 0.000102 msec
+20:28:17 Roll forward started
+20:28:17 Roll forward complete
+20:28:17 Checkpoint started
+20:28:17 Checkpoint finished, log reused
+20:28:18 Checkpoint started
+20:28:18 Checkpoint finished, log reused
+20:28:18 HTTP/WebDAV server online at 8805
+20:28:18 Server online at 1105 (pid 262082)
+20:37:15 Server received signal 2
+20:37:15 Initiating normal shutdown
+20:37:15 Checkpoint started
+20:37:15 Checkpoint finished, log reused
+20:37:15 Server shutdown complete
+
+		Sat Jul 27 2024
+14:07:14 { Loading plugin 1: Type `plain', file `wikiv' in `../hosting'
+14:07:14   WikiV version 0.6 from OpenLink Software
+14:07:14   Support functions for WikiV collaboration tool
+14:07:14   SUCCESS plugin 1: loaded from ../hosting/wikiv.so }
+14:07:14 { Loading plugin 2: Type `plain', file `mediawiki' in `../hosting'
+14:07:14   MediaWiki version 0.1 from OpenLink Software
+14:07:14   Support functions for MediaWiki collaboration tool
+14:07:14   SUCCESS plugin 2: loaded from ../hosting/mediawiki.so }
+14:07:14 { Loading plugin 3: Type `plain', file `creolewiki' in `../hosting'
+14:07:14   CreoleWiki version 0.1 from OpenLink Software
+14:07:14   Support functions for CreoleWiki collaboration tool
+14:07:14   SUCCESS plugin 3: loaded from ../hosting/creolewiki.so }
+14:07:14 { Loading plugin 4: Type `plain', file `im' in `../hosting'
+14:07:14   IM version 0.62 from OpenLink Software
+14:07:14   Support functions for Image Magick 6.9.12
+14:07:14   SUCCESS plugin 4: loaded from ../hosting/im.so }
+14:07:14 { Loading plugin 6: Type `plain', file `proj4' in `../hosting'
+14:07:14   plain version 1.1.3239 from OpenLink Software
+14:07:14   Cartographic Projections support based on Frank Warmerdam's proj4 library
+14:07:14   SUCCESS plugin 6: loaded from ../hosting/proj4.so }
+14:07:14 { Loading plugin 7: Type `plain', file `geos' in `../hosting'
+14:07:14   plain version 1.2.3239 from OpenLink Software
+14:07:14   GEOS plugin based on Geometry Engine Open Source library from Open Source Geospatial Foundation
+14:07:14   SUCCESS plugin 7: loaded from ../hosting/geos.so }
+14:07:14 { Loading plugin 8: Type `plain', file `shapefileio' in `../hosting'
+14:07:14   ShapefileIO version 0.1virt71 from OpenLink Software
+14:07:14   Shapefile support based on Frank Warmerdam's Shapelib
+14:07:14   SUCCESS plugin 8: loaded from ../hosting/shapefileio.so }
+14:07:14 { Loading plugin 9: Type `plain', file `graphql' in `../hosting'
+14:07:14   GraphQL/SPARQL Bridge version 0.9.3 (d698f21712) from OpenLink Software
+14:07:14   Support functions for GraphQL/SPARQL Bridge
+14:07:14   SUCCESS plugin 9: loaded from ../hosting/graphql.so }
+14:07:14 OpenLink Virtuoso Universal Server
+14:07:14 Version 07.20.3239-pthreads for Linux as of Feb 13 2024 (d698f21712)
+14:07:14 uses OpenSSL 1.0.2u  20 Dec 2019
+14:07:14 uses parts of PCRE, Html Tidy
+14:07:14 Database version 3126
+14:07:14 SQL Optimizer enabled (max 1000 layouts)
+14:07:15 Compiler unit is timed at 0.000089 msec
+14:07:16 Roll forward started
+14:07:16 Roll forward complete
+14:07:16 Checkpoint started
+14:07:16 Checkpoint finished, log reused
+14:07:16 Checkpoint started
+14:07:16 Checkpoint finished, log reused
+14:07:16 HTTP/WebDAV server online at 8805
+14:07:17 Server online at 1105 (pid 268358)
+15:07:17 Checkpoint started
+15:07:17 Checkpoint finished, log reused
+16:07:18 Checkpoint started
+16:07:18 Checkpoint finished, log reused
+17:07:19 Checkpoint started
+17:07:19 Checkpoint finished, log reused
+18:07:20 Checkpoint started
+18:07:20 Checkpoint finished, log reused
+19:07:20 Checkpoint started
+19:07:20 Checkpoint finished, log reused
+20:07:21 Checkpoint started
+20:07:21 Checkpoint finished, log reused
+21:07:21 Checkpoint started
+21:07:21 Checkpoint finished, log reused
+22:07:22 Checkpoint started
+22:07:22 Checkpoint finished, log reused
+23:07:22 Checkpoint started
+23:07:22 Checkpoint finished, log reused
+
+		Sun Jul 28 2024
+00:07:23 Checkpoint started
+00:07:23 Checkpoint finished, log reused
+01:07:23 Checkpoint started
+01:07:23 Checkpoint finished, log reused
+02:07:24 Checkpoint started
+02:07:24 Checkpoint finished, log reused
+03:07:24 Checkpoint started
+03:07:24 Checkpoint finished, log reused
+03:13:55 Server received signal 1
+03:13:55 Initiating quick shutdown
+03:13:55 Server shutdown complete
+
+		Sun Jul 28 2024
+13:51:15 { Loading plugin 1: Type `plain', file `wikiv' in `../hosting'
+13:51:15   WikiV version 0.6 from OpenLink Software
+13:51:15   Support functions for WikiV collaboration tool
+13:51:15   SUCCESS plugin 1: loaded from ../hosting/wikiv.so }
+13:51:15 { Loading plugin 2: Type `plain', file `mediawiki' in `../hosting'
+13:51:15   MediaWiki version 0.1 from OpenLink Software
+13:51:15   Support functions for MediaWiki collaboration tool
+13:51:15   SUCCESS plugin 2: loaded from ../hosting/mediawiki.so }
+13:51:15 { Loading plugin 3: Type `plain', file `creolewiki' in `../hosting'
+13:51:15   CreoleWiki version 0.1 from OpenLink Software
+13:51:15   Support functions for CreoleWiki collaboration tool
+13:51:15   SUCCESS plugin 3: loaded from ../hosting/creolewiki.so }
+13:51:15 { Loading plugin 4: Type `plain', file `im' in `../hosting'
+13:51:15   IM version 0.62 from OpenLink Software
+13:51:15   Support functions for Image Magick 6.9.12
+13:51:15   SUCCESS plugin 4: loaded from ../hosting/im.so }
+13:51:15 { Loading plugin 6: Type `plain', file `proj4' in `../hosting'
+13:51:15   plain version 1.1.3239 from OpenLink Software
+13:51:15   Cartographic Projections support based on Frank Warmerdam's proj4 library
+13:51:15   SUCCESS plugin 6: loaded from ../hosting/proj4.so }
+13:51:15 { Loading plugin 7: Type `plain', file `geos' in `../hosting'
+13:51:15   plain version 1.2.3239 from OpenLink Software
+13:51:15   GEOS plugin based on Geometry Engine Open Source library from Open Source Geospatial Foundation
+13:51:15   SUCCESS plugin 7: loaded from ../hosting/geos.so }
+13:51:15 { Loading plugin 8: Type `plain', file `shapefileio' in `../hosting'
+13:51:15   ShapefileIO version 0.1virt71 from OpenLink Software
+13:51:15   Shapefile support based on Frank Warmerdam's Shapelib
+13:51:15   SUCCESS plugin 8: loaded from ../hosting/shapefileio.so }
+13:51:15 { Loading plugin 9: Type `plain', file `graphql' in `../hosting'
+13:51:15   GraphQL/SPARQL Bridge version 0.9.3 (d698f21712) from OpenLink Software
+13:51:15   Support functions for GraphQL/SPARQL Bridge
+13:51:15   SUCCESS plugin 9: loaded from ../hosting/graphql.so }
+13:51:15 OpenLink Virtuoso Universal Server
+13:51:15 Version 07.20.3239-pthreads for Linux as of Feb 13 2024 (d698f21712)
+13:51:15 uses OpenSSL 1.0.2u  20 Dec 2019
+13:51:15 uses parts of PCRE, Html Tidy
+13:51:15 Database version 3126
+13:51:15 SQL Optimizer enabled (max 1000 layouts)
+13:51:16 Compiler unit is timed at 0.000095 msec
+13:51:17 Roll forward started
+13:51:17     15 transactions, 1242 bytes replayed (100 %)
+13:51:17 Roll forward complete
+13:51:17 Checkpoint started
+13:51:17 Checkpoint finished, log reused
+13:51:17 Checkpoint started
+13:51:17 Checkpoint finished, log reused
+13:51:17 HTTP/WebDAV server online at 8805
+13:51:17 Server online at 1105 (pid 289420)
+14:51:19 Checkpoint started
+14:51:19 Checkpoint finished, log reused
+15:51:19 Checkpoint started
+15:51:19 Checkpoint finished, log reused
+16:51:20 Checkpoint started
+16:51:20 Checkpoint finished, log reused
+17:51:20 Checkpoint started
+17:51:20 Checkpoint finished, log reused
+18:28:27 Server received signal 1
+18:28:27 Initiating quick shutdown
+18:28:27 Server shutdown complete
+
+		Tue Jul 30 2024
+09:49:38 { Loading plugin 1: Type `plain', file `wikiv' in `../hosting'
+09:49:38   WikiV version 0.6 from OpenLink Software
+09:49:38   Support functions for WikiV collaboration tool
+09:49:38   SUCCESS plugin 1: loaded from ../hosting/wikiv.so }
+09:49:38 { Loading plugin 2: Type `plain', file `mediawiki' in `../hosting'
+09:49:38   MediaWiki version 0.1 from OpenLink Software
+09:49:38   Support functions for MediaWiki collaboration tool
+09:49:38   SUCCESS plugin 2: loaded from ../hosting/mediawiki.so }
+09:49:38 { Loading plugin 3: Type `plain', file `creolewiki' in `../hosting'
+09:49:38   CreoleWiki version 0.1 from OpenLink Software
+09:49:38   Support functions for CreoleWiki collaboration tool
+09:49:38   SUCCESS plugin 3: loaded from ../hosting/creolewiki.so }
+09:49:38 { Loading plugin 4: Type `plain', file `im' in `../hosting'
+09:49:38   IM version 0.62 from OpenLink Software
+09:49:38   Support functions for Image Magick 6.9.12
+09:49:38   SUCCESS plugin 4: loaded from ../hosting/im.so }
+09:49:38 { Loading plugin 6: Type `plain', file `proj4' in `../hosting'
+09:49:38   plain version 1.1.3239 from OpenLink Software
+09:49:38   Cartographic Projections support based on Frank Warmerdam's proj4 library
+09:49:38   SUCCESS plugin 6: loaded from ../hosting/proj4.so }
+09:49:38 { Loading plugin 7: Type `plain', file `geos' in `../hosting'
+09:49:38   plain version 1.2.3239 from OpenLink Software
+09:49:38   GEOS plugin based on Geometry Engine Open Source library from Open Source Geospatial Foundation
+09:49:38   SUCCESS plugin 7: loaded from ../hosting/geos.so }
+09:49:38 { Loading plugin 8: Type `plain', file `shapefileio' in `../hosting'
+09:49:38   ShapefileIO version 0.1virt71 from OpenLink Software
+09:49:38   Shapefile support based on Frank Warmerdam's Shapelib
+09:49:38   SUCCESS plugin 8: loaded from ../hosting/shapefileio.so }
+09:49:38 { Loading plugin 9: Type `plain', file `graphql' in `../hosting'
+09:49:38   GraphQL/SPARQL Bridge version 0.9.3 (d698f21712) from OpenLink Software
+09:49:38   Support functions for GraphQL/SPARQL Bridge
+09:49:38   SUCCESS plugin 9: loaded from ../hosting/graphql.so }
+09:49:38 OpenLink Virtuoso Universal Server
+09:49:38 Version 07.20.3239-pthreads for Linux as of Feb 13 2024 (d698f21712)
+09:49:38 uses OpenSSL 1.0.2u  20 Dec 2019
+09:49:38 uses parts of PCRE, Html Tidy
+09:49:38 Database version 3126
+09:49:38 SQL Optimizer enabled (max 1000 layouts)
+09:49:40 Compiler unit is timed at 0.000091 msec
+09:49:40 Roll forward started
+09:49:40     51 transactions, 4461 bytes replayed (100 %)
+09:49:40 Roll forward complete
+09:49:40 Checkpoint started
+09:49:40 Checkpoint finished, log reused
+09:49:41 Checkpoint started
+09:49:41 Checkpoint finished, log reused
+09:49:41 HTTP/WebDAV server online at 8805
+09:49:41 Server online at 1105 (pid 304668)
+10:49:41 Checkpoint started
+10:49:41 Checkpoint finished, log reused
+11:13:37 Server received signal 2
+11:13:37 Initiating normal shutdown
+11:13:37 Checkpoint started
+11:13:37 Checkpoint finished, log reused
+11:13:37 Server shutdown complete
+
+		Thu Aug 01 2024
+12:24:09 { Loading plugin 1: Type `plain', file `wikiv' in `../hosting'
+12:24:09   WikiV version 0.6 from OpenLink Software
+12:24:09   Support functions for WikiV collaboration tool
+12:24:09   SUCCESS plugin 1: loaded from ../hosting/wikiv.so }
+12:24:09 { Loading plugin 2: Type `plain', file `mediawiki' in `../hosting'
+12:24:09   MediaWiki version 0.1 from OpenLink Software
+12:24:09   Support functions for MediaWiki collaboration tool
+12:24:09   SUCCESS plugin 2: loaded from ../hosting/mediawiki.so }
+12:24:09 { Loading plugin 3: Type `plain', file `creolewiki' in `../hosting'
+12:24:09   CreoleWiki version 0.1 from OpenLink Software
+12:24:09   Support functions for CreoleWiki collaboration tool
+12:24:09   SUCCESS plugin 3: loaded from ../hosting/creolewiki.so }
+12:24:09 { Loading plugin 4: Type `plain', file `im' in `../hosting'
+12:24:09   IM version 0.62 from OpenLink Software
+12:24:09   Support functions for Image Magick 6.9.12
+12:24:09   SUCCESS plugin 4: loaded from ../hosting/im.so }
+12:24:09 { Loading plugin 6: Type `plain', file `proj4' in `../hosting'
+12:24:09   plain version 1.1.3239 from OpenLink Software
+12:24:09   Cartographic Projections support based on Frank Warmerdam's proj4 library
+12:24:09   SUCCESS plugin 6: loaded from ../hosting/proj4.so }
+12:24:09 { Loading plugin 7: Type `plain', file `geos' in `../hosting'
+12:24:09   plain version 1.2.3239 from OpenLink Software
+12:24:09   GEOS plugin based on Geometry Engine Open Source library from Open Source Geospatial Foundation
+12:24:09   SUCCESS plugin 7: loaded from ../hosting/geos.so }
+12:24:09 { Loading plugin 8: Type `plain', file `shapefileio' in `../hosting'
+12:24:09   ShapefileIO version 0.1virt71 from OpenLink Software
+12:24:09   Shapefile support based on Frank Warmerdam's Shapelib
+12:24:09   SUCCESS plugin 8: loaded from ../hosting/shapefileio.so }
+12:24:09 { Loading plugin 9: Type `plain', file `graphql' in `../hosting'
+12:24:09   GraphQL/SPARQL Bridge version 0.9.3 (d698f21712) from OpenLink Software
+12:24:09   Support functions for GraphQL/SPARQL Bridge
+12:24:09   SUCCESS plugin 9: loaded from ../hosting/graphql.so }
+12:24:09 OpenLink Virtuoso Universal Server
+12:24:09 Version 07.20.3239-pthreads for Linux as of Feb 13 2024 (d698f21712)
+12:24:09 uses OpenSSL 1.0.2u  20 Dec 2019
+12:24:09 uses parts of PCRE, Html Tidy
+12:24:09 Database version 3126
+12:24:09 SQL Optimizer enabled (max 1000 layouts)
+12:24:10 Compiler unit is timed at 0.000089 msec
+12:24:10 Roll forward started
+12:24:10 Roll forward complete
+12:24:11 Checkpoint started
+12:24:11 Checkpoint finished, log reused
+12:24:11 Checkpoint started
+12:24:11 Checkpoint finished, log reused
+12:24:11 HTTP/WebDAV server online at 8805
+12:24:11 Server online at 1105 (pid 383107)
+12:26:27 Server received signal 2
+12:26:27 Initiating normal shutdown
+12:26:27 Checkpoint started
+12:26:27 Checkpoint finished, log reused
+12:26:27 Server shutdown complete
+
+		Mon Aug 12 2024
+00:29:24 { Loading plugin 1: Type `plain', file `wikiv' in `../hosting'
+00:29:24   WikiV version 0.6 from OpenLink Software
+00:29:24   Support functions for WikiV collaboration tool
+00:29:24   SUCCESS plugin 1: loaded from ../hosting/wikiv.so }
+00:29:24 { Loading plugin 2: Type `plain', file `mediawiki' in `../hosting'
+00:29:24   MediaWiki version 0.1 from OpenLink Software
+00:29:24   Support functions for MediaWiki collaboration tool
+00:29:24   SUCCESS plugin 2: loaded from ../hosting/mediawiki.so }
+00:29:24 { Loading plugin 3: Type `plain', file `creolewiki' in `../hosting'
+00:29:24   CreoleWiki version 0.1 from OpenLink Software
+00:29:24   Support functions for CreoleWiki collaboration tool
+00:29:24   SUCCESS plugin 3: loaded from ../hosting/creolewiki.so }
+00:29:24 { Loading plugin 4: Type `plain', file `im' in `../hosting'
+00:29:24   IM version 0.62 from OpenLink Software
+00:29:24   Support functions for Image Magick 6.9.12
+00:29:24   SUCCESS plugin 4: loaded from ../hosting/im.so }
+00:29:24 { Loading plugin 6: Type `plain', file `proj4' in `../hosting'
+00:29:24   plain version 1.1.3239 from OpenLink Software
+00:29:24   Cartographic Projections support based on Frank Warmerdam's proj4 library
+00:29:24   SUCCESS plugin 6: loaded from ../hosting/proj4.so }
+00:29:24 { Loading plugin 7: Type `plain', file `geos' in `../hosting'
+00:29:24   plain version 1.2.3239 from OpenLink Software
+00:29:24   GEOS plugin based on Geometry Engine Open Source library from Open Source Geospatial Foundation
+00:29:24   SUCCESS plugin 7: loaded from ../hosting/geos.so }
+00:29:24 { Loading plugin 8: Type `plain', file `shapefileio' in `../hosting'
+00:29:24   ShapefileIO version 0.1virt71 from OpenLink Software
+00:29:24   Shapefile support based on Frank Warmerdam's Shapelib
+00:29:24   SUCCESS plugin 8: loaded from ../hosting/shapefileio.so }
+00:29:24 { Loading plugin 9: Type `plain', file `graphql' in `../hosting'
+00:29:24   GraphQL/SPARQL Bridge version 0.9.3 (d698f21712) from OpenLink Software
+00:29:24   Support functions for GraphQL/SPARQL Bridge
+00:29:24   SUCCESS plugin 9: loaded from ../hosting/graphql.so }
+00:29:24 OpenLink Virtuoso Universal Server
+00:29:24 Version 07.20.3239-pthreads for Linux as of Feb 13 2024 (d698f21712)
+00:29:24 uses OpenSSL 1.0.2u  20 Dec 2019
+00:29:24 uses parts of PCRE, Html Tidy
+00:29:24 Database version 3126
+00:29:24 SQL Optimizer enabled (max 1000 layouts)
+00:29:25 Compiler unit is timed at 0.000090 msec
+00:29:25 Roll forward started
+00:29:25 Roll forward complete
+00:29:25 Checkpoint started
+00:29:25 Checkpoint finished, log reused
+00:29:26 Checkpoint started
+00:29:26 Checkpoint finished, log reused
+00:29:26 HTTP/WebDAV server online at 8805
+00:29:26 Server online at 1105 (pid 593952)
+00:45:44 Server received signal 2
+00:45:44 Initiating normal shutdown
+00:45:44 Checkpoint started
+00:45:44 Checkpoint finished, log reused
+00:45:44 Server shutdown complete
+
+		Mon Aug 12 2024
+00:46:41 { Loading plugin 1: Type `plain', file `wikiv' in `../hosting'
+00:46:41   WikiV version 0.6 from OpenLink Software
+00:46:41   Support functions for WikiV collaboration tool
+00:46:41   SUCCESS plugin 1: loaded from ../hosting/wikiv.so }
+00:46:41 { Loading plugin 2: Type `plain', file `mediawiki' in `../hosting'
+00:46:41   MediaWiki version 0.1 from OpenLink Software
+00:46:41   Support functions for MediaWiki collaboration tool
+00:46:41   SUCCESS plugin 2: loaded from ../hosting/mediawiki.so }
+00:46:41 { Loading plugin 3: Type `plain', file `creolewiki' in `../hosting'
+00:46:41   CreoleWiki version 0.1 from OpenLink Software
+00:46:41   Support functions for CreoleWiki collaboration tool
+00:46:41   SUCCESS plugin 3: loaded from ../hosting/creolewiki.so }
+00:46:41 { Loading plugin 4: Type `plain', file `im' in `../hosting'
+00:46:41   IM version 0.62 from OpenLink Software
+00:46:41   Support functions for Image Magick 6.9.12
+00:46:41   SUCCESS plugin 4: loaded from ../hosting/im.so }
+00:46:41 { Loading plugin 6: Type `plain', file `proj4' in `../hosting'
+00:46:41   plain version 1.1.3239 from OpenLink Software
+00:46:41   Cartographic Projections support based on Frank Warmerdam's proj4 library
+00:46:41   SUCCESS plugin 6: loaded from ../hosting/proj4.so }
+00:46:41 { Loading plugin 7: Type `plain', file `geos' in `../hosting'
+00:46:41   plain version 1.2.3239 from OpenLink Software
+00:46:41   GEOS plugin based on Geometry Engine Open Source library from Open Source Geospatial Foundation
+00:46:41   SUCCESS plugin 7: loaded from ../hosting/geos.so }
+00:46:41 { Loading plugin 8: Type `plain', file `shapefileio' in `../hosting'
+00:46:41   ShapefileIO version 0.1virt71 from OpenLink Software
+00:46:41   Shapefile support based on Frank Warmerdam's Shapelib
+00:46:41   SUCCESS plugin 8: loaded from ../hosting/shapefileio.so }
+00:46:41 { Loading plugin 9: Type `plain', file `graphql' in `../hosting'
+00:46:41   GraphQL/SPARQL Bridge version 0.9.3 (d698f21712) from OpenLink Software
+00:46:41   Support functions for GraphQL/SPARQL Bridge
+00:46:41   SUCCESS plugin 9: loaded from ../hosting/graphql.so }
+00:46:41 OpenLink Virtuoso Universal Server
+00:46:41 Version 07.20.3239-pthreads for Linux as of Feb 13 2024 (d698f21712)
+00:46:41 uses OpenSSL 1.0.2u  20 Dec 2019
+00:46:41 uses parts of PCRE, Html Tidy
+00:46:41 Database version 3126
+00:46:41 SQL Optimizer enabled (max 1000 layouts)
+00:46:42 Compiler unit is timed at 0.000092 msec
+00:46:42 Roll forward started
+00:46:42 Roll forward complete
+00:46:42 Checkpoint started
+00:46:42 Checkpoint finished, log reused
+00:46:43 Checkpoint started
+00:46:43 Checkpoint finished, log reused
+00:46:43 HTTP/WebDAV server online at 8805
+00:46:43 Server online at 1105 (pid 596238)
+01:25:24 Server received signal 2
+01:25:24 Initiating normal shutdown
+01:25:24 Checkpoint started
+01:25:24 Checkpoint finished, log reused
+01:25:24 Server shutdown complete
+
+		Sat Sep 28 2024
+16:34:08 { Loading plugin 1: Type `plain', file `wikiv' in `../hosting'
+16:34:08   WikiV version 0.6 from OpenLink Software
+16:34:08   Support functions for WikiV collaboration tool
+16:34:08   SUCCESS plugin 1: loaded from ../hosting/wikiv.so }
+16:34:08 { Loading plugin 2: Type `plain', file `mediawiki' in `../hosting'
+16:34:08   MediaWiki version 0.1 from OpenLink Software
+16:34:08   Support functions for MediaWiki collaboration tool
+16:34:08   SUCCESS plugin 2: loaded from ../hosting/mediawiki.so }
+16:34:08 { Loading plugin 3: Type `plain', file `creolewiki' in `../hosting'
+16:34:08   CreoleWiki version 0.1 from OpenLink Software
+16:34:08   Support functions for CreoleWiki collaboration tool
+16:34:08   SUCCESS plugin 3: loaded from ../hosting/creolewiki.so }
+16:34:08 { Loading plugin 4: Type `plain', file `im' in `../hosting'
+16:34:08   IM version 0.62 from OpenLink Software
+16:34:08   Support functions for Image Magick 6.9.12
+16:34:08   SUCCESS plugin 4: loaded from ../hosting/im.so }
+16:34:08 { Loading plugin 6: Type `plain', file `proj4' in `../hosting'
+16:34:08   plain version 1.1.3239 from OpenLink Software
+16:34:08   Cartographic Projections support based on Frank Warmerdam's proj4 library
+16:34:08   SUCCESS plugin 6: loaded from ../hosting/proj4.so }
+16:34:08 { Loading plugin 7: Type `plain', file `geos' in `../hosting'
+16:34:08   plain version 1.2.3239 from OpenLink Software
+16:34:08   GEOS plugin based on Geometry Engine Open Source library from Open Source Geospatial Foundation
+16:34:08   SUCCESS plugin 7: loaded from ../hosting/geos.so }
+16:34:08 { Loading plugin 8: Type `plain', file `shapefileio' in `../hosting'
+16:34:08   ShapefileIO version 0.1virt71 from OpenLink Software
+16:34:08   Shapefile support based on Frank Warmerdam's Shapelib
+16:34:08   SUCCESS plugin 8: loaded from ../hosting/shapefileio.so }
+16:34:08 { Loading plugin 9: Type `plain', file `graphql' in `../hosting'
+16:34:08   GraphQL/SPARQL Bridge version 0.9.3 (d698f21712) from OpenLink Software
+16:34:08   Support functions for GraphQL/SPARQL Bridge
+16:34:08   SUCCESS plugin 9: loaded from ../hosting/graphql.so }
+16:34:08 OpenLink Virtuoso Universal Server
+16:34:08 Version 07.20.3239-pthreads for Linux as of Feb 13 2024 (d698f21712)
+16:34:08 uses OpenSSL 1.0.2u  20 Dec 2019
+16:34:08 uses parts of PCRE, Html Tidy
+16:34:08 Database version 3126
+16:34:08 SQL Optimizer enabled (max 1000 layouts)
+16:34:09 Compiler unit is timed at 0.000106 msec
+16:34:10 Roll forward started
+16:34:10 Roll forward complete
+16:34:10 Checkpoint started
+16:34:10 Checkpoint finished, log reused
+16:34:11 Checkpoint started
+16:34:11 Checkpoint finished, log reused
+16:34:11 HTTP/WebDAV server online at 8805
+16:34:11 Server online at 1105 (pid 887001)
+17:34:13 Checkpoint started
+17:34:13 Checkpoint finished, log reused
+18:34:15 Checkpoint started
+18:34:15 Checkpoint finished, log reused
+19:34:15 Checkpoint started
+19:34:16 Checkpoint finished, log reused
+20:34:16 Checkpoint started
+20:34:16 Checkpoint finished, log reused
+21:34:16 Checkpoint started
+21:34:16 Checkpoint finished, log reused
+22:34:16 Checkpoint started
+22:34:16 Checkpoint finished, log reused
+23:34:17 Checkpoint started
+23:34:17 Checkpoint finished, log reused
+
+		Sun Sep 29 2024
+00:34:18 Checkpoint started
+00:34:18 Checkpoint finished, log reused
+01:34:18 Checkpoint started
+01:34:18 Checkpoint finished, log reused
+02:34:19 Checkpoint started
+02:34:19 Checkpoint finished, log reused
+03:34:21 Checkpoint started
+03:34:21 Checkpoint finished, log reused
+04:34:22 Checkpoint started
+04:34:22 Checkpoint finished, log reused
+05:34:23 Checkpoint started
+05:34:23 Checkpoint finished, log reused
+06:34:24 Checkpoint started
+06:34:24 Checkpoint finished, log reused
+07:34:25 Checkpoint started
+07:34:25 Checkpoint finished, log reused
+08:34:26 Checkpoint started
+08:34:26 Checkpoint finished, log reused
+09:34:27 Checkpoint started
+09:34:27 Checkpoint finished, log reused
+10:34:28 Checkpoint started
+10:34:28 Checkpoint finished, log reused
+11:34:29 Checkpoint started
+11:34:29 Checkpoint finished, log reused
+12:34:30 Checkpoint started
+12:34:30 Checkpoint finished, log reused
+13:34:31 Checkpoint started
+13:34:31 Checkpoint finished, log reused
+14:34:31 Checkpoint started
+14:34:32 Checkpoint finished, log reused
+15:34:32 Checkpoint started
+15:34:32 Checkpoint finished, log reused
+16:34:33 Checkpoint started
+16:34:33 Checkpoint finished, log reused
+17:34:34 Checkpoint started
+17:34:34 Checkpoint finished, log reused
+18:34:35 Checkpoint started
+18:34:35 Checkpoint finished, log reused
+19:34:36 Checkpoint started
+19:34:36 Checkpoint finished, log reused
+20:34:37 Checkpoint started
+20:34:37 Checkpoint finished, log reused
+21:34:38 Checkpoint started
+21:34:38 Checkpoint finished, log reused
+22:34:39 Checkpoint started
+22:34:39 Checkpoint finished, log reused
+23:34:39 Checkpoint started
+23:34:39 Checkpoint finished, log reused
+
+		Mon Sep 30 2024
+00:34:40 Checkpoint started
+00:34:40 Checkpoint finished, log reused
+01:34:42 Checkpoint started
+01:34:42 Checkpoint finished, log reused
+02:34:44 Checkpoint started
+02:34:44 Checkpoint finished, log reused
+03:34:46 Checkpoint started
+03:34:46 Checkpoint finished, log reused
+04:34:47 Checkpoint started
+04:34:47 Checkpoint finished, log reused
+05:34:49 Checkpoint started
+05:34:49 Checkpoint finished, log reused
+06:34:51 Checkpoint started
+06:34:51 Checkpoint finished, log reused
+07:34:53 Checkpoint started
+07:34:53 Checkpoint finished, log reused
+08:34:55 Checkpoint started
+08:34:55 Checkpoint finished, log reused
+09:34:57 Checkpoint started
+09:34:57 Checkpoint finished, log reused
+10:34:59 Checkpoint started
+10:34:59 Checkpoint finished, log reused
+11:35:00 Checkpoint started
+11:35:00 Checkpoint finished, log reused
+12:35:01 Checkpoint started
+12:35:01 Checkpoint finished, log reused
+13:35:02 Checkpoint started
+13:35:02 Checkpoint finished, log reused
+14:35:03 Checkpoint started
+14:35:03 Checkpoint finished, log reused
+15:35:04 Checkpoint started
+15:35:04 Checkpoint finished, log reused
+16:35:05 Checkpoint started
+16:35:05 Checkpoint finished, log reused
+17:35:06 Checkpoint started
+17:35:06 Checkpoint finished, log reused
+18:35:07 Checkpoint started
+18:35:07 Checkpoint finished, log reused
+19:35:08 Checkpoint started
+19:35:08 Checkpoint finished, log reused
+20:35:09 Checkpoint started
+20:35:09 Checkpoint finished, log reused
+21:35:10 Checkpoint started
+21:35:10 Checkpoint finished, log reused
+22:35:11 Checkpoint started
+22:35:11 Checkpoint finished, log reused
+23:35:12 Checkpoint started
+23:35:12 Checkpoint finished, log reused
+
+		Tue Oct 01 2024
+00:35:13 Checkpoint started
+00:35:13 Checkpoint finished, log reused
+01:35:14 Checkpoint started
+01:35:14 Checkpoint finished, log reused
+02:35:15 Checkpoint started
+02:35:15 Checkpoint finished, log reused
+03:35:16 Checkpoint started
+03:35:16 Checkpoint finished, log reused
+04:35:17 Checkpoint started
+04:35:17 Checkpoint finished, log reused
+05:35:18 Checkpoint started
+05:35:18 Checkpoint finished, log reused
+06:35:19 Checkpoint started
+06:35:19 Checkpoint finished, log reused
+07:35:20 Checkpoint started
+07:35:20 Checkpoint finished, log reused
+08:35:21 Checkpoint started
+08:35:21 Checkpoint finished, log reused
+09:35:22 Checkpoint started
+09:35:22 Checkpoint finished, log reused
+10:35:23 Checkpoint started
+10:35:23 Checkpoint finished, log reused
+11:35:24 Checkpoint started
+11:35:24 Checkpoint finished, log reused
+12:35:25 Checkpoint started
+12:35:25 Checkpoint finished, log reused
+13:35:26 Checkpoint started
+13:35:26 Checkpoint finished, log reused
+14:35:27 Checkpoint started
+14:35:27 Checkpoint finished, log reused
+15:35:28 Checkpoint started
+15:35:28 Checkpoint finished, log reused
+16:35:29 Checkpoint started
+16:35:29 Checkpoint finished, log reused
+17:35:30 Checkpoint started
+17:35:30 Checkpoint finished, log reused
+18:35:31 Checkpoint started
+18:35:31 Checkpoint finished, log reused
+19:35:32 Checkpoint started
+19:35:32 Checkpoint finished, log reused
+20:35:33 Checkpoint started
+20:35:33 Checkpoint finished, log reused
+21:35:34 Checkpoint started
+21:35:34 Checkpoint finished, log reused
+22:35:35 Checkpoint started
+22:35:35 Checkpoint finished, log reused
+23:35:35 Checkpoint started
+23:35:35 Checkpoint finished, log reused
+
+		Wed Oct 02 2024
+00:35:36 Checkpoint started
+00:35:36 Checkpoint finished, log reused
+01:35:37 Checkpoint started
+01:35:37 Checkpoint finished, log reused
+02:35:38 Checkpoint started
+02:35:38 Checkpoint finished, log reused
+03:35:39 Checkpoint started
+03:35:39 Checkpoint finished, log reused
+04:35:40 Checkpoint started
+04:35:40 Checkpoint finished, log reused
+05:35:41 Checkpoint started
+05:35:41 Checkpoint finished, log reused
+06:35:42 Checkpoint started
+06:35:42 Checkpoint finished, log reused
+07:35:43 Checkpoint started
+07:35:43 Checkpoint finished, log reused
+08:35:44 Checkpoint started
+08:35:44 Checkpoint finished, log reused
+09:35:45 Checkpoint started
+09:35:45 Checkpoint finished, log reused
+10:35:46 Checkpoint started
+10:35:46 Checkpoint finished, log reused
+11:35:47 Checkpoint started
+11:35:47 Checkpoint finished, log reused
+11:51:31 Server received signal 15
+11:51:31 Server received signal 1
+11:51:31 Server received signal 15
+11:51:31 Initiating quick shutdown
+11:51:31 Server shutdown complete
+
+		Sat Oct 19 2024
+22:34:08 { Loading plugin 1: Type `plain', file `wikiv' in `../hosting'
+22:34:08   WikiV version 0.6 from OpenLink Software
+22:34:08   Support functions for WikiV collaboration tool
+22:34:08   SUCCESS plugin 1: loaded from ../hosting/wikiv.so }
+22:34:08 { Loading plugin 2: Type `plain', file `mediawiki' in `../hosting'
+22:34:08   MediaWiki version 0.1 from OpenLink Software
+22:34:08   Support functions for MediaWiki collaboration tool
+22:34:08   SUCCESS plugin 2: loaded from ../hosting/mediawiki.so }
+22:34:08 { Loading plugin 3: Type `plain', file `creolewiki' in `../hosting'
+22:34:08   CreoleWiki version 0.1 from OpenLink Software
+22:34:08   Support functions for CreoleWiki collaboration tool
+22:34:08   SUCCESS plugin 3: loaded from ../hosting/creolewiki.so }
+22:34:08 { Loading plugin 4: Type `plain', file `im' in `../hosting'
+22:34:08   IM version 0.62 from OpenLink Software
+22:34:08   Support functions for Image Magick 6.9.12
+22:34:08   SUCCESS plugin 4: loaded from ../hosting/im.so }
+22:34:08 { Loading plugin 6: Type `plain', file `proj4' in `../hosting'
+22:34:08   plain version 1.1.3239 from OpenLink Software
+22:34:08   Cartographic Projections support based on Frank Warmerdam's proj4 library
+22:34:08   SUCCESS plugin 6: loaded from ../hosting/proj4.so }
+22:34:08 { Loading plugin 7: Type `plain', file `geos' in `../hosting'
+22:34:08   plain version 1.2.3239 from OpenLink Software
+22:34:08   GEOS plugin based on Geometry Engine Open Source library from Open Source Geospatial Foundation
+22:34:08   SUCCESS plugin 7: loaded from ../hosting/geos.so }
+22:34:08 { Loading plugin 8: Type `plain', file `shapefileio' in `../hosting'
+22:34:08   ShapefileIO version 0.1virt71 from OpenLink Software
+22:34:08   Shapefile support based on Frank Warmerdam's Shapelib
+22:34:08   SUCCESS plugin 8: loaded from ../hosting/shapefileio.so }
+22:34:08 { Loading plugin 9: Type `plain', file `graphql' in `../hosting'
+22:34:08   GraphQL/SPARQL Bridge version 0.9.3 (d698f21712) from OpenLink Software
+22:34:08   Support functions for GraphQL/SPARQL Bridge
+22:34:08   SUCCESS plugin 9: loaded from ../hosting/graphql.so }
+22:34:08 OpenLink Virtuoso Universal Server
+22:34:08 Version 07.20.3239-pthreads for Linux as of Feb 13 2024 (d698f21712)
+22:34:08 uses OpenSSL 1.0.2u  20 Dec 2019
+22:34:08 uses parts of PCRE, Html Tidy
+22:34:08 Database version 3126
+22:34:08 SQL Optimizer enabled (max 1000 layouts)
+22:34:10 Compiler unit is timed at 0.000092 msec
+22:34:10 Roll forward started
+22:34:10     15 transactions, 1254 bytes replayed (100 %)
+22:34:10 Roll forward complete
+22:34:10 Checkpoint started
+22:34:10 Checkpoint finished, log reused
+22:34:11 Checkpoint started
+22:34:11 Checkpoint finished, log reused
+22:34:13 HTTP/WebDAV server online at 8805
+22:34:13 Server online at 1105 (pid 1186606)
+23:34:13 Checkpoint started
+23:34:13 Checkpoint finished, log reused
+
+		Sun Oct 20 2024
+00:34:14 Checkpoint started
+00:34:14 Checkpoint finished, log reused
+01:34:15 Checkpoint started
+01:34:15 Checkpoint finished, log reused
+02:34:16 Checkpoint started
+02:34:16 Checkpoint finished, log reused
+03:27:12 Server received signal 1
+03:27:12 Initiating quick shutdown
+03:27:12 Server shutdown complete
+
+		Sun Oct 20 2024
+13:38:27 { Loading plugin 1: Type `plain', file `wikiv' in `../hosting'
+13:38:27   WikiV version 0.6 from OpenLink Software
+13:38:27   Support functions for WikiV collaboration tool
+13:38:27   SUCCESS plugin 1: loaded from ../hosting/wikiv.so }
+13:38:27 { Loading plugin 2: Type `plain', file `mediawiki' in `../hosting'
+13:38:27   MediaWiki version 0.1 from OpenLink Software
+13:38:27   Support functions for MediaWiki collaboration tool
+13:38:27   SUCCESS plugin 2: loaded from ../hosting/mediawiki.so }
+13:38:27 { Loading plugin 3: Type `plain', file `creolewiki' in `../hosting'
+13:38:27   CreoleWiki version 0.1 from OpenLink Software
+13:38:27   Support functions for CreoleWiki collaboration tool
+13:38:27   SUCCESS plugin 3: loaded from ../hosting/creolewiki.so }
+13:38:27 { Loading plugin 4: Type `plain', file `im' in `../hosting'
+13:38:27   IM version 0.62 from OpenLink Software
+13:38:27   Support functions for Image Magick 6.9.12
+13:38:27   SUCCESS plugin 4: loaded from ../hosting/im.so }
+13:38:27 { Loading plugin 6: Type `plain', file `proj4' in `../hosting'
+13:38:27   plain version 1.1.3239 from OpenLink Software
+13:38:27   Cartographic Projections support based on Frank Warmerdam's proj4 library
+13:38:27   SUCCESS plugin 6: loaded from ../hosting/proj4.so }
+13:38:27 { Loading plugin 7: Type `plain', file `geos' in `../hosting'
+13:38:27   plain version 1.2.3239 from OpenLink Software
+13:38:27   GEOS plugin based on Geometry Engine Open Source library from Open Source Geospatial Foundation
+13:38:27   SUCCESS plugin 7: loaded from ../hosting/geos.so }
+13:38:27 { Loading plugin 8: Type `plain', file `shapefileio' in `../hosting'
+13:38:27   ShapefileIO version 0.1virt71 from OpenLink Software
+13:38:27   Shapefile support based on Frank Warmerdam's Shapelib
+13:38:27   SUCCESS plugin 8: loaded from ../hosting/shapefileio.so }
+13:38:27 { Loading plugin 9: Type `plain', file `graphql' in `../hosting'
+13:38:27   GraphQL/SPARQL Bridge version 0.9.3 (d698f21712) from OpenLink Software
+13:38:27   Support functions for GraphQL/SPARQL Bridge
+13:38:27   SUCCESS plugin 9: loaded from ../hosting/graphql.so }
+13:38:27 OpenLink Virtuoso Universal Server
+13:38:27 Version 07.20.3239-pthreads for Linux as of Feb 13 2024 (d698f21712)
+13:38:27 uses OpenSSL 1.0.2u  20 Dec 2019
+13:38:27 uses parts of PCRE, Html Tidy
+13:38:27 Database version 3126
+13:38:27 SQL Optimizer enabled (max 1000 layouts)
+13:38:28 Compiler unit is timed at 0.000090 msec
+13:38:28 Roll forward started
+13:38:28     75 transactions, 6599 bytes replayed (100 %)
+13:38:28 Roll forward complete
+13:38:28 Checkpoint started
+13:38:28 Checkpoint finished, log reused
+13:38:29 Checkpoint started
+13:38:29 Checkpoint finished, log reused
+13:38:29 HTTP/WebDAV server online at 8805
+13:38:29 Server online at 1105 (pid 1216659)
+14:38:29 Checkpoint started
+14:38:29 Checkpoint finished, log reused
+
+		Sun Oct 20 2024
+15:27:03 { Loading plugin 1: Type `plain', file `wikiv' in `../hosting'
+15:27:03   WikiV version 0.6 from OpenLink Software
+15:27:03   Support functions for WikiV collaboration tool
+15:27:03   SUCCESS plugin 1: loaded from ../hosting/wikiv.so }
+15:27:03 { Loading plugin 2: Type `plain', file `mediawiki' in `../hosting'
+15:27:03   MediaWiki version 0.1 from OpenLink Software
+15:27:03   Support functions for MediaWiki collaboration tool
+15:27:03   SUCCESS plugin 2: loaded from ../hosting/mediawiki.so }
+15:27:03 { Loading plugin 3: Type `plain', file `creolewiki' in `../hosting'
+15:27:03   CreoleWiki version 0.1 from OpenLink Software
+15:27:03   Support functions for CreoleWiki collaboration tool
+15:27:03   SUCCESS plugin 3: loaded from ../hosting/creolewiki.so }
+15:27:03 { Loading plugin 4: Type `plain', file `im' in `../hosting'
+15:27:03   IM version 0.62 from OpenLink Software
+15:27:03   Support functions for Image Magick 6.9.12
+15:27:03   SUCCESS plugin 4: loaded from ../hosting/im.so }
+15:27:03 { Loading plugin 6: Type `plain', file `proj4' in `../hosting'
+15:27:03   plain version 1.1.3239 from OpenLink Software
+15:27:03   Cartographic Projections support based on Frank Warmerdam's proj4 library
+15:27:03   SUCCESS plugin 6: loaded from ../hosting/proj4.so }
+15:27:03 { Loading plugin 7: Type `plain', file `geos' in `../hosting'
+15:27:03   plain version 1.2.3239 from OpenLink Software
+15:27:03   GEOS plugin based on Geometry Engine Open Source library from Open Source Geospatial Foundation
+15:27:03   SUCCESS plugin 7: loaded from ../hosting/geos.so }
+15:27:03 { Loading plugin 8: Type `plain', file `shapefileio' in `../hosting'
+15:27:03   ShapefileIO version 0.1virt71 from OpenLink Software
+15:27:03   Shapefile support based on Frank Warmerdam's Shapelib
+15:27:03   SUCCESS plugin 8: loaded from ../hosting/shapefileio.so }
+15:27:03 { Loading plugin 9: Type `plain', file `graphql' in `../hosting'
+15:27:03   GraphQL/SPARQL Bridge version 0.9.3 (d698f21712) from OpenLink Software
+15:27:03   Support functions for GraphQL/SPARQL Bridge
+15:27:03   SUCCESS plugin 9: loaded from ../hosting/graphql.so }
+15:27:03 OpenLink Virtuoso Universal Server
+15:27:03 Version 07.20.3239-pthreads for Linux as of Feb 13 2024 (d698f21712)
+15:27:03 uses OpenSSL 1.0.2u  20 Dec 2019
+15:27:03 uses parts of PCRE, Html Tidy
+15:27:03 Database version 3126
+15:27:03 SQL Optimizer enabled (max 1000 layouts)
+15:27:04 Compiler unit is timed at 0.000089 msec
+15:27:05 Roll forward started
+15:27:05     1000 transactions, 7191402 bytes replayed (11 %)
+15:27:08     5000 transactions, 42994225 bytes replayed (66 %)
+15:27:10 Roll forward complete
+15:27:10 Checkpoint started
+15:27:10 Checkpoint finished, log reused
+15:27:10 Checkpoint started
+15:27:10 Checkpoint finished, log reused
+15:27:10 HTTP/WebDAV server online at 8804
+15:27:10 Server online at 1104 (pid 1255970)

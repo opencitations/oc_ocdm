@@ -38,11 +38,12 @@ jobs:
       run: |
         pip3 install poetry
         poetry install
-    - name: Run Blazegraph
+    - name: Run Virtuoso
       run: |
-        wget https://github.com/blazegraph/database/releases/download/BLAZEGRAPH_2_1_6_RC/blazegraph.jar
-        java -server -jar blazegraph.jar &
-        python3 -c 'import time; time.sleep(15)'
+        cd virtuoso-opensource/bin
+        ./virtuoso-t
+        python3 -c 'import time; time.sleep(30)'
+        cd ../..
     - name: Check the overage
       run: |
         poetry run coverage run --rcfile=oc_ocdm/test/coverage/.coveragerc

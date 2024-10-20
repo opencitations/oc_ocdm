@@ -27,7 +27,7 @@ from oc_ocdm.reader import Reader
 class TestReader(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.endpoint = 'http://127.0.0.1:9999/blazegraph/sparql'
+        cls.endpoint = 'http://127.0.0.1:8804/sparql'
         BASE = os.path.join('oc_ocdm', 'test', 'reader')
         server = SPARQLWrapper(cls.endpoint)
         query = 'LOAD <file:' + os.path.abspath(os.path.join(BASE, f'br.nt')).replace('\\', '/') + '> INTO GRAPH <' + f'https://w3id.org/oc/meta/' + '>'
