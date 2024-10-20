@@ -13,11 +13,9 @@
 # DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
-import unittest
-import os
-import tempfile
 
-from rdflib import Graph, Literal, URIRef
+import os
+import unittest
 
 from oc_ocdm.counter_handler.sqlite_counter_handler import SqliteCounterHandler
 from oc_ocdm.graph.graph_set import GraphSet
@@ -25,6 +23,7 @@ from oc_ocdm.prov.entities.snapshot_entity import SnapshotEntity
 from oc_ocdm.prov.prov_set import ProvSet
 from oc_ocdm.reader import Reader
 from oc_ocdm.storer import Storer
+from rdflib import URIRef
 
 
 class TestProvSet(unittest.TestCase):
@@ -33,6 +32,8 @@ class TestProvSet(unittest.TestCase):
     def setUp(self):
         self.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
         self.prov_set = ProvSet(self.graph_set, "http://test/", "./info_dir/", False, custom_counter_handler=SqliteCounterHandler('oc_ocdm/test/prov/prov_counter.db'), supplier_prefix="")
+        self.cur_time = 1607375859.846196
+        self.cur_time_str = '2020-12-07T21:17:39+00:00'
 
     def test_add_se(self):
         prov_subj = self.graph_set.add_br(self.resp_agent)
@@ -42,204 +43,187 @@ class TestProvSet(unittest.TestCase):
         self.assertIsInstance(se, SnapshotEntity)
         self.assertEqual(str(se.g.identifier), str(prov_subj.res) + "/prov/")
 
-    def test_generate_provenance(self):
-        cur_time = 1607375859.846196
-        cur_time_str = '2020-12-07T21:17:39+00:00'
+    def test_creation_merged_entity(self):
+        a = self.graph_set.add_br(self.resp_agent)
+        b = self.graph_set.add_br(self.resp_agent)
+        a.merge(b, prefer_self=True)
 
-        with self.subTest('Creation [Merged entity]'):
-            a = self.graph_set.add_br(self.resp_agent)
-            b = self.graph_set.add_br(self.resp_agent)
+        result = self.prov_set.generate_provenance(self.cur_time)
 
-            a.merge(b, prefer_self=True)
+        se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
+        self.assertIsNotNone(se_a)
+        self.assertIsInstance(se_a, SnapshotEntity)
+        self.assertEqual(a.res, se_a.get_is_snapshot_of())
+        self.assertEqual(self.cur_time_str, se_a.get_generation_time())
+        if a.source is not None:
+            self.assertEqual(a.source, str(se_a.get_primary_source()))
+        if a.resp_agent is not None:
+            self.assertEqual(a.resp_agent, str(se_a.get_resp_agent()))
+        self.assertEqual(f"The entity '{a.res}' has been created.", se_a.get_description())
 
-            result = self.prov_set.generate_provenance(cur_time)
+    def test_no_snapshot_merged_entity(self):
+        a = self.graph_set.add_br(self.resp_agent)
+        b = self.graph_set.add_br(self.resp_agent)
+        a.merge(b)
+        se_a_1 = self.prov_set.add_se(a)
 
-            se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
-            self.assertIsNotNone(se_a)
-            self.assertIsInstance(se_a, SnapshotEntity)
-            self.assertEqual(a.res, se_a.get_is_snapshot_of())
-            self.assertEqual(cur_time_str, se_a.get_generation_time())
-            if a.source is not None:
-                self.assertEqual(a.source, str(se_a.get_primary_source()))
-            if a.resp_agent is not None:
-                self.assertEqual(a.resp_agent, str(se_a.get_resp_agent()))
+        # This avoids that the presence of the mandatory rdf:type gets interpreted
+        # as a modification with respect to an empty preexisting_graph:
+        a.remove_every_triple()
 
-            self.assertEqual(f"The entity '{a.res}' has been created.", se_a.get_description())
-        with self.subTest('No snapshot [Merged entity]'):
-            a = self.graph_set.add_br(self.resp_agent)
-            b = self.graph_set.add_br(self.resp_agent)
-            a.merge(b)
-            se_a_1 = self.prov_set.add_se(a)
+        result = self.prov_set.generate_provenance(self.cur_time)
+        
+        se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
+        self.assertIsNone(se_a_2)
 
-            # This avoids that the presence of the mandatory rdf:type gets interpreted
-            # as a modification with respect to an empty preexisting_graph:
-            a.remove_every_triple()
+    def test_modification_merged_entity(self):
+        title = "TEST TITLE"
+        a = self.graph_set.add_br(self.resp_agent)
+        b = self.graph_set.add_br(self.resp_agent)
+        b.has_title(title)
+        a.merge(b)
+        se_a_1 = self.prov_set.add_se(a)
 
-            result = self.prov_set.generate_provenance(cur_time)
-            
+        result = self.prov_set.generate_provenance(self.cur_time)
+        
+        self.assertEqual(self.cur_time_str, se_a_1.get_invalidation_time())
 
-            se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
-            self.assertIsNone(se_a_2)
-        with self.subTest('Modification [Merged entity]'):
-            title = "TEST TITLE"
-            a = self.graph_set.add_br(self.resp_agent)
-            b = self.graph_set.add_br(self.resp_agent)
-            b.has_title(title)
-            a.merge(b)
-            se_a_1 = self.prov_set.add_se(a)
+        se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
+        self.assertIsNotNone(se_a_2)
+        self.assertIsInstance(se_a_2, SnapshotEntity)
+        self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
+        self.assertEqual(self.cur_time_str, se_a_2.get_generation_time())
+        if a.source is not None:
+            self.assertEqual(a.source, str(se_a_2.get_primary_source()))
+        if a.resp_agent is not None:
+            self.assertEqual(a.resp_agent, str(se_a_2.get_resp_agent()))
+        self.assertSetEqual({se_a_1}, set(se_a_2.get_derives_from()))
+        self.assertIsNotNone(se_a_2.get_update_action())
+        self.assertEqual(f"The entity '{a.res}' has been modified.", se_a_2.get_description())
 
-            result = self.prov_set.generate_provenance(cur_time)
-            
-            self.assertEqual(cur_time_str, se_a_1.get_invalidation_time())
+    def test_merge_merged_entity(self):
+        a = self.graph_set.add_br(self.resp_agent)
+        b = self.graph_set.add_br(self.resp_agent)
+        c = self.graph_set.add_br(self.resp_agent)
 
-            se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
-            self.assertIsNotNone(se_a_2)
-            self.assertIsInstance(se_a_2, SnapshotEntity)
-            self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
+        se_a_1 = self.prov_set.add_se(a)
+        se_a_1.has_generation_time("2020-01-01T00:00:00+00:00")
+        se_a_1.has_primary_source(URIRef("http://example.org/source_a"))
+        
+        se_b_1 = self.prov_set.add_se(b)
+        se_b_1.has_generation_time("2020-02-01T00:00:00+00:00")
+        se_b_1.has_primary_source(URIRef("http://example.org/source_b"))
+        
+        se_c_1 = self.prov_set.add_se(c)
+        se_c_1.has_generation_time("2020-03-01T00:00:00+00:00")
+        se_c_1.has_primary_source(URIRef("http://example.org/source_c"))
 
+        a.merge(b)
+        a.merge(c)
 
-            self.assertEqual(cur_time_str, se_a_2.get_generation_time())
-            if a.source is not None:
-                self.assertEqual(a.source, str(se_a_2.get_primary_source()))
-            if a.resp_agent is not None:
-                self.assertEqual(a.resp_agent, str(se_a_2.get_resp_agent()))
+        result = self.prov_set.generate_provenance(self.cur_time)
 
-            self.assertSetEqual({se_a_1}, set(se_a_2.get_derives_from()))
-            self.assertIsNotNone(se_a_2.get_update_action())
-            self.assertEqual(f"The entity '{a.res}' has been modified.", se_a_2.get_description())
-        with self.subTest('Merge [Merged entity]'):
-            a = self.graph_set.add_br(self.resp_agent)
-            b = self.graph_set.add_br(self.resp_agent)
-            c = self.graph_set.add_br(self.resp_agent)
+        se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
+        self.assertIsNotNone(se_a_2)
+        self.assertIsInstance(se_a_2, SnapshotEntity)
+        self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
+        self.assertEqual(self.cur_time_str, se_a_2.get_generation_time())
+        if a.source is not None:
+            self.assertEqual(a.source, str(se_a_2.get_primary_source()))
+        if a.resp_agent is not None:
+            self.assertEqual(a.resp_agent, str(se_a_2.get_resp_agent()))
+        self.assertNotEqual("2020-01-01T00:00:00+00:00", se_a_2.get_generation_time())
+        self.assertNotEqual(URIRef("http://example.org/source_a"), se_a_2.get_primary_source())
+        self.assertEqual(self.cur_time_str, se_a_2.get_generation_time())
+        if a.source is not None:
+            self.assertEqual(a.source, str(se_a_2.get_primary_source()))
+        self.assertSetEqual({se_a_1, se_b_1, se_c_1}, set(se_a_2.get_derives_from()))
+        self.assertEqual(self.cur_time_str, se_a_1.get_invalidation_time())
+        self.assertEqual(f"The entity '{a.res}' has been merged with '{b.res}', '{c.res}'.", se_a_2.get_description())
 
-            # Creiamo gli snapshot iniziali con metadati specifici
-            se_a_1 = self.prov_set.add_se(a)
-            se_a_1.has_generation_time("2020-01-01T00:00:00+00:00")
-            se_a_1.has_primary_source(URIRef("http://example.org/source_a"))
-            
-            se_b_1 = self.prov_set.add_se(b)
-            se_b_1.has_generation_time("2020-02-01T00:00:00+00:00")
-            se_b_1.has_primary_source(URIRef("http://example.org/source_b"))
-            
-            se_c_1 = self.prov_set.add_se(c)
-            se_c_1.has_generation_time("2020-03-01T00:00:00+00:00")
-            se_c_1.has_primary_source(URIRef("http://example.org/source_c"))
+    def test_creation_non_merged_entity(self):
+        a = self.graph_set.add_br(self.resp_agent)
 
-            a.merge(b)
-            a.merge(c)
+        result = self.prov_set.generate_provenance(self.cur_time)
+        
+        se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
+        self.assertIsNotNone(se_a)
+        self.assertIsInstance(se_a, SnapshotEntity)
+        self.assertEqual(a.res, se_a.get_is_snapshot_of())
+        self.assertEqual(self.cur_time_str, se_a.get_generation_time())
+        if a.source is not None:
+            self.assertEqual(a.source, str(se_a.get_primary_source()))
+        if a.resp_agent is not None:
+            self.assertEqual(a.resp_agent, str(se_a.get_resp_agent()))
+        self.assertEqual(f"The entity '{a.res}' has been created.", se_a.get_description())
 
-            result = self.prov_set.generate_provenance(cur_time)
+    def test_no_snapshot_non_merged_entity_scenario1(self):
+        a = self.graph_set.add_br(self.resp_agent)
+        a.mark_as_to_be_deleted()
 
-            # Verifichiamo il nuovo snapshot di merge
-            se_a_2: SnapshotEntity = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
-            self.assertIsNotNone(se_a_2)
-            self.assertIsInstance(se_a_2, SnapshotEntity)
-            self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
-            self.assertEqual(cur_time_str, se_a_2.get_generation_time())
-            if a.source is not None:
-                self.assertEqual(a.source, str(se_a_2.get_primary_source()))
-            if a.resp_agent is not None:
-                self.assertEqual(a.resp_agent, str(se_a_2.get_resp_agent()))
+        result = self.prov_set.generate_provenance(self.cur_time)
+        
+        se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
+        self.assertIsNone(se_a)
 
-            # Verifichiamo che i metadati non siano stati erroneamente ereditati
-            self.assertNotEqual("2020-01-01T00:00:00+00:00", se_a_2.get_generation_time())
-            self.assertNotEqual(URIRef("http://example.org/source_a"), se_a_2.get_primary_source())
+    def test_no_snapshot_merged_entity_scenario2(self):
+        a = self.graph_set.add_br(self.resp_agent)
+        se_a_1 = self.prov_set.add_se(a)
 
-            # Verifichiamo che i metadati corretti siano stati impostati
-            self.assertEqual(cur_time_str, se_a_2.get_generation_time())
-            if a.source is not None:
-                self.assertEqual(a.source, str(se_a_2.get_primary_source()))
+        # This avoids that the presence of the mandatory rdf:type gets interpreted
+        # as a modification with respect to an empty preexisting_graph:
+        a.remove_every_triple()
 
-            # Verifichiamo che lo snapshot derivi correttamente da tutti gli snapshot precedenti
-            self.assertSetEqual({se_a_1, se_b_1, se_c_1}, set(se_a_2.get_derives_from()))
-            self.assertEqual(cur_time_str, se_a_1.get_invalidation_time())
-            self.assertEqual(f"The entity '{a.res}' has been merged with '{b.res}', '{c.res}'.", se_a_2.get_description())
-        with self.subTest('Creation [Non-Merged entity]'):
-            a = self.graph_set.add_br(self.resp_agent)
+        result = self.prov_set.generate_provenance(self.cur_time)
+        
+        se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
+        self.assertIsNone(se_a_2)
 
-            result = self.prov_set.generate_provenance(cur_time)
-            
+    def test_deletion_non_merged_entity(self):
+        title = "TEST TITLE"
+        a = self.graph_set.add_br(self.resp_agent)
+        se_a_1 = self.prov_set.add_se(a)
+        a.has_title(title)
+        a.mark_as_to_be_deleted()
 
-            se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
-            self.assertIsNotNone(se_a)
-            self.assertIsInstance(se_a, SnapshotEntity)
-            self.assertEqual(a.res, se_a.get_is_snapshot_of())
-            self.assertEqual(cur_time_str, se_a.get_generation_time())
-            if a.source is not None:
-                self.assertEqual(a.source, str(se_a.get_primary_source()))
-            if a.resp_agent is not None:
-                self.assertEqual(a.resp_agent, str(se_a.get_resp_agent()))
+        result = self.prov_set.generate_provenance(self.cur_time)
+        
+        self.assertEqual(self.cur_time_str, se_a_1.get_invalidation_time())
 
-            self.assertEqual(f"The entity '{a.res}' has been created.", se_a.get_description())
-        with self.subTest('No snapshot [Non-Merged entity] (Scenario 1)'):
-            a = self.graph_set.add_br(self.resp_agent)
-            a.mark_as_to_be_deleted()
+        se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
+        self.assertIsNotNone(se_a_2)
+        self.assertIsInstance(se_a_2, SnapshotEntity)
+        self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
+        self.assertEqual(self.cur_time_str, se_a_2.get_generation_time())
+        if a.source is not None:
+            self.assertEqual(a.source, str(se_a_2.get_primary_source()))
+        if a.resp_agent is not None:
+            self.assertEqual(a.resp_agent, str(se_a_2.get_resp_agent()))
+        self.assertSetEqual({se_a_1}, set(se_a_2.get_derives_from()))
+        self.assertEqual(f"The entity '{a.res}' has been deleted.", se_a_2.get_description())
 
-            result = self.prov_set.generate_provenance(cur_time)
-            
+    def test_modification_non_merged_entity(self):
+        title = "TEST TITLE"
+        a = self.graph_set.add_br(self.resp_agent)
+        se_a_1 = self.prov_set.add_se(a)
+        a.has_title(title)
 
-            se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
-            self.assertIsNone(se_a)
-        with self.subTest('No snapshot [Merged entity] (Scenario 2)'):
-            a = self.graph_set.add_br(self.resp_agent)
-            se_a_1 = self.prov_set.add_se(a)
+        result = self.prov_set.generate_provenance(self.cur_time)
+        
+        self.assertEqual(self.cur_time_str, se_a_1.get_invalidation_time())
 
-            # This avoids that the presence of the mandatory rdf:type gets interpreted
-            # as a modification with respect to an empty preexisting_graph:
-            a.remove_every_triple()
-
-            result = self.prov_set.generate_provenance(cur_time)
-            
-
-            se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
-            self.assertIsNone(se_a_2)
-        with self.subTest('Deletion [Non-Merged entity]'):
-            title = "TEST TITLE"
-            a = self.graph_set.add_br(self.resp_agent)
-            se_a_1 = self.prov_set.add_se(a)
-            a.has_title(title)
-            a.mark_as_to_be_deleted()
-
-            result = self.prov_set.generate_provenance(cur_time)
-            
-
-            self.assertEqual(cur_time_str, se_a_1.get_invalidation_time())
-
-            se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
-            self.assertIsNotNone(se_a_2)
-            self.assertIsInstance(se_a_2, SnapshotEntity)
-            self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
-            self.assertEqual(cur_time_str, se_a_2.get_generation_time())
-            if a.source is not None:
-                self.assertEqual(a.source, str(se_a_2.get_primary_source()))
-            if a.resp_agent is not None:
-                self.assertEqual(a.resp_agent, str(se_a_2.get_resp_agent()))
-            self.assertSetEqual({se_a_1}, set(se_a_2.get_derives_from()))
-            self.assertEqual(f"The entity '{a.res}' has been deleted.", se_a_2.get_description())
-        with self.subTest('Modification [Non-Merged entity]'):
-            title = "TEST TITLE"
-            a = self.graph_set.add_br(self.resp_agent)
-            se_a_1 = self.prov_set.add_se(a)
-            a.has_title(title)
-
-            result = self.prov_set.generate_provenance(cur_time)
-            
-
-            self.assertEqual(cur_time_str, se_a_1.get_invalidation_time())
-
-            se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
-            self.assertIsNotNone(se_a_2)
-            self.assertIsInstance(se_a_2, SnapshotEntity)
-            self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
-            self.assertEqual(cur_time_str, se_a_2.get_generation_time())
-            if a.source is not None:
-                self.assertEqual(a.source, str(se_a_2.get_primary_source()))
-            if a.resp_agent is not None:
-                self.assertEqual(a.resp_agent, str(se_a_2.get_resp_agent()))
-
-            self.assertSetEqual({se_a_1}, set(se_a_2.get_derives_from()))
-            self.assertIsNotNone(se_a_2.get_update_action())
-            self.assertEqual(f"The entity '{a.res}' has been modified.", se_a_2.get_description())
+        se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
+        self.assertIsNotNone(se_a_2)
+        self.assertIsInstance(se_a_2, SnapshotEntity)
+        self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
+        self.assertEqual(self.cur_time_str, se_a_2.get_generation_time())
+        if a.source is not None:
+            self.assertEqual(a.source, str(se_a_2.get_primary_source()))
+        if a.resp_agent is not None:
+            self.assertEqual(a.resp_agent, str(se_a_2.get_resp_agent()))
+        self.assertSetEqual({se_a_1}, set(se_a_2.get_derives_from()))
+        self.assertIsNotNone(se_a_2.get_update_action())
+        self.assertEqual(f"The entity '{a.res}' has been modified.", se_a_2.get_description())
 
     def test_retrieve_last_snapshot(self):
         br = self.graph_set.add_br(self.resp_agent)
@@ -260,25 +244,6 @@ class TestProvSet(unittest.TestCase):
 
         prov_subject = URIRef('https://w3id.org/oc/corpus/br/abc')
         self.assertRaises(ValueError, self.prov_set._retrieve_last_snapshot, prov_subject)
-
-    # def test_generate_provenance_for_citations(self):
-    #     preexisting_graph = Graph()
-    #     preexisting_graph.add((
-    #         URIRef('https://w3id.org/oc/index/coci/ci/020010000023601000907630001040258020000010008010559090238044008040338381018136312231227010309014203370037122439026325-020010305093619112227370109090937010437073701020309'),
-    #         URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),
-    #         URIRef('http://purl.org/spar/cito/Citation')))
-    #     preexisting_graph.add((
-    #         URIRef('https://w3id.org/oc/index/coci/ci/020010000023601000907630001040258020000010008010559090238044008040338381018136312231227010309014203370037122439026325-020010305093619112227370109090937010437073701020309'),
-    #         URIRef('http://purl.org/spar/cito/hasCitationCreationDate'),
-    #         Literal('2022', datatype='http://www.w3.org/2001/XMLSchema#gYear')))
-    #     ci = self.graph_set.add_ci(self.resp_agent, res=URIRef('https://w3id.org/oc/index/coci/ci/020010000023601000907630001040258020000010008010559090238044008040338381018136312231227010309014203370037122439026325-020010305093619112227370109090937010437073701020309'), preexisting_graph=preexisting_graph)
-    #     self.prov_set.generate_provenance()
-    #     self.graph_set.commit_changes()
-    #     ci.has_citation_creation_date('2022')
-    #     self.prov_set.generate_provenance()
-    #     prov_entity = self.prov_set._retrieve_last_snapshot(URIRef('https://w3id.org/oc/index/coci/ci/020010000023601000907630001040258020000010008010559090238044008040338381018136312231227010309014203370037122439026325-020010305093619112227370109090937010437073701020309'))
-    #     self.assertEqual(prov_entity, URIRef('https://w3id.org/oc/index/coci/ci/020010000023601000907630001040258020000010008010559090238044008040338381018136312231227010309014203370037122439026325-020010305093619112227370109090937010437073701020309/prov/se/1'))
-
 
 class TestProvSetWorkflow(unittest.TestCase):
     def setUp(self):
