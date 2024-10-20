@@ -17,11 +17,10 @@
 import os
 import unittest
 
-from rdflib import URIRef
-from SPARQLWrapper import JSON, SPARQLWrapper
-
 from oc_ocdm.graph import GraphSet
 from oc_ocdm.reader import Reader
+from rdflib import Graph, URIRef
+from SPARQLWrapper import POST, SPARQLWrapper
 
 
 class TestReader(unittest.TestCase):
@@ -29,9 +28,18 @@ class TestReader(unittest.TestCase):
     def setUpClass(cls):
         cls.endpoint = 'http://127.0.0.1:8804/sparql'
         BASE = os.path.join('oc_ocdm', 'test', 'reader')
+        file_path = os.path.abspath(os.path.join(BASE, 'br.nt'))
+
+        g = Graph()
+        g.parse(file_path, format='nt')
+
+        insert_query = "INSERT DATA { GRAPH <https://w3id.org/oc/meta/> {\n"
+        for s, p, o in g:
+            insert_query += f"{s.n3()} {p.n3()} {o.n3()} .\n"
+        insert_query += "} }"
         server = SPARQLWrapper(cls.endpoint)
-        query = 'LOAD <file:' + os.path.abspath(os.path.join(BASE, f'br.nt')).replace('\\', '/') + '> INTO GRAPH <' + f'https://w3id.org/oc/meta/' + '>'
-        server.setQuery(query)
+        server.setMethod(POST)
+        server.setQuery(insert_query)
         server.query()
     
     def test_import_entity_from_triplestore(self):
