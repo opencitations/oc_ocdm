@@ -49,7 +49,7 @@ class TestProvSet(unittest.TestCase):
         a.merge(b, prefer_self=True)
 
         result = self.prov_set.generate_provenance(self.cur_time)
-
+        print(a.res, b.res, URIRef(a.res + '/prov/se/1'), self.prov_set.get_entity(URIRef(a.res + '/prov/se/1')))
         se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
         self.assertIsNotNone(se_a)
         self.assertIsInstance(se_a, SnapshotEntity)
