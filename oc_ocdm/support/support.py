@@ -372,7 +372,7 @@ def build_graph_from_results(results: List[Dict]) -> Graph:
             o = URIRef(triple['o']['value'])
         else:
             datatype = triple['o'].get('datatype', None)
-            datatype = URIRef(datatype) if datatype is not None else XSD.string
+            datatype = URIRef(datatype) if datatype is not None else None
             o = Literal(triple['o']['value'], datatype=datatype)
         graph.add((s, p, o))
     return graph
