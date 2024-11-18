@@ -1,0 +1,15 @@
+<https://w3id.org/oc/meta/ra/06360300897> <http://xmlns.com/foaf/0.1/familyName> "Smith" .
+<https://w3id.org/oc/meta/ra/06360300897> <http://xmlns.com/foaf/0.1/givenName> "John" .
+<https://w3id.org/oc/meta/ra/06360300897> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Agent> .
+
+<https://w3id.org/oc/meta/ra/06360300898> <http://xmlns.com/foaf/0.1/familyName> "Johnson" .
+<https://w3id.org/oc/meta/ra/06360300898> <http://xmlns.com/foaf/0.1/givenName> "Mary" .
+<https://w3id.org/oc/meta/ra/06360300898> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Agent> .
+
+<https://w3id.org/oc/meta/ra/06360300899> <http://xmlns.com/foaf/0.1/familyName> "Brown" .
+<https://w3id.org/oc/meta/ra/06360300899> <http://xmlns.com/foaf/0.1/givenName> "David" .
+<https://w3id.org/oc/meta/ra/06360300899> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Agent> .
+
+<https://w3id.org/oc/meta/ra/06360300900> <http://xmlns.com/foaf/0.1/familyName> "Wilson" .
+<https://w3id.org/oc/meta/ra/06360300900> <http://xmlns.com/foaf/0.1/givenName> "Sarah" .
+<https://w3id.org/oc/meta/ra/06360300900> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Agent> .

@@ -1,0 +1,7 @@
+<https://w3id.org/oc/meta/id/0605> <http://purl.org/spar/datacite/usesIdentifierScheme> <http://purl.org/spar/datacite/doi> .
+<https://w3id.org/oc/meta/id/0605> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/spar/datacite/Identifier> .
+<https://w3id.org/oc/meta/id/0605> <http://purl.org/dc/terms/identifier> "10.1234/cancer.1999.0605" .
+
+<https://w3id.org/oc/meta/id/0636064270> <http://purl.org/spar/datacite/usesIdentifierScheme> <http://purl.org/spar/datacite/doi> .
+<https://w3id.org/oc/meta/id/0636064270> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/spar/datacite/Identifier> .
+<https://w3id.org/oc/meta/id/0636064270> <http://purl.org/dc/terms/identifier> "10.1234/neurology.2012.0636066666" .
