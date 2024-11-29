@@ -353,6 +353,84 @@ class TestBibliographicResource(unittest.TestCase):
         triple2 = self.br1.res, RDF.type, GraphEntity.iri_preprint
         self.assertIn(triple2, self.br1.g) and not self.assertIn(triple1, self.br1.g)
 
+    def test_merge_specific_types(self):
+        """Test merging entities with specific types"""
+        
+        # Case 1: Merge specific type into generic type
+        br_specific = self.graph_set.add_br(self.resp_agent)
+        br_generic = self.graph_set.add_br(self.resp_agent)
+        
+        br_specific.create_journal_article()
+        
+        # Verify initial types
+        self.assertIn((br_specific.res, RDF.type, GraphEntity.iri_journal_article), br_specific.g)
+        self.assertIn((br_specific.res, RDF.type, GraphEntity.iri_expression), br_specific.g)
+        self.assertIn((br_generic.res, RDF.type, GraphEntity.iri_expression), br_generic.g)
+        
+        # Merge and verify types are preserved correctly
+        br_generic.merge(br_specific)
+        self.assertIn((br_generic.res, RDF.type, GraphEntity.iri_journal_article), br_generic.g)
+        self.assertIn((br_generic.res, RDF.type, GraphEntity.iri_expression), br_generic.g)
+        
+        # Case 2: Merge generic type into specific type
+        br_specific_2 = self.graph_set.add_br(self.resp_agent)
+        br_generic_2 = self.graph_set.add_br(self.resp_agent)
+        
+        br_specific_2.create_journal_article()
+        
+        br_specific_2.merge(br_generic_2)
+        self.assertIn((br_specific_2.res, RDF.type, GraphEntity.iri_journal_article), br_specific_2.g)
+        self.assertIn((br_specific_2.res, RDF.type, GraphEntity.iri_expression), br_specific_2.g)
+        
+        # Case 3: Merge between two specific types (prefer_self=True)
+        br_article = self.graph_set.add_br(self.resp_agent)
+        br_book = self.graph_set.add_br(self.resp_agent)
+        
+        br_article.create_journal_article()
+        br_book.create_book()
+        
+        br_article.merge(br_book, prefer_self=True)
+        self.assertIn((br_article.res, RDF.type, GraphEntity.iri_journal_article), br_article.g)
+        self.assertIn((br_article.res, RDF.type, GraphEntity.iri_expression), br_article.g)
+        self.assertNotIn((br_article.res, RDF.type, GraphEntity.iri_book), br_article.g)
+        
+        # Case 4: Merge between two specific types (prefer_self=False)
+        br_article_2 = self.graph_set.add_br(self.resp_agent)
+        br_book_2 = self.graph_set.add_br(self.resp_agent)
+        
+        br_article_2.create_journal_article()
+        br_book_2.create_book()
+        
+        br_article_2.merge(br_book_2, prefer_self=False)
+        self.assertIn((br_article_2.res, RDF.type, GraphEntity.iri_book), br_article_2.g)
+        self.assertIn((br_article_2.res, RDF.type, GraphEntity.iri_expression), br_article_2.g)
+        self.assertNotIn((br_article_2.res, RDF.type, GraphEntity.iri_journal_article), br_article_2.g)
+
+        # Case 5: Merge a generic entity into a specific entity (prefer_self=True)
+        br_specific_3 = self.graph_set.add_br(self.resp_agent)
+        br_generic_3 = self.graph_set.add_br(self.resp_agent)
+        
+        br_specific_3.create_journal_article()
+        
+        # Verify initial types
+        self.assertIn((br_specific_3.res, RDF.type, GraphEntity.iri_journal_article), br_specific_3.g)
+        self.assertIn((br_specific_3.res, RDF.type, GraphEntity.iri_expression), br_specific_3.g)
+        self.assertIn((br_generic_3.res, RDF.type, GraphEntity.iri_expression), br_generic_3.g)
+        
+        # Merge and verify types are preserved correctly
+        br_specific_3.merge(br_generic_3, prefer_self=True)
+        self.assertIn((br_specific_3.res, RDF.type, GraphEntity.iri_journal_article), br_specific_3.g)
+        self.assertIn((br_specific_3.res, RDF.type, GraphEntity.iri_expression), br_specific_3.g)
+
+        # Case 6: Merge a generic entity into a specific entity (prefer_self=False)
+        br_specific_4 = self.graph_set.add_br(self.resp_agent)
+        br_generic_4 = self.graph_set.add_br(self.resp_agent)
+        
+        br_specific_4.create_journal_article()
+        
+        br_specific_4.merge(br_generic_4, prefer_self=False)
+        self.assertIn((br_specific_4.res, RDF.type, GraphEntity.iri_expression), br_specific_4.g)
+        self.assertIn((br_specific_4.res, RDF.type, GraphEntity.iri_journal_article), br_specific_4.g)
 
 if __name__ == '__main__':
     unittest.main()

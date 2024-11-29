@@ -18,7 +18,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from oc_ocdm.abstract_entity import AbstractEntity
-from rdflib import Graph, Namespace, URIRef
+from rdflib import RDF, Graph, Namespace, URIRef
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict, List, Optional, Tuple
@@ -260,6 +260,20 @@ class GraphEntity(AbstractEntity):
 
         self._to_be_deleted = True
 
+    def _get_specific_type(self) -> Optional[URIRef]:
+        """
+        Get the specific type of the entity (e.g., JournalArticle), if any.
+        Excludes the base Expression type.
+        
+        Returns:
+            The specific type URI if present, None otherwise
+        """
+        base_type = self.short_name_to_type_iri[self.short_name]
+        for _, _, type_uri in self.g.triples((self.res, RDF.type, None)):
+            if type_uri != base_type:
+                return type_uri
+        return None
+
     def merge(self, other: GraphEntity, prefer_self: bool = False) -> None:
         """
         **WARNING:** ``GraphEntity`` **is an abstract class that cannot be instantiated at runtime.
@@ -282,9 +296,22 @@ class GraphEntity(AbstractEntity):
                 new_triple = (triple[0], triple[1], self.res)
                 entity.g.add(new_triple)
 
-        types: List[URIRef] = other.get_types()
-        for cur_type in types:
-            self._create_type(cur_type)
+        self_specific_type = self._get_specific_type()
+        other_specific_type = other._get_specific_type()
+
+        final_specific_type = None
+        if prefer_self and self_specific_type:
+            final_specific_type = self_specific_type
+        elif other_specific_type:
+            final_specific_type = other_specific_type
+        elif self_specific_type:
+            final_specific_type = self_specific_type
+
+        self.g.remove((self.res, RDF.type, None))
+        base_type = self.short_name_to_type_iri[self.short_name]
+        self.g.add((self.res, RDF.type, base_type))
+        if final_specific_type:
+            self.g.add((self.res, RDF.type, final_specific_type))
 
         label: Optional[str] = other.get_label()
         if label is not None:
