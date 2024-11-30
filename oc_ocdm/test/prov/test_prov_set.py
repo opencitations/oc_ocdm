@@ -52,7 +52,6 @@ class TestProvSet(unittest.TestCase):
         a.merge(b, prefer_self=True)
 
         result = self.prov_set.generate_provenance(self.cur_time)
-        print(a.res, b.res, URIRef(a.res + '/prov/se/1'), self.prov_set.get_entity(URIRef(a.res + '/prov/se/1')), self.prov_set.res_to_entity)
         se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
         self.assertIsNotNone(se_a)
         self.assertIsInstance(se_a, SnapshotEntity)
@@ -248,6 +247,42 @@ class TestProvSet(unittest.TestCase):
         prov_subject = URIRef('https://w3id.org/oc/corpus/br/abc')
         self.assertRaises(ValueError, self.prov_set._retrieve_last_snapshot, prov_subject)
 
+    def test_restore_deleted_entity(self):
+        # Create and delete an entity first
+        a = self.graph_set.add_br(self.resp_agent)
+
+        # Generate provenance for dcreation
+        self.prov_set.generate_provenance(self.cur_time)
+
+        a.mark_as_to_be_deleted()
+        
+        # Generate provenance for deletion
+        self.prov_set.generate_provenance(self.cur_time)
+        deletion_time = self.cur_time_str
+        
+        # Get the deletion snapshot
+        se_a_2: SnapshotEntity = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
+        self.assertIsNotNone(se_a_2)
+        self.assertEqual(deletion_time, se_a_2.get_generation_time())
+        self.assertEqual(deletion_time, se_a_2.get_invalidation_time())
+        
+        # Now restore the entity
+        a.mark_as_restored()
+        a.has_title("Restored Title")  # Add some modification
+        
+        # Generate provenance after restoration
+        restoration_time = "2020-12-08T21:17:39+00:00"
+        result = self.prov_set.generate_provenance(1607462259.846196)  # One day later
+        
+        # Check the restoration snapshot
+        se_a_3: SnapshotEntity = self.prov_set.get_entity(URIRef(a.res + '/prov/se/3'))
+        self.assertIsNotNone(se_a_3)
+        self.assertEqual(restoration_time, se_a_3.get_generation_time())
+        self.assertIsNone(se_a_3.get_invalidation_time())  # No invalidation time for restoration
+        self.assertEqual(f"The entity '{a.res}' has been restored.", se_a_3.get_description())
+        self.assertSetEqual({se_a_2}, set(se_a_3.get_derives_from()))
+        self.assertIsNotNone(se_a_3.get_update_action())
+
 class TestProvSetWorkflow(unittest.TestCase):
     def setUp(self):
         self.test_dir = os.path.join('oc_ocdm', 'test', 'prov', 'provset_workflow_data') + os.sep
@@ -347,6 +382,7 @@ class TestProvSetWorkflow(unittest.TestCase):
         # derived_from = set(final_se_a.get_derives_from())
         # self.assertEqual(3, len(derived_from))
         # self.assertTrue(all(se.res in derived_from for se in [se_a, se_b, se_c]))
+
 
 if __name__ == '__main__':
     unittest.main()

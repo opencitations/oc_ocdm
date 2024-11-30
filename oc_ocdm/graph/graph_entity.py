@@ -205,6 +205,7 @@ class GraphEntity(AbstractEntity):
         # FLAGS
         self._to_be_deleted: bool = False
         self._was_merged: bool = False
+        self._is_restored: bool = False
 
         # If res was not specified, create from scratch the URI reference for this entity,
         # otherwise use the provided one
@@ -250,6 +251,23 @@ class GraphEntity(AbstractEntity):
     def merge_list(self) -> Tuple[GraphEntity]:
         return self._merge_list
 
+    @property 
+    def is_restored(self) -> bool:
+        """Indicates if this entity was restored after being deleted."""
+        return self._is_restored
+
+    def mark_as_restored(self) -> None:
+        """
+        Marks an entity as being restored after deletion.
+                
+        This state signals to the provenance system that:
+        - No new invalidation time should be generated for the previous snapshot
+        - The original deletion snapshot's invalidation time should be preserved
+        - The entity should be treated as restored rather than newly created
+        """
+        self._to_be_deleted = False
+        self._is_restored = True
+            
     def mark_as_to_be_deleted(self) -> None:
         # Here we must REMOVE triples pointing
         # to 'self' [THIS CANNOT BE UNDONE]:
@@ -332,6 +350,7 @@ class GraphEntity(AbstractEntity):
         else:
             for triple in self.g.triples((self.res, None, None)):
                 self.preexisting_graph.add(triple)
+        self._is_restored = False
         self._to_be_deleted = False
         self._was_merged = False
         self._merge_list = tuple()

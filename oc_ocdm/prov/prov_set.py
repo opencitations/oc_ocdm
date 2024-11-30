@@ -189,6 +189,17 @@ class ProvSet(AbstractSet):
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been deleted.")
                     cur_snapshot.has_update_action(update_query)
                     modified_entities.add(cur_subj.res)
+                elif cur_subj.is_restored:
+                    # RESTORATION SNAPSHOT
+                    last_snapshot: SnapshotEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
+                    # Don't set invalidation time on previous snapshot for restorations
+                    
+                    cur_snapshot: SnapshotEntity = self._create_snapshot(cur_subj, cur_time)
+                    cur_snapshot.derives_from(last_snapshot)
+                    cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been restored.")
+                    if update_query:
+                        cur_snapshot.has_update_action(update_query)
+                    modified_entities.add(cur_subj.res)
                 elif was_modified:
                     # MODIFICATION SNAPSHOT
                     last_snapshot: SnapshotEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
