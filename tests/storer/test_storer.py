@@ -47,8 +47,8 @@ class TestStorer(unittest.TestCase):
         self.graph_set = GraphSet(self.base_iri, "", "060", False)
         self.prov_set = ProvSet(self.graph_set, self.base_iri, "", False)
         self.br = self.graph_set.add_br(self.resp_agent)
-        self.data_dir = os.path.join("oc_ocdm", "test", "storer", "data")
-        self.prov_dir = os.path.join("oc_ocdm", "test", "storer", "test_provenance")
+        self.data_dir = os.path.join("tests", "storer", "data")
+        self.prov_dir = os.path.join("tests", "storer", "test_provenance")
         self.info_dir = os.path.join(self.prov_dir, "info_dir")
         self.reset_server()
 
@@ -59,7 +59,7 @@ class TestStorer(unittest.TestCase):
             rmtree(os.path.join(self.prov_dir))
 
     def test_store_graphs_in_file(self):
-        base_dir = os.path.join("oc_ocdm", "test", "storer", "data", "rdf") + os.sep
+        base_dir = os.path.join("tests", "storer", "data", "rdf") + os.sep
         with self.subTest("output_format=json-ld, zip_output=True"):
             modified_entities = self.prov_set.generate_provenance()
             prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=True)
@@ -81,7 +81,7 @@ class TestStorer(unittest.TestCase):
                         'http://www.w3.org/ns/prov#specializationOf': [{'@id': 'http://test/br/0601'}], 
                         'http://www.w3.org/ns/prov#wasAttributedTo': [{'@id': 'http://resp_agent.test/'}]}], '@id': 'http://test/br/0601/prov/'}])
         with self.subTest("output_format=json-ld, zip_output=False"):
-            base_dir_1 = os.path.join("oc_ocdm", "test", "storer", "data", "rdf_1") + os.sep
+            base_dir_1 = os.path.join("tests", "storer", "data", "rdf_1") + os.sep
             storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
             self.prov_set.generate_provenance()
             prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
@@ -100,7 +100,7 @@ class TestStorer(unittest.TestCase):
                     'http://www.w3.org/ns/prov#specializationOf': [{'@id': 'http://test/br/0601'}], 
                     'http://www.w3.org/ns/prov#wasAttributedTo': [{'@id': 'http://resp_agent.test/'}]}], '@id': 'http://test/br/0601/prov/'}])
         with self.subTest("output_format=nquads, zip_output=True"):
-            base_dir_2 = os.path.join("oc_ocdm", "test", "storer", "data", "rdf_2") + os.sep
+            base_dir_2 = os.path.join("tests", "storer", "data", "rdf_2") + os.sep
             storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='nquads', zip_output=True)
             self.prov_set.generate_provenance()
             prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='nquads', zip_output=True)
@@ -128,7 +128,7 @@ class TestStorer(unittest.TestCase):
                             data_g.remove((s, p, o, c))
                     self.assertTrue(compare.isomorphic(data_g, expected_data_g))
         with self.subTest("output_format=nquads, zip_output=False"):
-            base_dir_3 = os.path.join("oc_ocdm", "test", "storer", "data", "rdf_3") + os.sep
+            base_dir_3 = os.path.join("tests", "storer", "data", "rdf_3") + os.sep
             storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='nquads', zip_output=False)
             self.prov_set.generate_provenance()
             prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='nquads', zip_output=False)
@@ -153,7 +153,7 @@ class TestStorer(unittest.TestCase):
             self.assertTrue(compare.isomorphic(prov_unzipped, expected_prov_unzipped))
 
     def test_store_graphs_in_file_multiprocessing(self):
-        base_dir = os.path.join("oc_ocdm", "test", "storer", "data", "multiprocessing") + os.sep
+        base_dir = os.path.join("tests", "storer", "data", "multiprocessing") + os.sep
         storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
         self.prov_set.generate_provenance()
         prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
@@ -174,7 +174,7 @@ class TestStorer(unittest.TestCase):
     def test_provenance(self):
         graph_set = GraphSet(self.base_iri, "", "060", False)
         prov_set = ProvSet(graph_set, self.base_iri, info_dir=self.info_dir)
-        base_dir = os.path.join("oc_ocdm", "test", "storer", "test_provenance") + os.sep
+        base_dir = os.path.join("tests", "storer", "test_provenance") + os.sep
         graph_set.add_br(self.resp_agent)
         graph_set.add_br(self.resp_agent)
         graph_set.add_br(self.resp_agent)
@@ -189,7 +189,7 @@ class TestStorer(unittest.TestCase):
             pool.starmap(process_entity, entities_to_process)
 
     def test_store_graphs_save_queries(self):
-        base_dir = os.path.join("oc_ocdm", "test", "storer", "data", "rdf_save_queries") + os.sep
+        base_dir = os.path.join("tests", "storer", "data", "rdf_save_queries") + os.sep
         storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
         self.prov_set.generate_provenance()
         prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
@@ -216,8 +216,8 @@ def process_entity(entity):
     base_iri = "http://test/"
     ts = 'http://127.0.0.1:8804/sparql'
     resp_agent = "http://resp_agent.test/"
-    base_dir = os.path.join("oc_ocdm", "test", "storer", "test_provenance") + os.sep
-    info_dir = os.path.join("oc_ocdm", "test", "storer", "test_provenance", "info_dir")
+    base_dir = os.path.join("tests", "storer", "test_provenance") + os.sep
+    info_dir = os.path.join("tests", "storer", "test_provenance", "info_dir")
     graph_set = GraphSet(base_iri, "", "060", False)
     Reader.import_entity_from_triplestore(graph_set, ts, URIRef(entity), resp_agent)
     br = graph_set.get_entity(URIRef(entity))
