@@ -124,7 +124,7 @@ jobs:
 
   DeployPages:
     needs: CheckCoverage
-    if: github.ref == 'refs/heads/master' 
+    if: github.ref == 'refs/heads/master'  
     runs-on: ubuntu-latest
     environment:
       name: github-pages
