@@ -77,6 +77,11 @@ jobs:
         # Run the script
         ./tests/stop-test-database.sh
         
+    - name: Generate HTML coverage report (for master branch only)
+      if: github.ref == 'refs/heads/master' && matrix.python-version == '3.10'
+      run: |
+        poetry run coverage html -d htmlcov
+        
     - name: Generate coverage badge (for master branch only)
       if: github.ref == 'refs/heads/master' && matrix.python-version == '3.10'
       run: |
@@ -106,7 +111,25 @@ jobs:
         repository: arcangelo7/badges
         actor: arcangelo7
         
+    - name: Upload coverage report to GitHub Pages artifact (for master branch only)
+      if: github.ref == 'refs/heads/master' && matrix.python-version == '3.10'
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: htmlcov/
+        
     - uses: actions/upload-artifact@v4
       with:
           name: coverage-artifact-${{ matrix.python-version }}
           path: tests/coverage/
+
+  DeployPages:
+    needs: CheckCoverage
+    if: github.ref == 'refs/heads/master' 
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
