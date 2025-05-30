@@ -89,19 +89,7 @@ _On Windows (PowerShell):_
     # Stop the test database
     .\tests\stop-test-database.ps1
 ```
-```
 
-#### Database access during testing
-- **SPARQL endpoint**: http://localhost:8804/sparql
-- **Virtuoso Conductor**: http://localhost:8804/conductor
-- **Username**: dba
-- **Password**: dba
-
-#### Run specific test files
-To run a specific test file:
-``` bash
-    poetry run python -m unittest oc_ocdm.test.path.to.test_file
-```
 
 ### How to manage the project using Poetry
 See [Poetry commands documentation](https://python-poetry.org/docs/cli/).

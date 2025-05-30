@@ -31,7 +31,7 @@ class TestProvSet(unittest.TestCase):
 
     def setUp(self):
         self.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
-        counter_db_path = 'oc_ocdm/test/prov/prov_counter.db'
+        counter_db_path = 'tests/prov/prov_counter.db'
         if os.path.exists(counter_db_path):
             os.remove(counter_db_path)
         self.prov_set = ProvSet(self.graph_set, "http://test/", "./info_dir/", False, custom_counter_handler=SqliteCounterHandler(counter_db_path), supplier_prefix="")
@@ -285,7 +285,7 @@ class TestProvSet(unittest.TestCase):
 
 class TestProvSetWorkflow(unittest.TestCase):
     def setUp(self):
-        self.test_dir = os.path.join('oc_ocdm', 'test', 'prov', 'provset_workflow_data') + os.sep
+        self.test_dir = os.path.join('tests', 'prov', 'provset_workflow_data') + os.sep
         if not os.path.exists(self.test_dir):
             os.makedirs(self.test_dir)
         self.base_iri = "http://test/"
