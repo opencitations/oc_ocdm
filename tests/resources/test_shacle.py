@@ -12,7 +12,7 @@ class TestShacle(unittest.TestCase):
     def test_validate(self):
       data_graph = ConjunctiveGraph()
       sg = Graph()
-      data_graph.parse(source=os.path.join('oc_ocdm', 'test', 'resources', 'data.json'), format='json-ld')
+      data_graph.parse(source=os.path.join('tests', 'resources', 'data.json'), format='json-ld')
       sg.parse(source=os.path.join('oc_ocdm', 'resources', 'shacle.ttl'), format='text/turtle')
       r = validate(data_graph,
         shacl_graph=sg,
@@ -32,7 +32,7 @@ class TestShacle(unittest.TestCase):
       reader = Reader()
       g_set = GraphSet(base_iri='https://w3id.org/oc/meta/')
       g = ConjunctiveGraph()
-      g.parse(source=os.path.join('oc_ocdm', 'test', 'resources', 'data_reader.json'))
+      g.parse(source=os.path.join('tests', 'resources', 'data_reader.json'))
       results = []
       for triple in g:
         o = triple[2]
@@ -56,7 +56,7 @@ class TestShacle(unittest.TestCase):
       reader = Reader()
       g_set = GraphSet(base_iri='https://w3id.org/oc/meta/')
       g = ConjunctiveGraph()
-      g.parse(source=os.path.join('oc_ocdm', 'test', 'resources', 'data_reader_invalid.json'))
+      g.parse(source=os.path.join('tests', 'resources', 'data_reader_invalid.json'))
       results = []
       for triple in g:
         o = triple[2]

@@ -29,7 +29,7 @@ class TestReader(unittest.TestCase):
     def setUpClass(cls):
         cls.endpoint = 'http://127.0.0.1:8804/sparql'
         cls.resp_agent = 'https://orcid.org/0000-0002-8420-0696'
-        BASE = os.path.join('oc_ocdm', 'test', 'reader')
+        BASE = os.path.join('tests', 'reader')
         
         cls.br_file = os.path.abspath(os.path.join(BASE, 'br.nt'))
         cls.ra_file = os.path.abspath(os.path.join(BASE, 'ra.nt'))
