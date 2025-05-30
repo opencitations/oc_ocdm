@@ -23,6 +23,11 @@ on:
   pull_request:
     branches: [master]
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   CheckCoverage:
     runs-on: ubuntu-latest
@@ -60,6 +65,9 @@ jobs:
     - name: Run tests with coverage
       run: |
         poetry run coverage run --rcfile=tests/coverage/.coveragerc
+        echo "=== Coverage Report ==="
+        poetry run coverage report
+        echo "COVERAGE=$(poetry run coverage report | grep TOTAL | awk '{print $4}')" >> $GITHUB_ENV
         
     - name: Stop test database
       if: always()
@@ -69,33 +77,36 @@ jobs:
         # Run the script
         ./tests/stop-test-database.sh
         
-    - name: Generate the badge
+    - name: Generate coverage badge (for master branch only)
+      if: github.ref == 'refs/heads/master' && matrix.python-version == '3.10'
       run: |
-        mv .coverage tests/coverage/
-        cd tests/coverage/
-        rm -f coverage.svg
-        poetry run coverage-badge -o coverage.svg
+        # Determine badge color based on coverage percentage
+        COVERAGE_NUM=$(echo ${{ env.COVERAGE }} | sed 's/%//')
+        
+        if (( $(echo "$COVERAGE_NUM >= 90" | bc -l) )); then
+          COLOR="green"
+        elif (( $(echo "$COVERAGE_NUM >= 75" | bc -l) )); then
+          COLOR="yellow"
+        elif (( $(echo "$COVERAGE_NUM >= 60" | bc -l) )); then
+          COLOR="orange"
+        else
+          COLOR="red"
+        fi
+        echo "BADGE_COLOR=$COLOR" >> $GITHUB_ENV
+        
+    - name: Update external coverage badge (for master branch only)
+      if: github.ref == 'refs/heads/master' && matrix.python-version == '3.10'
+      uses: RubbaBoy/BYOB@v1.3.0
+      with:
+        name: opencitations-oc_ocdm-coverage-master
+        label: "Coverage"
+        status: "${{ env.COVERAGE }}"
+        color: ${{ env.BADGE_COLOR }}
+        github_token: ${{ secrets.GIST_PAT }}
+        repository: arcangelo7/badges
+        actor: arcangelo7
         
     - uses: actions/upload-artifact@v4
       with:
           name: coverage-artifact-${{ matrix.python-version }}
           path: tests/coverage/
-          
-  PublishBadge:
-    runs-on: ubuntu-latest
-    needs: CheckCoverage
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/download-artifact@v4
-      with:
-        name: coverage-artifact-3.10
-        path: tests/coverage/
-    - name: Publish the badge on the GitHub repo
-      run: |
-        git pull
-        git add tests/coverage/.coverage
-        git add tests/coverage/coverage.svg
-        git config --global user.name 'arcangelo7'
-        git config --global user.email 'arcangelomas@gmail.com'
-        git commit -m 'Coverage updated'
-        git push
