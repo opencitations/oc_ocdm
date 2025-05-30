@@ -1,7 +1,7 @@
 # oc_ocdm
 [<img src="https://img.shields.io/badge/powered%20by-OpenCitations-%239931FC?labelColor=2D22DE" />](http://opencitations.net)
 [![Run tests](https://github.com/opencitations/oc_ocdm/actions/workflows/run_tests.yml/badge.svg)](https://github.com/opencitations/oc_ocdm/actions/workflows/run_tests.yml)
-![Coverage](https://raw.githubusercontent.com/opencitations/oc_ocdm/master/oc_ocdm/test/coverage/coverage.svg)
+![Coverage](https://raw.githubusercontent.com/opencitations/oc_ocdm/master/tests/coverage/coverage.svg)
 [![Documentation Status](https://readthedocs.org/projects/oc-ocdm/badge/?version=latest)](https://oc-ocdm.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/oc-ocdm.svg)](https://badge.fury.io/py/oc-ocdm)
 ![PyPI](https://img.shields.io/pypi/pyversions/oc_meta)
@@ -30,7 +30,7 @@ This package can be simply installed with **pip**:
 ```
   2. Clone this repository:
 ``` bash
-    git clone https://github.com/iosonopersia/oc_ocdm
+    git clone https://github.com/opencitations/oc_ocdm
     cd ./oc_ocdm
 ```
   3. Install all the dependencies:
@@ -54,9 +54,53 @@ This package can be simply installed with **pip**:
 ```
 
 ### How to run the tests
-Just run the following command inside the root project folder:
+
+The project uses Virtuoso triplestore running in Docker for testing. Follow these steps to run the tests:
+
+#### Prerequisites
+- Docker installed and running
+- All dependencies installed:
 ``` bash
-    poetry run test
+    poetry install
+```
+
+#### Basic test execution
+
+_On Linux/macOS:_
+``` bash
+    # Start the test database
+    ./tests/start-test-database.sh
+    
+    # Run tests with coverage
+    poetry run coverage run --rcfile=tests/coverage/.coveragerc
+    
+    # Stop the test database
+    ./tests/stop-test-database.sh
+```
+
+_On Windows (PowerShell):_
+``` powershell
+    # Start the test database
+    .\tests\start-test-database.ps1
+    
+    # Run tests with coverage
+    poetry run coverage run --rcfile=tests/coverage/.coveragerc
+    
+    # Stop the test database
+    .\tests\stop-test-database.ps1
+```
+```
+
+#### Database access during testing
+- **SPARQL endpoint**: http://localhost:8804/sparql
+- **Virtuoso Conductor**: http://localhost:8804/conductor
+- **Username**: dba
+- **Password**: dba
+
+#### Run specific test files
+To run a specific test file:
+``` bash
+    poetry run python -m unittest oc_ocdm.test.path.to.test_file
 ```
 
 ### How to manage the project using Poetry
@@ -118,8 +162,8 @@ If you are using or extending `oc_ocdm` as part of a scientific publication, we 
 ```
 
 ## Acknowledgements
-This work has been funded by the project “Open Biomedical Citations in Context Corpus”
-(Wellcome Trust, Grant n. 214471/Z/18/Z) and the project “Wikipedia Citations in Wikidata”
+This work has been funded by the project "Open Biomedical Citations in Context Corpus"
+(Wellcome Trust, Grant n. 214471/Z/18/Z) and the project "Wikipedia Citations in Wikidata"
 (Wikimedia Foundation, https://meta.wikimedia.org/wiki/Wikicite/grant/Wikipedia_Citations_in_Wikidata).
 
 We would like to thank (in alphabetic order) Fabio Mariani (@FabioMariani), Arcangelo

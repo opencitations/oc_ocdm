@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright 2022 Arcangelo Massari <arcangelo.massari@unibo.it>
+# Copyright 2022-2025 Arcangelo Massari <arcangelo.massari@unibo.it>
 #
 # Permission to use, copy, modify, and/or distribute this software for any purpose
 # with or without fee is hereby granted, provided that the above copyright notice
@@ -14,63 +14,87 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 
-
 name: Run tests
+
 on:
   push:
-    branches: [ master ]
+    branches:
+      - "**" # All branches, including those with /
   pull_request:
-    branches: [ master ]
+    branches: [master]
+
 jobs:
   CheckCoverage:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+
     steps:
-    - uses: actions/checkout@v3.0.2
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+        
+    - name: Setup Poetry
+      uses: snok/install-poetry@v1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+        
     - name: Install dependencies
+      run: poetry install
+        
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v3
+        
+    - name: Start test database
       run: |
-        pip3 install poetry
-        poetry install
-    - name: Run Virtuoso
+        # Make the script executable
+        chmod +x ./tests/start-test-database.sh
+        # Run the script
+        ./tests/start-test-database.sh
+        
+    - name: Run tests with coverage
       run: |
-        cd virtuoso-opensource/bin
-        ./virtuoso-t
-        python3 -c 'import time; time.sleep(30)'
-        cd ../..
-    - name: Check the overage
+        poetry run coverage run --rcfile=tests/coverage/.coveragerc
+        
+    - name: Stop test database
+      if: always()
       run: |
-        poetry run coverage run --rcfile=oc_ocdm/test/coverage/.coveragerc
+        # Make the script executable
+        chmod +x ./tests/stop-test-database.sh
+        # Run the script
+        ./tests/stop-test-database.sh
+        
     - name: Generate the badge
       run: |
-        mv .coverage oc_ocdm/test/coverage/
-        cd oc_ocdm/test/coverage/
-        rm coverage.svg
+        mv .coverage tests/coverage/
+        cd tests/coverage/
+        rm -f coverage.svg
         poetry run coverage-badge -o coverage.svg
-    - uses: actions/upload-artifact@v3.1.0
+        
+    - uses: actions/upload-artifact@v4
       with:
-          name: coverage-artifact
-          path: oc_ocdm/test/coverage/
+          name: coverage-artifact-${{ matrix.python-version }}
+          path: tests/coverage/
+          
   PublishBadge:
     runs-on: ubuntu-latest
     needs: CheckCoverage
     steps:
-    - uses: actions/checkout@v3.0.2
-    - uses: actions/download-artifact@v3.0.0
+    - uses: actions/checkout@v4
+    - uses: actions/download-artifact@v4
       with:
-        name: coverage-artifact
-        path: oc_ocdm/test/coverage/
+        name: coverage-artifact-3.10
+        path: tests/coverage/
     - name: Publish the badge on the GitHub repo
       run: |
         git pull
-        git add oc_ocdm/test/coverage/.coverage
-        git add oc_ocdm/test/coverage/coverage.svg
+        git add tests/coverage/.coverage
+        git add tests/coverage/coverage.svg
         git config --global user.name 'arcangelo7'
         git config --global user.email 'arcangelomas@gmail.com'
         git commit -m 'Coverage updated'
