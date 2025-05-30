@@ -77,7 +77,7 @@ class TestStorer(unittest.TestCase):
                     self.assertEqual(data, [{'@graph': [{
                         '@id': 'http://test/br/0601/prov/se/1', 
                         '@type': ['http://www.w3.org/ns/prov#Entity'], 
-                        'http://purl.org/dc/terms/description': [{'@value': "The entity 'http://test/br/0601' has been created."}], 
+                        'http://purl.org/dc/terms/description': [{'@type': 'http://www.w3.org/2001/XMLSchema#string', '@value': "The entity 'http://test/br/0601' has been created."}], 
                         'http://www.w3.org/ns/prov#specializationOf': [{'@id': 'http://test/br/0601'}], 
                         'http://www.w3.org/ns/prov#wasAttributedTo': [{'@id': 'http://resp_agent.test/'}]}], '@id': 'http://test/br/0601/prov/'}])
         with self.subTest("output_format=json-ld, zip_output=False"):
@@ -96,7 +96,7 @@ class TestStorer(unittest.TestCase):
                 self.assertEqual(data, [{'@graph': [{
                     '@id': 'http://test/br/0601/prov/se/1', 
                     '@type': ['http://www.w3.org/ns/prov#Entity'], 
-                    'http://purl.org/dc/terms/description': [{'@value': "The entity 'http://test/br/0601' has been created."}], 
+                    'http://purl.org/dc/terms/description': [{'@type': 'http://www.w3.org/2001/XMLSchema#string', '@value': "The entity 'http://test/br/0601' has been created."}], 
                     'http://www.w3.org/ns/prov#specializationOf': [{'@id': 'http://test/br/0601'}], 
                     'http://www.w3.org/ns/prov#wasAttributedTo': [{'@id': 'http://resp_agent.test/'}]}], '@id': 'http://test/br/0601/prov/'}])
         with self.subTest("output_format=nquads, zip_output=True"):
@@ -167,7 +167,7 @@ class TestStorer(unittest.TestCase):
             self.assertEqual(data, [{'@graph': [{
                 '@id': 'http://test/br/0601/prov/se/1', 
                 '@type': ['http://www.w3.org/ns/prov#Entity'], 
-                'http://purl.org/dc/terms/description': [{'@value': "The entity 'http://test/br/0601' has been created."}], 
+                'http://purl.org/dc/terms/description': [{'@type': 'http://www.w3.org/2001/XMLSchema#string', '@value': "The entity 'http://test/br/0601' has been created."}], 
                 'http://www.w3.org/ns/prov#specializationOf': [{'@id': 'http://test/br/0601'}], 
                 'http://www.w3.org/ns/prov#wasAttributedTo': [{'@id': 'http://resp_agent.test/'}]}], '@id': 'http://test/br/0601/prov/'}])
 

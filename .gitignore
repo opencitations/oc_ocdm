@@ -22,7 +22,7 @@ docs/build/*
 
 # test database
 tests/test_db/*
+tests/prov/prov_counter.db
 
 blazegraph*
 rules.log
-oc_ocdm/test/prov/prov_counter.db
