@@ -17,6 +17,9 @@ import unittest
 
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
+from oc_ocdm.metadata.metadata_set import MetadataSet
+from oc_ocdm.prov.prov_set import ProvSet
+from rdflib import URIRef
 
 
 class TestBibliographicReferenceRemovers(unittest.TestCase):
@@ -230,6 +233,222 @@ class TestDiscourseElementRemovers(unittest.TestCase):
         de.remove_content()
 
         result = de.get_content()
+        self.assertIsNone(result)
+
+
+class TestCitationRemovers(unittest.TestCase):
+    resp_agent = 'http://resp_agent.test/'
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
+
+    def test_remove_citing_entity(self):
+        ci = self.graph_set.add_ci(self.resp_agent)
+        br = self.graph_set.add_br(self.resp_agent)
+
+        ci.has_citing_entity(br)
+
+        ci.remove_citing_entity()
+
+        result = ci.get_citing_entity()
+        self.assertIsNone(result)
+
+    def test_remove_cited_entity(self):
+        ci = self.graph_set.add_ci(self.resp_agent)
+        br = self.graph_set.add_br(self.resp_agent)
+
+        ci.has_cited_entity(br)
+        ci.remove_cited_entity()
+
+        result = ci.get_cited_entity()
+        self.assertIsNone(result)
+
+
+class TestResponsibleAgentRemovers(unittest.TestCase):
+    resp_agent = 'http://resp_agent.test/'
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
+
+    def test_remove_name(self):
+        ra = self.graph_set.add_ra(self.resp_agent)
+        ra.has_name("John Doe")
+
+        ra.remove_name()
+
+        result = ra.get_name()
+        self.assertIsNone(result)
+
+    def test_remove_given_name(self):
+        ra = self.graph_set.add_ra(self.resp_agent)
+        ra.has_given_name("John")
+
+        ra.remove_given_name()
+
+        result = ra.get_given_name()
+        self.assertIsNone(result)
+
+    def test_remove_family_name(self):
+        ra = self.graph_set.add_ra(self.resp_agent)
+        ra.has_family_name("Doe")
+
+        ra.remove_family_name()
+
+        result = ra.get_family_name()
+        self.assertIsNone(result)
+
+
+class TestMetadataRemovers(unittest.TestCase):
+    resp_agent = 'http://resp_agent.test/'
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.metadata_set = MetadataSet("http://test/metadata/", "./info_dir/", "")
+
+    def test_remove_dataset_title(self):
+        ds = self.metadata_set.add_dataset("test_dataset", self.resp_agent)
+        ds.has_title("Test Dataset")
+
+        ds.remove_title()
+
+        result = ds.get_title()
+        self.assertIsNone(result)
+
+    def test_remove_dataset_description(self):
+        ds = self.metadata_set.add_dataset("test_dataset2", self.resp_agent)
+        ds.has_description("Test description")
+
+        ds.remove_description()
+
+        result = ds.get_description()
+        self.assertIsNone(result)
+
+    def test_remove_dataset_publication_date(self):
+        ds = self.metadata_set.add_dataset("test_dataset3", self.resp_agent)
+        ds.has_publication_date("2025-01-01")
+
+        ds.remove_publication_date()
+
+        result = ds.get_publication_date()
+        self.assertIsNone(result)
+
+    def test_remove_dataset_modification_date(self):
+        ds = self.metadata_set.add_dataset("test_dataset4", self.resp_agent)
+        ds.has_modification_date("2025-01-01")
+
+        ds.remove_modification_date()
+
+        result = ds.get_modification_date()
+        self.assertIsNone(result)
+
+    def test_remove_dataset_keyword(self):
+        ds = self.metadata_set.add_dataset("test_dataset5", self.resp_agent)
+        ds.has_keyword("test")
+        ds.has_keyword("data")
+
+        # Remove all keywords
+        ds.remove_keyword()
+
+        result = ds.get_keywords()
+        self.assertEqual(len(result), 0)
+
+    def test_remove_dataset_subject(self):
+        ds = self.metadata_set.add_dataset("test_dataset6", self.resp_agent)
+        subject = URIRef("http://example.org/subject1")
+        ds.has_subject(subject)
+
+        ds.remove_subject()
+
+        result = ds.get_subjects()
+        self.assertEqual(len(result), 0)
+
+    def test_remove_dataset_landing_page(self):
+        ds = self.metadata_set.add_dataset("test_dataset7", self.resp_agent)
+        ds.has_landing_page(URIRef("http://example.org/landing"))
+
+        ds.remove_landing_page()
+
+        result = ds.get_landing_page()
+        self.assertIsNone(result)
+
+    def test_remove_distribution_title(self):
+        di = self.metadata_set.add_di("test_dist", self.resp_agent)
+        di.has_title("Distribution Title")
+
+        di.remove_title()
+
+        result = di.get_title()
+        self.assertIsNone(result)
+
+    def test_remove_distribution_description(self):
+        di = self.metadata_set.add_di("test_dist2", self.resp_agent)
+        di.has_description("Distribution description")
+
+        di.remove_description()
+
+        result = di.get_description()
+        self.assertIsNone(result)
+
+    def test_remove_distribution_license(self):
+        di = self.metadata_set.add_di("test_dist3", self.resp_agent)
+        di.has_license(URIRef("http://creativecommons.org/licenses/by/4.0/"))
+
+        di.remove_license()
+
+        result = di.get_license()
+        self.assertIsNone(result)
+
+
+class TestProvRemovers(unittest.TestCase):
+    resp_agent = 'http://resp_agent.test/'
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
+        cls.prov_set = ProvSet(cls.graph_set, "http://test/", "./info_dir/")
+
+    def test_remove_description(self):
+        br = self.graph_set.add_br(self.resp_agent)
+        self.prov_set.generate_provenance()
+
+        # Get the snapshot entity
+        se = list(self.prov_set.res_to_entity.values())[0]
+
+        # Check description exists
+        desc = se.get_description()
+        self.assertIsNotNone(desc)
+
+        # Remove description
+        se.remove_description()
+
+        # Check description is removed
+        desc = se.get_description()
+        self.assertIsNone(desc)
+
+    def test_remove_update_action(self):
+        br = self.graph_set.add_br(self.resp_agent)
+        self.prov_set.generate_provenance()
+
+        se = list(self.prov_set.res_to_entity.values())[0]
+        se.has_update_action("UPDATE")
+
+        se.remove_update_action()
+
+        result = se.get_update_action()
+        self.assertIsNone(result)
+
+    def test_remove_invalidation_time(self):
+        br = self.graph_set.add_br(self.resp_agent)
+        self.prov_set.generate_provenance()
+
+        se = list(self.prov_set.res_to_entity.values())[0]
+        se.has_invalidation_time("2025-01-01T00:00:00Z")
+
+        se.remove_invalidation_time()
+
+        result = se.get_invalidation_time()
         self.assertIsNone(result)
 
 

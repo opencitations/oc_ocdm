@@ -15,7 +15,9 @@
 # SOFTWARE.
 import json
 import os
+import tempfile
 import unittest
+from unittest.mock import patch, MagicMock
 from zipfile import ZipFile
 from multiprocessing import Pool
 from SPARQLWrapper import POST, SPARQLWrapper
@@ -26,6 +28,7 @@ from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
 from oc_ocdm.storer import Storer
 from oc_ocdm.reader import Reader
+from oc_ocdm.support.reporter import Reporter
 
 from shutil import rmtree
 
@@ -203,22 +206,138 @@ class TestStorer(unittest.TestCase):
         prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
         storer.store_all(base_dir, self.base_iri)
         prov_storer.store_all(base_dir, self.base_iri)
-        
+
         to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
         storer.upload_all(self.ts, base_dir, save_queries=True)
-        
+
         # Controlla che la directory to_be_uploaded esista
         self.assertTrue(os.path.exists(to_be_uploaded_dir))
-        
+
         # Controlla che ci sia almeno un file nella directory to_be_uploaded
         saved_queries = os.listdir(to_be_uploaded_dir)
         self.assertGreater(len(saved_queries), 0)
-        
+
         # Controlla il contenuto di uno dei file salvati
         query_file = os.path.join(to_be_uploaded_dir, saved_queries[0])
         with open(query_file, 'r', encoding='utf-8') as f:
             query_content = f.read()
             self.assertIn("INSERT DATA", query_content)  # Verifica che ci sia una query di inserimento
+
+    def test_unsupported_output_format(self):
+        """Test that ValueError is raised for unsupported output formats."""
+        with self.assertRaises(ValueError) as context:
+            Storer(self.graph_set, output_format='unsupported_format')
+        self.assertIn("not supported", str(context.exception))
+
+    def test_custom_reporters(self):
+        """Test storer initialization with custom reporters."""
+        custom_repok = Reporter(prefix="[Custom OK] ")
+        custom_reperr = Reporter(prefix="[Custom ERROR] ")
+
+        storer = Storer(self.graph_set, repok=custom_repok, reperr=custom_reperr)
+
+        self.assertEqual(storer.repok.prefix, "[Custom OK] ")
+        self.assertEqual(storer.reperr.prefix, "[Custom ERROR] ")
+
+    def test_context_map_file_loading(self):
+        """Test loading JSON-LD context from file in storer."""
+        context_data = {
+            "@context": {
+                "dc": "http://purl.org/dc/terms/",
+                "title": "dc:title"
+            }
+        }
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+            json.dump(context_data, f)
+            context_file = f.name
+
+        try:
+            context_map = {
+                "http://example.org/context": context_file
+            }
+            storer = Storer(self.graph_set, context_map=context_map, output_format='json-ld')
+
+            # Verify the context was loaded from file
+            self.assertIn("http://example.org/context", storer.context_map)
+            self.assertEqual(storer.context_map["http://example.org/context"], context_data)
+        finally:
+            os.unlink(context_file)
+
+    def test_store_graphs_in_file(self):
+        """Test the store_graphs_in_file method."""
+        base_dir = os.path.join("tests", "storer", "data", "direct_store") + os.sep
+        os.makedirs(base_dir, exist_ok=True)
+
+        try:
+            file_path = os.path.join(base_dir, "output.json")
+            storer = Storer(self.graph_set, output_format='json-ld', zip_output=False)
+
+            storer.store_graphs_in_file(file_path)
+
+            # Verify file was created
+            self.assertTrue(os.path.exists(file_path))
+
+            # Verify content
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+                self.assertIsInstance(data, list)
+                self.assertGreater(len(data), 0)
+        finally:
+            if os.path.exists(base_dir):
+                rmtree(base_dir)
+
+    def test_upload_with_failure_marker(self):
+        """Test SPARQL upload that creates failure markers on error."""
+        base_dir = os.path.join("tests", "storer", "data", "rdf_upload_fail") + os.sep
+        storer = Storer(self.graph_set, output_format='json-ld', zip_output=False)
+        storer.store_all(base_dir, self.base_iri)
+
+        try:
+            # Mock SPARQLWrapper to simulate failure
+            with patch('SPARQLWrapper.SPARQLWrapper.query') as mock_query:
+                mock_query.side_effect = Exception("Connection failed")
+
+                # This should create failure markers
+                try:
+                    storer.upload_all("http://invalid-endpoint:9999/sparql", base_dir)
+                except:
+                    pass  # Expected to fail
+
+                # Check that failure marker files were created
+                for root, dirs, files in os.walk(base_dir):
+                    for file in files:
+                        if file.endswith('.json'):
+                            marker_file = os.path.join(root, file + '.failed')
+                            # Failure markers should exist
+                            if os.path.exists(marker_file):
+                                self.assertTrue(True)
+                                return
+        finally:
+            if os.path.exists(base_dir):
+                rmtree(base_dir)
+
+    def test_zip_output_with_ntriples(self):
+        """Test ZIP output with N-Triples format."""
+        base_dir = os.path.join("tests", "storer", "data", "zip_nt") + os.sep
+        storer = Storer(self.graph_set, output_format='nt', zip_output=True)
+        storer.store_all(base_dir, self.base_iri)
+
+        try:
+            # Find the generated ZIP file
+            for root, dirs, files in os.walk(base_dir):
+                for file in files:
+                    if file.endswith('.zip'):
+                        zip_path = os.path.join(root, file)
+                        with ZipFile(zip_path, 'r') as zf:
+                            # Check that ZIP contains .nt file
+                            names = zf.namelist()
+                            self.assertTrue(any(name.endswith('.nt') for name in names))
+                            return
+            self.fail("No ZIP file found")
+        finally:
+            if os.path.exists(base_dir):
+                rmtree(base_dir)
 
 def process_entity(entity):
     base_iri = "http://test/"

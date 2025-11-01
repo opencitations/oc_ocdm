@@ -52,7 +52,7 @@ class Storer(object):
         supported_formats: Set[str] = {'application/n-triples', 'ntriples', 'nt', 'nt11',
                                        'application/n-quads', 'nquads', 'json-ld'}
         if output_format not in supported_formats:
-            raise ValueError(f"Given output_format '{self.output_format}' is not supported."
+            raise ValueError(f"Given output_format '{output_format}' is not supported."
                              f" Available formats: {supported_formats}.")
         else:
             self.output_format: str = output_format
