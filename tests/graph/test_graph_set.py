@@ -170,6 +170,105 @@ class TestGraphSet(unittest.TestCase):
             orphans_set = {o.res for o in orphans}
             self.assertSetEqual({br.res}, orphans_set)
 
+    def test_get_an(self):
+        an1 = self.graph_set.add_an(self.resp_agent)
+        an2 = self.graph_set.add_an(self.resp_agent)
+
+        result = self.graph_set.get_an()
+        self.assertEqual(len(result), 2)
+        self.assertIn(an1, result)
+        self.assertIn(an2, result)
+
+    def test_get_ar(self):
+        ar1 = self.graph_set.add_ar(self.resp_agent)
+        ar2 = self.graph_set.add_ar(self.resp_agent)
+
+        result = self.graph_set.get_ar()
+        self.assertEqual(len(result), 2)
+        self.assertIn(ar1, result)
+        self.assertIn(ar2, result)
+
+    def test_get_be(self):
+        be1 = self.graph_set.add_be(self.resp_agent)
+        be2 = self.graph_set.add_be(self.resp_agent)
+
+        result = self.graph_set.get_be()
+        self.assertEqual(len(result), 2)
+        self.assertIn(be1, result)
+        self.assertIn(be2, result)
+
+    def test_get_br(self):
+        br1 = self.graph_set.add_br(self.resp_agent)
+        br2 = self.graph_set.add_br(self.resp_agent)
+
+        result = self.graph_set.get_br()
+        self.assertEqual(len(result), 2)
+        self.assertIn(br1, result)
+        self.assertIn(br2, result)
+
+    def test_get_ci(self):
+        ci1 = self.graph_set.add_ci(self.resp_agent)
+        ci2 = self.graph_set.add_ci(self.resp_agent)
+
+        result = self.graph_set.get_ci()
+        self.assertEqual(len(result), 2)
+        self.assertIn(ci1, result)
+        self.assertIn(ci2, result)
+
+    def test_get_de(self):
+        de1 = self.graph_set.add_de(self.resp_agent)
+        de2 = self.graph_set.add_de(self.resp_agent)
+
+        result = self.graph_set.get_de()
+        self.assertEqual(len(result), 2)
+        self.assertIn(de1, result)
+        self.assertIn(de2, result)
+
+    def test_get_id(self):
+        id1 = self.graph_set.add_id(self.resp_agent)
+        id2 = self.graph_set.add_id(self.resp_agent)
+
+        result = self.graph_set.get_id()
+        self.assertEqual(len(result), 2)
+        self.assertIn(id1, result)
+        self.assertIn(id2, result)
+
+    def test_get_pl(self):
+        pl1 = self.graph_set.add_pl(self.resp_agent)
+        pl2 = self.graph_set.add_pl(self.resp_agent)
+
+        result = self.graph_set.get_pl()
+        self.assertEqual(len(result), 2)
+        self.assertIn(pl1, result)
+        self.assertIn(pl2, result)
+
+    def test_get_rp(self):
+        rp1 = self.graph_set.add_rp(self.resp_agent)
+        rp2 = self.graph_set.add_rp(self.resp_agent)
+
+        result = self.graph_set.get_rp()
+        self.assertEqual(len(result), 2)
+        self.assertIn(rp1, result)
+        self.assertIn(rp2, result)
+
+    def test_get_ra(self):
+        ra1 = self.graph_set.add_ra(self.resp_agent)
+        ra2 = self.graph_set.add_ra(self.resp_agent)
+
+        result = self.graph_set.get_ra()
+        self.assertEqual(len(result), 2)
+        self.assertIn(ra1, result)
+        self.assertIn(ra2, result)
+
+    def test_get_re(self):
+        re1 = self.graph_set.add_re(self.resp_agent)
+        re2 = self.graph_set.add_re(self.resp_agent)
+
+        result = self.graph_set.get_re()
+        self.assertEqual(len(result), 2)
+        self.assertIn(re1, result)
+        self.assertIn(re2, result)
+
 
 if __name__ == '__main__':
     unittest.main()

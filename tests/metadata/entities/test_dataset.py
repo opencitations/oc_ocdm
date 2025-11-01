@@ -112,6 +112,164 @@ class TestDataset(unittest.TestCase):
         triple = self.dataset.res, MetadataEntity.iri_distribution, self.di.res
         self.assertIn(triple, self.dataset.g)
 
+    def test_merge_with_title(self):
+        ds1 = self.metadata_set.add_dataset("ds1", self.resp_agent)
+        ds2 = self.metadata_set.add_dataset("ds2", self.resp_agent)
+
+        title = "Test Dataset"
+        ds2.has_title(title)
+
+        ds1.merge(ds2)
+
+        self.assertEqual(ds1.get_title(), title)
+        self.assertTrue(ds2.to_be_deleted)
+
+    def test_merge_with_description(self):
+        ds1 = self.metadata_set.add_dataset("ds1", self.resp_agent)
+        ds2 = self.metadata_set.add_dataset("ds2", self.resp_agent)
+
+        description = "Test description"
+        ds2.has_description(description)
+
+        ds1.merge(ds2)
+
+        self.assertEqual(ds1.get_description(), description)
+
+    def test_merge_with_dates(self):
+        ds1 = self.metadata_set.add_dataset("ds1", self.resp_agent)
+        ds2 = self.metadata_set.add_dataset("ds2", self.resp_agent)
+
+        pub_date = "2020-01-01T00:00:00"
+        mod_date = "2020-12-31T23:59:59"
+        ds2.has_publication_date(pub_date)
+        ds2.has_modification_date(mod_date)
+
+        ds1.merge(ds2)
+
+        self.assertEqual(ds1.get_publication_date(), pub_date)
+        self.assertEqual(ds1.get_modification_date(), mod_date)
+
+    def test_merge_with_keywords(self):
+        ds1 = self.metadata_set.add_dataset("ds1", self.resp_agent)
+        ds2 = self.metadata_set.add_dataset("ds2", self.resp_agent)
+
+        ds2.has_keyword("keyword1")
+        ds2.has_keyword("keyword2")
+
+        ds1.merge(ds2)
+
+        keywords = ds1.get_keywords()
+        self.assertEqual(len(keywords), 2)
+
+    def test_merge_with_subjects(self):
+        ds1 = self.metadata_set.add_dataset("ds1", self.resp_agent)
+        ds2 = self.metadata_set.add_dataset("ds2", self.resp_agent)
+
+        subject1 = URIRef("http://subject1/")
+        subject2 = URIRef("http://subject2/")
+        ds2.has_subject(subject1)
+        ds2.has_subject(subject2)
+
+        ds1.merge(ds2)
+
+        subjects = ds1.get_subjects()
+        self.assertEqual(len(subjects), 2)
+
+    def test_merge_basic(self):
+        ds1 = self.metadata_set.add_dataset("ds1", self.resp_agent)
+        ds2 = self.metadata_set.add_dataset("ds2", self.resp_agent)
+
+        title = "Test"
+        ds2.has_title(title)
+
+        ds1.merge(ds2)
+        self.assertTrue(ds2.to_be_deleted)
+
+    def test_merge_with_sub_datasets(self):
+        ds1 = self.metadata_set.add_dataset("ds1", self.resp_agent)
+        ds2 = self.metadata_set.add_dataset("ds2", self.resp_agent)
+        sub_ds = self.metadata_set.add_dataset("sub", self.resp_agent)
+
+        ds2.has_sub_dataset(sub_ds)
+
+        ds1.merge(ds2)
+
+        sub_datasets = ds1.get_sub_datasets()
+        self.assertEqual(len(sub_datasets), 1)
+
+    def test_merge_with_sparql_endpoint(self):
+        ds1 = self.metadata_set.add_dataset("ds1", self.resp_agent)
+        ds2 = self.metadata_set.add_dataset("ds2", self.resp_agent)
+
+        endpoint = URIRef("http://sparql.endpoint/")
+        ds2.has_sparql_endpoint(endpoint)
+
+        ds1.merge(ds2)
+
+        self.assertEqual(ds1.get_sparql_endpoint(), endpoint)
+
+    def test_merge_with_distributions(self):
+        ds1 = self.metadata_set.add_dataset("ds1", self.resp_agent)
+        ds2 = self.metadata_set.add_dataset("ds2", self.resp_agent)
+        di = self.metadata_set.add_di("di", self.resp_agent)
+
+        ds2.has_distribution(di)
+
+        ds1.merge(ds2)
+
+        distributions = ds1.get_distributions()
+        self.assertEqual(len(distributions), 1)
+
+    def test_get_title(self):
+        title = "Test Dataset"
+        self.dataset.has_title(title)
+        self.assertEqual(self.dataset.get_title(), title)
+
+    def test_get_description(self):
+        description = "Test description"
+        self.dataset.has_description(description)
+        self.assertEqual(self.dataset.get_description(), description)
+
+    def test_get_publication_date(self):
+        pub_date = "2020-01-01T00:00:00"
+        self.dataset.has_publication_date(pub_date)
+        self.assertEqual(self.dataset.get_publication_date(), pub_date)
+
+    def test_get_modification_date(self):
+        mod_date = "2020-12-31T23:59:59"
+        self.dataset.has_modification_date(mod_date)
+        self.assertEqual(self.dataset.get_modification_date(), mod_date)
+
+    def test_get_keywords(self):
+        self.dataset.has_keyword("keyword1")
+        self.dataset.has_keyword("keyword2")
+        keywords = self.dataset.get_keywords()
+        self.assertEqual(len(keywords), 2)
+
+    def test_get_subjects(self):
+        subject1 = URIRef("http://subject1/")
+        subject2 = URIRef("http://subject2/")
+        self.dataset.has_subject(subject1)
+        self.dataset.has_subject(subject2)
+        subjects = self.dataset.get_subjects()
+        self.assertEqual(len(subjects), 2)
+
+
+    def test_get_sub_datasets(self):
+        self.dataset.has_sub_dataset(self.sub_dataset)
+        sub_datasets = self.dataset.get_sub_datasets()
+        self.assertEqual(len(sub_datasets), 1)
+
+    def test_get_sparql_endpoint(self):
+        endpoint = URIRef("http://sparql.endpoint/")
+        self.dataset.has_sparql_endpoint(endpoint)
+        self.assertEqual(self.dataset.get_sparql_endpoint(), endpoint)
+
+    def test_get_distributions(self):
+        self.dataset.has_distribution(self.di)
+        distributions = self.dataset.get_distributions()
+        self.assertEqual(len(distributions), 1)
+
 
 if __name__ == '__main__':
     unittest.main()

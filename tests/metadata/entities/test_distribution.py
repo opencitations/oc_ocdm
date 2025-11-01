@@ -89,6 +89,81 @@ class TestBibliographicResource(unittest.TestCase):
                                                                     normalize=False)
         self.assertIn(triple, self.di.g)
 
+    def test_merge_with_title(self):
+        di1 = self.metadata_set.add_di("di1", self.resp_agent)
+        di2 = self.metadata_set.add_di("di2", self.resp_agent)
+
+        title = "Test Distribution"
+        di2.has_title(title)
+
+        di1.merge(di2)
+
+        self.assertEqual(di1.get_title(), title)
+        self.assertTrue(di2.to_be_deleted)
+
+    def test_merge_with_description(self):
+        di1 = self.metadata_set.add_di("di1", self.resp_agent)
+        di2 = self.metadata_set.add_di("di2", self.resp_agent)
+
+        description = "Test description"
+        di2.has_description(description)
+
+        di1.merge(di2)
+
+        self.assertEqual(di1.get_description(), description)
+
+    def test_merge_with_publication_date(self):
+        di1 = self.metadata_set.add_di("di1", self.resp_agent)
+        di2 = self.metadata_set.add_di("di2", self.resp_agent)
+
+        pub_date = "2020-01-01T00:00:00"
+        di2.has_publication_date(pub_date)
+
+        di1.merge(di2)
+
+        self.assertEqual(di1.get_publication_date(), pub_date)
+
+    def test_merge_with_byte_size(self):
+        di1 = self.metadata_set.add_di("di1", self.resp_agent)
+        di2 = self.metadata_set.add_di("di2", self.resp_agent)
+
+        byte_size = "2048"
+        di2.has_byte_size(byte_size)
+
+        di1.merge(di2)
+
+        self.assertEqual(di1.get_byte_size(), byte_size)
+
+    def test_merge_basic(self):
+        di1 = self.metadata_set.add_di("di1", self.resp_agent)
+        di2 = self.metadata_set.add_di("di2", self.resp_agent)
+
+        title = "Test"
+        di2.has_title(title)
+
+        di1.merge(di2)
+        self.assertTrue(di2.to_be_deleted)
+
+    def test_get_title(self):
+        title = "Test Distribution"
+        self.di.has_title(title)
+        self.assertEqual(self.di.get_title(), title)
+
+    def test_get_description(self):
+        description = "Test description"
+        self.di.has_description(description)
+        self.assertEqual(self.di.get_description(), description)
+
+    def test_get_publication_date(self):
+        pub_date = "2020-01-01T00:00:00"
+        self.di.has_publication_date(pub_date)
+        self.assertEqual(self.di.get_publication_date(), pub_date)
+
+    def test_get_byte_size(self):
+        byte_size = "2048"
+        self.di.has_byte_size(byte_size)
+        self.assertEqual(self.di.get_byte_size(), byte_size)
+
 
 if __name__ == '__main__':
     unittest.main()

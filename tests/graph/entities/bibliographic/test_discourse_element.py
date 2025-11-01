@@ -153,6 +153,41 @@ class TestDiscourseElement(unittest.TestCase):
         triple2 = self.de1.res, RDF.type, GraphEntity.iri_methods
         self.assertIn(triple2, self.de1.g) and self.assertIn(triple1, self.de1.g)
 
+    def test_create_introduction(self):
+        result = self.de1.create_introduction()
+        self.assertIsNone(result)
+
+        triple = self.de1.res, RDF.type, GraphEntity.iri_introduction
+        self.assertIn(triple, self.de1.g)
+
+    def test_create_related_work(self):
+        result = self.de1.create_related_work()
+        self.assertIsNone(result)
+
+        triple = self.de1.res, RDF.type, GraphEntity.iri_related_work
+        self.assertIn(triple, self.de1.g)
+
+    def test_create_results(self):
+        result = self.de1.create_results()
+        self.assertIsNone(result)
+
+        triple = self.de1.res, RDF.type, GraphEntity.iri_results
+        self.assertIn(triple, self.de1.g)
+
+    def test_create_discussion(self):
+        result = self.de1.create_discussion()
+        self.assertIsNone(result)
+
+        triple = self.de1.res, RDF.type, GraphEntity.iri_discussion
+        self.assertIn(triple, self.de1.g)
+
+    def test_create_conclusion(self):
+        result = self.de1.create_conclusion()
+        self.assertIsNone(result)
+
+        triple = self.de1.res, RDF.type, GraphEntity.iri_conclusion
+        self.assertIn(triple, self.de1.g)
+
 
 if __name__ == '__main__':
     unittest.main()
