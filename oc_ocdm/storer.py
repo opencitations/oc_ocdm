@@ -30,7 +30,7 @@ from oc_ocdm.reader import Reader
 from oc_ocdm.support.query_utils import get_update_query
 from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import find_paths
-from rdflib import ConjunctiveGraph, URIRef
+from rdflib import Dataset, URIRef
 from SPARQLWrapper import SPARQLWrapper
 
 if TYPE_CHECKING:
@@ -91,22 +91,18 @@ class Storer(object):
         self.reperr.new_article()
         self.repok.add_sentence("Store the graphs into a file: starting process")
 
-        cg: ConjunctiveGraph = ConjunctiveGraph()
+        cg: Dataset = Dataset()
         for g in self.a_set.graphs():
             cg.addN([item + (g.identifier,) for item in list(g)])
 
         self._store_in_file(cg, file_path, context_path)
 
-    def _store_in_file(self, cur_g: ConjunctiveGraph, cur_file_path: str, context_path: str = None) -> None:
+    def _store_in_file(self, cur_g: Dataset, cur_file_path: str, context_path: str = None) -> None:
         # Note: the following lines from here and until 'cur_json_ld' are a sort of hack for including all
         # the triples of the input graph into the final stored file. Somehow, some of them are not written
         # in such file otherwise - in particular the provenance ones.
-        new_g: ConjunctiveGraph = ConjunctiveGraph()
-        for s, p, o in cur_g.triples((None, None, None)):
-            g_iri: Optional[URIRef] = None
-            for g_context in cur_g.contexts((s, p, o)):
-                g_iri = g_context.identifier
-                break
+        new_g: Dataset = Dataset()
+        for s, p, o, g_iri in cur_g.quads((None, None, None, None)):
             new_g.addN([(s, p, o, g_iri)])
 
         zip_file_path = cur_file_path.replace(os.path.splitext(cur_file_path)[1], ".zip")
@@ -120,7 +116,7 @@ class Storer(object):
 
         self.repok.add_sentence(f"File '{cur_file_path}' added.")
 
-    def _write_graph(self, graph: ConjunctiveGraph, zip_file: ZipFile, cur_file_path, context_path):
+    def _write_graph(self, graph: Dataset, zip_file: ZipFile, cur_file_path, context_path):
         if self.output_format == "json-ld":
             # Serialize the graph in JSON-LD format
             cur_json_ld = json.loads(graph.serialize(format="json-ld", context=self.context_map.get(context_path)))
@@ -173,14 +169,14 @@ class Storer(object):
                 if os.path.exists(output_filepath):
                     stored_g = Reader(context_map=self.context_map).load(output_filepath)
                 if stored_g is None:
-                    stored_g = ConjunctiveGraph()
+                    stored_g = Dataset()
                 for entity_in_path in entities_in_path:
                     self.store(entity_in_path, stored_g, relevant_path, context_path, False)
                 self._store_in_file(stored_g, relevant_path, context_path)
 
         return list(relevant_paths.keys())
 
-    def store(self, entity: AbstractEntity, destination_g: ConjunctiveGraph, cur_file_path: str, context_path: str = None, store_now: bool = True) -> ConjunctiveGraph:
+    def store(self, entity: AbstractEntity, destination_g: Dataset, cur_file_path: str, context_path: str = None, store_now: bool = True) -> Dataset:
         self.repok.new_article()
         self.reperr.new_article()
 

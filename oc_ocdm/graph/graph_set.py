@@ -24,7 +24,7 @@ from SPARQLWrapper import RDFXML, SPARQLWrapper
 
 if TYPE_CHECKING:
     from typing import Dict, ClassVar, Tuple, Optional, List, Set
-    from rdflib import ConjunctiveGraph
+    from rdflib import Dataset
 
 from oc_ocdm.counter_handler.counter_handler import CounterHandler
 from oc_ocdm.counter_handler.filesystem_counter_handler import \
@@ -277,7 +277,7 @@ class GraphSet(AbstractSet):
                 sparql.setMethod('GET')
                 sparql.setReturnFormat(RDFXML)
 
-                result: ConjunctiveGraph = sparql.query().convert()
+                result: Dataset = sparql.query().convert()
                 if result is not None:
                     imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(self, result, resp_agent)
                     for imported_entity in imported_entities:

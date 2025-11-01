@@ -24,8 +24,8 @@ from zipfile import ZipFile
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import build_graph_from_results
-from rdflib import RDF, ConjunctiveGraph, Graph, URIRef
-from SPARQLWrapper import JSON, POST, SPARQLWrapper
+from rdflib import RDF, Dataset, Graph, URIRef
+from SPARQLWrapper import JSON, SPARQLWrapper
 
 if TYPE_CHECKING:
     from typing import Any, Dict, List, Optional, Set
@@ -59,11 +59,11 @@ class Reader(object):
         else:
             self.reperr: Reporter = reperr
 
-    def load(self, rdf_file_path: str) -> Optional[ConjunctiveGraph]:
+    def load(self, rdf_file_path: str) -> Optional[Dataset]:
         self.repok.new_article()
         self.reperr.new_article()
 
-        loaded_graph: Optional[ConjunctiveGraph] = None
+        loaded_graph: Optional[Dataset] = None
         if os.path.isfile(rdf_file_path):
 
             try:
@@ -79,9 +79,9 @@ class Reader(object):
 
         return loaded_graph
 
-    def _load_graph(self, file_path: str) -> ConjunctiveGraph:
+    def _load_graph(self, file_path: str) -> Dataset:
         formats = ["json-ld", "rdfxml", "turtle", "trig", "nt11", "nquads"]
-        loaded_graph = ConjunctiveGraph()
+        loaded_graph = Dataset()
 
         if file_path.endswith('.zip'):
             try:
@@ -102,7 +102,7 @@ class Reader(object):
 
         raise IOError(f"It was impossible to load the file '{file_path}' with supported formats.")
 
-    def _try_parse(self, graph: ConjunctiveGraph, file_obj, formats: List[str]) -> bool:
+    def _try_parse(self, graph: Dataset, file_obj, formats: List[str]) -> bool:
         for cur_format in formats:
             file_obj.seek(0)  # Reset file pointer to the beginning for each new attempt
             try:
@@ -164,9 +164,17 @@ class Reader(object):
         return valid_graph
 
     @staticmethod
-    def import_entities_from_graph(g_set: GraphSet, results: List[Dict]|Graph, resp_agent: str,
+    def import_entities_from_graph(g_set: GraphSet, results: List[Dict]|Graph|Dataset, resp_agent: str,
                                    enable_validation: bool = False, closed: bool = False) -> List[GraphEntity]:
-        graph = build_graph_from_results(results) if isinstance(results, list) else results
+        if isinstance(results, list):
+            graph = build_graph_from_results(results)
+        elif isinstance(results, Dataset):
+            # Convert Dataset to Graph by flattening all quads into triples
+            graph = Graph()
+            for s, p, o, _ in results.quads((None, None, None, None)):
+                graph.add((s, p, o))
+        else:
+            graph = results
         if enable_validation:
             reader = Reader()
             graph = reader.graph_validation(graph, closed)

@@ -20,7 +20,7 @@ from zipfile import ZipFile
 from multiprocessing import Pool
 from SPARQLWrapper import POST, SPARQLWrapper
 
-from rdflib import ConjunctiveGraph, URIRef, compare
+from rdflib import Dataset, Graph, URIRef, compare
 
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
@@ -28,6 +28,14 @@ from oc_ocdm.storer import Storer
 from oc_ocdm.reader import Reader
 
 from shutil import rmtree
+
+
+def dataset_to_graph(dataset: Dataset) -> Graph:
+    """Convert a Dataset to a Graph for comparison purposes by flattening all quads."""
+    g = Graph()
+    for s, p, o, _ in dataset.quads((None, None, None, None)):
+        g.add((s, p, o))
+    return g
 
 
 class TestStorer(unittest.TestCase):
@@ -114,8 +122,8 @@ class TestStorer(unittest.TestCase):
             with ZipFile(os.path.join(base_dir_2, "br", "060", "10000", "1000", "prov", "se.zip"), mode="r") as archive:
                 with archive.open("se.nq") as f:
                     data = f.read().decode("utf-8")
-                    data_g = ConjunctiveGraph()
-                    expected_data_g = ConjunctiveGraph()
+                    data_g = Dataset()
+                    expected_data_g = Dataset()
                     data_g.parse(data=data, format="nquads")
                     expected_data_g.parse(data="""
                         <http://test/br/0601/prov/se/1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> <http://test/br/0601/prov/> .
@@ -126,7 +134,7 @@ class TestStorer(unittest.TestCase):
                     for s, p, o, c in data_g.quads():
                         if p == URIRef("http://www.w3.org/ns/prov#generatedAtTime"):
                             data_g.remove((s, p, o, c))
-                    self.assertTrue(compare.isomorphic(data_g, expected_data_g))
+                    self.assertTrue(compare.isomorphic(dataset_to_graph(data_g), dataset_to_graph(expected_data_g)))
         with self.subTest("output_format=nquads, zip_output=False"):
             base_dir_3 = os.path.join("tests", "storer", "data", "rdf_3") + os.sep
             storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='nquads', zip_output=False)
@@ -135,8 +143,8 @@ class TestStorer(unittest.TestCase):
             storer.store_all(base_dir_3, self.base_iri)
             prov_storer.store_all(base_dir_3, self.base_iri)
             self.graph_set.commit_changes()
-            prov_unzipped = ConjunctiveGraph()
-            expected_prov_unzipped = ConjunctiveGraph()
+            prov_unzipped = Dataset()
+            expected_prov_unzipped = Dataset()
             with open(os.path.join(base_dir_3, "br", "060", "10000", "1000.nt"), "r", encoding="utf-8") as f:
                 data_unzipped = f.read()
             prov_unzipped.parse(source=os.path.join(base_dir_3, "br", "060", "10000", "1000", "prov", "se.nq"), format="nquads")
@@ -150,7 +158,7 @@ class TestStorer(unittest.TestCase):
                 if p == URIRef("http://www.w3.org/ns/prov#generatedAtTime"):
                     prov_unzipped.remove((s, p, o, c))
             self.assertEqual(data_unzipped, "<http://test/br/0601> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/spar/fabio/Expression> <http://test/br/> .\n\n")
-            self.assertTrue(compare.isomorphic(prov_unzipped, expected_prov_unzipped))
+            self.assertTrue(compare.isomorphic(dataset_to_graph(prov_unzipped), dataset_to_graph(expected_prov_unzipped)))
 
     def test_store_graphs_in_file_multiprocessing(self):
         base_dir = os.path.join("tests", "storer", "data", "multiprocessing") + os.sep

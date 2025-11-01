@@ -2,7 +2,7 @@ import os
 import unittest
 
 from pyshacl import validate
-from rdflib import ConjunctiveGraph, Graph, URIRef
+from rdflib import Dataset, Graph, URIRef
 
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.reader import Reader
@@ -10,7 +10,7 @@ from oc_ocdm.reader import Reader
 
 class TestShacle(unittest.TestCase):
     def test_validate(self):
-      data_graph = ConjunctiveGraph()
+      data_graph = Dataset()
       sg = Graph()
       data_graph.parse(source=os.path.join('tests', 'resources', 'data.json'), format='json-ld')
       sg.parse(source=os.path.join('oc_ocdm', 'resources', 'shacle.ttl'), format='text/turtle')
@@ -31,7 +31,7 @@ class TestShacle(unittest.TestCase):
     def test_reader(self):
       reader = Reader()
       g_set = GraphSet(base_iri='https://w3id.org/oc/meta/')
-      g = ConjunctiveGraph()
+      g = Dataset()
       g.parse(source=os.path.join('tests', 'resources', 'data_reader.json'))
       results = []
       for triple in g:
@@ -55,7 +55,7 @@ class TestShacle(unittest.TestCase):
     def test_reader_invalid(self):
       reader = Reader()
       g_set = GraphSet(base_iri='https://w3id.org/oc/meta/')
-      g = ConjunctiveGraph()
+      g = Dataset()
       g.parse(source=os.path.join('tests', 'resources', 'data_reader_invalid.json'))
       results = []
       for triple in g:

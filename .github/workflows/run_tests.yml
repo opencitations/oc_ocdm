@@ -57,9 +57,7 @@ jobs:
         
     - name: Start test database
       run: |
-        # Make the script executable
         chmod +x ./tests/start-test-database.sh
-        # Run the script
         ./tests/start-test-database.sh
         
     - name: Run tests with coverage
