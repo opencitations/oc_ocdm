@@ -1,3 +1,10 @@
+## [9.2.4](https://github.com/opencitations/oc_ocdm/compare/9.2.3...9.2.4) (2025-11-12)
+
+
+### Bug Fixes
+
+* relax redis dependency version constraint [release] ([a46d9ec](https://github.com/opencitations/oc_ocdm/commit/a46d9eceaa7ea1b93025605fcccb18ef0f1cc3e4))
+
 ## [9.2.3](https://github.com/opencitations/oc_ocdm/compare/9.2.2...9.2.3) (2025-11-12)
 
 
