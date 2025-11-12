@@ -15,6 +15,7 @@
 # SOFTWARE.
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import time
@@ -301,8 +302,8 @@ class Storer(object):
         return result
 
     def _save_query(self, query_string: str, directory: str, added_statements: int, removed_statements: int) -> None:
-        timestamp = datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f')
-        file_name = f"{timestamp}_add{added_statements}_remove{removed_statements}.sparql"
+        content_hash = hashlib.sha256(query_string.encode('utf-8')).hexdigest()[:16]
+        file_name = f"{content_hash}_add{added_statements}_remove{removed_statements}.sparql"
         file_path = os.path.join(directory, file_name)
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(query_string)

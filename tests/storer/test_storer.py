@@ -13,8 +13,10 @@
 # DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
+import hashlib
 import json
 import os
+import re
 import tempfile
 import unittest
 from unittest.mock import patch, MagicMock
@@ -210,18 +212,72 @@ class TestStorer(unittest.TestCase):
         to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
         storer.upload_all(self.ts, base_dir, save_queries=True)
 
-        # Controlla che la directory to_be_uploaded esista
+        # Check that the to_be_uploaded directory exists
         self.assertTrue(os.path.exists(to_be_uploaded_dir))
 
-        # Controlla che ci sia almeno un file nella directory to_be_uploaded
+        # Check that there is at least one file in the to_be_uploaded directory
         saved_queries = os.listdir(to_be_uploaded_dir)
         self.assertGreater(len(saved_queries), 0)
 
-        # Controlla il contenuto di uno dei file salvati
+        # Check the content of one of the saved files
         query_file = os.path.join(to_be_uploaded_dir, saved_queries[0])
         with open(query_file, 'r', encoding='utf-8') as f:
             query_content = f.read()
-            self.assertIn("INSERT DATA", query_content)  # Verifica che ci sia una query di inserimento
+            self.assertIn("INSERT DATA", query_content)
+
+    def test_save_query_hash_determinism(self):
+        """Test that _save_query uses deterministic hash-based filenames."""
+        base_dir = os.path.join("tests", "storer", "data", "hash_determinism") + os.sep
+        to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
+        os.makedirs(to_be_uploaded_dir, exist_ok=True)
+
+        try:
+            storer = Storer(self.graph_set, output_format='json-ld', zip_output=False)
+
+            # Test 1: Same query generates same filename
+            query1 = "INSERT DATA { <http://example.org/s1> <http://example.org/p1> <http://example.org/o1> . }"
+            storer._save_query(query1, to_be_uploaded_dir, added_statements=1, removed_statements=0)
+            files_after_first = set(os.listdir(to_be_uploaded_dir))
+            self.assertEqual(len(files_after_first), 1)
+            first_filename = list(files_after_first)[0]
+
+            # Save the same query again
+            storer._save_query(query1, to_be_uploaded_dir, added_statements=1, removed_statements=0)
+            files_after_second = set(os.listdir(to_be_uploaded_dir))
+
+            # Should still be only one file (same filename, overwritten)
+            self.assertEqual(len(files_after_second), 1)
+            self.assertEqual(files_after_first, files_after_second)
+
+            # Test 2: Different query generates different filename
+            query2 = "INSERT DATA { <http://example.org/s2> <http://example.org/p2> <http://example.org/o2> . }"
+            storer._save_query(query2, to_be_uploaded_dir, added_statements=1, removed_statements=0)
+            files_after_third = set(os.listdir(to_be_uploaded_dir))
+
+            # Should now have two files
+            self.assertEqual(len(files_after_third), 2)
+            self.assertNotEqual(files_after_first, files_after_third)
+
+            # Test 3: Verify filename format matches pattern {hash}_add{n}_remove{m}.sparql
+            filename_pattern = re.compile(r'^[a-f0-9]{16}_add\d+_remove\d+\.sparql$')
+            for filename in files_after_third:
+                self.assertIsNotNone(filename_pattern.match(filename),
+                                     f"Filename '{filename}' does not match expected pattern")
+
+            # Test 4: Verify hash is correctly computed
+            expected_hash = hashlib.sha256(query1.encode('utf-8')).hexdigest()[:16]
+            expected_filename = f"{expected_hash}_add1_remove0.sparql"
+            self.assertIn(expected_filename, files_after_third)
+
+            # Test 5: Verify saved content matches original query
+            saved_file_path = os.path.join(to_be_uploaded_dir, expected_filename)
+            with open(saved_file_path, 'r', encoding='utf-8') as f:
+                saved_content = f.read()
+            self.assertEqual(saved_content, query1)
+
+        finally:
+            if os.path.exists(base_dir):
+                rmtree(base_dir)
 
     def test_unsupported_output_format(self):
         """Test that ValueError is raised for unsupported output formats."""
