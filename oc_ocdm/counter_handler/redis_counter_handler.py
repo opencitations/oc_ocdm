@@ -39,7 +39,30 @@ class RedisCounterHandler(CounterHandler):
         :param password: Redis password (if required)
         :type password: Optional[str]
         """
+        self.host = host
+        self.port = port
+        self.db = db
+        self.password = password
         self.redis = redis.Redis(host=host, port=port, db=db, password=password, decode_responses=True)
+
+    def __getstate__(self):
+        """Support for pickle serialization."""
+        state = self.__dict__.copy()
+        # Remove Redis connection (not picklable)
+        del state['redis']
+        return state
+
+    def __setstate__(self, state):
+        """Support for pickle deserialization."""
+        self.__dict__.update(state)
+        # Recreate Redis connection
+        self.redis = redis.Redis(
+            host=self.host,
+            port=self.port,
+            db=self.db,
+            password=self.password,
+            decode_responses=True
+        )
 
     def set_counter(self, new_value: int, entity_short_name: str, prov_short_name: str = "",
                     identifier: int = 1, supplier_prefix: str = "") -> None:

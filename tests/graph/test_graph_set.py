@@ -13,6 +13,7 @@
 # DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
+import pickle
 import unittest
 
 from rdflib import Graph
@@ -268,6 +269,44 @@ class TestGraphSet(unittest.TestCase):
         self.assertEqual(len(result), 2)
         self.assertIn(re1, result)
         self.assertIn(re2, result)
+
+    def test_pickle_serialization(self):
+        # Create a GraphSet with some entities
+        br = self.graph_set.add_br(self.resp_agent)
+        br.has_title("Test Title")
+        br.has_pub_date("2024-01-01")
+
+        ar = self.graph_set.add_ar(self.resp_agent)
+        ra = self.graph_set.add_ra(self.resp_agent)
+        ra.has_name("Test Author")
+
+        # Link entities
+        ar.is_held_by(ra)
+        br.has_contributor(ar)
+
+        # Pickle and unpickle the GraphSet
+        pickled = pickle.dumps(self.graph_set)
+        restored = pickle.loads(pickled)
+
+        # Verify state is preserved
+        self.assertEqual(len(restored.res_to_entity), len(self.graph_set.res_to_entity))
+        self.assertEqual(restored.base_iri, self.graph_set.base_iri)
+        self.assertEqual(restored.info_dir, self.graph_set.info_dir)
+        self.assertEqual(restored.supplier_prefix, self.graph_set.supplier_prefix)
+
+        # Verify entities are accessible
+        restored_br = restored.get_entity(br.res)
+        self.assertIsNotNone(restored_br)
+        self.assertEqual(restored_br.get_title(), "Test Title")
+        self.assertEqual(restored_br.get_pub_date(), "2024-01-01")
+
+        restored_ra = restored.get_entity(ra.res)
+        self.assertIsNotNone(restored_ra)
+        self.assertEqual(restored_ra.get_name(), "Test Author")
+
+        # Verify relationships are preserved
+        restored_ar = restored.get_entity(ar.res)
+        self.assertIsNotNone(restored_ar)
 
 
 if __name__ == '__main__':

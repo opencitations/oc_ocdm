@@ -23,7 +23,10 @@ docs/build/*
 # test database
 tests/test_db/*
 tests/prov/prov_counter.db
+tests/storer/data/*
 htmlcov/*
+.coverage
+.coverage.*
 
 blazegraph*
 rules.log

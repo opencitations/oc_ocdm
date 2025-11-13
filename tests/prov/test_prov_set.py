@@ -15,6 +15,7 @@
 # SOFTWARE.
 
 import os
+import pickle
 import unittest
 
 from oc_ocdm.counter_handler.sqlite_counter_handler import SqliteCounterHandler
@@ -282,6 +283,36 @@ class TestProvSet(unittest.TestCase):
         self.assertEqual(f"The entity '{a.res}' has been restored.", se_a_3.get_description())
         self.assertSetEqual({se_a_2}, set(se_a_3.get_derives_from()))
         self.assertIsNotNone(se_a_3.get_update_action())
+
+    def test_pickle_serialization(self):
+        # Create graph entities and provenance snapshots
+        br = self.graph_set.add_br(self.resp_agent)
+        br.has_title("Test Resource")
+
+        # Generate provenance
+        self.prov_set.generate_provenance(self.cur_time)
+        se = self.prov_set.get_entity(URIRef(br.res + '/prov/se/1'))
+        se.has_description("Initial creation")
+        se.has_primary_source(URIRef("http://example.org/source"))
+
+        # Pickle and unpickle the ProvSet
+        pickled = pickle.dumps(self.prov_set)
+        restored = pickle.loads(pickled)
+
+        # Verify state is preserved
+        self.assertEqual(len(restored.res_to_entity), len(self.prov_set.res_to_entity))
+        self.assertEqual(restored.base_iri, self.prov_set.base_iri)
+        self.assertEqual(restored.info_dir, self.prov_set.info_dir)
+        self.assertEqual(restored.supplier_prefix, self.prov_set.supplier_prefix)
+
+        # Verify snapshot entity is accessible
+        restored_se = restored.get_entity(se.res)
+        self.assertIsNotNone(restored_se)
+        self.assertEqual(restored_se.get_description(), "Initial creation")
+        self.assertEqual(restored_se.get_primary_source(), URIRef("http://example.org/source"))
+
+        # Verify the related graph_set is also pickled
+        self.assertIsNotNone(restored.prov_g)
 
 class TestProvSetWorkflow(unittest.TestCase):
     def setUp(self):

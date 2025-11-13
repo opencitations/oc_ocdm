@@ -52,6 +52,24 @@ class AbstractSet(ABC):
                 result.append(entity.g)
         return result
 
+    def __getstate__(self):
+        """
+        Support for pickle serialization.
+
+        RDFLib Graph objects contain threading locks that are not directly picklable,
+        but Python's pickle module can handle them. This method provides standard
+        pickle protocol support for AbstractSet instances.
+        """
+        return self.__dict__.copy()
+
+    def __setstate__(self, state):
+        """
+        Support for pickle deserialization.
+
+        Restores the AbstractSet state from a pickled representation.
+        """
+        self.__dict__.update(state)
+
     @abstractmethod
     def get_entity(self, res: URIRef) -> Optional[AbstractEntity]:
         """

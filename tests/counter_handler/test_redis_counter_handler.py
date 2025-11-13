@@ -14,6 +14,7 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
 
+import pickle
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -124,6 +125,27 @@ class TestRedisCounterHandler(unittest.TestCase):
         with self.subTest("Wrong inputs"):
             with self.assertRaises(ValueError):
                 self.counter_handler.increment_metadata_counter("di", None)
+
+    def test_pickle_serialization(self):
+        with self.subTest("Pickle and unpickle RedisCounterHandler"):
+            self.mock_redis.get.return_value = "42"
+
+            # Pickle the counter handler
+            pickled = pickle.dumps(self.counter_handler)
+
+            # Unpickle it
+            with patch('redis.Redis', return_value=self.mock_redis):
+                restored = pickle.loads(pickled)
+
+            # Verify connection parameters are preserved
+            self.assertEqual(restored.host, self.counter_handler.host)
+            self.assertEqual(restored.port, self.counter_handler.port)
+            self.assertEqual(restored.db, self.counter_handler.db)
+
+            # Verify Redis connection works after unpickling
+            result = restored.read_counter("br", supplier_prefix="060")
+            self.assertEqual(result, 42)
+            self.mock_redis.get.assert_called_with("br:060")
 
 if __name__ == '__main__':
     unittest.main()

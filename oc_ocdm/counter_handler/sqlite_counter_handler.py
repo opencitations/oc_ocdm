@@ -31,10 +31,11 @@ class SqliteCounterHandler(CounterHandler):
         :type info_dir: str
         """
         sqlite3.threadsafety = 3
+        self.database = database
         self.con = sqlite3.connect(database)
         self.cur = self.con.cursor()
         self.cur.execute("""CREATE TABLE IF NOT EXISTS info(
-            entity TEXT PRIMARY KEY, 
+            entity TEXT PRIMARY KEY,
             count INTEGER)""")
 
     def set_counter(self, new_value: int, entity_name: str) -> None:
@@ -88,9 +89,32 @@ class SqliteCounterHandler(CounterHandler):
 
     def increment_metadata_counter(self):
         pass
-    
+
     def read_metadata_counter(self):
         pass
-    
+
     def set_metadata_counter(self):
         pass
+
+    def __getstate__(self):
+        """
+        Support for pickle serialization.
+
+        Exclude the SQLite connection and cursor objects, which are not picklable.
+        The database path is preserved and the connection will be recreated upon unpickling.
+        """
+        state = self.__dict__.copy()
+        del state['con']
+        del state['cur']
+        return state
+
+    def __setstate__(self, state):
+        """
+        Support for pickle deserialization.
+
+        Recreates the SQLite connection and cursor after unpickling.
+        """
+        self.__dict__.update(state)
+        sqlite3.threadsafety = 3
+        self.con = sqlite3.connect(self.database)
+        self.cur = self.con.cursor()
