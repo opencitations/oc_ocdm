@@ -1,3 +1,10 @@
+## [9.2.6](https://github.com/opencitations/oc_ocdm/compare/9.2.5...9.2.6) (2025-11-13)
+
+
+### Bug Fixes
+
+* add multiprocessing support with pickle serialization ([348a88e](https://github.com/opencitations/oc_ocdm/commit/348a88ea41d400bca425814b5db271f68c4a658a))
+
 ## [9.2.5](https://github.com/opencitations/oc_ocdm/compare/9.2.4...9.2.5) (2025-11-13)
 
 
