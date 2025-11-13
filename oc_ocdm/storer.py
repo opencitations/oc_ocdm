@@ -157,7 +157,7 @@ class Storer(object):
             if is_relevant:
                 cur_dir_path, cur_file_path = self._dir_and_file_paths(entity.res, base_dir, base_iri, process_id)
                 if not os.path.exists(cur_dir_path):
-                    os.makedirs(cur_dir_path)
+                    os.makedirs(cur_dir_path, exist_ok=True)
                 relevant_paths.setdefault(cur_file_path, list())
                 relevant_paths[cur_file_path].append(entity)
 
@@ -359,7 +359,7 @@ class Storer(object):
                                                 f"triplestore due to communication problems: {e}")
                         tp_err_dir: str = base_dir + os.sep + "tp_err"
                         if not os.path.exists(tp_err_dir):
-                            os.makedirs(tp_err_dir)
+                            os.makedirs(tp_err_dir, exist_ok=True)
                         cur_file_err: str = tp_err_dir + os.sep + \
                             datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f_not_uploaded.txt')
                         with open(cur_file_err, 'wt', encoding='utf-8') as f:
