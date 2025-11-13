@@ -245,3 +245,4 @@ class RedisCounterHandler(CounterHandler):
                     pipeline.set(key, value)
                 pipeline.execute()
                 pbar.update(len(batch))
+                
