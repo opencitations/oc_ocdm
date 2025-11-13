@@ -1,3 +1,10 @@
+## [9.2.5](https://github.com/opencitations/oc_ocdm/compare/9.2.4...9.2.5) (2025-11-13)
+
+
+### Bug Fixes
+
+* prevent race condition in directory creation [release] ([372872b](https://github.com/opencitations/oc_ocdm/commit/372872bc078f16034c5c4162f75abfb12986b891))
+
 ## [9.2.4](https://github.com/opencitations/oc_ocdm/compare/9.2.3...9.2.4) (2025-11-12)
 
 
