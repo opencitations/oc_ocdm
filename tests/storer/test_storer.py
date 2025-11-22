@@ -395,6 +395,80 @@ class TestStorer(unittest.TestCase):
             if os.path.exists(base_dir):
                 rmtree(base_dir)
 
+    def test_upload_all_with_modified_entities_filtering(self):
+        """Test that upload_all filters entities based on modified_entities."""
+        base_dir = os.path.join("tests", "storer", "data", "modified_entities_filter") + os.sep
+
+        br1 = self.graph_set.add_br(self.resp_agent)
+        br1.has_title("First Resource")
+        br2 = self.graph_set.add_br(self.resp_agent)
+        br2.has_title("Second Resource")
+        br3 = self.graph_set.add_br(self.resp_agent)
+        br3.has_title("Third Resource")
+
+        modified_entities = {URIRef(br1.res), URIRef(br3.res)}
+
+        storer = Storer(self.graph_set, modified_entities=modified_entities)
+        result = storer.upload_all(self.ts, base_dir, save_queries=True)
+
+        try:
+            self.assertTrue(result)
+            to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
+            self.assertTrue(os.path.exists(to_be_uploaded_dir))
+
+            query_files = [f for f in os.listdir(to_be_uploaded_dir) if f.endswith('.sparql')]
+            self.assertGreater(len(query_files), 0)
+
+            all_queries_content = ""
+            for query_file in query_files:
+                with open(os.path.join(to_be_uploaded_dir, query_file), 'r') as f:
+                    all_queries_content += f.read()
+
+            self.assertIn(str(br1.res), all_queries_content)
+            self.assertNotIn(str(br2.res), all_queries_content)
+            self.assertIn(str(br3.res), all_queries_content)
+
+        finally:
+            if os.path.exists(base_dir):
+                rmtree(base_dir)
+
+    def test_upload_all_save_queries_with_provenance_entities(self):
+        """Test save_queries includes prov entities for modified graph entities."""
+        base_dir = os.path.join("tests", "storer", "data", "prov_queries") + os.sep
+
+        br1 = self.graph_set.add_br(self.base_iri + "br/1")
+        br1.has_title("Resource with Provenance")
+
+        prov_set = ProvSet(self.graph_set, self.base_iri, info_dir=os.path.join(base_dir, "info_dir"))
+        modified_entities = prov_set.generate_provenance()
+
+        storer = Storer(self.graph_set, modified_entities=modified_entities)
+        prov_storer = Storer(prov_set, modified_entities=modified_entities)
+
+        result = storer.upload_all(self.ts, base_dir, save_queries=True)
+        prov_result = prov_storer.upload_all(self.ts, base_dir, save_queries=True)
+
+        try:
+            self.assertTrue(result)
+            self.assertTrue(prov_result)
+
+            to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
+            query_files = [f for f in os.listdir(to_be_uploaded_dir) if f.endswith('.sparql')]
+            self.assertGreater(len(query_files), 0)
+
+            all_queries_content = ""
+            for query_file in query_files:
+                with open(os.path.join(to_be_uploaded_dir, query_file), 'r') as f:
+                    content = f.read()
+                    all_queries_content += content
+
+            self.assertIn("INSERT DATA", all_queries_content)
+            self.assertIn("/prov/se/", all_queries_content)
+
+        finally:
+            if os.path.exists(base_dir):
+                rmtree(base_dir)
+
 def process_entity(entity):
     base_iri = "http://test/"
     ts = 'http://127.0.0.1:8804/sparql'

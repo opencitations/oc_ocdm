@@ -256,7 +256,7 @@ class Storer(object):
         if batch_size <= 0:
             batch_size = 10
 
-        query_string: str = ""
+        query_parts: list = []
         added_statements: int = 0
         removed_statements: int = 0
         skipped_queries: int = 0
@@ -266,34 +266,36 @@ class Storer(object):
             to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
             os.makedirs(to_be_uploaded_dir, exist_ok=True)
 
-        for idx, entity in enumerate(self.a_set.res_to_entity.values()):
+        entities_to_process = self.a_set.res_to_entity.values()
+        if self.modified_entities is not None:
+            entities_to_process = [
+                entity for entity in entities_to_process
+                if URIRef(str(entity.res).split('/prov/se/')[0]) in self.modified_entities
+            ]
+
+        for idx, entity in enumerate(entities_to_process):
             update_query, n_added, n_removed = get_update_query(entity, entity_type=self._class_to_entity_type(entity))
 
             if update_query == "":
                 skipped_queries += 1
             else:
                 index = idx - skipped_queries
-                if index == 0:
-                    # First query
-                    query_string = update_query
-                    added_statements = n_added
-                    removed_statements = n_removed
-                elif index % batch_size == 0:
-                    # batch_size-multiple query
+                query_parts.append(update_query)
+                added_statements += n_added
+                removed_statements += n_removed
+
+                if (index + 1) % batch_size == 0:
+                    query_string = " ; ".join(query_parts)
                     if save_queries:
                         self._save_query(query_string, to_be_uploaded_dir, added_statements, removed_statements)
                     else:
                         result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
-                    query_string = update_query
-                    added_statements = n_added
-                    removed_statements = n_removed
-                else:
-                    # Accumulated query
-                    query_string += " ; " + update_query
-                    added_statements += n_added
-                    removed_statements += n_removed
+                    query_parts = []
+                    added_statements = 0
+                    removed_statements = 0
 
-        if query_string != "":
+        if query_parts:
+            query_string = " ; ".join(query_parts)
             if save_queries:
                 self._save_query(query_string, to_be_uploaded_dir, added_statements, removed_statements)
             else:

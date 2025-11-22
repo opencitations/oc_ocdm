@@ -48,12 +48,12 @@ def get_insert_query(graph_iri: URIRef, data: Graph) -> Tuple[str, int]:
 
 
 def get_update_query(entity: AbstractEntity, entity_type: str = "graph") -> Tuple[str, int, int]:
-    if entity_type in ["graph", "metadata"]:
-        to_be_deleted: bool = entity.to_be_deleted
-        preexisting_graph: Graph = entity.preexisting_graph
-    elif entity_type == "prov":
-        to_be_deleted: bool = False
-        preexisting_graph: Graph = Graph(identifier=entity.g.identifier)
+    if entity_type == "prov":
+        insert_string, added_triples = get_insert_query(entity.g.identifier, entity.g)
+        return insert_string, added_triples, 0
+
+    to_be_deleted: bool = entity.to_be_deleted
+    preexisting_graph: Graph = entity.preexisting_graph
 
     if to_be_deleted:
         delete_string, removed_triples = get_delete_query(entity.g.identifier, preexisting_graph)
@@ -62,12 +62,15 @@ def get_update_query(entity: AbstractEntity, entity_type: str = "graph") -> Tupl
         else:
             return "", 0, 0
     else:
+        if len(preexisting_graph) == len(entity.g):
+            if preexisting_graph == entity.g:
+                return "", 0, 0
+
         preexisting_iso: IsomorphicGraph = to_isomorphic(preexisting_graph)
         current_iso: IsomorphicGraph = to_isomorphic(entity.g)
         if preexisting_iso == current_iso:
-            # Both graphs have exactly the same content!
             return "", 0, 0
-        in_both, in_first, in_second = graph_diff(preexisting_iso, current_iso)
+        _, in_first, in_second = graph_diff(preexisting_iso, current_iso)
         delete_string, removed_triples = get_delete_query(entity.g.identifier, in_first)
         insert_string, added_triples = get_insert_query(entity.g.identifier, in_second)
         if delete_string != "" and insert_string != "":
