@@ -1,3 +1,10 @@
+## [9.2.8](https://github.com/opencitations/oc_ocdm/compare/9.2.7...9.2.8) (2025-11-22)
+
+
+### Bug Fixes
+
+* use isomorphic comparison instead of == operator for graph equality [release] ([ad41548](https://github.com/opencitations/oc_ocdm/commit/ad415489fc00d1d0ea17c6807a5030d1f7529579))
+
 ## [9.2.7](https://github.com/opencitations/oc_ocdm/compare/9.2.6...9.2.7) (2025-11-22)
 
 
