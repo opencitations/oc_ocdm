@@ -62,12 +62,9 @@ def get_update_query(entity: AbstractEntity, entity_type: str = "graph") -> Tupl
         else:
             return "", 0, 0
     else:
-        if len(preexisting_graph) == len(entity.g):
-            if preexisting_graph == entity.g:
-                return "", 0, 0
-
         preexisting_iso: IsomorphicGraph = to_isomorphic(preexisting_graph)
         current_iso: IsomorphicGraph = to_isomorphic(entity.g)
+
         if preexisting_iso == current_iso:
             return "", 0, 0
         _, in_first, in_second = graph_diff(preexisting_iso, current_iso)
