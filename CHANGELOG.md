@@ -1,3 +1,11 @@
+## [9.2.7](https://github.com/opencitations/oc_ocdm/compare/9.2.6...9.2.7) (2025-11-22)
+
+
+### Bug Fixes
+
+* optimize O(n²) operations in entity getters and string operations [release] ([8886b65](https://github.com/opencitations/oc_ocdm/commit/8886b653075662e9179537e75fc12397194a81fb))
+* optimize save_queries workflow for large datasets ([c3b2d6b](https://github.com/opencitations/oc_ocdm/commit/c3b2d6b78042639217d26b9db85e7ebe7faa700e))
+
 ## [9.2.6](https://github.com/opencitations/oc_ocdm/compare/9.2.5...9.2.6) (2025-11-13)
 
 
