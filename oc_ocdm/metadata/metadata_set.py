@@ -122,17 +122,7 @@ class MetadataSet(AbstractSet):
         g.namespace_manager.bind("void", MetadataEntity.VOID)
 
     def get_dataset(self) -> Tuple[Dataset]:
-        result: Tuple[Dataset] = tuple()
-        for ref in self.res_to_entity:
-            entity: MetadataEntity = self.res_to_entity[ref]
-            if isinstance(entity, Dataset):
-                result += (entity, )
-        return result
+        return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, Dataset))
 
     def get_di(self) -> Tuple[Distribution]:
-        result: Tuple[Distribution] = tuple()
-        for ref in self.res_to_entity:
-            entity: MetadataEntity = self.res_to_entity[ref]
-            if isinstance(entity, Distribution):
-                result += (entity, )
-        return result
+        return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, Distribution))

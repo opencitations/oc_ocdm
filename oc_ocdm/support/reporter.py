@@ -50,12 +50,13 @@ class Reporter(object):
         return self.last_sentence
 
     def get_articles_as_string(self) -> str:
-        result: str = ""
+        parts = []
         for article in self.articles:
             for sentence in article:
-                result += sentence + "\n"
-            result += "\n"
-        return result
+                parts.append(sentence)
+                parts.append("\n")
+            parts.append("\n")
+        return ''.join(parts)
 
     def write_file(self, file_path) -> None:
         with open(file_path, 'wt', encoding='utf-8') as f:

@@ -94,7 +94,7 @@ class Storer(object):
 
         cg: Dataset = Dataset()
         for g in self.a_set.graphs():
-            cg.addN([item + (g.identifier,) for item in list(g)])
+            cg.addN(item + (g.identifier,) for item in g)
 
         self._store_in_file(cg, file_path, context_path)
 
@@ -150,14 +150,16 @@ class Storer(object):
         self.repok.add_sentence("Starting the process")
 
         relevant_paths: Dict[str, list] = dict()
+        created_dirs = set()
         for entity in self.a_set.res_to_entity.values():
             is_relevant = True
             if self.modified_entities is not None and URIRef(entity.res.split('/prov/se/')[0]) not in self.modified_entities:
                 is_relevant = False
             if is_relevant:
                 cur_dir_path, cur_file_path = self._dir_and_file_paths(entity.res, base_dir, base_iri, process_id)
-                if not os.path.exists(cur_dir_path):
+                if cur_dir_path not in created_dirs:
                     os.makedirs(cur_dir_path, exist_ok=True)
+                    created_dirs.add(cur_dir_path)
                 relevant_paths.setdefault(cur_file_path, list())
                 relevant_paths[cur_file_path].append(entity)
 

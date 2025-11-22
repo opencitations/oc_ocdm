@@ -284,9 +284,4 @@ class ProvSet(AbstractSet):
             return URIRef(str(prov_subject) + '/prov/se/' + last_snapshot_count)
 
     def get_se(self) -> Tuple[SnapshotEntity]:
-        result: Tuple[SnapshotEntity] = tuple()
-        for ref in self.res_to_entity:
-            entity: ProvEntity = self.res_to_entity[ref]
-            if isinstance(entity, SnapshotEntity):
-                result += (entity, )
-        return result
+        return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, SnapshotEntity))
