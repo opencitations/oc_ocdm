@@ -1,3 +1,15 @@
+# [9.3.0](https://github.com/opencitations/oc_ocdm/compare/9.2.8...9.3.0) (2025-11-24)
+
+
+### Bug Fixes
+
+* simplify upload_all API with prepare_bulk_load parameter [release] ([52cdb76](https://github.com/opencitations/oc_ocdm/commit/52cdb767e0a0e402f048e14d1e49056439e8ad23))
+
+
+### Features
+
+* add optimized bulk upload workflow with N-Quads serialization ([7ffb219](https://github.com/opencitations/oc_ocdm/commit/7ffb219bc0f1c1a8526ce5492c018f57d1d22dda))
+
 ## [9.2.8](https://github.com/opencitations/oc_ocdm/compare/9.2.7...9.2.8) (2025-11-22)
 
 
