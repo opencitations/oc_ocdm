@@ -13,6 +13,7 @@
 # DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 # SOFTWARE.
+import gzip
 import hashlib
 import json
 import os
@@ -25,12 +26,14 @@ from multiprocessing import Pool
 from SPARQLWrapper import POST, SPARQLWrapper
 
 from rdflib import Dataset, Graph, URIRef, compare
+from rdflib.compare import to_isomorphic, graph_diff
 
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
 from oc_ocdm.storer import Storer
 from oc_ocdm.reader import Reader
 from oc_ocdm.support.reporter import Reporter
+from oc_ocdm.support.query_utils import serialize_graph_to_nquads
 
 from shutil import rmtree
 
@@ -468,6 +471,352 @@ class TestStorer(unittest.TestCase):
         finally:
             if os.path.exists(base_dir):
                 rmtree(base_dir)
+
+    def test_upload_all_separate_inserts_deletes(self):
+        """Test upload_all with separate_inserts_deletes parameter."""
+        test_graph_set = GraphSet(self.base_iri, "", "060", False)
+
+        br = test_graph_set.add_br(self.resp_agent)
+        br.has_title("Test Title")
+
+        br.preexisting_graph = Graph(identifier=br.g.identifier)
+        for triple in br.g:
+            br.preexisting_graph.add(triple)
+
+        br.has_subtitle("New Subtitle")
+
+        expected_insert_graph = Graph()
+        for s, p, o in br.g:
+            if (s, p, o) not in br.preexisting_graph:
+                expected_insert_graph.add((s, p, o))
+
+        self.assertEqual(len(expected_insert_graph), 1)
+
+        base_dir = os.path.join("tests", "storer", "data", "separate_queries")
+        os.makedirs(base_dir, exist_ok=True)
+
+        storer = Storer(test_graph_set, output_format='json-ld')
+        result = storer.upload_all(
+            self.ts,
+            base_dir=base_dir,
+            batch_size=10,
+            save_queries=True,
+            separate_inserts_deletes=True
+        )
+
+        self.assertTrue(result)
+
+        to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
+        self.assertTrue(os.path.exists(to_be_uploaded_dir))
+
+        sparql_files = [f for f in os.listdir(to_be_uploaded_dir) if f.endswith('.sparql')]
+
+        insert_files = [f for f in sparql_files if 'add' in f and 'remove0' in f]
+        delete_files = [f for f in sparql_files if 'remove' in f and not 'remove0' in f]
+
+        self.assertEqual(len(insert_files), 1)
+        self.assertEqual(len(delete_files), 0)
+
+        insert_file = insert_files[0]
+        parts = insert_file.split('_')
+        add_count = int(parts[1].replace('add', ''))
+        remove_count = int(parts[2].replace('remove', '').replace('.sparql', ''))
+        self.assertEqual(add_count, 1)
+        self.assertEqual(remove_count, 0)
+
+        with open(os.path.join(to_be_uploaded_dir, insert_file), 'r') as f:
+            content = f.read()
+            self.assertIn("INSERT DATA", content)
+            self.assertNotIn("DELETE DATA", content)
+            self.assertIn(str(br.res), content)
+            self.assertIn("New Subtitle", content)
+            self.assertIn("hasSubtitle", content)
+
+    def test_upload_all_save_inserts_as_nquads(self):
+        """Test upload_all with save_inserts_as_nquads parameter."""
+        test_graph_set = GraphSet(self.base_iri, "", "060", False)
+
+        br = test_graph_set.add_br(self.resp_agent)
+        br.has_title("Test Title")
+        br.has_subtitle("Test Subtitle")
+
+        ar = test_graph_set.add_ar(self.resp_agent)
+
+        expected_br_quads = set(quad.rstrip('\n') for quad in serialize_graph_to_nquads(br.g, br.g.identifier))
+        expected_ar_quads = set(quad.rstrip('\n') for quad in serialize_graph_to_nquads(ar.g, ar.g.identifier))
+        expected_all_quads = expected_br_quads | expected_ar_quads
+
+        base_dir = os.path.join("tests", "storer", "data", "nquads_test")
+        nquads_output_dir = os.path.join(base_dir, "nquads")
+        os.makedirs(base_dir, exist_ok=True)
+
+        storer = Storer(test_graph_set, output_format='json-ld')
+        result = storer.upload_all(
+            self.ts,
+            base_dir=base_dir,
+            batch_size=10,
+            separate_inserts_deletes=True,
+            save_inserts_as_nquads=True,
+            nquads_output_dir=nquads_output_dir,
+            nquads_batch_size=100
+        )
+
+        self.assertTrue(result)
+        self.assertTrue(os.path.exists(nquads_output_dir))
+
+        nquads_files = sorted([f for f in os.listdir(nquads_output_dir) if f.endswith('.nq.gz')])
+        self.assertEqual(len(nquads_files), 1)
+
+        all_quads_from_file = []
+        for nquads_file in nquads_files:
+            file_path = os.path.join(nquads_output_dir, nquads_file)
+            with gzip.open(file_path, 'rt', encoding='utf-8') as f:
+                content = f.read()
+                lines = [line.rstrip('\n') for line in content.split('\n') if line.strip()]
+                all_quads_from_file.extend(lines)
+
+        actual_quads = set(all_quads_from_file)
+
+        self.assertEqual(len(actual_quads), len(expected_all_quads))
+        self.assertEqual(actual_quads, expected_all_quads)
+
+        to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
+        if os.path.exists(to_be_uploaded_dir):
+            sparql_files = [f for f in os.listdir(to_be_uploaded_dir) if f.endswith('.sparql')]
+            insert_sparql_files = [f for f in sparql_files if 'INSERT DATA' in open(os.path.join(to_be_uploaded_dir, f)).read()]
+            self.assertEqual(len(insert_sparql_files), 0)
+
+    def test_write_nquads_file(self):
+        """Test _write_nquads_file method with batching."""
+        br = self.graph_set.add_br(self.resp_agent)
+        br.has_title("Test Title")
+
+        nquads_expected = serialize_graph_to_nquads(br.g, br.g.identifier)
+        expected_set = set(nquads_expected)
+
+        output_dir = os.path.join("tests", "storer", "data", "nquads_write_test")
+        os.makedirs(output_dir, exist_ok=True)
+
+        storer = Storer(self.graph_set, output_format='json-ld')
+        storer.repok.new_article()
+        storer._write_nquads_file(nquads_expected, output_dir, 0)
+
+        expected_file = os.path.join(output_dir, "bulk_load_00000.nq.gz")
+        self.assertTrue(os.path.exists(expected_file))
+
+        with gzip.open(expected_file, 'rt', encoding='utf-8') as f:
+            content = f.read()
+            lines = [line.rstrip('\n') for line in content.split('\n') if line.strip()]
+            actual_set = set(lines)
+
+        expected_set_normalized = {line.rstrip('\n') for line in expected_set}
+
+        self.assertEqual(len(actual_set), len(expected_set_normalized))
+        self.assertEqual(actual_set, expected_set_normalized)
+
+        second_batch = ["<http://example.org/s> <http://example.org/p> <http://example.org/o> <http://example.org/g> .\n"]
+        expected_second = set(second_batch)
+
+        storer._write_nquads_file(second_batch, output_dir, 1)
+
+        second_file = os.path.join(output_dir, "bulk_load_00001.nq.gz")
+        self.assertTrue(os.path.exists(second_file))
+
+        with gzip.open(second_file, 'rt', encoding='utf-8') as f:
+            content = f.read()
+            lines = [line.rstrip('\n') for line in content.split('\n') if line.strip()]
+            actual_second = set(lines)
+
+        expected_second_normalized = {line.rstrip('\n') for line in expected_second}
+
+        self.assertEqual(len(actual_second), 1)
+        self.assertEqual(actual_second, expected_second_normalized)
+
+    def test_upload_all_separate_with_deletes(self):
+        """Test upload_all with DELETE queries when entities are modified and deleted."""
+        test_graph_set = GraphSet(self.base_iri, "", "060", False)
+
+        br = test_graph_set.add_br(self.resp_agent)
+        br.has_title("Original Title")
+        br.has_subtitle("Original Subtitle")
+
+        br.preexisting_graph = Graph(identifier=br.g.identifier)
+        for triple in br.g:
+            br.preexisting_graph.add(triple)
+
+        br.remove_title()
+        br.has_title("Modified Title")
+
+        _, br_to_delete, br_to_insert = graph_diff(to_isomorphic(br.preexisting_graph), to_isomorphic(br.g))
+        expected_br_insert_count = len(br_to_insert)
+        expected_br_delete_count = len(br_to_delete)
+
+        self.assertEqual(expected_br_insert_count, 1)
+        self.assertEqual(expected_br_delete_count, 1)
+
+        br2 = test_graph_set.add_br(self.resp_agent)
+        br2.has_title("To Be Deleted")
+        br2.preexisting_graph = Graph(identifier=br2.g.identifier)
+        for triple in br2.g:
+            br2.preexisting_graph.add(triple)
+        expected_br2_delete_count = len(br2.preexisting_graph)
+        br2.mark_as_to_be_deleted()
+
+        expected_total_insert = expected_br_insert_count
+        expected_total_delete = expected_br_delete_count + expected_br2_delete_count
+
+        base_dir = os.path.join("tests", "storer", "data", "separate_with_deletes")
+        os.makedirs(base_dir, exist_ok=True)
+
+        storer = Storer(test_graph_set, output_format='json-ld')
+        result = storer.upload_all(
+            self.ts,
+            base_dir=base_dir,
+            batch_size=10,
+            save_queries=True,
+            separate_inserts_deletes=True
+        )
+
+        self.assertTrue(result)
+
+        to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
+        self.assertTrue(os.path.exists(to_be_uploaded_dir))
+
+        sparql_files = [f for f in os.listdir(to_be_uploaded_dir) if f.endswith('.sparql')]
+
+        insert_files = []
+        delete_files = []
+
+        for file in sparql_files:
+            with open(os.path.join(to_be_uploaded_dir, file), 'r') as f:
+                content = f.read()
+                if "INSERT DATA" in content:
+                    self.assertNotIn("DELETE DATA", content)
+                    insert_files.append((file, content))
+                elif "DELETE DATA" in content:
+                    self.assertNotIn("INSERT DATA", content)
+                    delete_files.append((file, content))
+
+        self.assertEqual(len(insert_files), 1)
+        self.assertEqual(len(delete_files), 1)
+
+        insert_file, insert_content = insert_files[0]
+        parts = insert_file.split('_')
+        add_count = int(parts[1].replace('add', ''))
+        remove_count = int(parts[2].replace('remove', '').replace('.sparql', ''))
+        self.assertEqual(add_count, expected_total_insert)
+        self.assertEqual(remove_count, 0)
+        self.assertIn("Modified Title", insert_content)
+        self.assertIn(str(br.res), insert_content)
+
+        delete_file, delete_content = delete_files[0]
+        parts = delete_file.split('_')
+        add_count = int(parts[1].replace('add', ''))
+        remove_count = int(parts[2].replace('remove', '').replace('.sparql', ''))
+        self.assertEqual(add_count, 0)
+        self.assertEqual(remove_count, expected_total_delete)
+        self.assertIn(str(br.res), delete_content)
+        self.assertIn(str(br2.res), delete_content)
+
+    def test_upload_all_nquads_inserts_sparql_deletes(self):
+        """Test that INSERT queries go to nquads and DELETE queries go to SPARQL files."""
+        test_graph_set = GraphSet(self.base_iri, "", "060", False)
+
+        br = test_graph_set.add_br(self.resp_agent)
+        br.has_title("Original Title")
+        br.has_subtitle("Original Subtitle")
+
+        br.preexisting_graph = Graph(identifier=br.g.identifier)
+        for triple in br.g:
+            br.preexisting_graph.add(triple)
+
+        br.remove_title()
+        br.has_title("Modified Title")
+
+        _, br_to_delete, br_to_insert = graph_diff(to_isomorphic(br.preexisting_graph), to_isomorphic(br.g))
+
+        expected_insert_quads = set(quad.rstrip('\n') for quad in serialize_graph_to_nquads(br_to_insert, br.g.identifier))
+        expected_delete_count = len(br_to_delete)
+
+        base_dir = os.path.join("tests", "storer", "data", "nquads_sparql_mixed")
+        nquads_output_dir = os.path.join(base_dir, "nquads")
+        os.makedirs(base_dir, exist_ok=True)
+
+        storer = Storer(test_graph_set, output_format='json-ld')
+        result = storer.upload_all(
+            self.ts,
+            base_dir=base_dir,
+            batch_size=10,
+            separate_inserts_deletes=True,
+            save_inserts_as_nquads=True,
+            nquads_output_dir=nquads_output_dir,
+            nquads_batch_size=100
+        )
+
+        self.assertTrue(result)
+
+        nquads_files = [f for f in os.listdir(nquads_output_dir) if f.endswith('.nq.gz')]
+        self.assertEqual(len(nquads_files), 1)
+
+        actual_insert_quads = []
+        for nquads_file in nquads_files:
+            file_path = os.path.join(nquads_output_dir, nquads_file)
+            with gzip.open(file_path, 'rt', encoding='utf-8') as f:
+                content = f.read()
+                lines = [line.rstrip('\n') for line in content.split('\n') if line.strip()]
+                actual_insert_quads.extend(lines)
+
+        actual_insert_set = set(actual_insert_quads)
+        self.assertEqual(actual_insert_set, expected_insert_quads)
+
+        to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
+        self.assertTrue(os.path.exists(to_be_uploaded_dir))
+
+        sparql_files = [f for f in os.listdir(to_be_uploaded_dir) if f.endswith('.sparql')]
+
+        insert_sparql_files = []
+        delete_sparql_files = []
+
+        for file in sparql_files:
+            with open(os.path.join(to_be_uploaded_dir, file), 'r') as f:
+                content = f.read()
+                if "INSERT DATA" in content:
+                    insert_sparql_files.append(file)
+                elif "DELETE DATA" in content:
+                    delete_sparql_files.append(file)
+
+        self.assertEqual(len(insert_sparql_files), 0)
+        self.assertEqual(len(delete_sparql_files), 1)
+
+        delete_file = delete_sparql_files[0]
+        parts = delete_file.split('_')
+        add_count = int(parts[1].replace('add', ''))
+        remove_count = int(parts[2].replace('remove', '').replace('.sparql', ''))
+        self.assertEqual(add_count, 0)
+        self.assertEqual(remove_count, expected_delete_count)
+
+    def test_upload_all_nquads_validation_errors(self):
+        """Test upload_all parameter validation for N-Quads functionality."""
+        storer = Storer(self.graph_set, output_format='json-ld')
+
+        with self.subTest("missing_nquads_output_dir"):
+            result = storer.upload_all(
+                self.ts,
+                base_dir="tests/storer/data/validation",
+                save_inserts_as_nquads=True,
+                separate_inserts_deletes=True
+            )
+            self.assertFalse(result)
+
+        with self.subTest("separate_inserts_deletes_not_enabled"):
+            result = storer.upload_all(
+                self.ts,
+                base_dir="tests/storer/data/validation",
+                save_inserts_as_nquads=True,
+                nquads_output_dir="tests/storer/data/validation/nquads"
+            )
+            self.assertFalse(result)
+
 
 def process_entity(entity):
     base_iri = "http://test/"

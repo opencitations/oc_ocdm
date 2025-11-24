@@ -47,6 +47,83 @@ def get_insert_query(graph_iri: URIRef, data: Graph) -> Tuple[str, int]:
         return insert_string, num_of_statements
 
 
+def _compute_graph_changes(entity: AbstractEntity, entity_type: str) -> Tuple[Graph, Graph, int, int]:
+    """
+    Computes the triples to insert and delete for an entity.
+
+    Args:
+        entity: The entity to analyze
+        entity_type: Type of entity ("graph", "prov", or "metadata")
+
+    Returns:
+        Tuple of (triples_to_insert, triples_to_delete, added_count, removed_count)
+    """
+    if entity_type == "prov":
+        return entity.g, Graph(), len(entity.g), 0
+
+    to_be_deleted: bool = entity.to_be_deleted
+    preexisting_graph: Graph = entity.preexisting_graph
+
+    if to_be_deleted:
+        return Graph(), preexisting_graph, 0, len(preexisting_graph)
+
+    preexisting_iso: IsomorphicGraph = to_isomorphic(preexisting_graph)
+    current_iso: IsomorphicGraph = to_isomorphic(entity.g)
+
+    if preexisting_iso == current_iso:
+        return Graph(), Graph(), 0, 0
+
+    _, in_first, in_second = graph_diff(preexisting_iso, current_iso)
+    return in_second, in_first, len(in_second), len(in_first)
+
+
+def serialize_graph_to_nquads(graph: Graph, graph_iri: URIRef) -> list:
+    """
+    Serializes RDF triples to N-Quads format using rdflib.
+
+    Args:
+        graph: RDF graph containing triples
+        graph_iri: Named graph IRI
+
+    Returns:
+        List of N-Quad strings (each ending with newline)
+    """
+    nquads = []
+    for s, p, o in graph:
+        nquad = f"{s.n3()} {p.n3()} {o.n3()} <{graph_iri}> .\n"
+        nquads.append(nquad)
+    return nquads
+
+
+def get_separated_queries(entity: AbstractEntity, entity_type: str = "graph") -> Tuple[str, str, int, int, Graph]:
+    """
+    Returns separate INSERT and DELETE queries for an entity, plus the insert graph.
+
+    Args:
+        entity: The entity to generate queries for
+        entity_type: Type of entity ("graph", "prov", or "metadata")
+
+    Returns:
+        Tuple of (insert_query, delete_query, added_count, removed_count, insert_graph)
+        The insert_graph can be used for direct N-Quads serialization without parsing SPARQL.
+    """
+    to_insert, to_delete, n_added, n_removed = _compute_graph_changes(entity, entity_type)
+
+    if n_added == 0 and n_removed == 0:
+        return "", "", 0, 0, Graph()
+
+    delete_string = ""
+    insert_string = ""
+
+    if n_removed > 0:
+        delete_string, _ = get_delete_query(entity.g.identifier, to_delete)
+
+    if n_added > 0:
+        insert_string, _ = get_insert_query(entity.g.identifier, to_insert)
+
+    return insert_string, delete_string, n_added, n_removed, to_insert
+
+
 def get_update_query(entity: AbstractEntity, entity_type: str = "graph") -> Tuple[str, int, int]:
     if entity_type == "prov":
         insert_string, added_triples = get_insert_query(entity.g.identifier, entity.g)

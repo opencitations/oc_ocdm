@@ -15,6 +15,7 @@
 # SOFTWARE.
 from __future__ import annotations
 
+import gzip
 import hashlib
 import json
 import os
@@ -28,7 +29,7 @@ from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.reader import Reader
-from oc_ocdm.support.query_utils import get_update_query
+from oc_ocdm.support.query_utils import get_separated_queries, get_update_query, serialize_graph_to_nquads
 from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import find_paths
 from rdflib import Dataset, URIRef
@@ -251,12 +252,38 @@ class Storer(object):
         else:
             return None
 
-    def upload_all(self, triplestore_url: str, base_dir: str = None, batch_size: int = 10, save_queries: bool = False) -> bool:
+    def upload_all(self, triplestore_url: str, base_dir: str = None, batch_size: int = 10, save_queries: bool = False,
+                   separate_inserts_deletes: bool = False, save_inserts_as_nquads: bool = False,
+                   nquads_output_dir: str = None, nquads_batch_size: int = 1000000) -> bool:
+        """
+        Upload queries to triplestore or save them to disk.
+
+        Args:
+            triplestore_url: SPARQL endpoint URL
+            base_dir: Base directory for output files
+            batch_size: Number of queries per SPARQL batch
+            save_queries: If True, save queries to disk instead of uploading
+            separate_inserts_deletes: If True, handle INSERT and DELETE queries separately
+            save_inserts_as_nquads: If True, save INSERT queries as .nq.gz files (requires separate_inserts_deletes=True)
+            nquads_output_dir: Directory for .nq.gz files (required if save_inserts_as_nquads=True)
+            nquads_batch_size: Number of quads per .nq.gz file (default: 1000000)
+
+        Returns:
+            True if successful, False otherwise
+        """
         self.repok.new_article()
         self.reperr.new_article()
 
         if batch_size <= 0:
             batch_size = 10
+
+        if save_inserts_as_nquads and not nquads_output_dir:
+            self.reperr.add_sentence("Error: nquads_output_dir is required when save_inserts_as_nquads=True")
+            return False
+
+        if save_inserts_as_nquads and not separate_inserts_deletes:
+            self.reperr.add_sentence("Error: separate_inserts_deletes must be True when save_inserts_as_nquads=True")
+            return False
 
         query_parts: list = []
         added_statements: int = 0
@@ -264,9 +291,16 @@ class Storer(object):
         skipped_queries: int = 0
         result: bool = True
 
-        if save_queries:
+        nquads_buffer: list = []
+        nquads_count: int = 0
+        nquads_file_index: int = 0
+
+        if save_queries or base_dir:
             to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
             os.makedirs(to_be_uploaded_dir, exist_ok=True)
+
+        if save_inserts_as_nquads:
+            os.makedirs(nquads_output_dir, exist_ok=True)
 
         entities_to_process = self.a_set.res_to_entity.values()
         if self.modified_entities is not None:
@@ -276,34 +310,98 @@ class Storer(object):
             ]
 
         for idx, entity in enumerate(entities_to_process):
-            update_query, n_added, n_removed = get_update_query(entity, entity_type=self._class_to_entity_type(entity))
+            entity_type = self._class_to_entity_type(entity)
 
-            if update_query == "":
-                skipped_queries += 1
-            else:
-                index = idx - skipped_queries
-                query_parts.append(update_query)
-                added_statements += n_added
-                removed_statements += n_removed
+            if separate_inserts_deletes:
+                insert_query, delete_query, n_added, n_removed, insert_graph = get_separated_queries(entity, entity_type=entity_type)
 
-                if (index + 1) % batch_size == 0:
-                    query_string = " ; ".join(query_parts)
-                    if save_queries:
-                        self._save_query(query_string, to_be_uploaded_dir, added_statements, removed_statements)
+                if insert_query == "" and delete_query == "":
+                    skipped_queries += 1
+                    continue
+
+                if insert_query != "":
+                    if save_inserts_as_nquads:
+                        quads = serialize_graph_to_nquads(insert_graph, entity.g.identifier)
+                        nquads_buffer.extend(quads)
+                        nquads_count += len(quads)
+
+                        if nquads_count >= nquads_batch_size:
+                            self._write_nquads_file(nquads_buffer, nquads_output_dir, nquads_file_index)
+                            nquads_file_index += 1
+                            nquads_buffer = []
+                            nquads_count = 0
                     else:
-                        result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
-                    query_parts = []
-                    added_statements = 0
-                    removed_statements = 0
+                        if base_dir:
+                            self._save_query(insert_query, to_be_uploaded_dir, n_added, 0)
+
+                if delete_query != "":
+                    index = idx - skipped_queries
+                    query_parts.append(delete_query)
+                    removed_statements += n_removed
+
+                    if (index + 1) % batch_size == 0:
+                        query_string = " ; ".join(query_parts)
+                        if base_dir:
+                            self._save_query(query_string, to_be_uploaded_dir, 0, removed_statements)
+                        else:
+                            result &= self._query(query_string, triplestore_url, base_dir, 0, removed_statements)
+                        query_parts = []
+                        removed_statements = 0
+            else:
+                update_query, n_added, n_removed = get_update_query(entity, entity_type=entity_type)
+
+                if update_query == "":
+                    skipped_queries += 1
+                else:
+                    index = idx - skipped_queries
+                    query_parts.append(update_query)
+                    added_statements += n_added
+                    removed_statements += n_removed
+
+                    if (index + 1) % batch_size == 0:
+                        query_string = " ; ".join(query_parts)
+                        if save_queries:
+                            self._save_query(query_string, to_be_uploaded_dir, added_statements, removed_statements)
+                        else:
+                            result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
+                        query_parts = []
+                        added_statements = 0
+                        removed_statements = 0
 
         if query_parts:
             query_string = " ; ".join(query_parts)
-            if save_queries:
-                self._save_query(query_string, to_be_uploaded_dir, added_statements, removed_statements)
+            if separate_inserts_deletes:
+                if base_dir:
+                    self._save_query(query_string, to_be_uploaded_dir, 0, removed_statements)
+                else:
+                    result &= self._query(query_string, triplestore_url, base_dir, 0, removed_statements)
             else:
-                result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
+                if save_queries:
+                    self._save_query(query_string, to_be_uploaded_dir, added_statements, removed_statements)
+                else:
+                    result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
+
+        if save_inserts_as_nquads and nquads_buffer:
+            self._write_nquads_file(nquads_buffer, nquads_output_dir, nquads_file_index)
 
         return result
+
+    def _write_nquads_file(self, nquads: list, output_dir: str, file_index: int) -> None:
+        """
+        Writes N-Quads to a gzipped file.
+
+        Args:
+            nquads: List of N-Quad strings
+            output_dir: Output directory
+            file_index: File index for naming
+        """
+        filename = f"bulk_load_{file_index:05d}.nq.gz"
+        filepath = os.path.join(output_dir, filename)
+
+        with gzip.open(filepath, 'wt', encoding='utf-8') as f:
+            f.writelines(nquads)
+
+        self.repok.add_sentence(f"Written {len(nquads)} quads to {filename}")
 
     def _save_query(self, query_string: str, directory: str, added_statements: int, removed_statements: int) -> None:
         content_hash = hashlib.sha256(query_string.encode('utf-8')).hexdigest()[:16]
