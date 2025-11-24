@@ -252,21 +252,24 @@ class Storer(object):
         else:
             return None
 
-    def upload_all(self, triplestore_url: str, base_dir: str = None, batch_size: int = 10, save_queries: bool = False,
-                   separate_inserts_deletes: bool = False, save_inserts_as_nquads: bool = False,
-                   nquads_output_dir: str = None, nquads_batch_size: int = 1000000) -> bool:
+    def upload_all(self, triplestore_url: str, base_dir: str = None, batch_size: int = 10,
+                   save_queries: bool = False, prepare_bulk_load: bool = False,
+                   bulk_load_dir: str = None) -> bool:
         """
         Upload queries to triplestore or save them to disk.
+
+        Three usage modes:
+        1. Default (save_queries=False, prepare_bulk_load=False): Execute combined SPARQL queries on triplestore
+        2. Save queries (save_queries=True, prepare_bulk_load=False): Save combined SPARQL queries to disk
+        3. Bulk load (save_queries=False, prepare_bulk_load=True): Prepare data for Virtuoso bulk loader (nquads + delete queries)
 
         Args:
             triplestore_url: SPARQL endpoint URL
             base_dir: Base directory for output files
             batch_size: Number of queries per SPARQL batch
-            save_queries: If True, save queries to disk instead of uploading
-            separate_inserts_deletes: If True, handle INSERT and DELETE queries separately
-            save_inserts_as_nquads: If True, save INSERT queries as .nq.gz files (requires separate_inserts_deletes=True)
-            nquads_output_dir: Directory for .nq.gz files (required if save_inserts_as_nquads=True)
-            nquads_batch_size: Number of quads per .nq.gz file (default: 1000000)
+            save_queries: If True, save combined SPARQL queries to disk instead of uploading
+            prepare_bulk_load: If True, prepare data for Virtuoso bulk loader (separate nquads + delete queries)
+            bulk_load_dir: Directory for nquads files (required if prepare_bulk_load=True)
 
         Returns:
             True if successful, False otherwise
@@ -277,13 +280,11 @@ class Storer(object):
         if batch_size <= 0:
             batch_size = 10
 
-        if save_inserts_as_nquads and not nquads_output_dir:
-            self.reperr.add_sentence("Error: nquads_output_dir is required when save_inserts_as_nquads=True")
-            return False
+        if save_queries and prepare_bulk_load:
+            raise ValueError("save_queries and prepare_bulk_load are mutually exclusive")
 
-        if save_inserts_as_nquads and not separate_inserts_deletes:
-            self.reperr.add_sentence("Error: separate_inserts_deletes must be True when save_inserts_as_nquads=True")
-            return False
+        if prepare_bulk_load and not bulk_load_dir:
+            raise ValueError("bulk_load_dir is required when prepare_bulk_load=True")
 
         query_parts: list = []
         added_statements: int = 0
@@ -291,16 +292,16 @@ class Storer(object):
         skipped_queries: int = 0
         result: bool = True
 
-        nquads_buffer: list = []
-        nquads_count: int = 0
-        nquads_file_index: int = 0
-
-        if save_queries or base_dir:
+        if base_dir:
             to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
             os.makedirs(to_be_uploaded_dir, exist_ok=True)
 
-        if save_inserts_as_nquads:
-            os.makedirs(nquads_output_dir, exist_ok=True)
+        if prepare_bulk_load:
+            os.makedirs(bulk_load_dir, exist_ok=True)
+            nquads_buffer: list = []
+            nquads_count: int = 0
+            nquads_file_index: int = 0
+            nquads_batch_size: int = 1000000
 
         entities_to_process = self.a_set.res_to_entity.values()
         if self.modified_entities is not None:
@@ -312,7 +313,7 @@ class Storer(object):
         for idx, entity in enumerate(entities_to_process):
             entity_type = self._class_to_entity_type(entity)
 
-            if separate_inserts_deletes:
+            if prepare_bulk_load:
                 insert_query, delete_query, n_added, n_removed, insert_graph = get_separated_queries(entity, entity_type=entity_type)
 
                 if insert_query == "" and delete_query == "":
@@ -320,19 +321,15 @@ class Storer(object):
                     continue
 
                 if insert_query != "":
-                    if save_inserts_as_nquads:
-                        quads = serialize_graph_to_nquads(insert_graph, entity.g.identifier)
-                        nquads_buffer.extend(quads)
-                        nquads_count += len(quads)
+                    quads = serialize_graph_to_nquads(insert_graph, entity.g.identifier)
+                    nquads_buffer.extend(quads)
+                    nquads_count += len(quads)
 
-                        if nquads_count >= nquads_batch_size:
-                            self._write_nquads_file(nquads_buffer, nquads_output_dir, nquads_file_index)
-                            nquads_file_index += 1
-                            nquads_buffer = []
-                            nquads_count = 0
-                    else:
-                        if base_dir:
-                            self._save_query(insert_query, to_be_uploaded_dir, n_added, 0)
+                    if nquads_count >= nquads_batch_size:
+                        self._write_nquads_file(nquads_buffer, bulk_load_dir, nquads_file_index)
+                        nquads_file_index += 1
+                        nquads_buffer = []
+                        nquads_count = 0
 
                 if delete_query != "":
                     index = idx - skipped_queries
@@ -341,10 +338,7 @@ class Storer(object):
 
                     if (index + 1) % batch_size == 0:
                         query_string = " ; ".join(query_parts)
-                        if base_dir:
-                            self._save_query(query_string, to_be_uploaded_dir, 0, removed_statements)
-                        else:
-                            result &= self._query(query_string, triplestore_url, base_dir, 0, removed_statements)
+                        self._save_query(query_string, to_be_uploaded_dir, 0, removed_statements)
                         query_parts = []
                         removed_statements = 0
             else:
@@ -370,19 +364,16 @@ class Storer(object):
 
         if query_parts:
             query_string = " ; ".join(query_parts)
-            if separate_inserts_deletes:
-                if base_dir:
-                    self._save_query(query_string, to_be_uploaded_dir, 0, removed_statements)
-                else:
-                    result &= self._query(query_string, triplestore_url, base_dir, 0, removed_statements)
+            if prepare_bulk_load:
+                self._save_query(query_string, to_be_uploaded_dir, 0, removed_statements)
             else:
                 if save_queries:
                     self._save_query(query_string, to_be_uploaded_dir, added_statements, removed_statements)
                 else:
                     result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
 
-        if save_inserts_as_nquads and nquads_buffer:
-            self._write_nquads_file(nquads_buffer, nquads_output_dir, nquads_file_index)
+        if prepare_bulk_load and nquads_buffer:
+            self._write_nquads_file(nquads_buffer, bulk_load_dir, nquads_file_index)
 
         return result
 
