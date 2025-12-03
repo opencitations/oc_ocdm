@@ -30,3 +30,5 @@ htmlcov/*
 
 blazegraph*
 rules.log
+
+benchmarks/redis_data/*

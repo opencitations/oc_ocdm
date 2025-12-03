@@ -1,0 +1,22 @@
+services:
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - ./redis_data:/data
+
+  benchmark:
+    build:
+      context: ..
+      dockerfile: benchmarks/Dockerfile
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=15
+    depends_on:
+      - redis
+    volumes:
+      - ..:/app
+      - ../.git:/app/.git:ro
+      - ./.benchmarks:/app/.benchmarks
+      - ./output:/app/benchmarks/output

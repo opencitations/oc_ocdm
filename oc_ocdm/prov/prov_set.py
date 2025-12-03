@@ -41,7 +41,6 @@ from oc_ocdm.support.support import (get_count, get_prefix, get_short_name)
 
 
 class ProvSet(AbstractSet):
-    # Labels
     labels: ClassVar[Dict[str, str]] = {
         "se": "snapshot of entity metadata"
     }
