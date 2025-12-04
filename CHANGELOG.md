@@ -1,3 +1,15 @@
+# [9.4.0](https://github.com/opencitations/oc_ocdm/compare/9.3.0...9.4.0) (2025-12-04)
+
+
+### Bug Fixes
+
+* **query_utils:** replace isomorphic graph comparison with set operations [release] ([5650079](https://github.com/opencitations/oc_ocdm/commit/56500794eca31ca7b2a28f4a86d15b4b2c4a3713))
+
+
+### Features
+
+* add benchmark infrastructure ([e357300](https://github.com/opencitations/oc_ocdm/commit/e357300c25129ab7d4d3412500d881c21cb8fe5e))
+
 # [9.3.0](https://github.com/opencitations/oc_ocdm/compare/9.2.8...9.3.0) (2025-11-24)
 
 
