@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from filelock import FileLock
+
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from oc_ocdm.prov.prov_entity import ProvEntity
@@ -112,22 +113,25 @@ class Storer(object):
 
     def _write_graph(self, graph: Dataset, zip_file: ZipFile, cur_file_path, context_path):
         if self.output_format == "json-ld":
-            # Serialize the graph in JSON-LD format
-            cur_json_ld = json.loads(graph.serialize(format="json-ld", context=self.context_map.get(context_path)))
             if context_path is not None and context_path in self.context_map:
+                cur_json_ld = json.loads(graph.serialize(format="json-ld", context=self.context_map[context_path]))
                 if isinstance(cur_json_ld, dict):
                     cur_json_ld["@context"] = context_path
-                else:  # When cur_json_ld is a list
+                else:
                     for item in cur_json_ld:
                         item["@context"] = context_path
-
-            # Determine how to write based on zip file presence
-            if zip_file is not None:
-                dumped_json = json.dumps(cur_json_ld, ensure_ascii=False).encode('utf-8')
-                zip_file.writestr(zinfo_or_arcname=os.path.basename(cur_file_path), data=dumped_json)
+                if zip_file is not None:
+                    data = json.dumps(cur_json_ld, ensure_ascii=False).encode('utf-8')
+                    zip_file.writestr(zinfo_or_arcname=os.path.basename(cur_file_path), data=data)
+                else:
+                    with open(cur_file_path, 'wt', encoding='utf-8') as f:
+                        json.dump(cur_json_ld, f, ensure_ascii=False)
             else:
-                with open(cur_file_path, 'wt', encoding='utf-8') as f:
-                    json.dump(cur_json_ld, f, ensure_ascii=False)
+                if zip_file is not None:
+                    data = graph.serialize(format="json-ld").encode('utf-8')
+                    zip_file.writestr(zinfo_or_arcname=os.path.basename(cur_file_path), data=data)
+                else:
+                    graph.serialize(destination=cur_file_path, format="json-ld")
         else:
             # Handle other RDF formats
             if zip_file is not None:

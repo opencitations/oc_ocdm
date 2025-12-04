@@ -322,6 +322,70 @@ class TestStorer(unittest.TestCase):
         finally:
             os.unlink(context_file)
 
+    def test_store_with_context_path(self):
+        """Test that context_path replaces embedded context with URL and compacts URIs."""
+        context_data = {"@context": {"fabio": "http://purl.org/spar/fabio/"}}
+        context_url = "http://example.org/context"
+        base_dir = os.path.join("tests", "storer", "data", "context_test") + os.sep
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+            json.dump(context_data, f)
+            context_file = f.name
+
+        try:
+            os.makedirs(base_dir, exist_ok=True)
+            context_map = {context_url: context_file}
+            storer = Storer(
+                self.graph_set,
+                context_map=context_map,
+                dir_split=10000,
+                n_file_item=1000,
+                output_format='json-ld',
+                zip_output=False
+            )
+            paths = storer.store_all(base_dir, "http://test/", context_path=context_url)
+            self.assertGreater(len(paths), 0)
+
+            with open(paths[0], 'r') as out:
+                data = json.load(out)
+                self.assertIn("@context", data)
+                self.assertEqual(data["@context"], context_url)
+                self.assertIsInstance(data["@context"], str)
+                self.assertIn("@graph", data)
+                self.assertIsInstance(data["@graph"], list)
+                json_str = json.dumps(data)
+                self.assertIn("fabio:", json_str)
+                self.assertNotIn("http://purl.org/spar/fabio/", json_str)
+        finally:
+            os.unlink(context_file)
+            if os.path.exists(base_dir):
+                rmtree(base_dir)
+
+    def test_store_without_context_path(self):
+        """Test that without context_path, URIs are not compacted."""
+        base_dir = os.path.join("tests", "storer", "data", "no_context_test") + os.sep
+
+        try:
+            os.makedirs(base_dir, exist_ok=True)
+            storer = Storer(
+                self.graph_set,
+                context_map={},
+                dir_split=10000,
+                n_file_item=1000,
+                output_format='json-ld',
+                zip_output=False
+            )
+            paths = storer.store_all(base_dir, "http://test/")
+            self.assertGreater(len(paths), 0)
+
+            with open(paths[0], 'r') as out:
+                json_str = out.read()
+                self.assertIn("http://purl.org/spar/fabio/", json_str)
+                self.assertNotIn("fabio:", json_str)
+        finally:
+            if os.path.exists(base_dir):
+                rmtree(base_dir)
+
     def test_store_graphs_in_file(self):
         """Test the store_graphs_in_file method."""
         base_dir = os.path.join("tests", "storer", "data", "direct_store") + os.sep

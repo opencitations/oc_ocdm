@@ -9,8 +9,8 @@
 cd "$(dirname "$0")"
 
 if [ -z "$1" ]; then
-    docker-compose -f docker-compose.yml run benchmark
+    docker-compose -f docker-compose.yml run --rm benchmark
 else
-    docker-compose -f docker-compose.yml run benchmark \
+    docker-compose -f docker-compose.yml run --rm benchmark \
         bash /app/benchmarks/run_single_benchmark.sh "$1"
 fi
