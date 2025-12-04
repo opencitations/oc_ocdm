@@ -19,6 +19,7 @@ import os
 import re
 from dataclasses import dataclass
 from datetime import datetime
+from functools import lru_cache
 from typing import TYPE_CHECKING
 from rdflib import URIRef, Graph
 
@@ -189,6 +190,7 @@ _compiled_entity_regex = re.compile(entity_regex)
 _compiled_prov_regex = re.compile(prov_regex)
 
 
+@lru_cache(maxsize=4096)
 def parse_uri(res: URIRef) -> ParsedURI:
     string_iri = str(res)
     if "/prov/" in string_iri:
@@ -220,52 +222,26 @@ def parse_uri(res: URIRef) -> ParsedURI:
     return ParsedURI("", "", "", "", False, "", "", "")
 
 
-def _get_match(regex: str, group: int, string: str) -> str:
-    match: Match = re.match(regex, string)
-    if match is not None:
-        return match.group(group)
-    else:
-        return ""
-
-
 def get_base_iri(res: URIRef) -> str:
-    string_iri: str = str(res)
-    if "/prov/" in string_iri:
-        return _get_match(prov_regex, 1, string_iri)
-    else:
-        return _get_match(entity_regex, 1, string_iri)
+    return parse_uri(res).base_iri
 
 
 def get_short_name(res: URIRef) -> str:
-    string_iri: str = str(res)
-    if "/prov/" in string_iri:
-        return _get_match(prov_regex, 5, string_iri)
-    else:
-        return _get_match(entity_regex, 2, string_iri)
+    return parse_uri(res).short_name
 
 
 def get_prefix(res: URIRef) -> str:
-    string_iri: str = str(res)
-    if "/prov/" in string_iri:
-        return ""  # provenance entities cannot have a supplier prefix
-    else:
-        return _get_match(entity_regex, 3, string_iri)
+    return parse_uri(res).prefix
 
 
 def get_count(res: URIRef) -> str:
-    string_iri: str = str(res)
-    if "/prov/" in string_iri:
-        return _get_match(prov_regex, 6, string_iri)
-    else:
-        return _get_match(entity_regex, 4, string_iri)
+    return parse_uri(res).count
 
 
 def get_resource_number(res: URIRef) -> int:
-    string_iri: str = str(res)
-    if "/prov/" in string_iri:
-        return int(_get_match(prov_regex, 4, string_iri))
-    else:
-        return int(_get_match(entity_regex, 4, string_iri))
+    parsed = parse_uri(res)
+    count = parsed.prov_subject_count if parsed.is_prov else parsed.count
+    return int(count) if count else 0
 
 
 def find_local_line_id(res: URIRef, n_file_item: int = 1) -> int:
