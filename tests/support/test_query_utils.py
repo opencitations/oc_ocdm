@@ -32,12 +32,12 @@ class TestQueryUtils(unittest.TestCase):
         self.base_iri = "https://test.org/"
         self.graph_set = GraphSet(self.base_iri, "", "060", False)
 
-    def test_get_insert_query_empty_graph(self):
-        """Test get_insert_query with empty graph returns empty string."""
+    def test_get_insert_query_empty_set(self):
+        """Test get_insert_query with empty set returns empty string."""
         graph_iri = URIRef("https://test.org/graph/1")
-        empty_graph = Graph()
+        empty_set = set()
 
-        query, count = get_insert_query(graph_iri, empty_graph)
+        query, count = get_insert_query(graph_iri, empty_set)
 
         self.assertEqual(query, "")
         self.assertEqual(count, 0)
@@ -45,23 +45,24 @@ class TestQueryUtils(unittest.TestCase):
     def test_get_insert_query_with_triples(self):
         """Test get_insert_query with triples generates correct query."""
         graph_iri = URIRef("https://test.org/graph/1")
-        graph = Graph()
         subject = URIRef("https://test.org/resource/1")
-        graph.add((subject, RDF.type, URIRef("https://test.org/Class")))
-        graph.add((subject, DCTERMS.title, Literal("Test")))
+        triples = {
+            (subject, RDF.type, URIRef("https://test.org/Class")),
+            (subject, DCTERMS.title, Literal("Test")),
+        }
 
-        query, count = get_insert_query(graph_iri, graph)
+        query, count = get_insert_query(graph_iri, triples)
 
         self.assertIn("INSERT DATA", query)
         self.assertIn(str(graph_iri), query)
         self.assertEqual(count, 2)
 
-    def test_get_delete_query_empty_graph(self):
-        """Test get_delete_query with empty graph returns empty string."""
+    def test_get_delete_query_empty_set(self):
+        """Test get_delete_query with empty set returns empty string."""
         graph_iri = URIRef("https://test.org/graph/1")
-        empty_graph = Graph()
+        empty_set = set()
 
-        query, count = get_delete_query(graph_iri, empty_graph)
+        query, count = get_delete_query(graph_iri, empty_set)
 
         self.assertEqual(query, "")
         self.assertEqual(count, 0)
@@ -69,11 +70,10 @@ class TestQueryUtils(unittest.TestCase):
     def test_get_delete_query_with_triples(self):
         """Test get_delete_query with triples generates correct query."""
         graph_iri = URIRef("https://test.org/graph/1")
-        graph = Graph()
         subject = URIRef("https://test.org/resource/1")
-        graph.add((subject, RDF.type, URIRef("https://test.org/Class")))
+        triples = {(subject, RDF.type, URIRef("https://test.org/Class"))}
 
-        query, count = get_delete_query(graph_iri, graph)
+        query, count = get_delete_query(graph_iri, triples)
 
         self.assertIn("DELETE DATA", query)
         self.assertIn(str(graph_iri), query)
@@ -269,13 +269,14 @@ class TestQueryUtils(unittest.TestCase):
 
     def test_serialize_graph_to_nquads(self):
         """Test serialize_graph_to_nquads generates valid N-Quads."""
-        graph = Graph()
         subject = URIRef("https://test.org/resource/1")
-        graph.add((subject, RDF.type, URIRef("https://test.org/Class")))
-        graph.add((subject, DCTERMS.title, Literal("Test")))
+        triples = {
+            (subject, RDF.type, URIRef("https://test.org/Class")),
+            (subject, DCTERMS.title, Literal("Test")),
+        }
         graph_iri = URIRef("https://test.org/graph/1")
 
-        nquads = serialize_graph_to_nquads(graph, graph_iri)
+        nquads = serialize_graph_to_nquads(triples, graph_iri)
 
         self.assertEqual(len(nquads), 2)
         for nquad in nquads:
