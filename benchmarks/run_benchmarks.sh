@@ -1,5 +1,31 @@
 #!/bin/bash
+# Run all benchmarks or a specific benchmark group.
+#
+# Usage:
+#   ./run_benchmarks.sh              # Run all benchmarks
+#   ./run_benchmarks.sh --group NAME # Run specific benchmark group
+#
+# Available groups: graph_diff, context_caching
+
 set -e
+
+GROUP=""
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --group)
+            GROUP="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+done
+
+if [ -n "$GROUP" ]; then
+    exec "$(dirname "$0")/run_single_benchmark.sh" "$GROUP"
+fi
 
 echo "Cleaning previous benchmark results..."
 rm -rf .benchmarks/*

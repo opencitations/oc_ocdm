@@ -283,6 +283,25 @@ class BenchmarkPlotGenerator:
             safe_group_name = group_name.replace("/", "_").replace(" ", "_")
             self.plot_group_combined(data, group=group_name, output_name=safe_group_name)
 
+    def generate_group_plot(self, json_file: str, group: str):
+        """
+        Generate plot for a specific benchmark group only.
+
+        Args:
+            json_file: Path to benchmark JSON file.
+            group: Name of the benchmark group to plot.
+        """
+        json_path = Path(json_file)
+        if not json_path.exists():
+            print(f"File not found: {json_file}")
+            return
+
+        print(f"\nProcessing: {json_path.name} (group: {group})")
+        data = self.load_benchmark_results(str(json_path))
+
+        safe_group_name = group.replace("/", "_").replace(" ", "_")
+        self.plot_group_combined(data, group=group, output_name=safe_group_name)
+
 
 def main():
     """Generate plots from command line."""
@@ -298,11 +317,19 @@ def main():
         default="benchmarks/output/plots",
         help="Directory to save plots",
     )
+    parser.add_argument(
+        "--group",
+        default=None,
+        help="Generate plot for specific benchmark group only",
+    )
 
     args = parser.parse_args()
 
     generator = BenchmarkPlotGenerator(output_dir=args.output_dir)
-    generator.generate_all_plots(args.input_file)
+    if args.group:
+        generator.generate_group_plot(args.input_file, args.group)
+    else:
+        generator.generate_all_plots(args.input_file)
 
 
 if __name__ == "__main__":

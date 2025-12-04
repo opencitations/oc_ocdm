@@ -3,6 +3,7 @@ Shared configuration and fixtures for oc_ocdm benchmarks.
 """
 
 import os
+from pathlib import Path
 
 import pytest
 
@@ -69,3 +70,12 @@ def create_prov_set(graph_set, handler):
         custom_counter_handler=handler,
         supplier_prefix=SUPPLIER_PREFIX
     )
+
+
+def pytest_configure(config):
+    """Configure pytest-benchmark storage directory based on benchmark group."""
+    benchmark_group = os.environ.get("BENCHMARK_GROUP")
+    if benchmark_group:
+        storage_dir = Path(".benchmarks") / benchmark_group
+        storage_dir.mkdir(parents=True, exist_ok=True)
+        config.option.benchmark_storage = str(storage_dir)
