@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import os
 import re
+from dataclasses import dataclass
 from datetime import datetime
 from typing import TYPE_CHECKING
 from rdflib import URIRef, Graph
@@ -28,6 +29,18 @@ if TYPE_CHECKING:
     from oc_ocdm.graph.entities.bibliographic.agent_role import AgentRole
 
 from urllib.parse import quote
+
+
+@dataclass
+class ParsedURI:
+    base_iri: str
+    short_name: str
+    prefix: str
+    count: str
+    is_prov: bool
+    prov_subject_short_name: str
+    prov_subject_prefix: str
+    prov_subject_count: str
 
 from rdflib import RDF, XSD, Literal
 
@@ -172,6 +185,40 @@ def is_string_empty(string: str) -> bool:
 entity_regex: str = r"^(.+)/([a-z][a-z])/(0[1-9]+0)?((?:[1-9][0-9]*)|(?:\d+-\d+))$"
 prov_regex: str = r"^(.+)/([a-z][a-z])/(0[1-9]+0)?((?:[1-9][0-9]*)|(?:\d+-\d+))/prov/([a-z][a-z])/([1-9][0-9]*)$"
 
+_compiled_entity_regex = re.compile(entity_regex)
+_compiled_prov_regex = re.compile(prov_regex)
+
+
+def parse_uri(res: URIRef) -> ParsedURI:
+    string_iri = str(res)
+    if "/prov/" in string_iri:
+        match = _compiled_prov_regex.match(string_iri)
+        if match:
+            return ParsedURI(
+                base_iri=match.group(1),
+                short_name=match.group(5),
+                prefix="",
+                count=match.group(6),
+                is_prov=True,
+                prov_subject_short_name=match.group(2),
+                prov_subject_prefix=match.group(3) or "",
+                prov_subject_count=match.group(4),
+            )
+    else:
+        match = _compiled_entity_regex.match(string_iri)
+        if match:
+            return ParsedURI(
+                base_iri=match.group(1),
+                short_name=match.group(2),
+                prefix=match.group(3) or "",
+                count=match.group(4),
+                is_prov=False,
+                prov_subject_short_name="",
+                prov_subject_prefix="",
+                prov_subject_count="",
+            )
+    return ParsedURI("", "", "", "", False, "", "", "")
+
 
 def _get_match(regex: str, group: int, string: str) -> str:
     match: Match = re.match(regex, string)
@@ -197,14 +244,6 @@ def get_short_name(res: URIRef) -> str:
         return _get_match(entity_regex, 2, string_iri)
 
 
-def get_prov_subject_short_name(prov_res: URIRef) -> str:
-    string_iri: str = str(prov_res)
-    if "/prov/" in string_iri:
-        return _get_match(prov_regex, 2, string_iri)
-    else:
-        return ""  # non-provenance entities do not have a prov_subject!
-
-
 def get_prefix(res: URIRef) -> str:
     string_iri: str = str(res)
     if "/prov/" in string_iri:
@@ -213,28 +252,12 @@ def get_prefix(res: URIRef) -> str:
         return _get_match(entity_regex, 3, string_iri)
 
 
-def get_prov_subject_prefix(prov_res: URIRef) -> str:
-    string_iri: str = str(prov_res)
-    if "/prov/" in string_iri:
-        return _get_match(prov_regex, 3, string_iri)
-    else:
-        return ""  # non-provenance entities do not have a prov_subject!
-
-
 def get_count(res: URIRef) -> str:
     string_iri: str = str(res)
     if "/prov/" in string_iri:
         return _get_match(prov_regex, 6, string_iri)
     else:
         return _get_match(entity_regex, 4, string_iri)
-
-
-def get_prov_subject_count(prov_res: URIRef) -> str:
-    string_iri: str = str(prov_res)
-    if "/prov/" in string_iri:
-        return _get_match(prov_regex, 4, string_iri)
-    else:
-        return ""  # non-provenance entities do not have a prov_subject!
 
 
 def get_resource_number(res: URIRef) -> int:
@@ -272,90 +295,48 @@ def find_paths(res: URIRef, base_dir: str, base_iri: str, default_dir: str, dir_
 
     if is_dataset(res):
         cur_dir_path: str = (base_dir + re.sub(r"^%s(.*)$" % base_iri, r"\1", string_iri))[:-1]
-        # In case of dataset, the file path is different from regular files, e.g.
-        # /corpus/br/index.json
         cur_file_path: str = cur_dir_path + os.sep + "index" + process_id_str + ".json"
-    else:
-        cur_number: int = get_resource_number(res)
+        return cur_dir_path, cur_file_path
 
-        # Find the correct file number where to save the resources
-        cur_file_split: int = 0
-        while True:
-            if cur_number > cur_file_split:
-                cur_file_split += n_file_item
-            else:
-                break
+    parsed = parse_uri(res)
+    cur_number: int = int(parsed.prov_subject_count) if parsed.is_prov else int(parsed.count)
 
-        # The data have been split in multiple directories and it is not something related
-        # with the provenance data of the whole corpus (e.g. provenance agents)
-        if dir_split and not string_iri.startswith(base_iri + "prov/"):
-            # Find the correct directory number where to save the file
-            cur_split: int = 0
-            while True:
-                if cur_number > cur_split:
-                    cur_split += dir_split
-                else:
-                    break
+    cur_file_split: int = 0
+    while cur_number > cur_file_split:
+        cur_file_split += n_file_item
 
-            if "/prov/" in string_iri:  # provenance file of a bibliographic entity
-                subj_short_name: str = get_prov_subject_short_name(res)
-                short_name: str = get_short_name(res)
-                sub_folder: str = get_prov_subject_prefix(res)
-                file_extension: str = '.json' if is_json else '.nq'
-                if sub_folder == "":
-                    sub_folder = default_dir
-                if sub_folder == "":
-                    sub_folder = "_"  # enforce default value
+    if dir_split and not string_iri.startswith(base_iri + "prov/"):
+        cur_split: int = 0
+        while cur_number > cur_split:
+            cur_split += dir_split
 
-                cur_dir_path: str = base_dir + subj_short_name + os.sep + sub_folder + \
-                    os.sep + str(cur_split) + os.sep + str(cur_file_split) + os.sep + "prov"
-                cur_file_path: str = cur_dir_path + os.sep + short_name + process_id_str + file_extension
-            else:  # regular bibliographic entity
-                short_name: str = get_short_name(res)
-                sub_folder: str = get_prefix(res)
-                file_extension: str = '.json' if is_json else '.nt'
-                if sub_folder == "":
-                    sub_folder = default_dir
-                if sub_folder == "":
-                    sub_folder = "_"  # enforce default value
-
-                cur_dir_path: str = base_dir + short_name + os.sep + sub_folder + os.sep + str(cur_split)
-                cur_file_path: str = cur_dir_path + os.sep + str(cur_file_split) + process_id_str + file_extension
-        # Enter here if no split is needed
-        elif dir_split == 0:
-            if "/prov/" in string_iri:
-                subj_short_name: str = get_prov_subject_short_name(res)
-                short_name: str = get_short_name(res)
-                sub_folder: str = get_prov_subject_prefix(res)
-                file_extension: str = '.json' if is_json else '.nq'
-                if sub_folder == "":
-                    sub_folder = default_dir
-                if sub_folder == "":
-                    sub_folder = "_"  # enforce default value
-
-                cur_dir_path: str = base_dir + subj_short_name + os.sep + sub_folder + \
-                    os.sep + str(cur_file_split) + os.sep + "prov"
-                cur_file_path: str = cur_dir_path + os.sep + short_name + process_id_str + file_extension
-            else:
-                short_name: str = get_short_name(res)
-                sub_folder: str = get_prefix(res)
-                file_extension: str = '.json' if is_json else '.nt'
-                if sub_folder == "":
-                    sub_folder = default_dir
-                if sub_folder == "":
-                    sub_folder = "_"  # enforce default value
-
-                cur_dir_path: str = base_dir + short_name + os.sep + sub_folder
-                cur_file_path: str = cur_dir_path + os.sep + str(cur_file_split) + process_id_str + file_extension
-        # Enter here if the data is about a provenance agent, e.g. /corpus/prov/
+        if parsed.is_prov:
+            sub_folder = parsed.prov_subject_prefix or default_dir or "_"
+            file_extension = '.json' if is_json else '.nq'
+            cur_dir_path = base_dir + parsed.prov_subject_short_name + os.sep + sub_folder + \
+                os.sep + str(cur_split) + os.sep + str(cur_file_split) + os.sep + "prov"
+            cur_file_path = cur_dir_path + os.sep + parsed.short_name + process_id_str + file_extension
         else:
-            short_name: str = get_short_name(res)
-            prefix: str = get_prefix(res)
-            count: str = get_count(res)
-            file_extension: str = '.json' if is_json else '.nq'
-
-            cur_dir_path: str = base_dir + short_name
-            cur_file_path: str = cur_dir_path + os.sep + prefix + count + process_id_str + file_extension
+            sub_folder = parsed.prefix or default_dir or "_"
+            file_extension = '.json' if is_json else '.nt'
+            cur_dir_path = base_dir + parsed.short_name + os.sep + sub_folder + os.sep + str(cur_split)
+            cur_file_path = cur_dir_path + os.sep + str(cur_file_split) + process_id_str + file_extension
+    elif dir_split == 0:
+        if parsed.is_prov:
+            sub_folder = parsed.prov_subject_prefix or default_dir or "_"
+            file_extension = '.json' if is_json else '.nq'
+            cur_dir_path = base_dir + parsed.prov_subject_short_name + os.sep + sub_folder + \
+                os.sep + str(cur_file_split) + os.sep + "prov"
+            cur_file_path = cur_dir_path + os.sep + parsed.short_name + process_id_str + file_extension
+        else:
+            sub_folder = parsed.prefix or default_dir or "_"
+            file_extension = '.json' if is_json else '.nt'
+            cur_dir_path = base_dir + parsed.short_name + os.sep + sub_folder
+            cur_file_path = cur_dir_path + os.sep + str(cur_file_split) + process_id_str + file_extension
+    else:
+        file_extension = '.json' if is_json else '.nq'
+        cur_dir_path = base_dir + parsed.short_name
+        cur_file_path = cur_dir_path + os.sep + parsed.prefix + parsed.count + process_id_str + file_extension
 
     return cur_dir_path, cur_file_path
 

@@ -15,6 +15,7 @@ if [ -z "$1" ]; then
     echo "  - graph_diff"
     echo "  - context_caching"
     echo "  - storer"
+    echo "  - find_paths"
     exit 1
 fi
 
@@ -31,9 +32,12 @@ case "$GROUP" in
     storer)
         TEST_FILE="benchmarks/test_storer.py"
         ;;
+    find_paths)
+        TEST_FILE="benchmarks/test_find_paths.py"
+        ;;
     *)
         echo "Unknown benchmark group: $GROUP"
-        echo "Available groups: graph_diff, context_caching, storer"
+        echo "Available groups: graph_diff, context_caching, storer, find_paths"
         exit 1
         ;;
 esac
