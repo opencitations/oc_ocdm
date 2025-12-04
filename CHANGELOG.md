@@ -1,3 +1,19 @@
+## [9.4.1](https://github.com/opencitations/oc_ocdm/compare/9.4.0...9.4.1) (2025-12-04)
+
+
+### Bug Fixes
+
+* **query_utils:** replace Graph objects with sets in _compute_graph_changes ([9dbd09e](https://github.com/opencitations/oc_ocdm/commit/9dbd09e118fdbac8f426fad6b94ee732c355e52b))
+* **storer:** remove unnecessary Dataset reconstruction in _store_in_file ([5091653](https://github.com/opencitations/oc_ocdm/commit/509165316447a5e013a81c44f818e3c2942e71e5))
+* **storer:** skip JSON parsing when context_map is empty ([334c319](https://github.com/opencitations/oc_ocdm/commit/334c3191b15b95b6424339bd1e8ac624d85a0e91))
+* **support:** optimize find_paths with single regex match ([e244b5b](https://github.com/opencitations/oc_ocdm/commit/e244b5be3b974a3c3f9bdfb2f5443c4d2e315c92))
+
+
+### Performance Improvements
+
+* **benchmarks:** add context caching benchmark and improve tooling ([f601489](https://github.com/opencitations/oc_ocdm/commit/f601489443b2710c1d67b514b0a80594b986bfe0))
+* **support:** cache parse_uri results and refactor URI helper functions ([efbe372](https://github.com/opencitations/oc_ocdm/commit/efbe3725108b3f70deb9a6b8f96ed5701ed4fccd))
+
 # [9.4.0](https://github.com/opencitations/oc_ocdm/compare/9.3.0...9.4.0) (2025-12-04)
 
 
