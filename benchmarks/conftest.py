@@ -18,6 +18,7 @@ REDIS_DB = int(os.environ["REDIS_DB"])
 
 BASE_IRI = "https://w3id.org/oc/meta/"
 RESP_AGENT = "https://orcid.org/0000-0002-8420-0696"
+SUPPLIER_PREFIX = "060"
 
 BENCHMARK_ROUNDS = 5
 
@@ -42,7 +43,8 @@ def create_populated_graph_set(handler, entity_count):
     graph_set = GraphSet(
         base_iri=BASE_IRI,
         wanted_label=False,
-        custom_counter_handler=handler
+        custom_counter_handler=handler,
+        supplier_prefix=SUPPLIER_PREFIX
     )
     factory = DataFactory(seed=42)
     entities = factory.populate_graph_set(graph_set, RESP_AGENT, entity_count)
@@ -64,5 +66,6 @@ def create_prov_set(graph_set, handler):
         prov_subj_graph_set=graph_set,
         base_iri=BASE_IRI,
         wanted_label=False,
-        custom_counter_handler=handler
+        custom_counter_handler=handler,
+        supplier_prefix=SUPPLIER_PREFIX
     )

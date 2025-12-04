@@ -20,11 +20,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Tuple
     from rdflib import URIRef
-    from rdflib.compare import IsomorphicGraph
     from oc_ocdm.abstract_entity import AbstractEntity
 
 from rdflib import Graph
-from rdflib.compare import graph_diff, to_isomorphic
 
 
 def get_delete_query(graph_iri: URIRef, data: Graph) -> Tuple[str, int]:
@@ -67,13 +65,23 @@ def _compute_graph_changes(entity: AbstractEntity, entity_type: str) -> Tuple[Gr
     if to_be_deleted:
         return Graph(), preexisting_graph, 0, len(preexisting_graph)
 
-    preexisting_iso: IsomorphicGraph = to_isomorphic(preexisting_graph)
-    current_iso: IsomorphicGraph = to_isomorphic(entity.g)
+    preexisting_triples = set(preexisting_graph)
+    current_triples = set(entity.g)
 
-    if preexisting_iso == current_iso:
+    if preexisting_triples == current_triples:
         return Graph(), Graph(), 0, 0
 
-    _, in_first, in_second = graph_diff(preexisting_iso, current_iso)
+    removed_triples = preexisting_triples - current_triples
+    added_triples = current_triples - preexisting_triples
+
+    in_first = Graph()
+    for triple in removed_triples:
+        in_first.add(triple)
+
+    in_second = Graph()
+    for triple in added_triples:
+        in_second.add(triple)
+
     return in_second, in_first, len(in_second), len(in_first)
 
 
@@ -125,33 +133,19 @@ def get_separated_queries(entity: AbstractEntity, entity_type: str = "graph") ->
 
 
 def get_update_query(entity: AbstractEntity, entity_type: str = "graph") -> Tuple[str, int, int]:
-    if entity_type == "prov":
-        insert_string, added_triples = get_insert_query(entity.g.identifier, entity.g)
-        return insert_string, added_triples, 0
+    to_insert, to_delete, n_added, n_removed = _compute_graph_changes(entity, entity_type)
 
-    to_be_deleted: bool = entity.to_be_deleted
-    preexisting_graph: Graph = entity.preexisting_graph
+    if n_added == 0 and n_removed == 0:
+        return "", 0, 0
 
-    if to_be_deleted:
-        delete_string, removed_triples = get_delete_query(entity.g.identifier, preexisting_graph)
-        if delete_string != "":
-            return delete_string, 0, removed_triples
-        else:
-            return "", 0, 0
+    delete_string, _ = get_delete_query(entity.g.identifier, to_delete)
+    insert_string, _ = get_insert_query(entity.g.identifier, to_insert)
+
+    if delete_string != "" and insert_string != "":
+        return delete_string + '; ' + insert_string, n_added, n_removed
+    elif delete_string != "":
+        return delete_string, 0, n_removed
+    elif insert_string != "":
+        return insert_string, n_added, 0
     else:
-        preexisting_iso: IsomorphicGraph = to_isomorphic(preexisting_graph)
-        current_iso: IsomorphicGraph = to_isomorphic(entity.g)
-
-        if preexisting_iso == current_iso:
-            return "", 0, 0
-        _, in_first, in_second = graph_diff(preexisting_iso, current_iso)
-        delete_string, removed_triples = get_delete_query(entity.g.identifier, in_first)
-        insert_string, added_triples = get_insert_query(entity.g.identifier, in_second)
-        if delete_string != "" and insert_string != "":
-            return delete_string + '; ' + insert_string, added_triples, removed_triples
-        elif delete_string != "":
-            return delete_string, 0, removed_triples
-        elif insert_string != "":
-            return insert_string, added_triples, 0
-        else:
-            return "", 0, 0
+        return "", 0, 0
