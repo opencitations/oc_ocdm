@@ -100,21 +100,13 @@ class Storer(object):
         self._store_in_file(cg, file_path, context_path)
 
     def _store_in_file(self, cur_g: Dataset, cur_file_path: str, context_path: str = None) -> None:
-        # Note: the following lines from here and until 'cur_json_ld' are a sort of hack for including all
-        # the triples of the input graph into the final stored file. Somehow, some of them are not written
-        # in such file otherwise - in particular the provenance ones.
-        new_g: Dataset = Dataset()
-        for s, p, o, g_iri in cur_g.quads((None, None, None, None)):
-            new_g.addN([(s, p, o, g_iri)])
-
         zip_file_path = cur_file_path.replace(os.path.splitext(cur_file_path)[1], ".zip")
-        
+
         if self.zip_output:
             with ZipFile(zip_file_path, mode="w", compression=ZIP_DEFLATED, allowZip64=True) as zip_file:
-                self._write_graph(new_g, zip_file, cur_file_path, context_path)
+                self._write_graph(cur_g, zip_file, cur_file_path, context_path)
         else:
-            # Handle non-zipped output directly to a file
-            self._write_graph(new_g, None, cur_file_path, context_path)
+            self._write_graph(cur_g, None, cur_file_path, context_path)
 
         self.repok.add_sentence(f"File '{cur_file_path}' added.")
 
