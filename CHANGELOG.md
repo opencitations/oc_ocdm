@@ -1,3 +1,10 @@
+## [9.4.2](https://github.com/opencitations/oc_ocdm/compare/9.4.1...9.4.2) (2025-12-05)
+
+
+### Bug Fixes
+
+* **sparql:** migrate from SPARQLWrapper to sparqlite ([a2b8957](https://github.com/opencitations/oc_ocdm/commit/a2b8957e45b81ef6830b7ca22fc82386e17cd8a8))
+
 ## [9.4.1](https://github.com/opencitations/oc_ocdm/compare/9.4.0...9.4.1) (2025-12-04)
 
 
