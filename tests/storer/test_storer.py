@@ -23,9 +23,9 @@ import unittest
 from unittest.mock import patch
 from zipfile import ZipFile
 from multiprocessing import Pool
-from SPARQLWrapper import POST, SPARQLWrapper
 
 from rdflib import Dataset, Graph, URIRef, compare
+from sparqlite import SPARQLClient
 
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
@@ -48,12 +48,10 @@ def dataset_to_graph(dataset: Dataset) -> Graph:
 class TestStorer(unittest.TestCase):
     ts = 'http://127.0.0.1:8804/sparql'
 
-    def reset_server(self, server:str=ts) -> None:
-        ts = SPARQLWrapper(server)
-        for graph in {'https://w3id.org/oc/meta/br/', 'https://w3id.org/oc/meta/ra/', 'https://w3id.org/oc/meta/re/', 'https://w3id.org/oc/meta/id/', 'https://w3id.org/oc/meta/ar/', 'http://default.graph/'}:
-            ts.setQuery(f'CLEAR GRAPH <{graph}>')
-            ts.setMethod(POST)
-            ts.query()
+    def reset_server(self, server: str = ts) -> None:
+        with SPARQLClient(server) as client:
+            for graph in {'https://w3id.org/oc/meta/br/', 'https://w3id.org/oc/meta/ra/', 'https://w3id.org/oc/meta/re/', 'https://w3id.org/oc/meta/id/', 'https://w3id.org/oc/meta/ar/', 'http://default.graph/'}:
+                client.update(f'CLEAR GRAPH <{graph}>')
 
     def setUp(self):
         self.resp_agent = "http://resp_agent.test/"
@@ -416,25 +414,17 @@ class TestStorer(unittest.TestCase):
         storer.store_all(base_dir, self.base_iri)
 
         try:
-            # Mock SPARQLWrapper to simulate failure
-            with patch('SPARQLWrapper.SPARQLWrapper.query') as mock_query:
-                mock_query.side_effect = Exception("Connection failed")
+            from sparqlite import EndpointError
+            with patch('sparqlite.SPARQLClient.update') as mock_update:
+                mock_update.side_effect = EndpointError("Connection failed")
 
-                # This should create failure markers
-                try:
-                    storer.upload_all("http://invalid-endpoint:9999/sparql", base_dir)
-                except:
-                    pass  # Expected to fail
+                result = storer.upload_all("http://invalid-endpoint:9999/sparql", base_dir)
+                self.assertFalse(result)
 
-                # Check that failure marker files were created
-                for root, dirs, files in os.walk(base_dir):
-                    for file in files:
-                        if file.endswith('.json'):
-                            marker_file = os.path.join(root, file + '.failed')
-                            # Failure markers should exist
-                            if os.path.exists(marker_file):
-                                self.assertTrue(True)
-                                return
+                tp_err_dir = os.path.join(base_dir, "tp_err")
+                if os.path.exists(tp_err_dir):
+                    err_files = [f for f in os.listdir(tp_err_dir) if f.endswith('.txt')]
+                    self.assertGreater(len(err_files), 0)
         finally:
             if os.path.exists(base_dir):
                 rmtree(base_dir)

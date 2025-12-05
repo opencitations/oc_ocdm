@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import json
 import os
-import time
 from typing import TYPE_CHECKING
 from zipfile import ZipFile
 
@@ -25,7 +24,7 @@ from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import build_graph_from_results
 from rdflib import RDF, Dataset, Graph, URIRef
-from SPARQLWrapper import JSON, SPARQLWrapper
+from sparqlite import SPARQLClient, EndpointError
 
 if TYPE_CHECKING:
     from typing import Any, Dict, List, Optional, Set
@@ -233,135 +232,78 @@ class Reader(object):
     def import_entity_from_triplestore(g_set: GraphSet, ts_url: str, res: URIRef, resp_agent: str,
                                     enable_validation: bool = False) -> GraphEntity:
         query: str = f"SELECT ?s ?p ?o WHERE {{BIND (<{res}> AS ?s). ?s ?p ?o.}}"
-        attempt = 0
-        max_attempts = 3
-        wait_time = 5  # Initial wait time in seconds
+        try:
+            with SPARQLClient(ts_url, max_retries=3, backoff_factor=2.5) as client:
+                result = client.query(query)['results']['bindings']
 
-        while attempt < max_attempts:
-            try:
-                sparql: SPARQLWrapper = SPARQLWrapper(ts_url)
-                sparql.setQuery(query)
-                sparql.setMethod('GET')
-                sparql.setReturnFormat(JSON)
-                result = sparql.queryAndConvert()['results']['bindings']
-                
-                if not result:  # Se non ci sono risultati, l'entità non esiste
+                if not result:
                     raise ValueError(f"The requested entity {res} was not found in the triplestore.")
-                    
+
                 imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(g_set, result, resp_agent, enable_validation)
                 if len(imported_entities) <= 0:
                     raise ValueError("The requested entity was not recognized as a proper OCDM entity.")
                 return imported_entities[0]
 
-            except ValueError as ve:  # Non facciamo retry per errori di validazione
-                raise ve
-            except Exception as e:
-                attempt += 1
-                if attempt < max_attempts:
-                    print(f"[3] Attempt {attempt} failed. Could not import entity due to communication problems: {e}")
-                    print(f"Retrying in {wait_time} seconds...")
-                    time.sleep(wait_time)
-                    wait_time *= 2
-                else:
-                    print(f"[3] All {max_attempts} attempts failed. Could not import entity due to communication problems: {e}")
-                    raise
-
-        raise Exception("Max attempts reached. Failed to import entity from triplestore.")
+        except ValueError:
+            raise
+        except EndpointError as e:
+            print(f"[3] Could not import entity due to communication problems: {e}")
+            raise
 
     @staticmethod
     def import_entities_from_triplestore(g_set: GraphSet, ts_url: str, entities: List[URIRef], resp_agent: str,
                                     enable_validation: bool = False, batch_size: int = 1000) -> List[GraphEntity]:
-        """
-        Import multiple entities from a triplestore in batches using a single SPARQL query per batch.
-        
-        Args:
-            g_set: The GraphSet to import entities into
-            ts_url: The triplestore URL endpoint
-            entities: List of URIRef entities to import
-            resp_agent: The responsible agent string
-            enable_validation: Whether to validate the imported graphs
-            batch_size: Number of entities to import in each batch
-            
-        Returns:
-            List of imported GraphEntity objects
-        """
         if not entities:
             raise ValueError("No entities provided for import")
-            
+
         imported_entities: List[GraphEntity] = []
-        max_attempts = 3
-        wait_time = 5  # Initial wait time in seconds
-        
-        # Process entities in batches
-        for i in range(0, len(entities), batch_size):
-            batch = entities[i:i + batch_size]
-            not_found_entities = set(str(entity) for entity in batch)
-            
-            # Construct SPARQL query for batch using UNION pattern for Virtuoso
-            union_patterns = []
-            for entity in batch:
-                union_patterns.append(f"{{ BIND(<{str(entity)}> AS ?s) ?s ?p ?o }}")
-            
-            query = f"""
-            SELECT ?s ?p ?o
-            WHERE {{
-                {' UNION '.join(union_patterns)}
-            }}
-            """
-            
-            # Execute query with retry logic
-            attempt = 0
-            while attempt < max_attempts:
-                try:
-                    sparql: SPARQLWrapper = SPARQLWrapper(ts_url)
-                    sparql.setQuery(query)
-                    sparql.setMethod('GET')
-                    sparql.setReturnFormat(JSON)
-                    results = sparql.queryAndConvert()['results']['bindings']
-                    
-                    if not results:  # Se non ci sono risultati per questo batch
+
+        try:
+            with SPARQLClient(ts_url, max_retries=3, backoff_factor=2.5) as client:
+                for i in range(0, len(entities), batch_size):
+                    batch = entities[i:i + batch_size]
+                    not_found_entities = set(str(entity) for entity in batch)
+
+                    union_patterns = []
+                    for entity in batch:
+                        union_patterns.append(f"{{ BIND(<{str(entity)}> AS ?s) ?s ?p ?o }}")
+
+                    query = f"""
+                    SELECT ?s ?p ?o
+                    WHERE {{
+                        {' UNION '.join(union_patterns)}
+                    }}
+                    """
+
+                    results = client.query(query)['results']['bindings']
+
+                    if not results:
                         entities_str = ', '.join(not_found_entities)
                         raise ValueError(f"The requested entities were not found in the triplestore: {entities_str}")
-                    
-                    # Teniamo traccia delle entità trovate
+
                     for result in results:
                         if 's' in result and 'value' in result['s']:
                             not_found_entities.discard(result['s']['value'])
-                    
-                    # Import entities from results
-                    try:
-                        batch_entities = Reader.import_entities_from_graph(
-                            g_set=g_set,
-                            results=results,
-                            resp_agent=resp_agent,
-                            enable_validation=enable_validation
-                        )
-                        imported_entities.extend(batch_entities)
-                        
-                        # Se alcune entità non sono state trovate, lo segnaliamo
-                        if not_found_entities:
-                            entities_str = ', '.join(not_found_entities)
-                            raise ValueError(f"The following entities were not recognized as proper OCDM entities: {entities_str}")
-                        
-                        break  # Usciamo dal ciclo di retry se tutto è andato bene
-                        
-                    except ValueError as ve:  # Errori di validazione non richiedono retry
-                        raise ve
-                        
-                except ValueError as ve:  # Non facciamo retry per errori di validazione o entità non trovate
-                    raise ve
-                except Exception as e:
-                    attempt += 1
-                    if attempt < max_attempts:
-                        print(f"[3] Attempt {attempt} failed. Could not import batch due to communication problems: {e}")
-                        print(f"Retrying in {wait_time} seconds...")
-                        time.sleep(wait_time)
-                        wait_time *= 2
-                    else:
-                        print(f"[3] All {max_attempts} attempts failed. Could not import batch due to communication problems: {e}")
-                        raise
-        
+
+                    batch_entities = Reader.import_entities_from_graph(
+                        g_set=g_set,
+                        results=results,
+                        resp_agent=resp_agent,
+                        enable_validation=enable_validation
+                    )
+                    imported_entities.extend(batch_entities)
+
+                    if not_found_entities:
+                        entities_str = ', '.join(not_found_entities)
+                        raise ValueError(f"The following entities were not recognized as proper OCDM entities: {entities_str}")
+
+        except ValueError:
+            raise
+        except EndpointError as e:
+            print(f"[3] Could not import batch due to communication problems: {e}")
+            raise
+
         if not imported_entities:
             raise ValueError("None of the requested entities were found or recognized as proper OCDM entities.")
-            
+
         return imported_entities

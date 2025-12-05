@@ -24,7 +24,7 @@ from oc_ocdm.graph import GraphSet
 from oc_ocdm.reader import Reader
 from oc_ocdm.support.reporter import Reporter
 from rdflib import Graph, URIRef, Dataset, Namespace, RDF
-from SPARQLWrapper import POST, SPARQLWrapper
+from sparqlite import SPARQLClient
 
 
 class TestReader(unittest.TestCase):
@@ -33,25 +33,23 @@ class TestReader(unittest.TestCase):
         cls.endpoint = 'http://127.0.0.1:8804/sparql'
         cls.resp_agent = 'https://orcid.org/0000-0002-8420-0696'
         BASE = os.path.join('tests', 'reader')
-        
+
         cls.br_file = os.path.abspath(os.path.join(BASE, 'br.nt'))
         cls.ra_file = os.path.abspath(os.path.join(BASE, 'ra.nt'))
         cls.id_file = os.path.abspath(os.path.join(BASE, 'id.nt'))
-        
-        for file_path in [cls.br_file, cls.ra_file, cls.id_file]:
-            if os.path.exists(file_path):
-                g = Graph()
-                g.parse(file_path, format='nt')
-                
-                insert_query = "INSERT DATA { GRAPH <https://w3id.org/oc/meta/> {\n"
-                for s, p, o in g:
-                    insert_query += f"{s.n3()} {p.n3()} {o.n3()} .\n"
-                insert_query += "} }"
-                
-                server = SPARQLWrapper(cls.endpoint)
-                server.setMethod(POST)
-                server.setQuery(insert_query)
-                server.query()
+
+        with SPARQLClient(cls.endpoint) as client:
+            for file_path in [cls.br_file, cls.ra_file, cls.id_file]:
+                if os.path.exists(file_path):
+                    g = Graph()
+                    g.parse(file_path, format='nt')
+
+                    insert_query = "INSERT DATA { GRAPH <https://w3id.org/oc/meta/> {\n"
+                    for s, p, o in g:
+                        insert_query += f"{s.n3()} {p.n3()} {o.n3()} .\n"
+                    insert_query += "} }"
+
+                    client.update(insert_query)
     
     def setUp(self):
         self.reader = Reader()
@@ -112,31 +110,20 @@ class TestReader(unittest.TestCase):
                 False
             )
         
-    def test_batch_import_with_retry(self):
-        """Test batch import with connection failure and retry."""
+    def test_batch_import_with_empty_results(self):
+        """Test batch import with empty results."""
         entities = [
-            URIRef('https://w3id.org/oc/meta/br/0605'),
-            URIRef('https://w3id.org/oc/meta/br/0636066666')
+            URIRef('https://w3id.org/oc/meta/br/nonexistent1'),
+            URIRef('https://w3id.org/oc/meta/br/nonexistent2')
         ]
-        
-        # Mock SPARQLWrapper to fail once then succeed
-        with patch('SPARQLWrapper.SPARQLWrapper.queryAndConvert') as mock_query:
-            mock_query.side_effect = [
-                Exception("Connection failed"),  # First attempt fails
-                {'results': {'bindings': []}}    # Second attempt succeeds
-            ]
-            
-            # This should retry and eventually succeed
-            with self.assertRaises(ValueError):  # Empty results raise ValueError
-                self.reader.import_entities_from_triplestore(
-                    self.g_set,
-                    self.endpoint,
-                    entities,
-                    self.resp_agent
-                )
-            
-            # Verify that retry happened
-            self.assertEqual(mock_query.call_count, 2)
+
+        with self.assertRaises(ValueError):
+            self.reader.import_entities_from_triplestore(
+                self.g_set,
+                self.endpoint,
+                entities,
+                self.resp_agent
+            )
     
     def test_import_mixed_entity_types(self):
         """Test importing different types of entities in the same batch."""
@@ -344,10 +331,8 @@ class TestReader(unittest.TestCase):
     def tearDownClass(cls):
         """Clean up the triplestore after tests."""
         delete_query = "CLEAR GRAPH <https://w3id.org/oc/meta/>"
-        server = SPARQLWrapper(cls.endpoint)
-        server.setMethod(POST)
-        server.setQuery(delete_query)
-        server.query()
+        with SPARQLClient(cls.endpoint) as client:
+            client.update(delete_query)
 
 
 if __name__ == '__main__':

@@ -19,7 +19,6 @@ import gzip
 import hashlib
 import json
 import os
-import time
 from datetime import datetime
 from typing import TYPE_CHECKING
 from zipfile import ZIP_DEFLATED, ZipFile
@@ -34,7 +33,7 @@ from oc_ocdm.support.query_utils import get_separated_queries, get_update_query,
 from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import find_paths
 from rdflib import Dataset, URIRef
-from SPARQLWrapper import SPARQLWrapper
+from sparqlite import SPARQLClient, EndpointError
 
 if TYPE_CHECKING:
     from typing import Any, Dict, List, Optional, Set, Tuple
@@ -414,44 +413,27 @@ class Storer(object):
     def _query(self, query_string: str, triplestore_url: str, base_dir: str = None,
             added_statements: int = 0, removed_statements: int = 0) -> bool:
         if query_string != "":
-            attempt = 0
-            max_attempts = 3
-            wait_time = 5  # Initial wait time in seconds
+            try:
+                with SPARQLClient(triplestore_url, max_retries=3, backoff_factor=2.5) as client:
+                    client.update(query_string)
 
-            while attempt < max_attempts:
-                try:
-                    sparql: SPARQLWrapper = SPARQLWrapper(triplestore_url)
-                    sparql.setQuery(query_string)
-                    sparql.setMethod('POST')
+                self.repok.add_sentence(
+                    f"Triplestore updated with {added_statements} added statements and "
+                    f"with {removed_statements} removed statements.")
 
-                    sparql.query()
+                return True
 
-                    self.repok.add_sentence(
-                        f"Triplestore updated with {added_statements} added statements and "
-                        f"with {removed_statements} removed statements.")
-
-                    return True
-
-                except Exception as e:
-                    attempt += 1
-                    self.reperr.add_sentence("[3] "
-                                            f"Attempt {attempt} failed. Graph was not loaded into the "
-                                            f"triplestore due to communication problems: {e}")
-                    if attempt < max_attempts:
-                        self.reperr.add_sentence(f"Retrying in {wait_time} seconds...")
-                        time.sleep(wait_time)
-                        wait_time *= 2  # Double the wait time for the next attempt
-
-                    if base_dir is not None and attempt == max_attempts:
-                        self.reperr.add_sentence("[3] "
-                                                "Graph was not loaded into the "
-                                                f"triplestore due to communication problems: {e}")
-                        tp_err_dir: str = base_dir + os.sep + "tp_err"
-                        if not os.path.exists(tp_err_dir):
-                            os.makedirs(tp_err_dir, exist_ok=True)
-                        cur_file_err: str = tp_err_dir + os.sep + \
-                            datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f_not_uploaded.txt')
-                        with open(cur_file_err, 'wt', encoding='utf-8') as f:
-                            f.write(query_string)
+            except EndpointError as e:
+                self.reperr.add_sentence("[3] "
+                                        "Graph was not loaded into the "
+                                        f"triplestore due to communication problems: {e}")
+                if base_dir is not None:
+                    tp_err_dir: str = base_dir + os.sep + "tp_err"
+                    if not os.path.exists(tp_err_dir):
+                        os.makedirs(tp_err_dir, exist_ok=True)
+                    cur_file_err: str = tp_err_dir + os.sep + \
+                        datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f_not_uploaded.txt')
+                    with open(cur_file_err, 'wt', encoding='utf-8') as f:
+                        f.write(query_string)
 
         return False

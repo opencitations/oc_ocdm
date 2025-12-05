@@ -17,14 +17,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from io import BytesIO
+
 from oc_ocdm.abstract_set import AbstractSet
 from oc_ocdm.reader import Reader
 from oc_ocdm.support.support import get_count, get_prefix, get_short_name
-from SPARQLWrapper import RDFXML, SPARQLWrapper
+from sparqlite import SPARQLClient
 
 if TYPE_CHECKING:
     from typing import Dict, ClassVar, Tuple, Optional, List, Set
-    from rdflib import Dataset
 
 from oc_ocdm.counter_handler.counter_handler import CounterHandler
 from oc_ocdm.counter_handler.filesystem_counter_handler import \
@@ -268,20 +269,17 @@ class GraphSet(AbstractSet):
         return result_list
 
     def remove_orphans_from_triplestore(self, ts_url: str, resp_agent: str) -> None:
-        sparql: SPARQLWrapper = SPARQLWrapper(ts_url)
-
-        for entity_res, entity in self.res_to_entity.items():
-            if entity.to_be_deleted:
-                query: str = f"CONSTRUCT {{?s ?p ?o}} WHERE {{?s ?p ?o ; ?p_1 <{entity_res}>}}"
-                sparql.setQuery(query)
-                sparql.setMethod('GET')
-                sparql.setReturnFormat(RDFXML)
-
-                result: Dataset = sparql.query().convert()
-                if result is not None:
-                    imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(self, result, resp_agent)
-                    for imported_entity in imported_entities:
-                        imported_entity.g.remove((imported_entity.res, None, entity_res))
+        with SPARQLClient(ts_url) as client:
+            for entity_res, entity in self.res_to_entity.items():
+                if entity.to_be_deleted:
+                    query: str = f"CONSTRUCT {{?s ?p ?o}} WHERE {{?s ?p ?o ; ?p_1 <{entity_res}>}}"
+                    nt_bytes = client.construct(query)
+                    if nt_bytes:
+                        result: Graph = Graph()
+                        result.parse(BytesIO(nt_bytes), format='nt')
+                        imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(self, result, resp_agent)
+                        for imported_entity in imported_entities:
+                            imported_entity.g.remove((imported_entity.res, None, entity_res))
 
     def commit_changes(self):
         for res, entity in self.res_to_entity.items():
