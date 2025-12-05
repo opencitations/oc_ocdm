@@ -272,19 +272,18 @@ class Storer(object):
         self.repok.new_article()
         self.reperr.new_article()
 
-        if batch_size <= 0:
-            batch_size = 10
-
         if save_queries and prepare_bulk_load:
             raise ValueError("save_queries and prepare_bulk_load are mutually exclusive")
 
         if prepare_bulk_load and not bulk_load_dir:
             raise ValueError("bulk_load_dir is required when prepare_bulk_load=True")
 
-        query_parts: list = []
+        if batch_size <= 0:
+            batch_size = 10
+
+        query_batch: list = []
         added_statements: int = 0
         removed_statements: int = 0
-        skipped_queries: int = 0
         result: bool = True
 
         if base_dir:
@@ -305,17 +304,16 @@ class Storer(object):
                 if URIRef(str(entity.res).split('/prov/se/')[0]) in self.modified_entities
             ]
 
-        for idx, entity in enumerate(entities_to_process):
+        for entity in entities_to_process:
             entity_type = self._class_to_entity_type(entity)
 
             if prepare_bulk_load:
-                insert_query, delete_query, n_added, n_removed, insert_graph = get_separated_queries(entity, entity_type=entity_type)
+                insert_queries, delete_queries, n_added, n_removed, insert_graph = get_separated_queries(entity, entity_type=entity_type)
 
-                if insert_query == "" and delete_query == "":
-                    skipped_queries += 1
+                if not insert_queries and not delete_queries:
                     continue
 
-                if insert_query != "":
+                if insert_queries:
                     quads = serialize_graph_to_nquads(insert_graph, entity.g.identifier)
                     nquads_buffer.extend(quads)
                     nquads_count += len(quads)
@@ -326,46 +324,44 @@ class Storer(object):
                         nquads_buffer = []
                         nquads_count = 0
 
-                if delete_query != "":
-                    index = idx - skipped_queries
-                    query_parts.append(delete_query)
-                    removed_statements += n_removed
+                for delete_query in delete_queries:
+                    query_batch.append(delete_query)
+                    removed_statements += n_removed // len(delete_queries)
 
-                    if (index + 1) % batch_size == 0:
-                        query_string = " ; ".join(query_parts)
+                    if len(query_batch) >= batch_size:
+                        query_string = " ; ".join(query_batch)
                         self._save_query(query_string, to_be_uploaded_dir, 0, removed_statements)
-                        query_parts = []
+                        query_batch = []
                         removed_statements = 0
             else:
-                update_query, n_added, n_removed = get_update_query(entity, entity_type=entity_type)
+                update_queries, n_added, n_removed = get_update_query(entity, entity_type=entity_type)
 
-                if update_query == "":
-                    skipped_queries += 1
-                else:
-                    index = idx - skipped_queries
-                    query_parts.append(update_query)
-                    added_statements += n_added
-                    removed_statements += n_removed
+                if not update_queries:
+                    continue
 
-                    if (index + 1) % batch_size == 0:
-                        query_string = " ; ".join(query_parts)
+                for query in update_queries:
+                    query_batch.append(query)
+                    added_statements += n_added // len(update_queries)
+                    removed_statements += n_removed // len(update_queries)
+
+                    if len(query_batch) >= batch_size:
+                        query_string = " ; ".join(query_batch)
                         if save_queries:
                             self._save_query(query_string, to_be_uploaded_dir, added_statements, removed_statements)
                         else:
                             result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
-                        query_parts = []
+                        query_batch = []
                         added_statements = 0
                         removed_statements = 0
 
-        if query_parts:
-            query_string = " ; ".join(query_parts)
+        if query_batch:
+            query_string = " ; ".join(query_batch)
             if prepare_bulk_load:
                 self._save_query(query_string, to_be_uploaded_dir, 0, removed_statements)
+            elif save_queries:
+                self._save_query(query_string, to_be_uploaded_dir, added_statements, removed_statements)
             else:
-                if save_queries:
-                    self._save_query(query_string, to_be_uploaded_dir, added_statements, removed_statements)
-                else:
-                    result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
+                result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
 
         if prepare_bulk_load and nquads_buffer:
             self._write_nquads_file(nquads_buffer, bulk_load_dir, nquads_file_index)

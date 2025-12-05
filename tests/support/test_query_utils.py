@@ -33,13 +33,13 @@ class TestQueryUtils(unittest.TestCase):
         self.graph_set = GraphSet(self.base_iri, "", "060", False)
 
     def test_get_insert_query_empty_set(self):
-        """Test get_insert_query with empty set returns empty string."""
+        """Test get_insert_query with empty set returns empty list."""
         graph_iri = URIRef("https://test.org/graph/1")
         empty_set = set()
 
-        query, count = get_insert_query(graph_iri, empty_set)
+        queries, count = get_insert_query(graph_iri, empty_set)
 
-        self.assertEqual(query, "")
+        self.assertEqual(queries, [])
         self.assertEqual(count, 0)
 
     def test_get_insert_query_with_triples(self):
@@ -51,20 +51,21 @@ class TestQueryUtils(unittest.TestCase):
             (subject, DCTERMS.title, Literal("Test")),
         }
 
-        query, count = get_insert_query(graph_iri, triples)
+        queries, count = get_insert_query(graph_iri, triples)
 
-        self.assertIn("INSERT DATA", query)
-        self.assertIn(str(graph_iri), query)
+        self.assertEqual(len(queries), 1)
+        self.assertIn("INSERT DATA", queries[0])
+        self.assertIn(str(graph_iri), queries[0])
         self.assertEqual(count, 2)
 
     def test_get_delete_query_empty_set(self):
-        """Test get_delete_query with empty set returns empty string."""
+        """Test get_delete_query with empty set returns empty list."""
         graph_iri = URIRef("https://test.org/graph/1")
         empty_set = set()
 
-        query, count = get_delete_query(graph_iri, empty_set)
+        queries, count = get_delete_query(graph_iri, empty_set)
 
-        self.assertEqual(query, "")
+        self.assertEqual(queries, [])
         self.assertEqual(count, 0)
 
     def test_get_delete_query_with_triples(self):
@@ -73,10 +74,11 @@ class TestQueryUtils(unittest.TestCase):
         subject = URIRef("https://test.org/resource/1")
         triples = {(subject, RDF.type, URIRef("https://test.org/Class"))}
 
-        query, count = get_delete_query(graph_iri, triples)
+        queries, count = get_delete_query(graph_iri, triples)
 
-        self.assertIn("DELETE DATA", query)
-        self.assertIn(str(graph_iri), query)
+        self.assertEqual(len(queries), 1)
+        self.assertIn("DELETE DATA", queries[0])
+        self.assertIn(str(graph_iri), queries[0])
         self.assertEqual(count, 1)
 
     def test_get_update_query_unchanged_entity(self):
@@ -87,9 +89,9 @@ class TestQueryUtils(unittest.TestCase):
         for triple in br.g:
             br.preexisting_graph.add(triple)
 
-        query, added, removed = get_update_query(br, entity_type="graph")
+        queries, added, removed = get_update_query(br, entity_type="graph")
 
-        self.assertEqual(query, "")
+        self.assertEqual(queries, [])
         self.assertEqual(added, 0)
         self.assertEqual(removed, 0)
 
@@ -98,9 +100,10 @@ class TestQueryUtils(unittest.TestCase):
         br = self.graph_set.add_br(self.base_iri + "br/1")
         br.has_title("New Title")
 
-        query, added, removed = get_update_query(br, entity_type="graph")
+        queries, added, removed = get_update_query(br, entity_type="graph")
 
-        self.assertIn("INSERT DATA", query)
+        self.assertTrue(len(queries) >= 1)
+        self.assertTrue(any("INSERT DATA" in q for q in queries))
         self.assertEqual(added, 2)
         self.assertEqual(removed, 0)
 
@@ -115,9 +118,10 @@ class TestQueryUtils(unittest.TestCase):
 
         br.g.add((br.res, URIRef("http://example.org/newProp"), Literal("New Value")))
 
-        query, added, removed = get_update_query(br, entity_type="graph")
+        queries, added, removed = get_update_query(br, entity_type="graph")
 
-        self.assertIn("INSERT DATA", query)
+        self.assertTrue(len(queries) >= 1)
+        self.assertTrue(any("INSERT DATA" in q for q in queries))
         self.assertEqual(added, 1)
         self.assertEqual(removed, 0)
 
@@ -131,10 +135,11 @@ class TestQueryUtils(unittest.TestCase):
 
         br.mark_as_to_be_deleted()
 
-        query, added, removed = get_update_query(br, entity_type="graph")
+        queries, added, removed = get_update_query(br, entity_type="graph")
 
-        self.assertIn("DELETE DATA", query)
-        self.assertNotIn("INSERT DATA", query)
+        self.assertTrue(len(queries) >= 1)
+        self.assertTrue(any("DELETE DATA" in q for q in queries))
+        self.assertFalse(any("INSERT DATA" in q for q in queries))
         self.assertEqual(added, 0)
         self.assertEqual(removed, 2)
 
@@ -147,10 +152,11 @@ class TestQueryUtils(unittest.TestCase):
         se = prov_set.add_se(br)
         se.has_description("Creation")
 
-        query, added, removed = get_update_query(se, entity_type="prov")
+        queries, added, removed = get_update_query(se, entity_type="prov")
 
-        self.assertIn("INSERT DATA", query)
-        self.assertNotIn("DELETE DATA", query)
+        self.assertTrue(len(queries) >= 1)
+        self.assertTrue(any("INSERT DATA" in q for q in queries))
+        self.assertFalse(any("DELETE DATA" in q for q in queries))
         self.assertEqual(added, len(se.g))
         self.assertEqual(removed, 0)
 
@@ -162,9 +168,9 @@ class TestQueryUtils(unittest.TestCase):
         for triple in br.g:
             br.preexisting_graph.add(triple)
 
-        query, added, removed = get_update_query(br, entity_type="graph")
+        queries, added, removed = get_update_query(br, entity_type="graph")
 
-        self.assertEqual(query, "")
+        self.assertEqual(queries, [])
         self.assertEqual(added, 0)
         self.assertEqual(removed, 0)
 
@@ -178,9 +184,10 @@ class TestQueryUtils(unittest.TestCase):
 
         br.has_subtitle("New Subtitle")
 
-        query, added, removed = get_update_query(br, entity_type="graph")
+        queries, added, removed = get_update_query(br, entity_type="graph")
 
-        self.assertIn("INSERT DATA", query)
+        self.assertTrue(len(queries) >= 1)
+        self.assertTrue(any("INSERT DATA" in q for q in queries))
         self.assertEqual(added, 1)
         self.assertEqual(removed, 0)
 
@@ -194,10 +201,11 @@ class TestQueryUtils(unittest.TestCase):
 
         br.has_subtitle("Additional Info")
 
-        query, added, removed = get_update_query(br, entity_type="graph")
+        queries, added, removed = get_update_query(br, entity_type="graph")
 
-        self.assertIn("INSERT DATA", query)
-        self.assertNotIn("DELETE DATA", query)
+        self.assertTrue(len(queries) >= 1)
+        self.assertTrue(any("INSERT DATA" in q for q in queries))
+        self.assertFalse(any("DELETE DATA" in q for q in queries))
         self.assertEqual(added, 1)
         self.assertEqual(removed, 0)
 
@@ -290,10 +298,11 @@ class TestQueryUtils(unittest.TestCase):
 
         with self.subTest("new_entity"):
             br.has_title("New Title")
-            insert_q, delete_q, n_added, n_removed, insert_g = get_separated_queries(br, "graph")
+            insert_queries, delete_queries, n_added, n_removed, insert_g = get_separated_queries(br, "graph")
 
-            self.assertIn("INSERT DATA", insert_q)
-            self.assertEqual(delete_q, "")
+            self.assertTrue(len(insert_queries) >= 1)
+            self.assertTrue(any("INSERT DATA" in q for q in insert_queries))
+            self.assertEqual(delete_queries, [])
             self.assertEqual(n_added, 2)
             self.assertEqual(n_removed, 0)
             self.assertEqual(len(insert_g), 2)
@@ -303,30 +312,32 @@ class TestQueryUtils(unittest.TestCase):
             for triple in br.g:
                 br.preexisting_graph.add(triple)
 
-            insert_q, delete_q, n_added, n_removed, insert_g = get_separated_queries(br, "graph")
+            insert_queries, delete_queries, n_added, n_removed, insert_g = get_separated_queries(br, "graph")
 
-            self.assertEqual(insert_q, "")
-            self.assertEqual(delete_q, "")
+            self.assertEqual(insert_queries, [])
+            self.assertEqual(delete_queries, [])
             self.assertEqual(n_added, 0)
             self.assertEqual(n_removed, 0)
             self.assertEqual(len(insert_g), 0)
 
         with self.subTest("modified_entity"):
             br.has_subtitle("New Subtitle")
-            insert_q, delete_q, n_added, n_removed, insert_g = get_separated_queries(br, "graph")
+            insert_queries, delete_queries, n_added, n_removed, insert_g = get_separated_queries(br, "graph")
 
-            self.assertIn("INSERT DATA", insert_q)
-            self.assertEqual(delete_q, "")
+            self.assertTrue(len(insert_queries) >= 1)
+            self.assertTrue(any("INSERT DATA" in q for q in insert_queries))
+            self.assertEqual(delete_queries, [])
             self.assertEqual(n_added, 1)
             self.assertEqual(n_removed, 0)
             self.assertEqual(len(insert_g), 1)
 
         with self.subTest("deleted_entity"):
             br.mark_as_to_be_deleted()
-            insert_q, delete_q, n_added, n_removed, insert_g = get_separated_queries(br, "graph")
+            insert_queries, delete_queries, n_added, n_removed, insert_g = get_separated_queries(br, "graph")
 
-            self.assertEqual(insert_q, "")
-            self.assertIn("DELETE DATA", delete_q)
+            self.assertEqual(insert_queries, [])
+            self.assertTrue(len(delete_queries) >= 1)
+            self.assertTrue(any("DELETE DATA" in q for q in delete_queries))
             self.assertEqual(n_added, 0)
             self.assertEqual(n_removed, 2)
             self.assertEqual(len(insert_g), 0)

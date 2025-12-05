@@ -131,8 +131,9 @@ class ProvSet(AbstractSet):
                 cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
                 modified_entities.add(cur_subj.res)
             else:
-                update_query: str = get_update_query(cur_subj, entity_type="graph")[0]
-                was_modified: bool = (update_query != "")
+                update_queries, _, _ = get_update_query(cur_subj, entity_type="graph")
+                was_modified: bool = len(update_queries) > 0
+                update_query: str = " ; ".join(update_queries) if update_queries else ""
                 snapshots_list: List[SnapshotEntity] = self._get_snapshots_from_merge_list(cur_subj)
                 if was_modified and len(snapshots_list) <= 0:
                     # MODIFICATION SNAPSHOT
@@ -175,8 +176,9 @@ class ProvSet(AbstractSet):
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been created.")
                     modified_entities.add(cur_subj.res)
             else:
-                update_query: str = get_update_query(cur_subj, entity_type="graph")[0]
-                was_modified: bool = (update_query != "")
+                update_queries, _, _ = get_update_query(cur_subj, entity_type="graph")
+                was_modified: bool = len(update_queries) > 0
+                update_query: str = " ; ".join(update_queries) if update_queries else ""
                 if cur_subj.to_be_deleted:
                     # DELETION SNAPSHOT
                     last_snapshot: SnapshotEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
