@@ -1,3 +1,10 @@
+## [9.4.3](https://github.com/opencitations/oc_ocdm/compare/9.4.2...9.4.3) (2025-12-06)
+
+
+### Bug Fixes
+
+* **sparql:** add query chunking to prevent oversized SPARQL requests ([7b28aea](https://github.com/opencitations/oc_ocdm/commit/7b28aeaaf3bfc31c3707068b08fd2fe285c47f4c))
+
 ## [9.4.2](https://github.com/opencitations/oc_ocdm/compare/9.4.1...9.4.2) (2025-12-05)
 
 
