@@ -1,3 +1,10 @@
+## [9.4.4](https://github.com/opencitations/oc_ocdm/compare/9.4.3...9.4.4) (2026-03-13)
+
+
+### Bug Fixes
+
+* normalize RDF literals to xsd:string and tighten type annotations ([2164e19](https://github.com/opencitations/oc_ocdm/commit/2164e19e74e338bdfd1256d35fb79cbe4093e742))
+
 ## [9.4.3](https://github.com/opencitations/oc_ocdm/compare/9.4.2...9.4.3) (2025-12-06)
 
 
