@@ -29,7 +29,7 @@ from sparqlite import SPARQLClient
 class TestReader(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.endpoint = 'http://127.0.0.1:8804/sparql'
+        cls.endpoint = os.environ["SPARQL_TEST_ENDPOINT"]
         cls.resp_agent = 'https://orcid.org/0000-0002-8420-0696'
         BASE = os.path.join('tests', 'reader')
 

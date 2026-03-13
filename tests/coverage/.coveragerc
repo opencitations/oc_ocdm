@@ -1,6 +1,6 @@
 # .coveragerc to control coverage.py
 [run]
-command_line = -m unittest discover -s tests -p test_*.py
+command_line = -m pytest tests/
 source = oc_ocdm/
 omit = 
     tests/*

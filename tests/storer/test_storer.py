@@ -27,6 +27,7 @@ from multiprocessing import Pool
 from rdflib import Dataset, Graph, URIRef, compare
 from sparqlite import SPARQLClient
 
+from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import BibliographicResource
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
 from oc_ocdm.storer import Storer
@@ -46,17 +47,18 @@ def dataset_to_graph(dataset: Dataset) -> Graph:
 
 
 class TestStorer(unittest.TestCase):
-    ts = 'http://127.0.0.1:8804/sparql'
+    @classmethod
+    def setUpClass(cls):
+        cls.ts = os.environ["SPARQL_TEST_ENDPOINT"]
 
-    def reset_server(self, server: str = ts) -> None:
-        with SPARQLClient(server) as client:
+    def reset_server(self) -> None:
+        with SPARQLClient(self.ts) as client:
             for graph in {'https://w3id.org/oc/meta/br/', 'https://w3id.org/oc/meta/ra/', 'https://w3id.org/oc/meta/re/', 'https://w3id.org/oc/meta/id/', 'https://w3id.org/oc/meta/ar/', 'http://default.graph/'}:
                 client.update(f'CLEAR GRAPH <{graph}>')
 
     def setUp(self):
         self.resp_agent = "http://resp_agent.test/"
         self.base_iri = "http://test/"
-        self.ts = self.ts
         self.graph_set = GraphSet(self.base_iri, "", "060", False)
         self.prov_set = ProvSet(self.graph_set, self.base_iri, "", False)
         self.br = self.graph_set.add_br(self.resp_agent)
@@ -70,7 +72,7 @@ class TestStorer(unittest.TestCase):
         if os.path.exists(self.prov_dir):
             rmtree(os.path.join(self.prov_dir))
 
-    def test_store_graphs_in_file(self):
+    def test_store_all(self):
         base_dir = os.path.join("tests", "storer", "data", "rdf") + os.sep
         with self.subTest("output_format=json-ld, zip_output=True"):
             modified_entities = self.prov_set.generate_provenance()
@@ -135,9 +137,9 @@ class TestStorer(unittest.TestCase):
                         <http://test/br/0601/prov/se/1> <http://www.w3.org/ns/prov#wasAttributedTo> <http://resp_agent.test/> <http://test/br/0601/prov/> .
                         <http://test/br/0601/prov/se/1> <http://purl.org/dc/terms/description> "The entity 'http://test/br/0601' has been created."^^<http://www.w3.org/2001/XMLSchema#string> <http://test/br/0601/prov/> .
                     """, format="nquads")
-                    for s, p, o, c in data_g.quads():
+                    for s, p, o, _ in data_g.quads():
                         if p == URIRef("http://www.w3.org/ns/prov#generatedAtTime"):
-                            data_g.remove((s, p, o, c))
+                            data_g.remove((s, p, o))
                     self.assertTrue(compare.isomorphic(dataset_to_graph(data_g), dataset_to_graph(expected_data_g)))
         with self.subTest("output_format=nquads, zip_output=False"):
             base_dir_3 = os.path.join("tests", "storer", "data", "rdf_3") + os.sep
@@ -158,9 +160,9 @@ class TestStorer(unittest.TestCase):
                 <http://test/br/0601/prov/se/1> <http://www.w3.org/ns/prov#wasAttributedTo> <http://resp_agent.test/> <http://test/br/0601/prov/> .
                 <http://test/br/0601/prov/se/1> <http://purl.org/dc/terms/description> "The entity 'http://test/br/0601' has been created."^^<http://www.w3.org/2001/XMLSchema#string> <http://test/br/0601/prov/> .
             """, format="nquads")
-            for s, p, o, c in prov_unzipped.quads():
+            for s, p, o, _ in prov_unzipped.quads():
                 if p == URIRef("http://www.w3.org/ns/prov#generatedAtTime"):
-                    prov_unzipped.remove((s, p, o, c))
+                    prov_unzipped.remove((s, p, o))
             self.assertEqual(data_unzipped, "<http://test/br/0601> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/spar/fabio/Expression> <http://test/br/> .\n\n")
             self.assertTrue(compare.isomorphic(dataset_to_graph(prov_unzipped), dataset_to_graph(expected_prov_unzipped)))
 
@@ -239,7 +241,6 @@ class TestStorer(unittest.TestCase):
             storer._save_query(query1, to_be_uploaded_dir, added_statements=1, removed_statements=0)
             files_after_first = set(os.listdir(to_be_uploaded_dir))
             self.assertEqual(len(files_after_first), 1)
-            first_filename = list(files_after_first)[0]
 
             # Save the same query again
             storer._save_query(query1, to_be_uploaded_dir, added_statements=1, removed_statements=0)
@@ -437,7 +438,7 @@ class TestStorer(unittest.TestCase):
 
         try:
             # Find the generated ZIP file
-            for root, dirs, files in os.walk(base_dir):
+            for root, _, files in os.walk(base_dir):
                 for file in files:
                     if file.endswith('.zip'):
                         zip_path = os.path.join(root, file)
@@ -557,7 +558,8 @@ class TestStorer(unittest.TestCase):
         br = self.graph_set.add_br(self.resp_agent)
         br.has_title("Test Title")
 
-        nquads_expected = serialize_graph_to_nquads(br.g, br.g.identifier)
+        assert isinstance(br.g.identifier, URIRef)
+        nquads_expected = serialize_graph_to_nquads(set(br.g), br.g.identifier)
         expected_set = set(nquads_expected)
 
         output_dir = os.path.join("tests", "storer", "data", "nquads_write_test")
@@ -663,13 +665,14 @@ class TestStorer(unittest.TestCase):
 
 def process_entity(entity):
     base_iri = "http://test/"
-    ts = 'http://127.0.0.1:8804/sparql'
+    ts = os.environ["SPARQL_TEST_ENDPOINT"]
     resp_agent = "http://resp_agent.test/"
     base_dir = os.path.join("tests", "storer", "test_provenance") + os.sep
     info_dir = os.path.join("tests", "storer", "test_provenance", "info_dir")
     graph_set = GraphSet(base_iri, "", "060", False)
     Reader.import_entity_from_triplestore(graph_set, ts, URIRef(entity), resp_agent)
     br = graph_set.get_entity(URIRef(entity))
+    assert isinstance(br, BibliographicResource)
     br.has_title("Hola")
     prov_set = ProvSet(graph_set, base_iri, info_dir=info_dir)
     prov_set.generate_provenance()
