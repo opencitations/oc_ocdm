@@ -32,10 +32,10 @@ jobs:
       should_release: ${{ steps.check_message.outputs.should_release }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      
+
       - name: Check commit message
         id: check_message
         run: |
@@ -58,28 +58,25 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          # Ensure all tags are fetched
           fetch-tags: true
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Install UV
+        uses: astral-sh/setup-uv@v7
         with:
+          enable-cache: true
           python-version: "3.10"
 
-      - name: Setup Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
+      - name: Install Python
+        run: uv python install
 
       - name: Install dependencies
-        run: poetry install
+        run: uv sync --locked --all-groups
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "lts/*"
 
@@ -100,8 +97,7 @@ jobs:
 
       - name: Build and publish to PyPI
         env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
-          poetry config pypi-token.pypi $PYPI_TOKEN
-          poetry build
-          poetry publish 
+          uv build
+          uv publish --token $UV_PUBLISH_TOKEN

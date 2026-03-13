@@ -1,21 +1,17 @@
-[tool.poetry]
-name = "oc_ocdm"
+[project]
+name = "oc-ocdm"
 version = "9.4.3"
 description = "Object mapping library for manipulating RDF graphs that are compliant with the OpenCitations datamodel."
-authors = [
-    "Silvio Peroni <essepuntato@gmail.com>",
-    "Marilena Daquino <marilena.daquino2@unibo.it>",
-    "Fabio Mariani <fabio.mariani6@studio.unibo.it>",
-    "Simone Persiani <iosonopersia@gmail.com>",
-    "Arcangelo Massari <arcangelo.massari@unibo.it>"
-]
 readme = "README.md"
 license = "ISC"
-homepage = "https://opencitations.net"
-repository = "https://github.com/opencitations/oc_ocdm"
-documentation = "https://oc-ocdm.readthedocs.io"
 keywords = ["opencitations", "openscience", "datamodel", "mapping"]
-
+authors = [
+    { name = "Silvio Peroni", email = "essepuntato@gmail.com" },
+    { name = "Marilena Daquino", email = "marilena.daquino2@unibo.it" },
+    { name = "Fabio Mariani", email = "fabio.mariani6@studio.unibo.it" },
+    { name = "Simone Persiani", email = "iosonopersia@gmail.com" },
+    { name = "Arcangelo Massari", email = "arcangelo.massari@unibo.it" },
+]
 classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
@@ -26,27 +22,34 @@ classifiers = [
     "Topic :: Database",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: System :: Archiving",
-    "Typing :: Typed"
+    "Typing :: Typed",
+]
+requires-python = ">=3.10, <3.14"
+dependencies = [
+    "filelock>=3.6.0",
+    "pyshacl>=0.30.1",
+    "rdflib>=7.4.0",
+    "redis>=4.5.5,<8.0.0",
+    "sparqlite>=1.0.0",
+    "tqdm>=4.67.1",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.10,<3.14"
-filelock = "^3.6.0"
-pyshacl = "^0.30.1"
-redis = ">=4.5.5,<8.0.0"
-tqdm = "^4.67.1"
-rdflib = "^7.4.0"
-sparqlite = "^1.0.0"
+[dependency-groups]
+dev = [
+    "coverage>=6.5.0",
+    "coverage-badge>=1.1.0",
+    "matplotlib>=3.10.7",
+    "pytest-benchmark>=5.2.3",
+    "sphinx>=4.4.0",
+    "sphinx-rtd-theme>=1.0.0",
+    "wget>=3.2",
+]
 
-[tool.poetry.group.dev.dependencies]
-Sphinx = "^4.4.0"
-sphinx_rtd_theme = "^1.0.0"
-coverage = "^6.5.0"
-coverage-badge = "^1.1.0"
-wget = "^3.2"
-matplotlib = "^3.10.7"
-pytest-benchmark = "^5.2.3"
+[project.urls]
+Homepage = "https://opencitations.net"
+Repository = "https://github.com/opencitations/oc_ocdm"
+Documentation = "https://oc-ocdm.readthedocs.io"
 
 [build-system]
-requires = ["poetry>=1.1.12"]
-build-backend = "poetry.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
