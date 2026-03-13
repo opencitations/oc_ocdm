@@ -38,14 +38,14 @@ class SqliteCounterHandler(CounterHandler):
             entity TEXT PRIMARY KEY,
             count INTEGER)""")
 
-    def set_counter(self, new_value: int, entity_name: str) -> None:
+    def set_counter(self, new_value: int, entity_name: object) -> None:
         """
         It allows to set the counter value of provenance entities.
 
         :param new_value: The new counter value to be set
         :type new_value: int
         :param entity_name: The entity name
-        :type entity_name: str
+        :type entity_name: object
         :raises ValueError: if ``new_value`` is a negative integer.
         :return: None
         """
@@ -55,12 +55,12 @@ class SqliteCounterHandler(CounterHandler):
         self.cur.execute(f"INSERT OR REPLACE INTO info (entity, count) VALUES ('{entity_name}', {new_value})")
         self.con.commit()
 
-    def read_counter(self, entity_name: str) -> int:
+    def read_counter(self, entity_name: object) -> int:
         """
         It allows to read the counter value of provenance entities.
 
         :param entity_name: The entity name
-        :type entity_name: str
+        :type entity_name: object
         :return: The requested counter value.
         """
         entity_name = str(entity_name)
@@ -73,12 +73,12 @@ class SqliteCounterHandler(CounterHandler):
         else:
             raise(Exception("There is more than one counter for this entity. The databse id broken"))
 
-    def increment_counter(self, entity_name: str) -> int:
+    def increment_counter(self, entity_name: object) -> int:
         """
         It allows to increment the counter value of graph and provenance entities by one unit.
 
         :param entity_name: The entity name
-        :type entity_name: str
+        :type entity_name: object
         :return: The newly-updated (already incremented) counter value.
         """
         entity_name = str(entity_name)

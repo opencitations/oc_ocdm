@@ -17,13 +17,12 @@
 import os
 import tempfile
 import unittest
-from unittest.mock import patch, MagicMock
 import json
 
 from oc_ocdm.graph import GraphSet
 from oc_ocdm.reader import Reader
 from oc_ocdm.support.reporter import Reporter
-from rdflib import Graph, URIRef, Dataset, Namespace, RDF
+from rdflib import BNode, Graph, Literal, URIRef, Dataset, Namespace, RDF, XSD
 from sparqlite import SPARQLClient
 
 
@@ -94,7 +93,7 @@ class TestReader(unittest.TestCase):
         
         # Check if specific properties were imported correctly
         br_0605 = self.g_set.get_entity(URIRef('https://w3id.org/oc/meta/br/0605'))
-        self.assertIsNotNone(br_0605)
+        assert br_0605 is not None
         # Check title
         title = next(br_0605.g.objects(br_0605.res, URIRef('http://purl.org/dc/terms/title')))
         self.assertEqual(str(title), "A Review Of Hemolytic Uremic Syndrome In Patients Treated With Gemcitabine Therapy")
@@ -333,6 +332,49 @@ class TestReader(unittest.TestCase):
         delete_query = "CLEAR GRAPH <https://w3id.org/oc/meta/>"
         with SPARQLClient(cls.endpoint) as client:
             client.update(delete_query)
+
+
+class TestReaderNoTriplestore(unittest.TestCase):
+
+    def setUp(self):
+        self.reader = Reader()
+
+    def test_extract_subjects_filters_bnodes(self):
+        g = Graph()
+        uri = URIRef('http://example.org/s')
+        bnode = BNode()
+        g.add((uri, RDF.type, URIRef('http://example.org/Type')))
+        g.add((bnode, RDF.type, URIRef('http://example.org/OtherType')))
+        subjects = Reader._extract_subjects(g)
+        self.assertEqual(subjects, {uri})
+
+    def test_extract_subjects_empty_graph(self):
+        g = Graph()
+        subjects = Reader._extract_subjects(g)
+        self.assertEqual(subjects, set())
+
+    def test_load_normalizes_literals_in_nt_file(self):
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.nt', delete=False) as f:
+            f.write('<http://example.org/s> <http://example.org/p> "plain text" .\n')
+            temp_file = f.name
+        try:
+            result = self.reader.load(temp_file)
+            assert result is not None
+            for g in result.graphs():
+                for _, _, o in g.triples((URIRef('http://example.org/s'), None, None)):
+                    if isinstance(o, Literal):
+                        self.assertEqual(o.datatype, XSD.string)
+        finally:
+            os.unlink(temp_file)
+
+    def test_graph_validation_returns_valid_triples(self):
+        g = Graph()
+        br_uri = URIRef('https://w3id.org/oc/meta/br/1')
+        FABIO = Namespace('http://purl.org/spar/fabio/')
+        g.add((br_uri, RDF.type, FABIO.Expression))
+        valid_graph = self.reader.graph_validation(g, closed=False)
+        self.assertIsInstance(valid_graph, Graph)
+        self.assertEqual(len(valid_graph), 1)
 
 
 if __name__ == '__main__':

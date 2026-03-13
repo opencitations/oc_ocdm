@@ -40,17 +40,16 @@ from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.support.support import (get_count, get_prefix, get_short_name)
 
 
-class ProvSet(AbstractSet):
+class ProvSet(AbstractSet[ProvEntity]):
     labels: ClassVar[Dict[str, str]] = {
         "se": "snapshot of entity metadata"
     }
 
     def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, info_dir: str = "",
-                 wanted_label: bool = True, custom_counter_handler: CounterHandler = None,
+                 wanted_label: bool = True, custom_counter_handler: Optional[CounterHandler] = None,
                  supplier_prefix: str = "") -> None:
         super(ProvSet, self).__init__()
         self.prov_g: GraphSet = prov_subj_graph_set
-        # The following variable maps a URIRef with the related provenance entity
         self.res_to_entity: Dict[URIRef, ProvEntity] = {}
         self.base_iri: str = base_iri
         self.wanted_label: bool = wanted_label
@@ -67,16 +66,18 @@ class ProvSet(AbstractSet):
         if res in self.res_to_entity:
             return self.res_to_entity[res]
 
-    def add_se(self, prov_subject: GraphEntity, res: URIRef = None) -> SnapshotEntity:
+    def add_se(self, prov_subject: GraphEntity, res: Optional[URIRef] = None) -> SnapshotEntity:
         if res is not None and get_short_name(res) != "se":
             raise ValueError(f"Given res: <{res}> is inappropriate for a SnapshotEntity entity.")
         if res is not None and res in self.res_to_entity:
-            return self.res_to_entity[res]
+            entity = self.res_to_entity[res]
+            assert isinstance(entity, SnapshotEntity)
+            return entity
         g_prov: str = str(prov_subject) + "/prov/"
-        supplier_prefix = get_prefix(str(prov_subject.res))
+        supplier_prefix = get_prefix(prov_subject.res)
         cur_g, count, label = self._add_prov(g_prov, "se", prov_subject, res, supplier_prefix)
-        return SnapshotEntity(prov_subject, cur_g, self, res, prov_subject.resp_agent,
-                              prov_subject.source, ProvEntity.iri_entity, count, label, "se")
+        return SnapshotEntity(prov_subject, cur_g, self,
+                              res, prov_subject.resp_agent, prov_subject.source, count, label)
 
     def _create_snapshot(self, cur_subj: GraphEntity, cur_time: str) -> SnapshotEntity:
         new_snapshot: SnapshotEntity = self.add_se(prov_subject=cur_subj)
@@ -109,7 +110,7 @@ class ProvSet(AbstractSet):
         merge_description += "."
         return merge_description
 
-    def generate_provenance(self, c_time: float = None) -> set:
+    def generate_provenance(self, c_time: Optional[float] = None) -> set:
         modified_entities = set()
 
         if c_time is None:
@@ -214,7 +215,7 @@ class ProvSet(AbstractSet):
         return modified_entities
     
     def _add_prov(self, graph_url: str, short_name: str, prov_subject: GraphEntity,
-                res: URIRef = None, supplier_prefix: str = "") -> Tuple[Graph, Optional[str], Optional[str]]:
+                res: Optional[URIRef] = None, supplier_prefix: str = "") -> Tuple[Graph, Optional[str], Optional[str]]:
         cur_g: Graph = Graph(identifier=graph_url)
         self._set_ns(cur_g)
 
@@ -272,7 +273,7 @@ class ProvSet(AbstractSet):
         except ValueError:
             raise ValueError('prov_subject is not a valid URIRef. Unable to extract the count value!')
 
-        supplier_prefix = get_prefix(str(prov_subject))
+        supplier_prefix = get_prefix(prov_subject)
 
         if isinstance(self.counter_handler, SqliteCounterHandler):
             last_snapshot_count: str = str(self.counter_handler.read_counter(prov_subject))
@@ -284,5 +285,5 @@ class ProvSet(AbstractSet):
         else:
             return URIRef(str(prov_subject) + '/prov/se/' + last_snapshot_count)
 
-    def get_se(self) -> Tuple[SnapshotEntity]:
+    def get_se(self) -> Tuple[SnapshotEntity, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, SnapshotEntity))

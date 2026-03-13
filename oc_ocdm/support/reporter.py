@@ -40,6 +40,7 @@ class Reporter(object):
                 print("\n")
 
     def add_sentence(self, sentence: str, print_this_sentence: bool = True) -> None:
+        assert self.last_article is not None
         cur_sentence: str = self.prefix + sentence
         self.last_sentence = cur_sentence
         self.last_article.append(cur_sentence)

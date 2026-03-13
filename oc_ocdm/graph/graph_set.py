@@ -54,7 +54,7 @@ from oc_ocdm.graph.graph_entity import GraphEntity
 from rdflib import Graph, Namespace, URIRef
 
 
-class GraphSet(AbstractSet):
+class GraphSet(AbstractSet[GraphEntity]):
     # Labels
     labels: ClassVar[Dict[str, str]] = {
         "an": "annotation",

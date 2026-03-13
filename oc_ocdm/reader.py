@@ -22,7 +22,7 @@ from zipfile import ZipFile
 
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.support.reporter import Reporter
-from oc_ocdm.support.support import build_graph_from_results
+from oc_ocdm.support.support import build_graph_from_results, normalize_graph_literals
 from rdflib import RDF, Dataset, Graph, URIRef
 from sparqlite import SPARQLClient, EndpointError
 
@@ -35,7 +35,7 @@ from pyshacl import validate
 
 class Reader(object):
 
-    def __init__(self, repok: Reporter = None, reperr: Reporter = None, context_map: Dict[str, Any] = None) -> None:
+    def __init__(self, repok: Optional[Reporter] = None, reperr: Optional[Reporter] = None, context_map: Optional[Dict[str, Any]] = None) -> None:
 
         if context_map is not None:
             self.context_map: Dict[str, Any] = context_map
@@ -88,6 +88,8 @@ class Reader(object):
                     for zf_name in archive.namelist():
                         with archive.open(zf_name) as f:
                             if self._try_parse(loaded_graph, f, formats):
+                                for graph in loaded_graph.graphs():
+                                    normalize_graph_literals(graph)
                                 return loaded_graph
             except Exception as e:
                 raise IOError(f"Error opening or reading zip file '{file_path}': {e}")
@@ -95,6 +97,8 @@ class Reader(object):
             try:
                 with open(file_path, 'rt', encoding='utf-8') as f:
                     if self._try_parse(loaded_graph, f, formats):
+                        for graph in loaded_graph.graphs():
+                            normalize_graph_literals(graph)
                         return loaded_graph
             except Exception as e:
                 raise IOError(f"Error opening or reading file '{file_path}': {e}")
@@ -132,7 +136,8 @@ class Reader(object):
     def _extract_subjects(graph: Graph) -> Set[URIRef]:
         subjects: Set[URIRef] = set()
         for s in graph.subjects(unique=True):
-            subjects.add(s)
+            if isinstance(s, URIRef):
+                subjects.add(s)
         return subjects
 
     def graph_validation(self, graph: Graph, closed: bool = False) -> Graph:
@@ -142,7 +147,7 @@ class Reader(object):
             sg.parse(os.path.join('oc_ocdm', 'resources', 'shacle_closed.ttl'))
         else:
             sg.parse(os.path.join('oc_ocdm', 'resources', 'shacle.ttl'))
-        _, report_g, _ = validate(graph,
+        _, report_result, _ = validate(graph,
             shacl_graph=sg,
             ont_graph=None,
             inference=None,
@@ -153,8 +158,10 @@ class Reader(object):
             advanced=False,
             js=False,
             debug=False)
+        if not isinstance(report_result, Graph):
+            raise TypeError(f"Expected Graph from SHACL validation, got {type(report_result)}")
         invalid_nodes = set()
-        for triple in report_g.triples((None, URIRef('http://www.w3.org/ns/shacl#focusNode'), None)):
+        for triple in report_result.triples((None, URIRef('http://www.w3.org/ns/shacl#focusNode'), None)):
             invalid_nodes.add(triple[2])
         for subject in self._extract_subjects(graph):
             if subject not in invalid_nodes:

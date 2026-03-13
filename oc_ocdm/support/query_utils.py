@@ -17,9 +17,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, Set
 
+from rdflib import URIRef
+
 if TYPE_CHECKING:
     from typing import Tuple
-    from rdflib import URIRef
     from oc_ocdm.abstract_entity import AbstractEntity
 
 MAX_TRIPLES_PER_QUERY = 500
@@ -83,6 +84,11 @@ def _compute_graph_changes(entity: AbstractEntity, entity_type: str) -> Tuple[Se
         triples = set(entity.g)
         return triples, set(), len(triples), 0
 
+    # Deferred import to break circular dependency:
+    # graph_entity → abstract_entity → support.support → (support/__init__) → query_utils → graph_entity
+    from oc_ocdm.graph.graph_entity import GraphEntity  # noqa: E402
+
+    assert isinstance(entity, GraphEntity)
     to_be_deleted: bool = entity.to_be_deleted
     preexisting_graph = entity.preexisting_graph
 
@@ -133,14 +139,17 @@ def get_separated_queries(entity: AbstractEntity, entity_type: str = "graph") ->
     if n_added == 0 and n_removed == 0:
         return [], [], 0, 0, set()
 
+    graph_iri = entity.g.identifier
+    assert isinstance(graph_iri, URIRef)
+
     delete_queries = []
     insert_queries = []
 
     if n_removed > 0:
-        delete_queries, _ = get_delete_query(entity.g.identifier, to_delete)
+        delete_queries, _ = get_delete_query(graph_iri, to_delete)
 
     if n_added > 0:
-        insert_queries, _ = get_insert_query(entity.g.identifier, to_insert)
+        insert_queries, _ = get_insert_query(graph_iri, to_insert)
 
     return insert_queries, delete_queries, n_added, n_removed, to_insert
 
@@ -151,7 +160,10 @@ def get_update_query(entity: AbstractEntity, entity_type: str = "graph") -> Tupl
     if n_added == 0 and n_removed == 0:
         return [], 0, 0
 
-    delete_queries, _ = get_delete_query(entity.g.identifier, to_delete)
-    insert_queries, _ = get_insert_query(entity.g.identifier, to_insert)
+    graph_iri = entity.g.identifier
+    assert isinstance(graph_iri, URIRef)
+
+    delete_queries, _ = get_delete_query(graph_iri, to_delete)
+    insert_queries, _ = get_insert_query(graph_iri, to_insert)
 
     return delete_queries + insert_queries, n_added, n_removed

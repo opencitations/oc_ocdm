@@ -22,8 +22,8 @@ from oc_ocdm.support.support import create_type, create_literal, get_short_name,
 from rdflib import URIRef, RDFS, RDF, Literal, Graph
 
 if TYPE_CHECKING:
-    from typing import Optional, List, ClassVar, Dict, Tuple, Iterable
-    from rdflib import term
+    from typing import Optional, List, ClassVar, Dict, Iterable
+    from rdflib.term import IdentifiedNode, Node
 
 
 class AbstractEntity(ABC):
@@ -85,7 +85,7 @@ class AbstractEntity(ABC):
         """
         self.g.remove((self.res, RDFS.label, None))
 
-    def _create_literal(self, p: URIRef, s: str, dt: URIRef = None, nor: bool = True) -> None:
+    def _create_literal(self, p: URIRef, s: str, dt: Optional[URIRef] = None, nor: bool = True) -> None:
         """
         Adds an RDF triple with a literal object inside the graph of the entity
 
@@ -144,7 +144,7 @@ class AbstractEntity(ABC):
     def __str__(self) -> str:
         return str(self.res)
 
-    def add_triples(self, iterable_of_triples: Iterable[Tuple[term]]) -> None:
+    def add_triples(self, iterable_of_triples: Iterable[tuple[IdentifiedNode, URIRef, Node]]) -> None:
         """
         A utility method that allows to add a batch of triples into the graph of the entity.
 
@@ -173,7 +173,7 @@ class AbstractEntity(ABC):
                 result.append(str(o))
         return result
 
-    def _get_uri_reference(self, predicate: URIRef, short_name: str = None) -> Optional[URIRef]:
+    def _get_uri_reference(self, predicate: URIRef, short_name: Optional[str] = None) -> Optional[URIRef]:
         result: Optional[URIRef] = None
         for o in self.g.objects(self.res, predicate):
             if type(o) == URIRef:
@@ -188,7 +188,7 @@ class AbstractEntity(ABC):
                     break
         return result
 
-    def _get_multiple_uri_references(self, predicate: URIRef, short_name: str = None) -> List[URIRef]:
+    def _get_multiple_uri_references(self, predicate: URIRef, short_name: Optional[str] = None) -> List[URIRef]:
         result: List[URIRef] = []
         for o in self.g.objects(self.res, predicate):
             if type(o) == URIRef:

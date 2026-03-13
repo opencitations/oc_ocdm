@@ -16,12 +16,16 @@
 import os
 import unittest
 
-from rdflib import Namespace, URIRef
+from rdflib import Graph, Literal, Namespace, URIRef, XSD
 
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
-from oc_ocdm.support.support import (find_paths,
-                                     get_ordered_contributors_from_br)
+from oc_ocdm.support.support import (build_graph_from_results, create_date,
+                                     create_literal, find_paths,
+                                     get_datatype_from_iso_8601,
+                                     get_ordered_contributors_from_br,
+                                     normalize_graph_literals,
+                                     sparql_binding_to_term)
 
 
 class TestSupport(unittest.TestCase):
@@ -124,6 +128,225 @@ class TestSupport(unittest.TestCase):
             n_file_item = 1000,
             is_json = True)
         self.assertEqual((cur_dir_path, cur_file_path), (os.path.join('support', 'test', 'data', 'rdfbr', '060', '10000', '1000', 'prov'), os.path.join('support', 'test', 'data', 'rdfbr', '060', '10000', '1000', 'prov', 'se.json')))
+
+
+class TestSparqlBindingToTerm(unittest.TestCase):
+
+    def test_uri_binding(self):
+        binding = {'type': 'uri', 'value': 'http://example.org/resource'}
+        result = sparql_binding_to_term(binding)
+        self.assertEqual(result, URIRef('http://example.org/resource'))
+
+    def test_literal_with_datatype(self):
+        binding = {
+            'type': 'literal',
+            'value': '42',
+            'datatype': 'http://www.w3.org/2001/XMLSchema#integer'
+        }
+        result = sparql_binding_to_term(binding)
+        self.assertEqual(result, Literal('42', datatype=XSD.integer))
+
+    def test_literal_with_language(self):
+        binding = {'type': 'literal', 'value': 'hello', 'xml:lang': 'en'}
+        result = sparql_binding_to_term(binding)
+        self.assertEqual(result, Literal('hello', lang='en'))
+        self.assertIsInstance(result, Literal)
+        assert isinstance(result, Literal)
+        self.assertEqual(result.language, 'en')
+
+    def test_simple_literal_normalized_to_xsd_string(self):
+        binding = {'type': 'literal', 'value': 'plain text'}
+        result = sparql_binding_to_term(binding)
+        self.assertEqual(result, Literal('plain text', datatype=XSD.string))
+        self.assertIsInstance(result, Literal)
+        assert isinstance(result, Literal)
+        self.assertEqual(result.datatype, XSD.string)
+
+
+class TestNormalizeGraphLiterals(unittest.TestCase):
+
+    def test_simple_literal_gets_xsd_string(self):
+        g = Graph()
+        s = URIRef('http://example.org/s')
+        p = URIRef('http://example.org/p')
+        g.add((s, p, Literal('plain')))
+        normalize_graph_literals(g)
+        obj = list(g.objects(s, p))[0]
+        assert isinstance(obj, Literal)
+        self.assertEqual(obj.datatype, XSD.string)
+
+    def test_typed_literal_unchanged(self):
+        g = Graph()
+        s = URIRef('http://example.org/s')
+        p = URIRef('http://example.org/p')
+        original = Literal('42', datatype=XSD.integer)
+        g.add((s, p, original))
+        normalize_graph_literals(g)
+        obj = list(g.objects(s, p))[0]
+        assert isinstance(obj, Literal)
+        self.assertEqual(obj.datatype, XSD.integer)
+
+    def test_lang_literal_unchanged(self):
+        g = Graph()
+        s = URIRef('http://example.org/s')
+        p = URIRef('http://example.org/p')
+        original = Literal('ciao', lang='it')
+        g.add((s, p, original))
+        normalize_graph_literals(g)
+        obj = list(g.objects(s, p))[0]
+        assert isinstance(obj, Literal)
+        self.assertEqual(obj.language, 'it')
+        self.assertIsNone(obj.datatype)
+
+    def test_empty_graph(self):
+        g = Graph()
+        normalize_graph_literals(g)
+        self.assertEqual(len(g), 0)
+
+
+class TestCreateDate(unittest.TestCase):
+
+    def test_none_returns_none(self):
+        self.assertIsNone(create_date(None))
+
+    def test_empty_list_returns_none(self):
+        self.assertIsNone(create_date([]))
+
+    def test_year_only(self):
+        self.assertEqual(create_date([2023]), '2023')
+
+    def test_year_month(self):
+        self.assertEqual(create_date([2023, 6]), '2023-06')
+
+    def test_full_date(self):
+        self.assertEqual(create_date([2023, 6, 15]), '2023-06-15')
+
+    def test_full_date_jan_1_returns_year_month(self):
+        self.assertEqual(create_date([2023, 1, 1]), '2023-01')
+
+    def test_three_elements_month_none_day_none_returns_year(self):
+        self.assertEqual(create_date([2023, None, None]), '2023')
+
+    def test_three_elements_with_month_and_day_1(self):
+        self.assertEqual(create_date([2023, 3, 1]), '2023-03-01')
+
+    def test_first_element_none(self):
+        self.assertIsNone(create_date([None]))
+
+
+class TestGetDatatypeFromIso8601(unittest.TestCase):
+
+    def test_full_date(self):
+        dt, val = get_datatype_from_iso_8601('2023-06-15')
+        self.assertEqual(dt, XSD.date)
+        self.assertEqual(val, '2023-06-15')
+
+    def test_year_month(self):
+        dt, val = get_datatype_from_iso_8601('2023-06')
+        self.assertEqual(dt, XSD.gYearMonth)
+        self.assertEqual(val, '2023-06')
+
+    def test_year_only(self):
+        dt, val = get_datatype_from_iso_8601('2023')
+        self.assertEqual(dt, XSD.gYear)
+        self.assertEqual(val, '2023')
+
+    def test_truncates_after_10_chars(self):
+        dt, val = get_datatype_from_iso_8601('2023-06-15T10:30:00')
+        self.assertEqual(dt, XSD.date)
+        self.assertEqual(val, '2023-06-15')
+
+    def test_invalid_string_raises(self):
+        with self.assertRaises(ValueError):
+            get_datatype_from_iso_8601('not-a-date')
+
+
+class TestCreateLiteral(unittest.TestCase):
+
+    def test_adds_literal_with_default_xsd_string(self):
+        g = Graph()
+        res = URIRef('http://example.org/s')
+        p = URIRef('http://example.org/p')
+        create_literal(g, res, p, 'hello')
+        obj = list(g.objects(res, p))[0]
+        assert isinstance(obj, Literal)
+        self.assertEqual(str(obj), 'hello')
+        self.assertEqual(obj.datatype, XSD.string)
+
+    def test_adds_literal_with_explicit_datatype(self):
+        g = Graph()
+        res = URIRef('http://example.org/s')
+        p = URIRef('http://example.org/p')
+        create_literal(g, res, p, '42', dt=XSD.integer)
+        obj = list(g.objects(res, p))[0]
+        assert isinstance(obj, Literal)
+        self.assertEqual(obj.datatype, XSD.integer)
+
+    def test_empty_string_adds_nothing(self):
+        g = Graph()
+        res = URIRef('http://example.org/s')
+        p = URIRef('http://example.org/p')
+        create_literal(g, res, p, '')
+        self.assertEqual(len(g), 0)
+
+    def test_whitespace_only_adds_nothing(self):
+        g = Graph()
+        res = URIRef('http://example.org/s')
+        p = URIRef('http://example.org/p')
+        create_literal(g, res, p, '   ')
+        self.assertEqual(len(g), 0)
+
+
+class TestBuildGraphFromResults(unittest.TestCase):
+
+    def test_uri_triple(self):
+        results = [{
+            's': {'type': 'uri', 'value': 'http://example.org/s'},
+            'p': {'type': 'uri', 'value': 'http://example.org/p'},
+            'o': {'type': 'uri', 'value': 'http://example.org/o'}
+        }]
+        g = build_graph_from_results(results)
+        self.assertEqual(len(g), 1)
+        s, p, o = next(iter(g))
+        self.assertEqual(s, URIRef('http://example.org/s'))
+        self.assertEqual(o, URIRef('http://example.org/o'))
+
+    def test_literal_object_with_datatype(self):
+        results = [{
+            's': {'type': 'uri', 'value': 'http://example.org/s'},
+            'p': {'type': 'uri', 'value': 'http://example.org/p'},
+            'o': {'type': 'literal', 'value': '42', 'datatype': 'http://www.w3.org/2001/XMLSchema#integer'}
+        }]
+        g = build_graph_from_results(results)
+        o = list(g.objects())[0]
+        assert isinstance(o, Literal)
+        self.assertEqual(o.datatype, XSD.integer)
+
+    def test_literal_object_without_datatype_gets_xsd_string(self):
+        results = [{
+            's': {'type': 'uri', 'value': 'http://example.org/s'},
+            'p': {'type': 'uri', 'value': 'http://example.org/p'},
+            'o': {'type': 'literal', 'value': 'plain'}
+        }]
+        g = build_graph_from_results(results)
+        o = list(g.objects())[0]
+        assert isinstance(o, Literal)
+        self.assertEqual(o.datatype, XSD.string)
+
+    def test_literal_object_with_language(self):
+        results = [{
+            's': {'type': 'uri', 'value': 'http://example.org/s'},
+            'p': {'type': 'uri', 'value': 'http://example.org/p'},
+            'o': {'type': 'literal', 'value': 'bonjour', 'xml:lang': 'fr'}
+        }]
+        g = build_graph_from_results(results)
+        o = list(g.objects())[0]
+        assert isinstance(o, Literal)
+        self.assertEqual(o.language, 'fr')
+
+    def test_empty_results(self):
+        g = build_graph_from_results([])
+        self.assertEqual(len(g), 0)
 
 
 if __name__ == '__main__':

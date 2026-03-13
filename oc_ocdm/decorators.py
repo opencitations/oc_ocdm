@@ -16,16 +16,18 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar, cast
 
 from oc_ocdm.abstract_entity import AbstractEntity
 
 if TYPE_CHECKING:
-    from typing import Callable, Any
+    from typing import Callable
 from rdflib import URIRef
 
+F = TypeVar('F', bound='Callable[..., object]')
 
-def accepts_only(param_type: str):
+
+def accepts_only(param_type: str) -> Callable[[F], F]:
     """
     A decorator that can be applied to the entity methods such as setters and removers
     when they accept a parameter. It enforces the right parameter type by raising a
@@ -41,10 +43,10 @@ def accepts_only(param_type: str):
     :param param_type: A short string representing the expected type
     :type param_type: str
     """
-    def accepts_only_decorator(function: Callable):
+    def accepts_only_decorator(function: F) -> F:
 
         @wraps(function)
-        def accepts_only_wrapper(self, param: Any = None, **kwargs):
+        def accepts_only_wrapper(self: object, param: object = None, **kwargs: object) -> object:
             lowercase_type = param_type.lower()
             if param is None or \
                     (lowercase_type == 'literal' and isinstance(param, str)) or \
@@ -55,5 +57,5 @@ def accepts_only(param_type: str):
                 raise TypeError('[%s.%s] Expected argument type: %s. Provided argument type: %s.' %
                                 (self.__class__.__name__, function.__name__, lowercase_type, type(param).__name__))
 
-        return accepts_only_wrapper
+        return cast(F, accepts_only_wrapper)
     return accepts_only_decorator

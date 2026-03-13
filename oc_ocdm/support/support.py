@@ -44,18 +44,44 @@ class ParsedURI:
     prov_subject_count: str
 
 from rdflib import RDF, XSD, Literal
+from typing import Union
 
 
-def create_date(date_list: List[Optional[int]] = None) -> Optional[str]:
+def sparql_binding_to_term(binding: dict) -> Union[URIRef, Literal]:
+    """Convert a SPARQL JSON result binding to an rdflib term.
+
+    Per RDF 1.1, simple literals (no datatype, no language tag) are normalized to xsd:string.
+    """
+    if binding['type'] == 'uri':
+        return URIRef(binding['value'])
+    datatype = binding.get('datatype')
+    lang = binding.get('xml:lang')
+    if datatype is not None:
+        datatype = URIRef(datatype)
+    elif lang is None:
+        datatype = XSD.string
+    return Literal(binding['value'], datatype=datatype, lang=lang)
+
+
+def normalize_graph_literals(g: Graph) -> None:
+    triples_to_update = []
+    for s, p, o in g:
+        if isinstance(o, Literal) and o.datatype is None and o.language is None:
+            triples_to_update.append((s, p, o, Literal(str(o), datatype=XSD.string)))
+    for s, p, old_o, new_o in triples_to_update:
+        g.remove((s, p, old_o))
+        g.add((s, p, new_o))
+
+
+def create_date(date_list: Optional[List[Optional[int]]] = None) -> Optional[str]:
     string: Optional[str] = None
     if date_list is not None:
         l_date_list: int = len(date_list)
         if l_date_list != 0 and date_list[0] is not None:
-            if l_date_list == 3 and \
-                    ((date_list[1] is not None and date_list[1] != 1) or
-                     (date_list[2] is not None and date_list[2] != 1)):
+            if l_date_list == 3 and date_list[1] is not None and date_list[2] is not None and \
+                    (date_list[1] != 1 or date_list[2] != 1):
                 string = datetime(date_list[0], date_list[1], date_list[2]).strftime('%Y-%m-%d')
-            elif l_date_list == 2 and date_list[1] is not None:
+            elif l_date_list >= 2 and date_list[1] is not None:
                 string = datetime(date_list[0], date_list[1], 1).strftime('%Y-%m')
             else:
                 string = datetime(date_list[0], 1, 1).strftime('%Y')
@@ -73,11 +99,11 @@ def get_datatype_from_iso_8601(string: str) -> Tuple[URIRef, str]:
 
     num_of_parts: int = len(date_parts)
     if num_of_parts == 3:
-        return XSD.date, datetime(*date_parts).strftime('%Y-%m-%d')
+        return XSD.date, datetime(date_parts[0], date_parts[1], date_parts[2]).strftime('%Y-%m-%d')
     elif num_of_parts == 2:
-        return XSD.gYearMonth, datetime(*date_parts, 1).strftime('%Y-%m')
+        return XSD.gYearMonth, datetime(date_parts[0], date_parts[1], 1).strftime('%Y-%m')
     else:
-        return XSD.gYear, datetime(*date_parts, 1, 1).strftime('%Y')
+        return XSD.gYear, datetime(date_parts[0], 1, 1).strftime('%Y')
 
 def get_ordered_contributors_from_br(br: BibliographicResource,
                                      contributor_type: URIRef):
@@ -90,9 +116,9 @@ def get_ordered_contributors_from_br(br: BibliographicResource,
     sub_lists: List[Dict] = []
     from_id_to_res_in_heads: Dict[int, URIRef] = {}
     for ar in ar_list:
-        role_type: URIRef = ar.get_role_type()
-        ra: ResponsibleAgent = ar.get_is_held_by()
-        next_ar: AgentRole = ar.get_next()
+        role_type: Optional[URIRef] = ar.get_role_type()
+        ra: Optional[ResponsibleAgent] = ar.get_is_held_by()
+        next_ar: Optional[AgentRole] = ar.get_next()
         if next_ar is not None:
             next_ar_res: Optional[URIRef] = next_ar.res
         else:
@@ -168,7 +194,7 @@ def encode_url(u: str) -> str:
     return quote(u, "://")
 
 
-def create_literal(g: Graph, res: URIRef, p: URIRef, s: str, dt: URIRef = None, nor: bool = True) -> None:
+def create_literal(g: Graph, res: URIRef, p: URIRef, s: str, dt: Optional[URIRef] = None, nor: bool = True) -> None:
     if not is_string_empty(s):
         dt = dt if dt is not None else XSD.string
         g.add((res, p, Literal(s, datatype=dt, normalize=nor)))
@@ -178,7 +204,7 @@ def create_type(g: Graph, res: URIRef, res_type: URIRef) -> None:
     g.add((res, RDF.type, res_type))
 
 
-def is_string_empty(string: str) -> bool:
+def is_string_empty(string: Optional[str]) -> bool:
     return string is None or string.strip() == ""
 
 
@@ -259,7 +285,7 @@ def find_local_line_id(res: URIRef, n_file_item: int = 1) -> int:
 
 
 def find_paths(res: URIRef, base_dir: str, base_iri: str, default_dir: str, dir_split: int,
-               n_file_item: int, is_json: bool = True, process_id: int|str = None) -> Tuple[str, str]:
+               n_file_item: int, is_json: bool = True, process_id: int|str|None = None) -> Tuple[str, str]:
     """
     This function is responsible for looking for the correct JSON file that contains the data related to the
     resource identified by the variable 'string_iri'. This search takes into account the organisation in
@@ -323,14 +349,9 @@ def has_supplier_prefix(res: URIRef, base_iri: str) -> bool:
 def build_graph_from_results(results: List[Dict]) -> Graph:
     graph = Graph()
     for triple in results:
-        s = URIRef(triple['s']['value'])
-        p = URIRef(triple['p']['value'])
-        if triple['o']['type'] == 'uri':
-            o = URIRef(triple['o']['value'])
-        else:
-            datatype = triple['o'].get('datatype', None)
-            datatype = URIRef(datatype) if datatype is not None else None
-            o = Literal(triple['o']['value'], datatype=datatype)
+        s = sparql_binding_to_term(triple['s'])
+        p = sparql_binding_to_term(triple['p'])
+        o = sparql_binding_to_term(triple['o'])
         graph.add((s, p, o))
     return graph
 

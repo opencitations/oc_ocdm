@@ -33,7 +33,7 @@ from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from oc_ocdm.abstract_set import AbstractSet
 
 
-class MetadataSet(AbstractSet):
+class MetadataSet(AbstractSet[MetadataEntity]):
     # Labels
     labels: ClassVar[Dict[str, str]] = {
         "_dataset_": "dataset",

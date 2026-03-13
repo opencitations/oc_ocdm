@@ -16,7 +16,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 from oc_ocdm.abstract_entity import AbstractEntity
 
@@ -24,8 +24,10 @@ if TYPE_CHECKING:
     from typing import List, ClassVar, Dict, Optional
     from rdflib import URIRef, Graph
 
+E = TypeVar('E', bound=AbstractEntity)
 
-class AbstractSet(ABC):
+
+class AbstractSet(ABC, Generic[E]):
     """
     Abstract class which represents a generic set of entities.
     It is the base class for each concrete set of entities.
@@ -37,7 +39,7 @@ class AbstractSet(ABC):
         """
         Constructor of the ``AbstractSet`` class.
         """
-        self.res_to_entity: Dict[URIRef, AbstractEntity] = {}
+        self.res_to_entity: Dict[URIRef, E] = {}
 
     def graphs(self) -> List[Graph]:
         """
@@ -52,7 +54,7 @@ class AbstractSet(ABC):
                 result.append(entity.g)
         return result
 
-    def __getstate__(self):
+    def __getstate__(self) -> dict[str, object]:
         """
         Support for pickle serialization.
 
@@ -60,18 +62,18 @@ class AbstractSet(ABC):
         but Python's pickle module can handle them. This method provides standard
         pickle protocol support for AbstractSet instances.
         """
-        return self.__dict__.copy()
+        return vars(self).copy()
 
-    def __setstate__(self, state):
+    def __setstate__(self, state: dict[str, object]) -> None:
         """
         Support for pickle deserialization.
 
         Restores the AbstractSet state from a pickled representation.
         """
-        self.__dict__.update(state)
+        vars(self).update(state)
 
     @abstractmethod
-    def get_entity(self, res: URIRef) -> Optional[AbstractEntity]:
+    def get_entity(self, res: URIRef) -> Optional[E]:
         """
         Method signature for concrete implementations that allow
         to retrieve a contained entity identified by its URI.

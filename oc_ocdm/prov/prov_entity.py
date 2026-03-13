@@ -23,7 +23,7 @@ from oc_ocdm.abstract_entity import AbstractEntity
 from oc_ocdm.graph.graph_entity import GraphEntity
 
 if TYPE_CHECKING:
-    from typing import ClassVar, Dict
+    from typing import ClassVar, Dict, Optional
 
     from oc_ocdm.prov.prov_set import ProvSet
 
@@ -52,32 +52,32 @@ class ProvEntity(AbstractEntity):
     }
 
     def __init__(self, prov_subject: GraphEntity, g: Graph, p_set: ProvSet,
-                 res: URIRef = None, resp_agent: str = None, source: str = None,
-                 res_type: URIRef = None, count: str = None, label: str = None,
-                 short_name: str = "") -> None:
+                 res: Optional[URIRef] = None, resp_agent: Optional[str] = None, source: Optional[str] = None,
+                 count: Optional[str] = None, label: Optional[str] = None,
+                 short_name: str = "se") -> None:
         super(ProvEntity, self).__init__()
         self.prov_subject: GraphEntity = prov_subject
 
         self.g: Graph = g
-        self.resp_agent: str = resp_agent
-        self.source: str = source
+        self.resp_agent: Optional[str] = resp_agent
+        self.source: Optional[str] = source
         self.short_name: str = short_name
         self.p_set: ProvSet = p_set
 
-        # If res was not specified, create from scratch the URI reference for this entity,
-        # otherwise use the provided one
-        if res is None:
+        if res is not None and count is not None:
+            raise ValueError("'res' and 'count' are mutually exclusive: provide one or the other")
+        if res is not None:
+            self.res = res
+        elif count is not None:
             self.res = self._generate_new_res(g, count, short_name)
         else:
-            self.res = res
+            raise ValueError("Either 'res' or 'count' must be provided")
 
         if p_set is not None:
-            # If not already done, register this ProvEntity instance inside the ProvSet
             if self.res not in p_set.res_to_entity:
                 p_set.res_to_entity[self.res] = self
 
-        # Add mandatory information to the entity graph
-        self._create_type(res_type)
+        self._create_type(self.short_name_to_type_iri[short_name])
         if label is not None:
             self.create_label(label)
 
