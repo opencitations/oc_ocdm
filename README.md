@@ -8,14 +8,13 @@ SPDX-License-Identifier: ISC
 # oc_ocdm
 [<img src="https://img.shields.io/badge/powered%20by-OpenCitations-%239931FC?labelColor=2D22DE" />](http://opencitations.net)
 [![Run tests](https://github.com/opencitations/oc_ocdm/actions/workflows/run_tests.yml/badge.svg)](https://github.com/opencitations/oc_ocdm/actions/workflows/run_tests.yml)
-[![Coverage](https://byob.yarr.is/arcangelo7/badges/opencitations-oc_ocdm-coverage-master)](https://opencitations.github.io/oc_ocdm/)
+[![Coverage](https://opencitations.github.io/oc_ocdm/coverage-badge.svg)](https://opencitations.github.io/oc_ocdm/)
 [![Documentation Status](https://readthedocs.org/projects/oc-ocdm/badge/?version=latest)](https://oc-ocdm.readthedocs.io/en/latest/?badge=latest)
 [![REUSE](https://github.com/opencitations/oc_ocdm/actions/workflows/reuse.yml/badge.svg)](https://github.com/opencitations/oc_ocdm/actions/workflows/reuse.yml)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 [![PyPI version](https://badge.fury.io/py/oc-ocdm.svg)](https://badge.fury.io/py/oc-ocdm)
 ![PyPI](https://img.shields.io/pypi/pyversions/oc_meta)
-
 [![DOI](https://zenodo.org/badge/322327342.svg)](https://zenodo.org/badge/latestdoi/322327342)
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
 Documentation can be found here: [https://oc-ocdm.readthedocs.io](https://oc-ocdm.readthedocs.io).
 
