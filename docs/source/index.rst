@@ -1,3 +1,7 @@
+.. SPDX-FileCopyrightText: 2020-2022 Simone Persiani <iosonopersia@gmail.com>
+..
+.. SPDX-License-Identifier: ISC
+
 .. oc_ocdm documentation master file, created by
    sphinx-quickstart on Mon Aug 31 17:37:10 2020.
    You can adapt this file completely to your liking, but it should at least

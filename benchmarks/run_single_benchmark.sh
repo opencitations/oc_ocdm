@@ -1,4 +1,9 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: 2025 Arcangelo Massari <arcangelo.massari@unibo.it>
+#
+# SPDX-License-Identifier: ISC
+
 # Run a single benchmark group without clearing other results.
 #
 # Usage: ./run_single_benchmark.sh <benchmark_group>

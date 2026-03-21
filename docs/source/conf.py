@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2020-2022 Simone Persiani <iosonopersia@gmail.com>
+# SPDX-FileCopyrightText: 2025 Arcangelo Massari <arcangelo.massari@unibo.it>
+#
+# SPDX-License-Identifier: ISC
+
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full

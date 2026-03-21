@@ -1,8 +1,16 @@
+<!--
+SPDX-FileCopyrightText: 2020-2023 Simone Persiani <iosonopersia@gmail.com>
+SPDX-FileCopyrightText: 2022-2025 Arcangelo Massari <arcangelo.massari@unibo.it>
+
+SPDX-License-Identifier: ISC
+-->
+
 # oc_ocdm
 [<img src="https://img.shields.io/badge/powered%20by-OpenCitations-%239931FC?labelColor=2D22DE" />](http://opencitations.net)
 [![Run tests](https://github.com/opencitations/oc_ocdm/actions/workflows/run_tests.yml/badge.svg)](https://github.com/opencitations/oc_ocdm/actions/workflows/run_tests.yml)
 [![Coverage](https://byob.yarr.is/arcangelo7/badges/opencitations-oc_ocdm-coverage-master)](https://opencitations.github.io/oc_ocdm/)
 [![Documentation Status](https://readthedocs.org/projects/oc-ocdm/badge/?version=latest)](https://oc-ocdm.readthedocs.io/en/latest/?badge=latest)
+[![REUSE](https://github.com/opencitations/oc_ocdm/actions/workflows/reuse.yml/badge.svg)](https://github.com/opencitations/oc_ocdm/actions/workflows/reuse.yml)
 [![PyPI version](https://badge.fury.io/py/oc-ocdm.svg)](https://badge.fury.io/py/oc-ocdm)
 ![PyPI](https://img.shields.io/pypi/pyversions/oc_meta)
 

@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2020-2021 Simone Persiani <iosonopersia@gmail.com>
+# SPDX-FileCopyrightText: 2022 Arcangelo Massari <arcangelo.massari@unibo.it>
+#
+# SPDX-License-Identifier: ISC
+
 PREFIX rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX datacite: <http://purl.org/spar/datacite/>
 PREFIX prov:     <http://www.w3.org/ns/prov#>

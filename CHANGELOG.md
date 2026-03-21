@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 Arcangelo Massari <arcangelo.massari@unibo.it>
+
+SPDX-License-Identifier: ISC
+-->
+
 ## [9.4.4](https://github.com/opencitations/oc_ocdm/compare/9.4.3...9.4.4) (2026-03-13)
 
 

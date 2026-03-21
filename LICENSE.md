@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2020 OpenCitations
+SPDX-FileCopyrightText: 2020 Simone Persiani <iosonopersia@gmail.com>
+
+SPDX-License-Identifier: ISC
+-->
+
 ISC License (ISC)
 ==================================
 _Copyright 2020 OpenCitations_

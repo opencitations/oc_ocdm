@@ -1,3 +1,7 @@
+REM SPDX-FileCopyrightText: 2020 Simone Persiani <iosonopersia@gmail.com>
+REM
+REM SPDX-License-Identifier: ISC
+
 @ECHO OFF
 
 pushd %~dp0

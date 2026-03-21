@@ -1,3 +1,7 @@
+.. SPDX-FileCopyrightText: 2022 Simone Persiani <iosonopersia@gmail.com>
+..
+.. SPDX-License-Identifier: ISC
+
 Quick start guide
 =================
 ``oc_ocdm`` **is a Python package that enables the user to import, produce, modify and export RDF data structures which are

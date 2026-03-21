@@ -1,3 +1,8 @@
+.. SPDX-FileCopyrightText: 2020 OpenCitations
+.. SPDX-FileCopyrightText: 2022 Simone Persiani <iosonopersia@gmail.com>
+..
+.. SPDX-License-Identifier: ISC
+
 License (ISC)
 ==================================
 *Copyright 2020 OpenCitations*
