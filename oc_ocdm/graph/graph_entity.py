@@ -1,12 +1,9 @@
-#!/usr/bin/python
-
 # SPDX-FileCopyrightText: 2020-2022 Simone Persiani <iosonopersia@gmail.com>
 # SPDX-FileCopyrightText: 2022-2024 Arcangelo Massari <arcangelo.massari@unibo.it>
 # SPDX-FileCopyrightText: 2024 martasoricetti <marta.soricetti@studio.unibo.it>
 #
 # SPDX-License-Identifier: ISC
 
-# -*- coding: utf-8 -*-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -15,7 +12,7 @@ from oc_ocdm.abstract_entity import AbstractEntity
 from rdflib import RDF, Graph, Namespace, URIRef
 
 if TYPE_CHECKING:
-    from typing import ClassVar, Dict, List, Optional, Tuple
+    from typing import ClassVar, Dict, List, Optional
 
     from oc_ocdm.graph.graph_set import GraphSet
 
@@ -185,17 +182,17 @@ class GraphEntity(AbstractEntity):
         'rp': iri_intextref_pointer
     }
 
-    def __init__(self, g: Graph, g_set: GraphSet, res: URIRef = None, res_type: URIRef = None,
-                 resp_agent: str = None, source: str = None, count: str = None, label: str = None,
-                 short_name: str = "", preexisting_graph: Graph = None) -> None:
+    def __init__(self, g: Graph, g_set: GraphSet, res_type: URIRef, res: URIRef | None = None,
+                 resp_agent: str | None = None, source: str | None = None, count: str | None = None, label: str | None = None,
+                 short_name: str = "", preexisting_graph: Graph | None = None) -> None:
         super(GraphEntity, self).__init__()
         self.g: Graph = g
-        self.resp_agent: str = resp_agent
-        self.source: str = source
+        self.resp_agent: str | None = resp_agent
+        self.source: str | None = source
         self.short_name: str = short_name
         self.g_set: GraphSet = g_set
         self.preexisting_graph: Graph = Graph(identifier=g.identifier)
-        self._merge_list: Tuple[GraphEntity] = tuple()
+        self._merge_list: tuple[GraphEntity, ...] = ()
         # FLAGS
         self._to_be_deleted: bool = False
         self._was_merged: bool = False
@@ -230,7 +227,8 @@ class GraphEntity(AbstractEntity):
                 self.create_label(label)
 
     @staticmethod
-    def _generate_new_res(g: Graph, count: str) -> URIRef:
+    def _generate_new_res(g: Graph, count: str | None) -> URIRef:
+        assert count is not None
         return URIRef(str(g.identifier) + count)
 
     @property
@@ -242,7 +240,7 @@ class GraphEntity(AbstractEntity):
         return self._was_merged
 
     @property
-    def merge_list(self) -> Tuple[GraphEntity]:
+    def merge_list(self) -> tuple[GraphEntity, ...]:
         return self._merge_list
 
     @property 
@@ -266,7 +264,7 @@ class GraphEntity(AbstractEntity):
         # Here we must REMOVE triples pointing
         # to 'self' [THIS CANNOT BE UNDONE]:
         for res, entity in self.g_set.res_to_entity.items():
-            triples_list: List[Tuple] = list(entity.g.triples((res, None, self.res)))
+            triples_list: List[tuple] = list(entity.g.triples((res, None, self.res)))
             for triple in triples_list:
                 entity.g.remove(triple)
 
@@ -282,7 +280,7 @@ class GraphEntity(AbstractEntity):
         """
         base_type = self.short_name_to_type_iri[self.short_name]
         for _, _, type_uri in self.g.triples((self.res, RDF.type, None)):
-            if type_uri != base_type:
+            if isinstance(type_uri, URIRef) and type_uri != base_type:
                 return type_uri
         return None
 
@@ -302,7 +300,7 @@ class GraphEntity(AbstractEntity):
         # Here we must REDIRECT triples pointing
         # to 'other' to make them point to 'self':
         for res, entity in self.g_set.res_to_entity.items():
-            triples_list: List[Tuple] = list(entity.g.triples((res, None, other.res)))
+            triples_list: List[tuple] = list(entity.g.triples((res, None, other.res)))
             for triple in triples_list:
                 entity.g.remove(triple)
                 new_triple = (triple[0], triple[1], self.res)

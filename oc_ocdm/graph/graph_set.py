@@ -1,13 +1,11 @@
-#!/usr/bin/python
-
+# SPDX-FileCopyrightText: 2020-2022 Simone Persiani <iosonopersia@gmail.com>
 # SPDX-FileCopyrightText: 2023-2026 Arcangelo Massari <arcangelo.massari@unibo.it>
 #
 # SPDX-License-Identifier: ISC
 
-# -*- coding: utf-8 -*-
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from io import BytesIO
 
@@ -17,7 +15,7 @@ from oc_ocdm.support.support import get_count, get_prefix, get_short_name
 from sparqlite import SPARQLClient
 
 if TYPE_CHECKING:
-    from typing import Dict, ClassVar, Tuple, Optional, List, Set
+    from typing import Dict, ClassVar, Optional, List, Set
 
 from oc_ocdm.counter_handler.counter_handler import CounterHandler
 from oc_ocdm.counter_handler.filesystem_counter_handler import \
@@ -63,7 +61,7 @@ class GraphSet(AbstractSet[GraphEntity]):
     }
 
     def __init__(self, base_iri: str, info_dir: str = "", supplier_prefix: str = "",
-                 wanted_label: bool = True, custom_counter_handler: CounterHandler = None) -> None:
+                 wanted_label: bool = True, custom_counter_handler: CounterHandler | None = None) -> None:
         super(GraphSet, self).__init__()
         # The following variable maps a URIRef with the related graph entity
         self.res_to_entity: Dict[URIRef, GraphEntity] = {}
@@ -99,128 +97,128 @@ class GraphSet(AbstractSet[GraphEntity]):
             return self.res_to_entity[res]
 
     # Add resources related to bibliographic entities
-    def add_an(self, resp_agent: str, source: str = None, res: URIRef = None,
-               preexisting_graph: Graph = None) -> ReferenceAnnotation:
+    def add_an(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+               preexisting_graph: Graph | None = None) -> ReferenceAnnotation:
         if res is not None and get_short_name(res) != "an":
             raise ValueError(f"Given res: <{res}> is inappropriate for a ReferenceAnnotation entity.")
         if res is not None and res in self.res_to_entity:
-            return self.res_to_entity[res]
+            return cast(ReferenceAnnotation, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_an, "an", res)
-        return ReferenceAnnotation(cur_g, self, res, GraphEntity.iri_note,
+        return ReferenceAnnotation(cur_g, self, GraphEntity.iri_note, res,
                                    resp_agent, source, count, label, "an",
                                    preexisting_graph)
 
-    def add_ar(self, resp_agent: str, source: str = None, res: URIRef = None,
-               preexisting_graph: Graph = None) -> AgentRole:
+    def add_ar(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+               preexisting_graph: Graph | None = None) -> AgentRole:
         if res is not None and get_short_name(res) != "ar":
             raise ValueError(f"Given res: <{res}> is inappropriate for an AgentRole entity.")
         if res is not None and res in self.res_to_entity:
-            return self.res_to_entity[res]
+            return cast(AgentRole, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_ar, "ar", res)
-        return AgentRole(cur_g, self, res, GraphEntity.iri_role_in_time,
+        return AgentRole(cur_g, self, GraphEntity.iri_role_in_time, res,
                          resp_agent, source, count, label, "ar",
                          preexisting_graph)
 
-    def add_be(self, resp_agent: str, source: str = None, res: URIRef = None,
-               preexisting_graph: Graph = None) -> BibliographicReference:
+    def add_be(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+               preexisting_graph: Graph | None = None) -> BibliographicReference:
         if res is not None and get_short_name(res) != "be":
             raise ValueError(f"Given res: <{res}> is inappropriate for a BibliographicReference entity.")
         if res is not None and res in self.res_to_entity:
-            return self.res_to_entity[res]
+            return cast(BibliographicReference, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_be, "be", res)
-        return BibliographicReference(cur_g, self, res, GraphEntity.iri_bibliographic_reference,
+        return BibliographicReference(cur_g, self, GraphEntity.iri_bibliographic_reference, res,
                                       resp_agent, source, count, label, "be",
                                       preexisting_graph)
 
-    def add_br(self, resp_agent: str, source: str = None, res: URIRef = None,
-               preexisting_graph: Graph = None) -> BibliographicResource:
+    def add_br(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+               preexisting_graph: Graph | None = None) -> BibliographicResource:
         if res is not None and get_short_name(res) != "br":
             raise ValueError(f"Given res: <{res}> is inappropriate for a BibliographicResource entity.")
         if res is not None and res in self.res_to_entity:
-            return self.res_to_entity[res]
+            return cast(BibliographicResource, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_br, "br", res)
-        return BibliographicResource(cur_g, self, res, GraphEntity.iri_expression,
+        return BibliographicResource(cur_g, self, GraphEntity.iri_expression, res,
                                      resp_agent, source, count, label, "br",
                                      preexisting_graph)
 
-    def add_ci(self, resp_agent: str, source: str = None, res: URIRef = None,
-               preexisting_graph: Graph = None) -> Citation:
+    def add_ci(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+               preexisting_graph: Graph | None = None) -> Citation:
         if res is not None and get_short_name(res) != "ci":
             raise ValueError(f"Given res: <{res}> is inappropriate for a Citation entity.")
         if res is not None and res in self.res_to_entity:
-            return self.res_to_entity[res]
+            return cast(Citation, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_ci, "ci", res)
-        return Citation(cur_g, self, res, GraphEntity.iri_citation,
+        return Citation(cur_g, self, GraphEntity.iri_citation, res,
                         resp_agent, source, count, label, "ci",
                         preexisting_graph)
 
-    def add_de(self, resp_agent: str, source: str = None, res: URIRef = None,
-               preexisting_graph: Graph = None) -> DiscourseElement:
+    def add_de(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+               preexisting_graph: Graph | None = None) -> DiscourseElement:
         if res is not None and get_short_name(res) != "de":
             raise ValueError(f"Given res: <{res}> is inappropriate for a DiscourseElement entity.")
         if res is not None and res in self.res_to_entity:
-            return self.res_to_entity[res]
+            return cast(DiscourseElement, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_de, "de", res)
-        return DiscourseElement(cur_g, self, res, GraphEntity.iri_discourse_element,
+        return DiscourseElement(cur_g, self, GraphEntity.iri_discourse_element, res,
                                 resp_agent, source, count, label, "de",
                                 preexisting_graph)
 
-    def add_id(self, resp_agent: str, source: str = None, res: URIRef = None,
-               preexisting_graph: Graph = None) -> Identifier:
+    def add_id(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+               preexisting_graph: Graph | None = None) -> Identifier:
         if res is not None and get_short_name(res) != "id":
             raise ValueError(f"Given res: <{res}> is inappropriate for an Identifier entity.")
         if res is not None and res in self.res_to_entity:
-            return self.res_to_entity[res]
+            return cast(Identifier, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_id, "id", res)
-        return Identifier(cur_g, self, res, GraphEntity.iri_identifier,
+        return Identifier(cur_g, self, GraphEntity.iri_identifier, res,
                           resp_agent, source, count, label, "id",
                           preexisting_graph)
 
-    def add_pl(self, resp_agent: str, source: str = None, res: URIRef = None,
-               preexisting_graph: Graph = None) -> PointerList:
+    def add_pl(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+               preexisting_graph: Graph | None = None) -> PointerList:
         if res is not None and get_short_name(res) != "pl":
             raise ValueError(f"Given res: <{res}> is inappropriate for a PointerList entity.")
         if res is not None and res in self.res_to_entity:
-            return self.res_to_entity[res]
+            return cast(PointerList, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_pl, "pl", res)
-        return PointerList(cur_g, self, res, GraphEntity.iri_singleloc_pointer_list,
+        return PointerList(cur_g, self, GraphEntity.iri_singleloc_pointer_list, res,
                            resp_agent, source, count, label, "pl",
                            preexisting_graph)
 
-    def add_rp(self, resp_agent: str, source: str = None, res: URIRef = None,
-               preexisting_graph: Graph = None) -> ReferencePointer:
+    def add_rp(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+               preexisting_graph: Graph | None = None) -> ReferencePointer:
         if res is not None and get_short_name(res) != "rp":
             raise ValueError(f"Given res: <{res}> is inappropriate for a ReferencePointer entity.")
         if res is not None and res in self.res_to_entity:
-            return self.res_to_entity[res]
+            return cast(ReferencePointer, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_rp, "rp", res)
-        return ReferencePointer(cur_g, self, res, GraphEntity.iri_intextref_pointer,
+        return ReferencePointer(cur_g, self, GraphEntity.iri_intextref_pointer, res,
                                 resp_agent, source, count, label, "rp",
                                 preexisting_graph)
 
-    def add_ra(self, resp_agent: str, source: str = None, res: URIRef = None,
-               preexisting_graph: Graph = None) -> ResponsibleAgent:
+    def add_ra(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+               preexisting_graph: Graph | None = None) -> ResponsibleAgent:
         if res is not None and get_short_name(res) != "ra":
             raise ValueError(f"Given res: <{res}> is inappropriate for a ResponsibleAgent entity.")
         if res is not None and res in self.res_to_entity:
-            return self.res_to_entity[res]
+            return cast(ResponsibleAgent, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_ra, "ra", res)
-        return ResponsibleAgent(cur_g, self, res, GraphEntity.iri_agent,
+        return ResponsibleAgent(cur_g, self, GraphEntity.iri_agent, res,
                                 resp_agent, source, count, label, "ra",
                                 preexisting_graph)
 
-    def add_re(self, resp_agent: str, source: str = None, res: URIRef = None,
-               preexisting_graph: Graph = None) -> ResourceEmbodiment:
+    def add_re(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+               preexisting_graph: Graph | None = None) -> ResourceEmbodiment:
         if res is not None and get_short_name(res) != "re":
             raise ValueError(f"Given res: <{res}> is inappropriate for a ResourceEmbodiment entity.")
         if res is not None and res in self.res_to_entity:
-            return self.res_to_entity[res]
+            return cast(ResourceEmbodiment, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_re, "re", res)
-        return ResourceEmbodiment(cur_g, self, res, GraphEntity.iri_manifestation,
+        return ResourceEmbodiment(cur_g, self, GraphEntity.iri_manifestation, res,
                                   resp_agent, source, count, label, "re",
                                   preexisting_graph)
 
-    def _add(self, graph_url: str, short_name: str, res: URIRef = None) -> Tuple[Graph, Optional[str], Optional[str]]:
+    def _add(self, graph_url: str, short_name: str, res: URIRef | None = None) -> tuple[Graph, str | None, str | None]:
         cur_g: Graph = Graph(identifier=graph_url)
         self._set_ns(cur_g)
 
@@ -308,35 +306,35 @@ class GraphSet(AbstractSet[GraphEntity]):
         g.namespace_manager.bind("prism", GraphEntity.PRISM)
         g.namespace_manager.bind("pro", GraphEntity.PRO)
 
-    def get_an(self) -> Tuple[ReferenceAnnotation]:
+    def get_an(self) -> tuple[ReferenceAnnotation, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, ReferenceAnnotation))
 
-    def get_ar(self) -> Tuple[AgentRole]:
+    def get_ar(self) -> tuple[AgentRole, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, AgentRole))
 
-    def get_be(self) -> Tuple[BibliographicReference]:
+    def get_be(self) -> tuple[BibliographicReference, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, BibliographicReference))
 
-    def get_br(self) -> Tuple[BibliographicResource]:
+    def get_br(self) -> tuple[BibliographicResource, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, BibliographicResource))
 
-    def get_ci(self) -> Tuple[Citation]:
+    def get_ci(self) -> tuple[Citation, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, Citation))
 
-    def get_de(self) -> Tuple[DiscourseElement]:
+    def get_de(self) -> tuple[DiscourseElement, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, DiscourseElement))
 
-    def get_id(self) -> Tuple[Identifier]:
+    def get_id(self) -> tuple[Identifier, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, Identifier))
 
-    def get_pl(self) -> Tuple[PointerList]:
+    def get_pl(self) -> tuple[PointerList, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, PointerList))
 
-    def get_rp(self) -> Tuple[ReferencePointer]:
+    def get_rp(self) -> tuple[ReferencePointer, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, ReferencePointer))
 
-    def get_ra(self) -> Tuple[ResponsibleAgent]:
+    def get_ra(self) -> tuple[ResponsibleAgent, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, ResponsibleAgent))
 
-    def get_re(self) -> Tuple[ResourceEmbodiment]:
+    def get_re(self) -> tuple[ResourceEmbodiment, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, ResourceEmbodiment))
