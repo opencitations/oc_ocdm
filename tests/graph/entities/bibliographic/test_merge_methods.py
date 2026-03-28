@@ -53,7 +53,7 @@ class TestBibliographicReferenceMerge(unittest.TestCase):
         be1.merge(be2)
 
         referenced = be1.get_referenced_br()
-        self.assertIsNotNone(referenced)
+        assert referenced is not None
         self.assertEqual(referenced.res, br.res)
 
 
@@ -86,7 +86,7 @@ class TestReferencePointerMerge(unittest.TestCase):
         rp1.merge(rp2)
 
         next_rp = rp1.get_next_rp()
-        self.assertIsNotNone(next_rp)
+        assert next_rp is not None
         self.assertEqual(next_rp.res, rp3.res)
 
     def test_merge_with_denoted_be(self):
@@ -99,7 +99,7 @@ class TestReferencePointerMerge(unittest.TestCase):
         rp1.merge(rp2)
 
         denoted = rp1.get_denoted_be()
-        self.assertIsNotNone(denoted)
+        assert denoted is not None
         self.assertEqual(denoted.res, be.res)
 
     def test_merge_with_annotations(self):
@@ -153,7 +153,7 @@ class TestAgentRoleMerge(unittest.TestCase):
         ar1.merge(ar2)
 
         next_ar = ar1.get_next()
-        self.assertIsNotNone(next_ar)
+        assert next_ar is not None
         self.assertEqual(next_ar.res, ar3.res)
 
     def test_merge_with_held_by(self):
@@ -166,7 +166,7 @@ class TestAgentRoleMerge(unittest.TestCase):
         ar1.merge(ar2)
 
         held_by = ar1.get_is_held_by()
-        self.assertIsNotNone(held_by)
+        assert held_by is not None
         self.assertEqual(held_by.res, ra.res)
 
     def test_merge_with_publisher_role(self):
@@ -293,7 +293,7 @@ class TestCitationMerge(unittest.TestCase):
         ci1.merge(ci2)
 
         citing = ci1.get_citing_entity()
-        self.assertIsNotNone(citing)
+        assert citing is not None
         self.assertEqual(citing.res, br.res)
         self.assertTrue(ci2.to_be_deleted)
 
@@ -307,7 +307,7 @@ class TestCitationMerge(unittest.TestCase):
         ci1.merge(ci2)
 
         cited = ci1.get_cited_entity()
-        self.assertIsNotNone(cited)
+        assert cited is not None
         self.assertEqual(cited.res, br.res)
 
 

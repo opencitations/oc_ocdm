@@ -15,7 +15,6 @@ from oc_ocdm.decorators import accepts_only
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 
 if TYPE_CHECKING:
-    from typing import Optional
     from rdflib import URIRef
 
 
@@ -23,8 +22,7 @@ class Distribution(MetadataEntity):
     """Distribution (short: di): an accessible form of a dataset, for example a downloadable
        file."""
 
-    @accepts_only('di')
-    def merge(self, other: Distribution) -> None:
+    def _merge_properties(self, other: MetadataEntity) -> None:
         """
         The merge operation allows combining two ``Distribution`` entities into a single one,
         by marking the second entity as to be deleted while also copying its data into the current
@@ -43,38 +41,39 @@ class Distribution(MetadataEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        super(Distribution, self).merge(other)
+        super()._merge_properties(other)
+        assert isinstance(other, Distribution)
 
-        title: Optional[str] = other.get_title()
+        title: str | None = other.get_title()
         if title is not None:
             self.has_title(title)
 
-        description: Optional[str] = other.get_description()
+        description: str | None = other.get_description()
         if description is not None:
             self.has_description(description)
 
-        pub_date: Optional[str] = other.get_publication_date()
+        pub_date: str | None = other.get_publication_date()
         if pub_date is not None:
             self.has_publication_date(pub_date)
 
-        byte_size: Optional[str] = other.get_byte_size()
+        byte_size: str | None = other.get_byte_size()
         if byte_size is not None:
             self.has_byte_size(byte_size)
 
-        license_uri: Optional[URIRef] = other.get_license()
+        license_uri: URIRef | None = other.get_license()
         if license_uri is not None:
             self.has_license(license_uri)
 
-        download_url: Optional[URIRef] = other.get_download_url()
+        download_url: URIRef | None = other.get_download_url()
         if download_url is not None:
             self.has_download_url(download_url)
 
-        media_type: Optional[URIRef] = other.get_media_type()
+        media_type: URIRef | None = other.get_media_type()
         if media_type is not None:
             self.has_media_type(media_type)
 
     # HAS TITLE
-    def get_title(self) -> Optional[str]:
+    def get_title(self) -> str | None:
         """
         Getter method corresponding to the ``dcterms:title`` RDF predicate.
 
@@ -108,7 +107,7 @@ class Distribution(MetadataEntity):
         self.g.remove((self.res, MetadataEntity.iri_title, None))
 
     # HAS DESCRIPTION
-    def get_description(self) -> Optional[str]:
+    def get_description(self) -> str | None:
         """
         Getter method corresponding to the ``dcterms:description`` RDF predicate.
 
@@ -142,7 +141,7 @@ class Distribution(MetadataEntity):
         self.g.remove((self.res, MetadataEntity.iri_description, None))
 
     # HAS PUBLICATION DATE
-    def get_publication_date(self) -> Optional[str]:
+    def get_publication_date(self) -> str | None:
         """
         Getter method corresponding to the ``dcterms:issued`` RDF predicate.
 
@@ -177,7 +176,7 @@ class Distribution(MetadataEntity):
         self.g.remove((self.res, MetadataEntity.iri_issued, None))
 
     # HAS BYTE SIZE
-    def get_byte_size(self) -> Optional[str]:
+    def get_byte_size(self) -> str | None:
         """
         Getter method corresponding to the ``dcat:byte_size`` RDF predicate.
 
@@ -212,13 +211,13 @@ class Distribution(MetadataEntity):
         self.g.remove((self.res, MetadataEntity.iri_byte_size, None))
 
     # HAS LICENSE
-    def get_license(self) -> Optional[URIRef]:
+    def get_license(self) -> URIRef | None:
         """
         Getter method corresponding to the ``dcterms:license`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
-        return self._get_literal(MetadataEntity.iri_license)
+        return self._get_uri_reference(MetadataEntity.iri_license)
 
     @accepts_only('thing')
     def has_license(self, thing_res: URIRef) -> None:
@@ -246,13 +245,13 @@ class Distribution(MetadataEntity):
         self.g.remove((self.res, MetadataEntity.iri_license, None))
 
     # HAS DOWNLOAD URL
-    def get_download_url(self) -> Optional[URIRef]:
+    def get_download_url(self) -> URIRef | None:
         """
         Getter method corresponding to the ``dcat:downloadURL`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
-        return self._get_literal(MetadataEntity.iri_download_url)
+        return self._get_uri_reference(MetadataEntity.iri_download_url)
 
     @accepts_only('thing')
     def has_download_url(self, thing_res: URIRef) -> None:
@@ -280,13 +279,13 @@ class Distribution(MetadataEntity):
         self.g.remove((self.res, MetadataEntity.iri_download_url, None))
 
     # HAS_MEDIA_TYPE
-    def get_media_type(self) -> Optional[URIRef]:
+    def get_media_type(self) -> URIRef | None:
         """
         Getter method corresponding to the ``dcat:mediaType`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
-        return self._get_literal(MetadataEntity.iri_media_type)
+        return self._get_uri_reference(MetadataEntity.iri_media_type)
 
     @accepts_only('thing')
     def has_media_type(self, thing_res: URIRef) -> None:

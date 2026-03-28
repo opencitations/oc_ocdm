@@ -46,7 +46,7 @@ class AbstractEntity(ABC):
 
         :return: None
         """
-        self.g.remove((None, None, None))
+        self.g.remove((None, None, None))  # type: ignore[arg-type]
 
     # LABEL
     def get_label(self) -> Optional[str]:

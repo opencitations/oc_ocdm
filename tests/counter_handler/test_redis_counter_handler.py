@@ -42,7 +42,7 @@ class TestRedisCounterHandler(unittest.TestCase):
             self.mock_redis.set.assert_called_with("re:060", 20)
 
         with self.subTest("Set provenance counter"):
-            self.counter_handler.set_counter(2, "br", "se", "1", "060")
+            self.counter_handler.set_counter(2, "br", "se", 1, "060")
             self.mock_redis.set.assert_called_with("br:060:1:se", 2)
 
         with self.subTest("Wrong inputs"):
@@ -58,7 +58,7 @@ class TestRedisCounterHandler(unittest.TestCase):
 
         with self.subTest("Read provenance counter"):
             self.mock_redis.get.return_value = "2"
-            result = self.counter_handler.read_counter("br", "se", "1", "060")
+            result = self.counter_handler.read_counter("br", "se", 1, "060")
             self.assertEqual(result, 2)
             self.mock_redis.get.assert_called_with("br:060:1:se")
 
@@ -76,7 +76,7 @@ class TestRedisCounterHandler(unittest.TestCase):
 
         with self.subTest("Increment provenance counter"):
             self.mock_redis.incr.return_value = 3
-            result = self.counter_handler.increment_counter("br", "se", "1", "060")
+            result = self.counter_handler.increment_counter("br", "se", 1, "060")
             self.assertEqual(result, 3)
             self.mock_redis.incr.assert_called_with("br:060:1:se")
 
@@ -88,8 +88,6 @@ class TestRedisCounterHandler(unittest.TestCase):
         with self.subTest("Wrong inputs"):
             with self.assertRaises(ValueError):
                 self.counter_handler.set_metadata_counter(-1, "di", "http://dataset/")
-            with self.assertRaises(ValueError):
-                self.counter_handler.set_metadata_counter(1, "di", None)
 
     def test_read_metadata_counter(self):
         with self.subTest("Read metadata counter"):
@@ -103,20 +101,12 @@ class TestRedisCounterHandler(unittest.TestCase):
             result = self.counter_handler.read_metadata_counter("di", "http://dataset/")
             self.assertEqual(result, 0)
 
-        with self.subTest("Wrong inputs"):
-            with self.assertRaises(ValueError):
-                self.counter_handler.read_metadata_counter("di", None)
-
     def test_increment_metadata_counter(self):
         with self.subTest("Increment metadata counter"):
             self.mock_redis.incr.return_value = 6
             result = self.counter_handler.increment_metadata_counter("di", "http://dataset/")
             self.assertEqual(result, 6)
             self.mock_redis.incr.assert_called_with("metadata:http://dataset/:di")
-
-        with self.subTest("Wrong inputs"):
-            with self.assertRaises(ValueError):
-                self.counter_handler.increment_metadata_counter("di", None)
 
     def test_pickle_serialization(self):
         with self.subTest("Pickle and unpickle RedisCounterHandler"):

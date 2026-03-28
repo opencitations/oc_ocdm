@@ -6,7 +6,7 @@
 
 # -*- coding: utf-8 -*-
 
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union, cast
 
 import redis
 from tqdm import tqdm
@@ -44,9 +44,9 @@ class RedisCounterHandler(CounterHandler):
         del state['redis']
         return state
 
-    def __setstate__(self, state):
+    def __setstate__(self, state: dict[str, object]) -> None:
         """Support for pickle deserialization."""
-        self.__dict__.update(state)
+        vars(self).update(state)
         # Recreate Redis connection
         self.redis = redis.Redis(
             host=self.host,
@@ -101,7 +101,7 @@ class RedisCounterHandler(CounterHandler):
         :return: The requested counter value.
         """
         key = self._get_key(entity_short_name, prov_short_name, identifier, supplier_prefix)
-        value = self.redis.get(key)
+        value = cast(Optional[str], self.redis.get(key))
         return int(value) if value is not None else 0
 
     def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
@@ -122,7 +122,7 @@ class RedisCounterHandler(CounterHandler):
         :return: The newly-updated (already incremented) counter value.
         """
         key = self._get_key(entity_short_name, prov_short_name, identifier, supplier_prefix)
-        return self.redis.incr(key)
+        return cast(int, self.redis.incr(key))
 
     def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str) -> None:
         """
@@ -134,14 +134,11 @@ class RedisCounterHandler(CounterHandler):
         :type entity_short_name: str
         :param dataset_name: In case of a ``Dataset``, its name. Otherwise, the name of the relative dataset.
         :type dataset_name: str
-        :raises ValueError: if ``new_value`` is a negative integer or ``dataset_name`` is None
+        :raises ValueError: if ``new_value`` is a negative integer
         :return: None
         """
         if new_value < 0:
             raise ValueError("new_value must be a non negative integer!")
-
-        if dataset_name is None:
-            raise ValueError("dataset_name must be provided!")
 
         key = f"metadata:{dataset_name}:{entity_short_name}"
         self.redis.set(key, new_value)
@@ -154,14 +151,11 @@ class RedisCounterHandler(CounterHandler):
         :type entity_short_name: str
         :param dataset_name: In case of a ``Dataset``, its name. Otherwise, the name of the relative dataset.
         :type dataset_name: str
-        :raises ValueError: if ``dataset_name`` is None
+
         :return: The requested counter value.
         """
-        if dataset_name is None:
-            raise ValueError("dataset_name must be provided!")
-
         key = f"metadata:{dataset_name}:{entity_short_name}"
-        value = self.redis.get(key)
+        value = cast(Optional[str], self.redis.get(key))
         return int(value) if value is not None else 0
 
     def increment_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
@@ -172,14 +166,11 @@ class RedisCounterHandler(CounterHandler):
         :type entity_short_name: str
         :param dataset_name: In case of a ``Dataset``, its name. Otherwise, the name of the relative dataset.
         :type dataset_name: str
-        :raises ValueError: if ``dataset_name`` is None
+
         :return: The newly-updated (already incremented) counter value.
         """
-        if dataset_name is None:
-            raise ValueError("dataset_name must be provided!")
-
         key = f"metadata:{dataset_name}:{entity_short_name}"
-        return self.redis.incr(key)
+        return cast(int, self.redis.incr(key))
 
     def _get_key(self, entity_short_name: str, prov_short_name: str = "", identifier: Union[str, int, None] = None, supplier_prefix: str = "") -> str:
         """

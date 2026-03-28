@@ -7,7 +7,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Tuple, List, Optional
+from typing import TYPE_CHECKING, List
 
 from oc_ocdm.abstract_entity import AbstractEntity
 from rdflib import URIRef, Namespace, Graph
@@ -46,19 +46,19 @@ class MetadataEntity(AbstractEntity):
     }
 
     def __init__(self, g: Graph, base_iri: str, dataset_name: str, m_set: MetadataSet,
-                 res: URIRef = None, res_type: URIRef = None, resp_agent: str = None,
-                 source: str = None, count: str = None, label: str = None, short_name: str = "",
-                 preexisting_graph: Graph = None) -> None:
+                 res_type: URIRef, res: URIRef | None = None, resp_agent: str | None = None,
+                 source: str | None = None, count: str | None = None, label: str | None = None, short_name: str = "",
+                 preexisting_graph: Graph | None = None) -> None:
         super(MetadataEntity, self).__init__()
         self.g: Graph = g
         self.base_iri: str = base_iri
         self.dataset_name: str = dataset_name
-        self.resp_agent: str = resp_agent
-        self.source: str = source
+        self.resp_agent: str | None = resp_agent
+        self.source: str | None = source
         self.short_name: str = short_name
         self.m_set: MetadataSet = m_set
         self.preexisting_graph: Graph = Graph(identifier=g.identifier)
-        self._merge_list: Tuple[MetadataEntity] = tuple()
+        self._merge_list: tuple[MetadataEntity, ...] = ()
         # FLAGS
         self._to_be_deleted: bool = False
         self._was_merged: bool = False
@@ -95,10 +95,11 @@ class MetadataEntity(AbstractEntity):
                 self.create_label(label)
 
     @staticmethod
-    def _generate_new_res(count: str, base_res: str, short_name: str) -> URIRef:
+    def _generate_new_res(count: str | None, base_res: str, short_name: str) -> URIRef:
         if short_name == '_dataset_':
             return URIRef(base_res)
         else:
+            assert count is not None
             return URIRef(base_res + short_name + "/" + count)
 
     @property
@@ -110,14 +111,14 @@ class MetadataEntity(AbstractEntity):
         return self._was_merged
 
     @property
-    def merge_list(self) -> Tuple[MetadataEntity]:
+    def merge_list(self) -> tuple[MetadataEntity, ...]:
         return self._merge_list
 
     def mark_as_to_be_deleted(self) -> None:
         # Here we must REMOVE triples pointing
         # to 'self' [THIS CANNOT BE UNDONE]:
         for res, entity in self.m_set.res_to_entity.items():
-            triples_list: List[Tuple] = list(entity.g.triples((res, None, self.res)))
+            triples_list: List[tuple] = list(entity.g.triples((res, None, self.res)))
             for triple in triples_list:
                 entity.g.remove(triple)
 
@@ -135,11 +136,16 @@ class MetadataEntity(AbstractEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
+        if not isinstance(other, MetadataEntity) or other.short_name != self.short_name:
+            raise TypeError(
+                f"[{self.__class__.__name__}.merge] Expected entity type: {self.short_name}. "
+                f"Provided: {type(other).__name__}."
+            )
 
         # Here we must REDIRECT triples pointing
         # to 'other' to make them point to 'self':
         for res, entity in self.m_set.res_to_entity.items():
-            triples_list: List[Tuple] = list(entity.g.triples((res, None, other.res)))
+            triples_list: List[tuple] = list(entity.g.triples((res, None, other.res)))
             for triple in triples_list:
                 entity.g.remove(triple)
                 new_triple = (triple[0], triple[1], self.res)
@@ -149,7 +155,7 @@ class MetadataEntity(AbstractEntity):
         for cur_type in types:
             self._create_type(cur_type)
 
-        label: Optional[str] = other.get_label()
+        label: str | None = other.get_label()
         if label is not None:
             self.create_label(label)
 
@@ -161,6 +167,11 @@ class MetadataEntity(AbstractEntity):
         # also removes every triple pointing to 'other'
         other.mark_as_to_be_deleted()
 
+        self._merge_properties(other)
+
+    def _merge_properties(self, other: MetadataEntity) -> None:
+        pass
+
     def commit_changes(self):
         self.preexisting_graph = Graph(identifier=self.g.identifier)
         if self._to_be_deleted:
@@ -170,4 +181,4 @@ class MetadataEntity(AbstractEntity):
                 self.preexisting_graph.add(triple)
         self._to_be_deleted = False
         self._was_merged = False
-        self._merge_list = tuple()
+        self._merge_list = ()

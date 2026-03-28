@@ -101,52 +101,6 @@ def _compute_graph_changes(entity: AbstractEntity, entity_type: str) -> Tuple[Se
     return added_triples, removed_triples, len(added_triples), len(removed_triples)
 
 
-def serialize_graph_to_nquads(triples: Set, graph_iri: URIRef) -> list:
-    """
-    Serializes RDF triples to N-Quads format.
-
-    Args:
-        triples: Set of RDF triples
-        graph_iri: Named graph IRI
-
-    Returns:
-        List of N-Quad strings (each ending with newline)
-    """
-    return [f"{s.n3()} {p.n3()} {o.n3()} <{graph_iri}> .\n" for s, p, o in triples]
-
-
-def get_separated_queries(entity: AbstractEntity, entity_type: str = "graph") -> Tuple[List[str], List[str], int, int, Set]:
-    """
-    Returns separate INSERT and DELETE queries for an entity, plus the insert triples.
-
-    Args:
-        entity: The entity to generate queries for
-        entity_type: Type of entity ("graph", "prov", or "metadata")
-
-    Returns:
-        Tuple of (insert_queries, delete_queries, added_count, removed_count, insert_triples)
-        The insert_triples can be used for direct N-Quads serialization without parsing SPARQL.
-    """
-    to_insert, to_delete, n_added, n_removed = _compute_graph_changes(entity, entity_type)
-
-    if n_added == 0 and n_removed == 0:
-        return [], [], 0, 0, set()
-
-    graph_iri = entity.g.identifier
-    assert isinstance(graph_iri, URIRef)
-
-    delete_queries = []
-    insert_queries = []
-
-    if n_removed > 0:
-        delete_queries, _ = get_delete_query(graph_iri, to_delete)
-
-    if n_added > 0:
-        insert_queries, _ = get_insert_query(graph_iri, to_insert)
-
-    return insert_queries, delete_queries, n_added, n_removed, to_insert
-
-
 def get_update_query(entity: AbstractEntity, entity_type: str = "graph") -> Tuple[List[str], int, int]:
     to_insert, to_delete, n_added, n_removed = _compute_graph_changes(entity, entity_type)
 

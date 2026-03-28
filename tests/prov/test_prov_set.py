@@ -46,8 +46,7 @@ class TestProvSet(unittest.TestCase):
 
         result = self.prov_set.generate_provenance(self.cur_time)
         se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
-        self.assertIsNotNone(se_a)
-        self.assertIsInstance(se_a, SnapshotEntity)
+        assert isinstance(se_a, SnapshotEntity)
         self.assertEqual(a.res, se_a.get_is_snapshot_of())
         self.assertEqual(self.cur_time_str, se_a.get_generation_time())
         if a.source is not None:
@@ -84,8 +83,7 @@ class TestProvSet(unittest.TestCase):
         self.assertEqual(self.cur_time_str, se_a_1.get_invalidation_time())
 
         se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
-        self.assertIsNotNone(se_a_2)
-        self.assertIsInstance(se_a_2, SnapshotEntity)
+        assert isinstance(se_a_2, SnapshotEntity)
         self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
         self.assertEqual(self.cur_time_str, se_a_2.get_generation_time())
         if a.source is not None:
@@ -119,8 +117,7 @@ class TestProvSet(unittest.TestCase):
         result = self.prov_set.generate_provenance(self.cur_time)
 
         se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
-        self.assertIsNotNone(se_a_2)
-        self.assertIsInstance(se_a_2, SnapshotEntity)
+        assert isinstance(se_a_2, SnapshotEntity)
         self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
         self.assertEqual(self.cur_time_str, se_a_2.get_generation_time())
         if a.source is not None:
@@ -142,8 +139,7 @@ class TestProvSet(unittest.TestCase):
         result = self.prov_set.generate_provenance(self.cur_time)
         
         se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
-        self.assertIsNotNone(se_a)
-        self.assertIsInstance(se_a, SnapshotEntity)
+        assert isinstance(se_a, SnapshotEntity)
         self.assertEqual(a.res, se_a.get_is_snapshot_of())
         self.assertEqual(self.cur_time_str, se_a.get_generation_time())
         if a.source is not None:
@@ -186,8 +182,7 @@ class TestProvSet(unittest.TestCase):
         self.assertEqual(self.cur_time_str, se_a_1.get_invalidation_time())
 
         se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
-        self.assertIsNotNone(se_a_2)
-        self.assertIsInstance(se_a_2, SnapshotEntity)
+        assert isinstance(se_a_2, SnapshotEntity)
         self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
         self.assertEqual(self.cur_time_str, se_a_2.get_generation_time())
         if a.source is not None:
@@ -208,8 +203,7 @@ class TestProvSet(unittest.TestCase):
         self.assertEqual(self.cur_time_str, se_a_1.get_invalidation_time())
 
         se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
-        self.assertIsNotNone(se_a_2)
-        self.assertIsInstance(se_a_2, SnapshotEntity)
+        assert isinstance(se_a_2, SnapshotEntity)
         self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
         self.assertEqual(self.cur_time_str, se_a_2.get_generation_time())
         if a.source is not None:
@@ -254,22 +248,22 @@ class TestProvSet(unittest.TestCase):
         deletion_time = self.cur_time_str
         
         # Get the deletion snapshot
-        se_a_2: SnapshotEntity = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
-        self.assertIsNotNone(se_a_2)
+        se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
+        assert isinstance(se_a_2, SnapshotEntity)
         self.assertEqual(deletion_time, se_a_2.get_generation_time())
         self.assertEqual(deletion_time, se_a_2.get_invalidation_time())
-        
+
         # Now restore the entity
         a.mark_as_restored()
         a.has_title("Restored Title")  # Add some modification
-        
+
         # Generate provenance after restoration
         restoration_time = "2020-12-08T21:17:39+00:00"
         result = self.prov_set.generate_provenance(1607462259.846196)  # One day later
-        
+
         # Check the restoration snapshot
-        se_a_3: SnapshotEntity = self.prov_set.get_entity(URIRef(a.res + '/prov/se/3'))
-        self.assertIsNotNone(se_a_3)
+        se_a_3 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/3'))
+        assert isinstance(se_a_3, SnapshotEntity)
         self.assertEqual(restoration_time, se_a_3.get_generation_time())
         self.assertIsNone(se_a_3.get_invalidation_time())  # No invalidation time for restoration
         self.assertEqual(f"The entity '{a.res}' has been restored.", se_a_3.get_description())
@@ -284,6 +278,7 @@ class TestProvSet(unittest.TestCase):
         # Generate provenance
         self.prov_set.generate_provenance(self.cur_time)
         se = self.prov_set.get_entity(URIRef(br.res + '/prov/se/1'))
+        assert isinstance(se, SnapshotEntity)
         se.has_description("Initial creation")
         se.has_primary_source(URIRef("http://example.org/source"))
 
@@ -299,7 +294,7 @@ class TestProvSet(unittest.TestCase):
 
         # Verify snapshot entity is accessible
         restored_se = restored.get_entity(se.res)
-        self.assertIsNotNone(restored_se)
+        assert isinstance(restored_se, SnapshotEntity)
         self.assertEqual(restored_se.get_description(), "Initial creation")
         self.assertEqual(restored_se.get_primary_source(), URIRef("http://example.org/source"))
 
@@ -359,12 +354,16 @@ class TestProvSetWorkflow(unittest.TestCase):
                 if filename.endswith('.json') and not dirpath.endswith('prov'):
                     full_path = os.path.join(dirpath, filename)
                     loaded_graph = reader.load(full_path)
+                    assert loaded_graph is not None
                     reader.import_entities_from_graph(new_graph_set, results=loaded_graph, resp_agent=self.resp_agent)
 
         # Step 4: Perform merge operation
         new_a = new_graph_set.get_entity(a.res)
         new_b = new_graph_set.get_entity(b.res)
         new_c = new_graph_set.get_entity(c.res)
+        assert new_a is not None
+        assert new_b is not None
+        assert new_c is not None
 
         new_a.merge(new_b)
         new_a.merge(new_c)
@@ -390,6 +389,7 @@ class TestProvSetWorkflow(unittest.TestCase):
                 if filename.endswith('.json') and not dirpath.endswith('prov'):
                     full_path = os.path.join(dirpath, filename)
                     loaded_graph = reader.load(full_path)
+                    assert loaded_graph is not None
                     final_reader.import_entities_from_graph(final_graph_set, results=loaded_graph, resp_agent=self.resp_agent)
 
         # Check the final state

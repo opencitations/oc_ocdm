@@ -30,34 +30,36 @@ class SqliteCounterHandler(CounterHandler):
             entity TEXT PRIMARY KEY,
             count INTEGER)""")
 
-    def set_counter(self, new_value: int, entity_name: object) -> None:
+    def set_counter(self, new_value: int, entity_short_name: str, prov_short_name: str = "",  # type: ignore[override]
+                    identifier: int = 1, supplier_prefix: str = "") -> None:
         """
         It allows to set the counter value of provenance entities.
 
+        In this implementation, ``entity_short_name`` is used as a generic entity key
+        (which may be a URI string when called from ProvSet with a GraphEntity).
+
         :param new_value: The new counter value to be set
         :type new_value: int
-        :param entity_name: The entity name
-        :type entity_name: object
+        :param entity_short_name: The entity name (used as lookup key)
+        :type entity_short_name: str
         :raises ValueError: if ``new_value`` is a negative integer.
         :return: None
         """
-        entity_name = str(entity_name)
         if new_value < 0:
             raise ValueError("new_value must be a non negative integer!")
-        self.cur.execute(f"INSERT OR REPLACE INTO info (entity, count) VALUES ('{entity_name}', {new_value})")
+        self.cur.execute(f"INSERT OR REPLACE INTO info (entity, count) VALUES ('{entity_short_name}', {new_value})")
         self.con.commit()
 
-    def read_counter(self, entity_name: object) -> int:
+    def read_counter(self, entity_short_name: str, prov_short_name: str = "",  # type: ignore[override]
+                     identifier: int = 1, supplier_prefix: str = "") -> int:
         """
         It allows to read the counter value of provenance entities.
 
-        :param entity_name: The entity name
-        :type entity_name: object
+        :param entity_short_name: The entity name (used as lookup key)
+        :type entity_short_name: str
         :return: The requested counter value.
         """
-        entity_name = str(entity_name)
-        result = self.cur.execute(f"SELECT count FROM info WHERE entity='{entity_name}'")
-        rows = result.fetchall()
+        rows = self.cur.execute(f"SELECT count FROM info WHERE entity='{entity_short_name}'").fetchall()
         if len(rows) == 1:
             return rows[0][0]
         elif len(rows) == 0:
@@ -65,27 +67,26 @@ class SqliteCounterHandler(CounterHandler):
         else:
             raise(Exception("There is more than one counter for this entity. The databse id broken"))
 
-    def increment_counter(self, entity_name: object) -> int:
+    def increment_counter(self, entity_short_name: str, prov_short_name: str = "",  # type: ignore[override]
+                          identifier: int = 1, supplier_prefix: str = "") -> int:
         """
         It allows to increment the counter value of graph and provenance entities by one unit.
 
-        :param entity_name: The entity name
-        :type entity_name: object
+        :param entity_short_name: The entity name (used as lookup key)
+        :type entity_short_name: str
         :return: The newly-updated (already incremented) counter value.
         """
-        entity_name = str(entity_name)
-        cur_count = self.read_counter(entity_name)
-        count = cur_count + 1
-        self.set_counter(count, entity_name)
+        count = self.read_counter(entity_short_name) + 1
+        self.set_counter(count, entity_short_name)
         return count
 
-    def increment_metadata_counter(self):
-        pass
+    def increment_metadata_counter(self, entity_short_name: str = "", dataset_name: str = "") -> int:  # type: ignore[override]
+        return 0
 
-    def read_metadata_counter(self):
-        pass
+    def read_metadata_counter(self, entity_short_name: str = "", dataset_name: str = "") -> int:  # type: ignore[override]
+        return 0
 
-    def set_metadata_counter(self):
+    def set_metadata_counter(self, new_value: int = 0, entity_short_name: str = "", dataset_name: str = "") -> None:  # type: ignore[override]
         pass
 
     def __getstate__(self):
@@ -100,13 +101,13 @@ class SqliteCounterHandler(CounterHandler):
         del state['cur']
         return state
 
-    def __setstate__(self, state):
+    def __setstate__(self, state: dict[str, object]) -> None:
         """
         Support for pickle deserialization.
 
         Recreates the SQLite connection and cursor after unpickling.
         """
-        self.__dict__.update(state)
+        vars(self).update(state)
         sqlite3.threadsafety = 3
         self.con = sqlite3.connect(self.database)
         self.cur = self.con.cursor()

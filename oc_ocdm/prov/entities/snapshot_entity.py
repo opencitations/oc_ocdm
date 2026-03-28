@@ -145,7 +145,7 @@ class SnapshotEntity(ProvEntity):
         result: List[ProvEntity] = []
         for uri in uri_list:
             # TODO: what is the prov_subject of these snapshots?
-            result.append(self.p_set.add_se(None, uri))
+            result.append(self.p_set.add_se(self.prov_subject, uri))
         return result
 
     @accepts_only('se')
@@ -164,7 +164,7 @@ class SnapshotEntity(ProvEntity):
         self.g.add((self.res, ProvEntity.iri_was_derived_from, se_res.res))
 
     @accepts_only('se')
-    def remove_derives_from(self, se_res: ProvEntity = None) -> None:
+    def remove_derives_from(self, se_res: Optional[ProvEntity] = None) -> None:
         """
         Remover method corresponding to the ``prov:wasDerivedFrom`` RDF predicate.
 

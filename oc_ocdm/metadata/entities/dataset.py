@@ -11,10 +11,10 @@ from typing import TYPE_CHECKING
 
 from oc_ocdm.decorators import accepts_only
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
-from rdflib import XSD
+from rdflib import Literal, XSD
 
 if TYPE_CHECKING:
-    from typing import Optional, List
+    from typing import List
     from rdflib import URIRef
     from oc_ocdm.metadata.entities.distribution import Distribution
 
@@ -23,8 +23,7 @@ class Dataset(MetadataEntity):
     """Dataset (short: not applicable and strictly dependent on the implementation of the
        dataset infrastructure): a set of collected information about something."""
 
-    @accepts_only('_dataset_')
-    def merge(self, other: Dataset) -> None:
+    def _merge_properties(self, other: MetadataEntity) -> None:
         """
         The merge operation allows combining two ``Dataset`` entities into a single one,
         by marking the second entity as to be deleted while also copying its data into the current
@@ -43,21 +42,22 @@ class Dataset(MetadataEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        super(Dataset, self).merge(other)
+        super()._merge_properties(other)
+        assert isinstance(other, Dataset)
 
-        title: Optional[str] = other.get_title()
+        title: str | None = other.get_title()
         if title is not None:
             self.has_title(title)
 
-        description: Optional[str] = other.get_description()
+        description: str | None = other.get_description()
         if description is not None:
             self.has_description(description)
 
-        pub_date: Optional[str] = other.get_publication_date()
+        pub_date: str | None = other.get_publication_date()
         if pub_date is not None:
             self.has_publication_date(pub_date)
 
-        mod_date: Optional[str] = other.get_modification_date()
+        mod_date: str | None = other.get_modification_date()
         if mod_date is not None:
             self.has_modification_date(mod_date)
 
@@ -69,7 +69,7 @@ class Dataset(MetadataEntity):
         for cur_subject in subjects_list:
             self.has_subject(cur_subject)
 
-        landing_page: Optional[URIRef] = other.get_landing_page()
+        landing_page: URIRef | None = other.get_landing_page()
         if landing_page is not None:
             self.has_landing_page(landing_page)
 
@@ -77,7 +77,7 @@ class Dataset(MetadataEntity):
         for cur_sub_dataset in sub_datasets_list:
             self.has_sub_dataset(cur_sub_dataset)
 
-        sparql_endpoint: Optional[URIRef] = other.get_sparql_endpoint()
+        sparql_endpoint: URIRef | None = other.get_sparql_endpoint()
         if sparql_endpoint is not None:
             self.has_sparql_endpoint(sparql_endpoint)
 
@@ -86,7 +86,7 @@ class Dataset(MetadataEntity):
             self.has_distribution(cur_distribution)
 
     # HAS TITLE
-    def get_title(self) -> Optional[str]:
+    def get_title(self) -> str | None:
         """
         Getter method corresponding to the ``dcterms:title`` RDF predicate.
 
@@ -120,7 +120,7 @@ class Dataset(MetadataEntity):
         self.g.remove((self.res, MetadataEntity.iri_title, None))
 
     # HAS DESCRIPTION
-    def get_description(self) -> Optional[str]:
+    def get_description(self) -> str | None:
         """
         Getter method corresponding to the ``dcterms:description`` RDF predicate.
 
@@ -154,7 +154,7 @@ class Dataset(MetadataEntity):
         self.g.remove((self.res, MetadataEntity.iri_description, None))
 
     # HAS PUBLICATION DATE
-    def get_publication_date(self) -> Optional[str]:
+    def get_publication_date(self) -> str | None:
         """
         Getter method corresponding to the ``dcterms:issued`` RDF predicate.
 
@@ -189,7 +189,7 @@ class Dataset(MetadataEntity):
         self.g.remove((self.res, MetadataEntity.iri_issued, None))
 
     # HAS MODIFICATION DATE
-    def get_modification_date(self) -> Optional[str]:
+    def get_modification_date(self) -> str | None:
         """
         Getter method corresponding to the ``dcterms:modified`` RDF predicate.
 
@@ -247,7 +247,7 @@ class Dataset(MetadataEntity):
         self._create_literal(MetadataEntity.iri_keyword, string)
 
     @accepts_only('literal')
-    def remove_keyword(self, string: str = None) -> None:
+    def remove_keyword(self, string: str | None = None) -> None:
         """
         Remover method corresponding to the ``dcat:keyword`` RDF predicate.
 
@@ -261,7 +261,7 @@ class Dataset(MetadataEntity):
         :return: None
         """
         if string is not None:
-            self.g.remove((self.res, MetadataEntity.iri_keyword, string))
+            self.g.remove((self.res, MetadataEntity.iri_keyword, Literal(string)))
         else:
             self.g.remove((self.res, MetadataEntity.iri_keyword, None))
 
@@ -290,7 +290,7 @@ class Dataset(MetadataEntity):
         self.g.add((self.res, MetadataEntity.iri_subject, thing_res))
 
     @accepts_only('thing')
-    def remove_subject(self, thing_res: URIRef = None) -> None:
+    def remove_subject(self, thing_res: URIRef | None = None) -> None:
         """
         Remover method corresponding to the ``dcat:theme`` RDF predicate.
 
@@ -309,13 +309,13 @@ class Dataset(MetadataEntity):
             self.g.remove((self.res, MetadataEntity.iri_subject, None))
 
     # HAS LANDING PAGE
-    def get_landing_page(self) -> Optional[URIRef]:
+    def get_landing_page(self) -> URIRef | None:
         """
         Getter method corresponding to the ``dcat:landingPage`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
-        return self._get_literal(MetadataEntity.iri_landing_page)
+        return self._get_uri_reference(MetadataEntity.iri_landing_page)
 
     @accepts_only('thing')
     def has_landing_page(self, thing_res: URIRef) -> None:
@@ -352,7 +352,7 @@ class Dataset(MetadataEntity):
         uri_list: List[URIRef] = self._get_multiple_uri_references(MetadataEntity.iri_subset, '_dataset_')
         result: List[Dataset] = []
         for uri in uri_list:
-            result.append(self.m_set.add_dataset(self.resp_agent, self.source, uri))
+            result.append(self.m_set.add_dataset(self.dataset_name, self.resp_agent or "", self.source, uri))
         return result
 
     @accepts_only('_dataset_')
@@ -370,7 +370,7 @@ class Dataset(MetadataEntity):
         self.g.add((self.res, MetadataEntity.iri_subset, obj.res))
 
     @accepts_only('_dataset_')
-    def remove_sub_dataset(self, dataset_res: Dataset = None) -> None:
+    def remove_sub_dataset(self, dataset_res: Dataset | None = None) -> None:
         """
         Remover method corresponding to the ``void:subset`` RDF predicate.
 
@@ -389,13 +389,13 @@ class Dataset(MetadataEntity):
             self.g.remove((self.res, MetadataEntity.iri_subset, None))
 
     # HAS SPARQL ENDPOINT
-    def get_sparql_endpoint(self) -> Optional[URIRef]:
+    def get_sparql_endpoint(self) -> URIRef | None:
         """
         Getter method corresponding to the ``void:sparqlEndpoint`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(MetadataEntity.iri_sparql_endpoint)
+        uri: URIRef | None = self._get_uri_reference(MetadataEntity.iri_sparql_endpoint)
         return uri
 
     @accepts_only('thing')
@@ -433,7 +433,7 @@ class Dataset(MetadataEntity):
         uri_list: List[URIRef] = self._get_multiple_uri_references(MetadataEntity.iri_distribution, 'di')
         result: List[Distribution] = []
         for uri in uri_list:
-            result.append(self.m_set.add_di(self.resp_agent, self.source, uri))
+            result.append(self.m_set.add_di(self.dataset_name, self.resp_agent or "", self.source, uri))
         return result
 
     @accepts_only('di')
@@ -451,7 +451,7 @@ class Dataset(MetadataEntity):
         self.g.add((self.res, MetadataEntity.iri_distribution, obj.res))
 
     @accepts_only('di')
-    def remove_distribution(self, di_res: Distribution = None) -> None:
+    def remove_distribution(self, di_res: Distribution | None = None) -> None:
         """
         Remover method corresponding to the ``dcat:distribution`` RDF predicate.
 

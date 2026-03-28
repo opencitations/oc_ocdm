@@ -5,7 +5,6 @@
 # SPDX-License-Identifier: ISC
 
 # -*- coding: utf-8 -*-
-import gzip
 import hashlib
 import json
 import os
@@ -25,8 +24,6 @@ from oc_ocdm.prov.prov_set import ProvSet
 from oc_ocdm.storer import Storer
 from oc_ocdm.reader import Reader
 from oc_ocdm.support.reporter import Reporter
-from oc_ocdm.support.query_utils import serialize_graph_to_nquads
-
 from shutil import rmtree
 
 
@@ -45,7 +42,7 @@ class TestStorer(unittest.TestCase):
 
     def reset_server(self) -> None:
         with SPARQLClient(self.ts) as client:
-            for graph in {'https://w3id.org/oc/meta/br/', 'https://w3id.org/oc/meta/ra/', 'https://w3id.org/oc/meta/re/', 'https://w3id.org/oc/meta/id/', 'https://w3id.org/oc/meta/ar/', 'http://default.graph/'}:
+            for graph in {'https://w3id.org/oc/meta/br/', 'https://w3id.org/oc/meta/ra/', 'https://w3id.org/oc/meta/re/', 'https://w3id.org/oc/meta/id/', 'https://w3id.org/oc/meta/ar/', 'http://default.graph/', 'http://test/br/'}:
                 client.update(f'CLEAR GRAPH <{graph}>')
 
     def setUp(self):
@@ -194,83 +191,6 @@ class TestStorer(unittest.TestCase):
         entities_to_process = [('http://test/br/0601',), ('http://test/br/0602',), ('http://test/br/0603',)]
         with Pool(processes=3) as pool:
             pool.starmap(process_entity, entities_to_process)
-
-    def test_store_graphs_save_queries(self):
-        base_dir = os.path.join("tests", "storer", "data", "rdf_save_queries") + os.sep
-        storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
-        self.prov_set.generate_provenance()
-        prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
-        storer.store_all(base_dir, self.base_iri)
-        prov_storer.store_all(base_dir, self.base_iri)
-
-        to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
-        storer.upload_all(self.ts, base_dir, save_queries=True)
-
-        # Check that the to_be_uploaded directory exists
-        self.assertTrue(os.path.exists(to_be_uploaded_dir))
-
-        # Check that there is at least one file in the to_be_uploaded directory
-        saved_queries = os.listdir(to_be_uploaded_dir)
-        self.assertGreater(len(saved_queries), 0)
-
-        # Check the content of one of the saved files
-        query_file = os.path.join(to_be_uploaded_dir, saved_queries[0])
-        with open(query_file, 'r', encoding='utf-8') as f:
-            query_content = f.read()
-            self.assertIn("INSERT DATA", query_content)
-
-    def test_save_query_hash_determinism(self):
-        """Test that _save_query uses deterministic hash-based filenames."""
-        base_dir = os.path.join("tests", "storer", "data", "hash_determinism") + os.sep
-        to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
-        os.makedirs(to_be_uploaded_dir, exist_ok=True)
-
-        try:
-            storer = Storer(self.graph_set, output_format='json-ld', zip_output=False)
-
-            # Test 1: Same query generates same filename
-            query1 = "INSERT DATA { <http://example.org/s1> <http://example.org/p1> <http://example.org/o1> . }"
-            storer._save_query(query1, to_be_uploaded_dir, added_statements=1, removed_statements=0)
-            files_after_first = set(os.listdir(to_be_uploaded_dir))
-            self.assertEqual(len(files_after_first), 1)
-
-            # Save the same query again
-            storer._save_query(query1, to_be_uploaded_dir, added_statements=1, removed_statements=0)
-            files_after_second = set(os.listdir(to_be_uploaded_dir))
-
-            # Should still be only one file (same filename, overwritten)
-            self.assertEqual(len(files_after_second), 1)
-            self.assertEqual(files_after_first, files_after_second)
-
-            # Test 2: Different query generates different filename
-            query2 = "INSERT DATA { <http://example.org/s2> <http://example.org/p2> <http://example.org/o2> . }"
-            storer._save_query(query2, to_be_uploaded_dir, added_statements=1, removed_statements=0)
-            files_after_third = set(os.listdir(to_be_uploaded_dir))
-
-            # Should now have two files
-            self.assertEqual(len(files_after_third), 2)
-            self.assertNotEqual(files_after_first, files_after_third)
-
-            # Test 3: Verify filename format matches pattern {hash}_add{n}_remove{m}.sparql
-            filename_pattern = re.compile(r'^[a-f0-9]{16}_add\d+_remove\d+\.sparql$')
-            for filename in files_after_third:
-                self.assertIsNotNone(filename_pattern.match(filename),
-                                     f"Filename '{filename}' does not match expected pattern")
-
-            # Test 4: Verify hash is correctly computed
-            expected_hash = hashlib.sha256(query1.encode('utf-8')).hexdigest()[:16]
-            expected_filename = f"{expected_hash}_add1_remove0.sparql"
-            self.assertIn(expected_filename, files_after_third)
-
-            # Test 5: Verify saved content matches original query
-            saved_file_path = os.path.join(to_be_uploaded_dir, expected_filename)
-            with open(saved_file_path, 'r', encoding='utf-8') as f:
-                saved_content = f.read()
-            self.assertEqual(saved_content, query1)
-
-        finally:
-            if os.path.exists(base_dir):
-                rmtree(base_dir)
 
     def test_unsupported_output_format(self):
         """Test that ValueError is raised for unsupported output formats."""
@@ -446,7 +366,7 @@ class TestStorer(unittest.TestCase):
 
     def test_upload_all_with_modified_entities_filtering(self):
         """Test that upload_all filters entities based on modified_entities."""
-        base_dir = os.path.join("tests", "storer", "data", "modified_entities_filter") + os.sep
+        self.reset_server()
 
         br1 = self.graph_set.add_br(self.resp_agent)
         br1.has_title("First Resource")
@@ -458,24 +378,77 @@ class TestStorer(unittest.TestCase):
         modified_entities = {URIRef(br1.res), URIRef(br3.res)}
 
         storer = Storer(self.graph_set, modified_entities=modified_entities)
-        result = storer.upload_all(self.ts, base_dir, save_queries=True)
+        result = storer.upload_all(self.ts)
+
+        self.assertTrue(result)
+
+        with SPARQLClient(self.ts) as client:
+            results = client.query(f"ASK {{ <{br1.res}> ?p ?o }}")
+            self.assertTrue(results['boolean'])
+            results = client.query(f"ASK {{ <{br2.res}> ?p ?o }}")
+            self.assertFalse(results['boolean'])
+            results = client.query(f"ASK {{ <{br3.res}> ?p ?o }}")
+            self.assertTrue(results['boolean'])
+
+    def test_store_graphs_save_queries(self):
+        base_dir = os.path.join("tests", "storer", "data", "rdf_save_queries") + os.sep
+        storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+        self.prov_set.generate_provenance()
+        prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+        storer.store_all(base_dir, self.base_iri)
+        prov_storer.store_all(base_dir, self.base_iri)
+
+        to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
+        storer.upload_all(self.ts, base_dir, save_queries=True)
+
+        self.assertTrue(os.path.exists(to_be_uploaded_dir))
+
+        saved_queries = os.listdir(to_be_uploaded_dir)
+        self.assertGreater(len(saved_queries), 0)
+
+        query_file = os.path.join(to_be_uploaded_dir, saved_queries[0])
+        with open(query_file, 'r', encoding='utf-8') as f:
+            query_content = f.read()
+            self.assertIn("INSERT DATA", query_content)
+
+    def test_save_query_hash_determinism(self):
+        """Test that _save_query uses deterministic hash-based filenames."""
+        base_dir = os.path.join("tests", "storer", "data", "hash_determinism") + os.sep
+        to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
+        os.makedirs(to_be_uploaded_dir, exist_ok=True)
 
         try:
-            self.assertTrue(result)
-            to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
-            self.assertTrue(os.path.exists(to_be_uploaded_dir))
+            storer = Storer(self.graph_set, output_format='json-ld', zip_output=False)
 
-            query_files = [f for f in os.listdir(to_be_uploaded_dir) if f.endswith('.sparql')]
-            self.assertGreater(len(query_files), 0)
+            query1 = "INSERT DATA { <http://example.org/s1> <http://example.org/p1> <http://example.org/o1> . }"
+            storer._save_query(query1, to_be_uploaded_dir, added_statements=1, removed_statements=0)
+            files_after_first = set(os.listdir(to_be_uploaded_dir))
+            self.assertEqual(len(files_after_first), 1)
 
-            all_queries_content = ""
-            for query_file in query_files:
-                with open(os.path.join(to_be_uploaded_dir, query_file), 'r') as f:
-                    all_queries_content += f.read()
+            storer._save_query(query1, to_be_uploaded_dir, added_statements=1, removed_statements=0)
+            files_after_second = set(os.listdir(to_be_uploaded_dir))
+            self.assertEqual(len(files_after_second), 1)
+            self.assertEqual(files_after_first, files_after_second)
 
-            self.assertIn(str(br1.res), all_queries_content)
-            self.assertNotIn(str(br2.res), all_queries_content)
-            self.assertIn(str(br3.res), all_queries_content)
+            query2 = "INSERT DATA { <http://example.org/s2> <http://example.org/p2> <http://example.org/o2> . }"
+            storer._save_query(query2, to_be_uploaded_dir, added_statements=1, removed_statements=0)
+            files_after_third = set(os.listdir(to_be_uploaded_dir))
+            self.assertEqual(len(files_after_third), 2)
+            self.assertNotEqual(files_after_first, files_after_third)
+
+            filename_pattern = re.compile(r'^[a-f0-9]{16}_add\d+_remove\d+\.sparql$')
+            for filename in files_after_third:
+                self.assertIsNotNone(filename_pattern.match(filename),
+                                     f"Filename '{filename}' does not match expected pattern")
+
+            expected_hash = hashlib.sha256(query1.encode('utf-8')).hexdigest()[:16]
+            expected_filename = f"{expected_hash}_add1_remove0.sparql"
+            self.assertIn(expected_filename, files_after_third)
+
+            saved_file_path = os.path.join(to_be_uploaded_dir, expected_filename)
+            with open(saved_file_path, 'r', encoding='utf-8') as f:
+                saved_content = f.read()
+            self.assertEqual(saved_content, query1)
 
         finally:
             if os.path.exists(base_dir):
@@ -508,8 +481,7 @@ class TestStorer(unittest.TestCase):
             all_queries_content = ""
             for query_file in query_files:
                 with open(os.path.join(to_be_uploaded_dir, query_file), 'r') as f:
-                    content = f.read()
-                    all_queries_content += content
+                    all_queries_content += f.read()
 
             self.assertIn("INSERT DATA", all_queries_content)
             self.assertIn("/prov/se/", all_queries_content)
@@ -517,142 +489,6 @@ class TestStorer(unittest.TestCase):
         finally:
             if os.path.exists(base_dir):
                 rmtree(base_dir)
-
-    def test_upload_all_prepare_bulk_load(self):
-        """Test prepare_bulk_load with new entities (INSERT only)."""
-        test_graph_set = GraphSet(self.base_iri, "", "060", False)
-        br = test_graph_set.add_br(self.resp_agent)
-        br.has_title("Test Title")
-
-        base_dir = os.path.join("tests", "storer", "data", "bulk_load_test")
-        bulk_load_dir = os.path.join(base_dir, "bulk_load")
-
-        storer = Storer(test_graph_set, output_format='json-ld')
-        result = storer.upload_all(
-            self.ts,
-            base_dir=base_dir,
-            prepare_bulk_load=True,
-            bulk_load_dir=bulk_load_dir
-        )
-
-        self.assertTrue(result)
-
-        nquads_files = [f for f in os.listdir(bulk_load_dir) if f.endswith('.nq.gz')]
-        self.assertEqual(len(nquads_files), 1)
-
-        to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
-        if os.path.exists(to_be_uploaded_dir):
-            sparql_files = [f for f in os.listdir(to_be_uploaded_dir) if f.endswith('.sparql')]
-            self.assertEqual(len(sparql_files), 0)
-
-    def test_write_nquads_file(self):
-        """Test _write_nquads_file method with batching."""
-        br = self.graph_set.add_br(self.resp_agent)
-        br.has_title("Test Title")
-
-        assert isinstance(br.g.identifier, URIRef)
-        nquads_expected = serialize_graph_to_nquads(set(br.g), br.g.identifier)
-        expected_set = set(nquads_expected)
-
-        output_dir = os.path.join("tests", "storer", "data", "nquads_write_test")
-        os.makedirs(output_dir, exist_ok=True)
-
-        storer = Storer(self.graph_set, output_format='json-ld')
-        storer.repok.new_article()
-        storer._write_nquads_file(nquads_expected, output_dir, 0)
-
-        expected_file = os.path.join(output_dir, "bulk_load_00000.nq.gz")
-        self.assertTrue(os.path.exists(expected_file))
-
-        with gzip.open(expected_file, 'rt', encoding='utf-8') as f:
-            content = f.read()
-            lines = [line.rstrip('\n') for line in content.split('\n') if line.strip()]
-            actual_set = set(lines)
-
-        expected_set_normalized = {line.rstrip('\n') for line in expected_set}
-
-        self.assertEqual(len(actual_set), len(expected_set_normalized))
-        self.assertEqual(actual_set, expected_set_normalized)
-
-        second_batch = ["<http://example.org/s> <http://example.org/p> <http://example.org/o> <http://example.org/g> .\n"]
-        expected_second = set(second_batch)
-
-        storer._write_nquads_file(second_batch, output_dir, 1)
-
-        second_file = os.path.join(output_dir, "bulk_load_00001.nq.gz")
-        self.assertTrue(os.path.exists(second_file))
-
-        with gzip.open(second_file, 'rt', encoding='utf-8') as f:
-            content = f.read()
-            lines = [line.rstrip('\n') for line in content.split('\n') if line.strip()]
-            actual_second = set(lines)
-
-        expected_second_normalized = {line.rstrip('\n') for line in expected_second}
-
-        self.assertEqual(len(actual_second), 1)
-        self.assertEqual(actual_second, expected_second_normalized)
-
-    def test_upload_all_prepare_bulk_load_with_deletes(self):
-        """Test prepare_bulk_load with modified entities (INSERT and DELETE)."""
-        test_graph_set = GraphSet(self.base_iri, "", "060", False)
-        br = test_graph_set.add_br(self.resp_agent)
-        br.has_title("Original Title")
-
-        br.preexisting_graph = Graph(identifier=br.g.identifier)
-        for triple in br.g:
-            br.preexisting_graph.add(triple)
-
-        br.remove_title()
-        br.has_title("Modified Title")
-
-        base_dir = os.path.join("tests", "storer", "data", "bulk_load_deletes")
-        bulk_load_dir = os.path.join(base_dir, "bulk_load")
-
-        storer = Storer(test_graph_set, output_format='json-ld')
-        result = storer.upload_all(
-            self.ts,
-            base_dir=base_dir,
-            prepare_bulk_load=True,
-            bulk_load_dir=bulk_load_dir
-        )
-
-        self.assertTrue(result)
-
-        nquads_files = [f for f in os.listdir(bulk_load_dir) if f.endswith('.nq.gz')]
-        self.assertEqual(len(nquads_files), 1)
-
-        to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
-        sparql_files = [f for f in os.listdir(to_be_uploaded_dir) if f.endswith('.sparql')]
-        self.assertEqual(len(sparql_files), 1)
-
-        with open(os.path.join(to_be_uploaded_dir, sparql_files[0]), 'r') as f:
-            content = f.read()
-            self.assertIn("DELETE DATA", content)
-            self.assertNotIn("INSERT DATA", content)
-
-    def test_upload_all_validation_errors(self):
-        """Test upload_all parameter validation."""
-        storer = Storer(self.graph_set, output_format='json-ld')
-
-        with self.subTest("mutually_exclusive_options"):
-            with self.assertRaises(ValueError) as context:
-                storer.upload_all(
-                    self.ts,
-                    base_dir="tests/storer/data/validation",
-                    save_queries=True,
-                    prepare_bulk_load=True,
-                    bulk_load_dir="tests/storer/data/validation/bulk"
-                )
-            self.assertIn("mutually exclusive", str(context.exception))
-
-        with self.subTest("missing_bulk_load_dir"):
-            with self.assertRaises(ValueError) as context:
-                storer.upload_all(
-                    self.ts,
-                    base_dir="tests/storer/data/validation",
-                    prepare_bulk_load=True
-                )
-            self.assertIn("bulk_load_dir", str(context.exception))
 
 
 def process_entity(entity):

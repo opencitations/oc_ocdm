@@ -53,7 +53,7 @@ class TestBibliographicReferenceGetters(unittest.TestCase):
         be.references_br(br)
 
         result = be.get_referenced_br()
-        self.assertIsNotNone(result)
+        assert result is not None
         self.assertEqual(result.res, br.res)
 
     def test_get_referenced_br_empty(self):
@@ -84,7 +84,7 @@ class TestReferencePointerGetters(unittest.TestCase):
         rp1.has_next_rp(rp2)
 
         result = rp1.get_next_rp()
-        self.assertIsNotNone(result)
+        assert result is not None
         self.assertEqual(result.res, rp2.res)
 
     def test_get_next_rp_empty(self):
@@ -99,7 +99,7 @@ class TestReferencePointerGetters(unittest.TestCase):
         rp.denotes_be(be)
 
         result = rp.get_denoted_be()
-        self.assertIsNotNone(result)
+        assert result is not None
         self.assertEqual(result.res, be.res)
 
     def test_get_denoted_be_empty(self):
@@ -197,7 +197,7 @@ class TestDiscourseElementGetters(unittest.TestCase):
         de1.has_next_de(de2)
 
         result = de1.get_next_de()
-        self.assertIsNotNone(result)
+        assert result is not None
         self.assertEqual(result.res, de2.res)
 
     def test_get_next_de_empty(self):
@@ -308,7 +308,7 @@ class TestCitationGetters(unittest.TestCase):
         ci.has_citing_entity(br)
 
         result = ci.get_citing_entity()
-        self.assertIsNotNone(result)
+        assert result is not None
         self.assertEqual(result.res, br.res)
 
     def test_get_cited_entity(self):
@@ -318,7 +318,7 @@ class TestCitationGetters(unittest.TestCase):
         ci.has_cited_entity(br)
 
         result = ci.get_cited_entity()
-        self.assertIsNotNone(result)
+        assert result is not None
         self.assertEqual(result.res, br.res)
 
 

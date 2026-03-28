@@ -6,7 +6,7 @@ import os
 import unittest
 
 from pyshacl import validate
-from rdflib import Dataset, Graph, URIRef
+from rdflib import Dataset, Graph, Literal, URIRef
 
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.reader import Reader
@@ -41,7 +41,7 @@ class TestShacle(unittest.TestCase):
       for triple in g:
         o = triple[2]
         o_type = 'uri' if isinstance(o, URIRef) else 'literal'
-        if o_type == 'literal' and o.datatype:
+        if isinstance(o, Literal) and o.datatype:
           results.append({'s': {'type': 'uri', 'value': str(triple[0])}, 'p': {'type': 'uri', 'value': str(triple[1])}, 'o': {'type': o_type, 'value': str(triple[2]), 'datatype': str(o.datatype)}})
         else:
           results.append({'s': {'type': 'uri', 'value': str(triple[0])}, 'p': {'type': 'uri', 'value': str(triple[1])}, 'o': {'type': o_type, 'value': str(triple[2])}})
@@ -65,7 +65,7 @@ class TestShacle(unittest.TestCase):
       for triple in g:
         o = triple[2]
         o_type = 'uri' if isinstance(o, URIRef) else 'literal'
-        if o_type == 'literal' and o.datatype:
+        if isinstance(o, Literal) and o.datatype:
           results.append({'s': {'type': 'uri', 'value': str(triple[0])}, 'p': {'type': 'uri', 'value': str(triple[1])}, 'o': {'type': o_type, 'value': str(triple[2]), 'datatype': str(o.datatype)}})
         else:
           results.append({'s': {'type': 'uri', 'value': str(triple[0])}, 'p': {'type': 'uri', 'value': str(triple[1])}, 'o': {'type': o_type, 'value': str(triple[2])}})

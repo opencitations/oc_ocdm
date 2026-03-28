@@ -7,7 +7,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from oc_ocdm.counter_handler.counter_handler import CounterHandler
 from oc_ocdm.counter_handler.filesystem_counter_handler import FilesystemCounterHandler
@@ -17,7 +17,7 @@ from oc_ocdm.metadata.entities.distribution import Distribution
 from oc_ocdm.support.support import get_count, is_dataset, get_short_name
 
 if TYPE_CHECKING:
-    from typing import Dict, Optional, Tuple, ClassVar
+    from typing import Dict, Tuple, ClassVar
 
 from rdflib import Graph, URIRef
 
@@ -46,42 +46,44 @@ class MetadataSet(AbstractSet[MetadataEntity]):
         else:
             self.counter_handler: CounterHandler = InMemoryCounterHandler()
 
-    def get_entity(self, res: URIRef) -> Optional[MetadataEntity]:
+    def get_entity(self, res: URIRef) -> MetadataEntity | None:
         if res in self.res_to_entity:
             return self.res_to_entity[res]
 
-    def add_dataset(self, dataset_name: str, resp_agent: str, source: str = None, res: URIRef = None,
-                    preexisting_graph: Graph = None) -> Dataset:
+    def add_dataset(self, dataset_name: str, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+                    preexisting_graph: Graph | None = None) -> Dataset:
         if res is not None and not is_dataset(res):
             raise ValueError(f"Given res: <{res}> is inappropriate for a Dataset entity.")
         if res is not None and res in self.res_to_entity:
-            return self.res_to_entity[res]
+            return cast(Dataset, self.res_to_entity[res])
         # Here we use a fictitious short name for Dataset, since the OCDM document doesn't specify
         # any particular short name for this type of entity. It's only used internally to distinguish
         # between different metadata entities but it's meaningless outside of this scope.
         cur_g, count, label = self._add_metadata("_dataset_", dataset_name, res)
-        return Dataset(cur_g, self.base_iri, dataset_name, self, res,
-                       MetadataEntity.iri_dataset, resp_agent,
-                       source, count, label, "_dataset_", preexisting_graph)
+        return Dataset(cur_g, self.base_iri, dataset_name, self,
+                       MetadataEntity.iri_dataset, res,
+                       resp_agent, source, count, label, "_dataset_",
+                       preexisting_graph)
 
-    def add_di(self, dataset_name: str, resp_agent: str, source: str = None,
-               res: URIRef = None, preexisting_graph: Graph = None) -> Distribution:
+    def add_di(self, dataset_name: str, resp_agent: str, source: str | None = None,
+               res: URIRef | None = None, preexisting_graph: Graph | None = None) -> Distribution:
         if res is not None and get_short_name(res) != "di":
             raise ValueError(f"Given res: <{res}> is inappropriate for a Distribution entity.")
         if res is not None and res in self.res_to_entity:
-            return self.res_to_entity[res]
+            return cast(Distribution, self.res_to_entity[res])
         cur_g, count, label = self._add_metadata("di", dataset_name, res)
-        return Distribution(cur_g, self.base_iri, dataset_name, self, res,
-                            MetadataEntity.iri_datafile, resp_agent,
-                            source, count, label, "di", preexisting_graph)
+        return Distribution(cur_g, self.base_iri, dataset_name, self,
+                            MetadataEntity.iri_datafile, res,
+                            resp_agent, source, count, label, "di",
+                            preexisting_graph)
 
     def _add_metadata(self, short_name: str, dataset_name: str,
-                      res: URIRef = None) -> Tuple[Graph, Optional[str], Optional[str]]:
+                      res: URIRef | None = None) -> Tuple[Graph, str | None, str | None]:
         cur_g: Graph = Graph()
         self._set_ns(cur_g)
 
-        count: Optional[str] = None
-        label: Optional[str] = None
+        count: str | None = None
+        label: str | None = None
 
         if res is not None:
             if short_name != '_dataset_':  # Datasets don't have a counter associated with them...
@@ -113,8 +115,8 @@ class MetadataSet(AbstractSet[MetadataEntity]):
         g.namespace_manager.bind("dcat", MetadataEntity.DCAT)
         g.namespace_manager.bind("void", MetadataEntity.VOID)
 
-    def get_dataset(self) -> Tuple[Dataset]:
+    def get_dataset(self) -> tuple[Dataset, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, Dataset))
 
-    def get_di(self) -> Tuple[Distribution]:
+    def get_di(self) -> tuple[Distribution, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, Distribution))

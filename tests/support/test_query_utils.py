@@ -12,8 +12,7 @@ from rdflib.namespace import RDF, DCTERMS
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
 from oc_ocdm.support.query_utils import (
-    get_update_query, get_insert_query, get_delete_query,
-    get_separated_queries, serialize_graph_to_nquads, _compute_graph_changes
+    get_update_query, get_insert_query, get_delete_query, _compute_graph_changes
 )
 
 
@@ -266,73 +265,6 @@ class TestQueryUtils(unittest.TestCase):
         self.assertEqual(len(to_delete), 0)
         self.assertEqual(added, 1)
         self.assertEqual(removed, 0)
-
-    def test_serialize_graph_to_nquads(self):
-        """Test serialize_graph_to_nquads generates valid N-Quads."""
-        subject = URIRef("https://test.org/resource/1")
-        triples = {
-            (subject, RDF.type, URIRef("https://test.org/Class")),
-            (subject, DCTERMS.title, Literal("Test")),
-        }
-        graph_iri = URIRef("https://test.org/graph/1")
-
-        nquads = serialize_graph_to_nquads(triples, graph_iri)
-
-        self.assertEqual(len(nquads), 2)
-        for nquad in nquads:
-            self.assertIn(str(graph_iri), nquad)
-            self.assertTrue(nquad.endswith(" .\n"))
-            self.assertIn("<", nquad)
-
-    def test_get_separated_queries(self):
-        """Test get_separated_queries returns separate INSERT and DELETE."""
-        br = self.graph_set.add_br(self.base_iri + "br/1")
-
-        with self.subTest("new_entity"):
-            br.has_title("New Title")
-            insert_queries, delete_queries, n_added, n_removed, insert_g = get_separated_queries(br, "graph")
-
-            self.assertTrue(len(insert_queries) >= 1)
-            self.assertTrue(any("INSERT DATA" in q for q in insert_queries))
-            self.assertEqual(delete_queries, [])
-            self.assertEqual(n_added, 2)
-            self.assertEqual(n_removed, 0)
-            self.assertEqual(len(insert_g), 2)
-
-        with self.subTest("unchanged_entity"):
-            br.preexisting_graph = Graph(identifier=br.g.identifier)
-            for triple in br.g:
-                br.preexisting_graph.add(triple)
-
-            insert_queries, delete_queries, n_added, n_removed, insert_g = get_separated_queries(br, "graph")
-
-            self.assertEqual(insert_queries, [])
-            self.assertEqual(delete_queries, [])
-            self.assertEqual(n_added, 0)
-            self.assertEqual(n_removed, 0)
-            self.assertEqual(len(insert_g), 0)
-
-        with self.subTest("modified_entity"):
-            br.has_subtitle("New Subtitle")
-            insert_queries, delete_queries, n_added, n_removed, insert_g = get_separated_queries(br, "graph")
-
-            self.assertTrue(len(insert_queries) >= 1)
-            self.assertTrue(any("INSERT DATA" in q for q in insert_queries))
-            self.assertEqual(delete_queries, [])
-            self.assertEqual(n_added, 1)
-            self.assertEqual(n_removed, 0)
-            self.assertEqual(len(insert_g), 1)
-
-        with self.subTest("deleted_entity"):
-            br.mark_as_to_be_deleted()
-            insert_queries, delete_queries, n_added, n_removed, insert_g = get_separated_queries(br, "graph")
-
-            self.assertEqual(insert_queries, [])
-            self.assertTrue(len(delete_queries) >= 1)
-            self.assertTrue(any("DELETE DATA" in q for q in delete_queries))
-            self.assertEqual(n_added, 0)
-            self.assertEqual(n_removed, 2)
-            self.assertEqual(len(insert_g), 0)
 
 
 if __name__ == '__main__':

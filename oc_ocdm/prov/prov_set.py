@@ -221,19 +221,19 @@ class ProvSet(AbstractSet[ProvEntity]):
                 res_count: int = -1
             
             if isinstance(self.counter_handler, SqliteCounterHandler):
-                cur_count: int = self.counter_handler.read_counter(prov_subject)
+                cur_count: int = self.counter_handler.read_counter(str(prov_subject))
             else:
                 cur_count: int = self.counter_handler.read_counter(prov_subject.short_name, "se", int(get_count(prov_subject.res)), supplier_prefix=supplier_prefix)
-            
+
             if res_count > cur_count:
                 if isinstance(self.counter_handler, SqliteCounterHandler):
-                    self.counter_handler.set_counter(int(get_count(prov_subject.res)), prov_subject)
+                    self.counter_handler.set_counter(int(get_count(prov_subject.res)), str(prov_subject))
                 else:
                     self.counter_handler.set_counter(res_count, prov_subject.short_name, "se", int(get_count(prov_subject.res)), supplier_prefix=supplier_prefix)
             return cur_g, count, label
 
         if isinstance(self.counter_handler, SqliteCounterHandler):
-            count = str(self.counter_handler.increment_counter(prov_subject))
+            count = str(self.counter_handler.increment_counter(str(prov_subject)))
         else:
             count = str(self.counter_handler.increment_counter(prov_subject.short_name, "se", int(get_count(prov_subject.res)), supplier_prefix=supplier_prefix))
 
@@ -268,7 +268,7 @@ class ProvSet(AbstractSet[ProvEntity]):
         supplier_prefix = get_prefix(prov_subject)
 
         if isinstance(self.counter_handler, SqliteCounterHandler):
-            last_snapshot_count: str = str(self.counter_handler.read_counter(prov_subject))
+            last_snapshot_count: str = str(self.counter_handler.read_counter(str(prov_subject)))
         else:
             last_snapshot_count: str = str(self.counter_handler.read_counter(subj_short_name, "se", int(subj_count), supplier_prefix=supplier_prefix))
 

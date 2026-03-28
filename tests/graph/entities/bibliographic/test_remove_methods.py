@@ -7,9 +7,9 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.metadata.metadata_set import MetadataSet
+from oc_ocdm.prov.entities.snapshot_entity import SnapshotEntity
 from oc_ocdm.prov.prov_set import ProvSet
 from rdflib import URIRef
 
@@ -297,7 +297,7 @@ class TestMetadataRemovers(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.metadata_set = MetadataSet("http://test/metadata/", "./info_dir/", "")
+        cls.metadata_set = MetadataSet("http://test/metadata/", "./info_dir/")
 
     def test_remove_dataset_title(self):
         ds = self.metadata_set.add_dataset("test_dataset", self.resp_agent)
@@ -407,6 +407,7 @@ class TestProvRemovers(unittest.TestCase):
 
         # Get the snapshot entity
         se = list(self.prov_set.res_to_entity.values())[0]
+        assert isinstance(se, SnapshotEntity)
 
         # Check description exists
         desc = se.get_description()
@@ -424,6 +425,7 @@ class TestProvRemovers(unittest.TestCase):
         self.prov_set.generate_provenance()
 
         se = list(self.prov_set.res_to_entity.values())[0]
+        assert isinstance(se, SnapshotEntity)
         se.has_update_action("UPDATE")
 
         se.remove_update_action()
@@ -436,6 +438,7 @@ class TestProvRemovers(unittest.TestCase):
         self.prov_set.generate_provenance()
 
         se = list(self.prov_set.res_to_entity.values())[0]
+        assert isinstance(se, SnapshotEntity)
         se.has_invalidation_time("2025-01-01T00:00:00Z")
 
         se.remove_invalidation_time()

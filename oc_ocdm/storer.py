@@ -8,7 +8,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
-import gzip
 import hashlib
 import json
 import os
@@ -22,14 +21,14 @@ from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.reader import Reader
-from oc_ocdm.support.query_utils import get_separated_queries, get_update_query, serialize_graph_to_nquads
+from oc_ocdm.support.query_utils import get_update_query
 from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import find_paths
 from rdflib import Dataset, URIRef
 from sparqlite import SPARQLClient, EndpointError
 
 if TYPE_CHECKING:
-    from typing import Any, Dict, List, Optional, Set, Tuple
+    from typing import Any, Dict, List, Set, Tuple
 
     from oc_ocdm.abstract_entity import AbstractEntity
     from oc_ocdm.abstract_set import AbstractSet
@@ -37,9 +36,9 @@ if TYPE_CHECKING:
 
 class Storer(object):
 
-    def __init__(self, abstract_set: AbstractSet, repok: Reporter = None, reperr: Reporter = None,
-                 context_map: Dict[str, Any] = None, default_dir: str = "_", dir_split: int = 0,
-                 n_file_item: int = 1, output_format: str = "json-ld", zip_output: bool = False, modified_entities: set = None) -> None:
+    def __init__(self, abstract_set: AbstractSet, repok: Reporter | None = None, reperr: Reporter | None = None,
+                 context_map: Dict[str, Any] | None = None, default_dir: str = "_", dir_split: int = 0,
+                 n_file_item: int = 1, output_format: str = "json-ld", zip_output: bool = False, modified_entities: set | None = None) -> None:
         # We only accept format strings that:
         # 1. are supported by rdflib
         # 2. correspond to an output format which is effectively either NT or NQ
@@ -81,18 +80,18 @@ class Storer(object):
         else:
             self.reperr: Reporter = reperr
 
-    def store_graphs_in_file(self, file_path: str, context_path: str = None) -> None:
+    def store_graphs_in_file(self, file_path: str, context_path: str | None = None) -> None:
         self.repok.new_article()
         self.reperr.new_article()
         self.repok.add_sentence("Store the graphs into a file: starting process")
 
         cg: Dataset = Dataset()
         for g in self.a_set.graphs():
-            cg.addN(item + (g.identifier,) for item in g)
+            cg.addN(item + (g.identifier,) for item in g)  # type: ignore[arg-type]
 
         self._store_in_file(cg, file_path, context_path)
 
-    def _store_in_file(self, cur_g: Dataset, cur_file_path: str, context_path: str = None) -> None:
+    def _store_in_file(self, cur_g: Dataset, cur_file_path: str, context_path: str | None = None) -> None:
         zip_file_path = cur_file_path.replace(os.path.splitext(cur_file_path)[1], ".zip")
 
         if self.zip_output:
@@ -103,7 +102,7 @@ class Storer(object):
 
         self.repok.add_sentence(f"File '{cur_file_path}' added.")
 
-    def _write_graph(self, graph: Dataset, zip_file: ZipFile, cur_file_path, context_path):
+    def _write_graph(self, graph: Dataset, zip_file: ZipFile | None, cur_file_path: str, context_path: str | None) -> None:
         if self.output_format == "json-ld":
             if context_path is not None and context_path in self.context_map:
                 cur_json_ld = json.loads(graph.serialize(format="json-ld", context=self.context_map[context_path]))
@@ -132,7 +131,7 @@ class Storer(object):
             else:
                 graph.serialize(destination=cur_file_path, format=self.output_format, encoding="utf-8")
 
-    def store_all(self, base_dir: str, base_iri: str, context_path: str = None, process_id: int|str = None) -> List[str]:
+    def store_all(self, base_dir: str, base_iri: str, context_path: str | None = None, process_id: int | str | None = None) -> List[str]:
         self.repok.new_article()
         self.reperr.new_article()
 
@@ -168,34 +167,34 @@ class Storer(object):
 
         return list(relevant_paths.keys())
 
-    def store(self, entity: AbstractEntity, destination_g: Dataset, cur_file_path: str, context_path: str = None, store_now: bool = True) -> Dataset:
+    def store(self, entity: AbstractEntity, destination_g: Dataset, cur_file_path: str, context_path: str | None = None, store_now: bool = True) -> Dataset | None:
         self.repok.new_article()
         self.reperr.new_article()
 
         try:
             if isinstance(entity, ProvEntity):
                 quads: List[Tuple] = []
-                graph_identifier: URIRef = entity.g.identifier
+                graph_identifier = URIRef(str(entity.g.identifier))
                 for triple in entity.g.triples((entity.res, None, None)):
                     quads.append((*triple, graph_identifier))
                 destination_g.addN(quads)
             elif isinstance(entity, GraphEntity) or isinstance(entity, MetadataEntity):
                 if entity.to_be_deleted:
-                    destination_g.remove((entity.res, None, None, None))
+                    destination_g.remove((entity.res, None, None, None))  # type: ignore[arg-type]
                 else:
                     if len(entity.preexisting_graph) > 0:
                         """
                         We're not in 'append mode', so we need to remove
                         the entity that we're going to overwrite.
                         """
-                        destination_g.remove((entity.res, None, None, None))
+                        destination_g.remove((entity.res, None, None, None))  # type: ignore[arg-type]
                     """
                     Here we copy data from the entity into the stored graph.
                     If the entity was marked as to be deleted, then we're
                     done because we already removed all of its triples.
                     """
                     quads: List[Tuple] = []
-                    graph_identifier: URIRef = entity.g.identifier
+                    graph_identifier = URIRef(str(entity.g.identifier))
                     for triple in entity.g.triples((entity.res, None, None)):
                         quads.append((*triple, graph_identifier))
                     destination_g.addN(quads)
@@ -207,7 +206,7 @@ class Storer(object):
         except Exception as e:
             self.reperr.add_sentence(f"[1] It was impossible to store the RDF statements in {cur_file_path}. {e}")
 
-    def upload_and_store(self, base_dir: str, triplestore_url: str, base_iri: str, context_path: str = None,
+    def upload_and_store(self, base_dir: str, triplestore_url: str, base_iri: str, context_path: str | None = None,
                          batch_size: int = 10) -> None:
         stored_graph_path: List[str] = self.store_all(base_dir, base_iri, context_path)
 
@@ -225,51 +224,35 @@ class Storer(object):
         else:  # All the files have been stored
             self.upload_all(triplestore_url, base_dir, batch_size)
 
-    def _dir_and_file_paths(self, res: URIRef, base_dir: str, base_iri: str, process_id: int|str = None) -> Tuple[str, str]:
+    def _dir_and_file_paths(self, res: URIRef, base_dir: str, base_iri: str, process_id: int | str | None = None) -> Tuple[str, str]:
         is_json: bool = (self.output_format == "json-ld")
         return find_paths(res, base_dir, base_iri, self.default_dir, self.dir_split, self.n_file_item, is_json=is_json, process_id=process_id)
 
     @staticmethod
-    def _class_to_entity_type(entity: AbstractEntity) -> Optional[str]:
+    def _class_to_entity_type(entity: AbstractEntity) -> str:
         if isinstance(entity, GraphEntity):
             return "graph"
         elif isinstance(entity, ProvEntity):
             return "prov"
-        elif isinstance(entity, MetadataEntity):
-            return "metadata"
         else:
-            return None
+            return "metadata"
 
-    def upload_all(self, triplestore_url: str, base_dir: str = None, batch_size: int = 10,
-                   save_queries: bool = False, prepare_bulk_load: bool = False,
-                   bulk_load_dir: str = None) -> bool:
+    def upload_all(self, triplestore_url: str, base_dir: str | None = None, batch_size: int = 10,
+                   save_queries: bool = False) -> bool:
         """
-        Upload queries to triplestore or save them to disk.
-
-        Three usage modes:
-        1. Default (save_queries=False, prepare_bulk_load=False): Execute combined SPARQL queries on triplestore
-        2. Save queries (save_queries=True, prepare_bulk_load=False): Save combined SPARQL queries to disk
-        3. Bulk load (save_queries=False, prepare_bulk_load=True): Prepare data for Virtuoso bulk loader (nquads + delete queries)
+        Upload SPARQL update queries to the triplestore in batches, or save them to disk.
 
         Args:
             triplestore_url: SPARQL endpoint URL
-            base_dir: Base directory for output files
+            base_dir: Base directory for output files (required when save_queries is True)
             batch_size: Number of queries per SPARQL batch
             save_queries: If True, save combined SPARQL queries to disk instead of uploading
-            prepare_bulk_load: If True, prepare data for Virtuoso bulk loader (separate nquads + delete queries)
-            bulk_load_dir: Directory for nquads files (required if prepare_bulk_load=True)
 
         Returns:
-            True if successful, False otherwise
+            True if all batches were processed successfully, False otherwise
         """
         self.repok.new_article()
         self.reperr.new_article()
-
-        if save_queries and prepare_bulk_load:
-            raise ValueError("save_queries and prepare_bulk_load are mutually exclusive")
-
-        if prepare_bulk_load and not bulk_load_dir:
-            raise ValueError("bulk_load_dir is required when prepare_bulk_load=True")
 
         if batch_size <= 0:
             batch_size = 10
@@ -278,17 +261,11 @@ class Storer(object):
         added_statements: int = 0
         removed_statements: int = 0
         result: bool = True
+        to_be_uploaded_dir: str = ""
 
         if base_dir:
             to_be_uploaded_dir = os.path.join(base_dir, "to_be_uploaded")
             os.makedirs(to_be_uploaded_dir, exist_ok=True)
-
-        if prepare_bulk_load:
-            os.makedirs(bulk_load_dir, exist_ok=True)
-            nquads_buffer: list = []
-            nquads_count: int = 0
-            nquads_file_index: int = 0
-            nquads_batch_size: int = 1000000
 
         entities_to_process = self.a_set.res_to_entity.values()
         if self.modified_entities is not None:
@@ -299,84 +276,34 @@ class Storer(object):
 
         for entity in entities_to_process:
             entity_type = self._class_to_entity_type(entity)
+            update_queries, n_added, n_removed = get_update_query(entity, entity_type=entity_type)
 
-            if prepare_bulk_load:
-                insert_queries, delete_queries, n_added, n_removed, insert_graph = get_separated_queries(entity, entity_type=entity_type)
+            if not update_queries:
+                continue
 
-                if not insert_queries and not delete_queries:
-                    continue
+            for query in update_queries:
+                query_batch.append(query)
+                added_statements += n_added // len(update_queries)
+                removed_statements += n_removed // len(update_queries)
 
-                if insert_queries:
-                    quads = serialize_graph_to_nquads(insert_graph, entity.g.identifier)
-                    nquads_buffer.extend(quads)
-                    nquads_count += len(quads)
-
-                    if nquads_count >= nquads_batch_size:
-                        self._write_nquads_file(nquads_buffer, bulk_load_dir, nquads_file_index)
-                        nquads_file_index += 1
-                        nquads_buffer = []
-                        nquads_count = 0
-
-                for delete_query in delete_queries:
-                    query_batch.append(delete_query)
-                    removed_statements += n_removed // len(delete_queries)
-
-                    if len(query_batch) >= batch_size:
-                        query_string = " ; ".join(query_batch)
-                        self._save_query(query_string, to_be_uploaded_dir, 0, removed_statements)
-                        query_batch = []
-                        removed_statements = 0
-            else:
-                update_queries, n_added, n_removed = get_update_query(entity, entity_type=entity_type)
-
-                if not update_queries:
-                    continue
-
-                for query in update_queries:
-                    query_batch.append(query)
-                    added_statements += n_added // len(update_queries)
-                    removed_statements += n_removed // len(update_queries)
-
-                    if len(query_batch) >= batch_size:
-                        query_string = " ; ".join(query_batch)
-                        if save_queries:
-                            self._save_query(query_string, to_be_uploaded_dir, added_statements, removed_statements)
-                        else:
-                            result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
-                        query_batch = []
-                        added_statements = 0
-                        removed_statements = 0
+                if len(query_batch) >= batch_size:
+                    query_string = " ; ".join(query_batch)
+                    if save_queries:
+                        self._save_query(query_string, to_be_uploaded_dir, added_statements, removed_statements)
+                    else:
+                        result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
+                    query_batch = []
+                    added_statements = 0
+                    removed_statements = 0
 
         if query_batch:
             query_string = " ; ".join(query_batch)
-            if prepare_bulk_load:
-                self._save_query(query_string, to_be_uploaded_dir, 0, removed_statements)
-            elif save_queries:
+            if save_queries:
                 self._save_query(query_string, to_be_uploaded_dir, added_statements, removed_statements)
             else:
                 result &= self._query(query_string, triplestore_url, base_dir, added_statements, removed_statements)
 
-        if prepare_bulk_load and nquads_buffer:
-            self._write_nquads_file(nquads_buffer, bulk_load_dir, nquads_file_index)
-
         return result
-
-    def _write_nquads_file(self, nquads: list, output_dir: str, file_index: int) -> None:
-        """
-        Writes N-Quads to a gzipped file.
-
-        Args:
-            nquads: List of N-Quad strings
-            output_dir: Output directory
-            file_index: File index for naming
-        """
-        filename = f"bulk_load_{file_index:05d}.nq.gz"
-        filepath = os.path.join(output_dir, filename)
-
-        with gzip.open(filepath, 'wt', encoding='utf-8') as f:
-            f.writelines(nquads)
-
-        self.repok.add_sentence(f"Written {len(nquads)} quads to {filename}")
 
     def _save_query(self, query_string: str, directory: str, added_statements: int, removed_statements: int) -> None:
         content_hash = hashlib.sha256(query_string.encode('utf-8')).hexdigest()[:16]
@@ -384,14 +311,15 @@ class Storer(object):
         file_path = os.path.join(directory, file_name)
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(query_string)
-            
-    def upload(self, entity: AbstractEntity, triplestore_url: str, base_dir: str = None) -> bool:
+
+    def upload(self, entity: AbstractEntity, triplestore_url: str, base_dir: str | None = None) -> bool:
         self.repok.new_article()
         self.reperr.new_article()
 
-        update_query, n_added, n_removed = get_update_query(entity, entity_type=self._class_to_entity_type(entity))
-
-        return self._query(update_query, triplestore_url, base_dir, n_added, n_removed)
+        entity_type = self._class_to_entity_type(entity)
+        update_queries, n_added, n_removed = get_update_query(entity, entity_type=entity_type)
+        query_string = " ; ".join(update_queries) if update_queries else ""
+        return self._query(query_string, triplestore_url, base_dir, n_added, n_removed)
 
     def execute_query(self, query_string: str, triplestore_url: str) -> bool:
         self.repok.new_article()
@@ -399,7 +327,7 @@ class Storer(object):
 
         return self._query(query_string, triplestore_url)
 
-    def _query(self, query_string: str, triplestore_url: str, base_dir: str = None,
+    def _query(self, query_string: str, triplestore_url: str, base_dir: str | None = None,
             added_statements: int = 0, removed_statements: int = 0) -> bool:
         if query_string != "":
             try:
