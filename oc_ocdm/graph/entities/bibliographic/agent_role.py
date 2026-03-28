@@ -22,8 +22,7 @@ from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
 class AgentRole(BibliographicEntity):
     """Agent role (short: ar): a particular role held by an agent with respect to a bibliographic resource."""
 
-    @accepts_only('ar')
-    def merge(self, other: AgentRole) -> None:
+    def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
         The merge operation allows combining two ``AgentRole`` entities into a single one,
         by marking the second entity as to be deleted while also copying its data into the current
@@ -42,7 +41,8 @@ class AgentRole(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        super(AgentRole, self).merge(other)
+        super()._merge_properties(other, prefer_self)
+        assert isinstance(other, AgentRole)
 
         next_ar: Optional[AgentRole] = other.get_next()
         if next_ar is not None:

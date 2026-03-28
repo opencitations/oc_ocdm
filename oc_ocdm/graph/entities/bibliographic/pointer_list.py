@@ -24,8 +24,7 @@ class PointerList(BibliographicEntity):
        number of reference pointers denoting the specific bibliographic references to which
        the list pertains."""
 
-    @accepts_only('pl')
-    def merge(self, other: PointerList) -> None:
+    def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
         The merge operation allows combining two ``PointerList`` entities into a single one,
         by marking the second entity as to be deleted while also copying its data into the current
@@ -44,7 +43,8 @@ class PointerList(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        super(PointerList, self).merge(other)
+        super()._merge_properties(other, prefer_self)
+        assert isinstance(other, PointerList)
 
         content: Optional[str] = self.get_content()
         if content is not None:
@@ -115,7 +115,7 @@ class PointerList(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_has_element, rp_res.res))
 
     @accepts_only('rp')
-    def remove_contained_element(self, rp_res: ReferencePointer = None) -> None:
+    def remove_contained_element(self, rp_res: ReferencePointer | None = None) -> None:
         """
         Remover method corresponding to the ``co:element`` RDF predicate.
 

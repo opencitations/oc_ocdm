@@ -27,8 +27,7 @@ class BibliographicReference(BibliographicEntity):
     bibliographic resource.
     """
 
-    @accepts_only('be')
-    def merge(self, other: BibliographicReference) -> None:
+    def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
         The merge operation allows combining two ``BibliographicReference`` entities into a single one,
         by marking the second entity as to be deleted while also copying its data into the current
@@ -47,7 +46,8 @@ class BibliographicReference(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        super(BibliographicReference, self).merge(other)
+        super()._merge_properties(other, prefer_self)
+        assert isinstance(other, BibliographicReference)
 
         content: Optional[str] = other.get_content()
         if content is not None:
@@ -132,7 +132,7 @@ class BibliographicReference(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_has_annotation, an_res.res))
 
     @accepts_only('an')
-    def remove_annotation(self, an_res: ReferenceAnnotation = None) -> None:
+    def remove_annotation(self, an_res: ReferenceAnnotation | None = None) -> None:
         """
         Remover method corresponding to the ``oco:hasAnnotation`` RDF predicate.
 

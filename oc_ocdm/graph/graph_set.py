@@ -97,7 +97,7 @@ class GraphSet(AbstractSet[GraphEntity]):
             return self.res_to_entity[res]
 
     # Add resources related to bibliographic entities
-    def add_an(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+    def add_an(self, resp_agent: str | None, source: str | None = None, res: URIRef | None = None,
                preexisting_graph: Graph | None = None) -> ReferenceAnnotation:
         if res is not None and get_short_name(res) != "an":
             raise ValueError(f"Given res: <{res}> is inappropriate for a ReferenceAnnotation entity.")
@@ -108,7 +108,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                                    resp_agent, source, count, label, "an",
                                    preexisting_graph)
 
-    def add_ar(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+    def add_ar(self, resp_agent: str | None, source: str | None = None, res: URIRef | None = None,
                preexisting_graph: Graph | None = None) -> AgentRole:
         if res is not None and get_short_name(res) != "ar":
             raise ValueError(f"Given res: <{res}> is inappropriate for an AgentRole entity.")
@@ -119,7 +119,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                          resp_agent, source, count, label, "ar",
                          preexisting_graph)
 
-    def add_be(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+    def add_be(self, resp_agent: str | None, source: str | None = None, res: URIRef | None = None,
                preexisting_graph: Graph | None = None) -> BibliographicReference:
         if res is not None and get_short_name(res) != "be":
             raise ValueError(f"Given res: <{res}> is inappropriate for a BibliographicReference entity.")
@@ -130,7 +130,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                                       resp_agent, source, count, label, "be",
                                       preexisting_graph)
 
-    def add_br(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+    def add_br(self, resp_agent: str | None, source: str | None = None, res: URIRef | None = None,
                preexisting_graph: Graph | None = None) -> BibliographicResource:
         if res is not None and get_short_name(res) != "br":
             raise ValueError(f"Given res: <{res}> is inappropriate for a BibliographicResource entity.")
@@ -141,7 +141,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                                      resp_agent, source, count, label, "br",
                                      preexisting_graph)
 
-    def add_ci(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+    def add_ci(self, resp_agent: str | None, source: str | None = None, res: URIRef | None = None,
                preexisting_graph: Graph | None = None) -> Citation:
         if res is not None and get_short_name(res) != "ci":
             raise ValueError(f"Given res: <{res}> is inappropriate for a Citation entity.")
@@ -152,7 +152,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                         resp_agent, source, count, label, "ci",
                         preexisting_graph)
 
-    def add_de(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+    def add_de(self, resp_agent: str | None, source: str | None = None, res: URIRef | None = None,
                preexisting_graph: Graph | None = None) -> DiscourseElement:
         if res is not None and get_short_name(res) != "de":
             raise ValueError(f"Given res: <{res}> is inappropriate for a DiscourseElement entity.")
@@ -163,7 +163,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                                 resp_agent, source, count, label, "de",
                                 preexisting_graph)
 
-    def add_id(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+    def add_id(self, resp_agent: str | None, source: str | None = None, res: URIRef | None = None,
                preexisting_graph: Graph | None = None) -> Identifier:
         if res is not None and get_short_name(res) != "id":
             raise ValueError(f"Given res: <{res}> is inappropriate for an Identifier entity.")
@@ -174,7 +174,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                           resp_agent, source, count, label, "id",
                           preexisting_graph)
 
-    def add_pl(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+    def add_pl(self, resp_agent: str | None, source: str | None = None, res: URIRef | None = None,
                preexisting_graph: Graph | None = None) -> PointerList:
         if res is not None and get_short_name(res) != "pl":
             raise ValueError(f"Given res: <{res}> is inappropriate for a PointerList entity.")
@@ -185,7 +185,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                            resp_agent, source, count, label, "pl",
                            preexisting_graph)
 
-    def add_rp(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+    def add_rp(self, resp_agent: str | None, source: str | None = None, res: URIRef | None = None,
                preexisting_graph: Graph | None = None) -> ReferencePointer:
         if res is not None and get_short_name(res) != "rp":
             raise ValueError(f"Given res: <{res}> is inappropriate for a ReferencePointer entity.")
@@ -196,7 +196,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                                 resp_agent, source, count, label, "rp",
                                 preexisting_graph)
 
-    def add_ra(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+    def add_ra(self, resp_agent: str | None, source: str | None = None, res: URIRef | None = None,
                preexisting_graph: Graph | None = None) -> ResponsibleAgent:
         if res is not None and get_short_name(res) != "ra":
             raise ValueError(f"Given res: <{res}> is inappropriate for a ResponsibleAgent entity.")
@@ -207,7 +207,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                                 resp_agent, source, count, label, "ra",
                                 preexisting_graph)
 
-    def add_re(self, resp_agent: str, source: str | None = None, res: URIRef | None = None,
+    def add_re(self, resp_agent: str | None, source: str | None = None, res: URIRef | None = None,
                preexisting_graph: Graph | None = None) -> ResourceEmbodiment:
         if res is not None and get_short_name(res) != "re":
             raise ValueError(f"Given res: <{res}> is inappropriate for a ResourceEmbodiment entity.")

@@ -28,8 +28,7 @@ class DiscourseElement(BibliographicEntity):
        introduction, discussion, acknowledgements, reference list, figure, appendix), in which
        the content of a bibliographic resource can be organized."""
 
-    @accepts_only('de')
-    def merge(self, other: DiscourseElement) -> None:
+    def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
         The merge operation allows combining two ``DiscourseElement`` entities into a single one,
         by marking the second entity as to be deleted while also copying its data into the current
@@ -48,7 +47,8 @@ class DiscourseElement(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        super(DiscourseElement, self).merge(other)
+        super()._merge_properties(other, prefer_self)
+        assert isinstance(other, DiscourseElement)
 
         title: Optional[str] = other.get_title()
         if title is not None:
@@ -141,7 +141,7 @@ class DiscourseElement(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_contains_de, de_res.res))
 
     @accepts_only('de')
-    def remove_contained_discourse_element(self, de_res: DiscourseElement = None) -> None:
+    def remove_contained_discourse_element(self, de_res: DiscourseElement | None = None) -> None:
         """
         Remover method corresponding to the ``frbr:part`` RDF predicate.
 
@@ -224,7 +224,7 @@ class DiscourseElement(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_is_context_of, rp_res.res))
 
     @accepts_only('rp')
-    def remove_is_context_of_rp(self, rp_res: ReferencePointer = None) -> None:
+    def remove_is_context_of_rp(self, rp_res: ReferencePointer | None = None) -> None:
         """
         Remover method corresponding to the ``c4o:isContextOf`` RDF predicate.
 
@@ -271,7 +271,7 @@ class DiscourseElement(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_is_context_of, pl_res.res))
 
     @accepts_only('pl')
-    def remove_is_context_of_pl(self, pl_res: PointerList = None) -> None:
+    def remove_is_context_of_pl(self, pl_res: PointerList | None = None) -> None:
         """
         Remover method corresponding to the ``c4o:isContextOf`` RDF predicate.
 
@@ -357,7 +357,7 @@ class DiscourseElement(BibliographicEntity):
 
     # HAS TYPE
     @accepts_only('thing')
-    def create_discourse_element(self, de_class: URIRef = None) -> None:
+    def create_discourse_element(self, de_class: URIRef | None = None) -> None:
         """
         Setter method corresponding to the ``rdf:type`` RDF predicate.
         If parameter is None, it implicitly sets the object value ``deo:DiscourseElement``.

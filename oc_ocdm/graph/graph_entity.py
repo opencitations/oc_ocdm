@@ -12,7 +12,7 @@ from oc_ocdm.abstract_entity import AbstractEntity
 from rdflib import RDF, Graph, Namespace, URIRef
 
 if TYPE_CHECKING:
-    from typing import ClassVar, Dict, List, Optional
+    from typing import ClassVar, Dict, List, Optional, Self
 
     from oc_ocdm.graph.graph_set import GraphSet
 
@@ -284,7 +284,7 @@ class GraphEntity(AbstractEntity):
                 return type_uri
         return None
 
-    def merge(self, other: GraphEntity, prefer_self: bool = False) -> None:
+    def merge(self, other: Self, prefer_self: bool = False) -> None:
         """
         **WARNING:** ``GraphEntity`` **is an abstract class that cannot be instantiated at runtime.
         As such, it's only possible to execute this method on entities generated from**
@@ -293,12 +293,18 @@ class GraphEntity(AbstractEntity):
         :param other: The entity which will be marked as to be deleted and whose properties will
          be merged into the current entity.
         :type other: GraphEntity
-        :raises TypeError: if the parameter is of the wrong type
+        :param prefer_self: If True, prefer values from the current entity for non-functional properties
+        :type prefer_self: bool
+        :raises TypeError: if the parameter is not of the same entity type
         :return: None
         """
+        if not isinstance(other, GraphEntity) or other.short_name != self.short_name:
+            raise TypeError(
+                f"[{self.__class__.__name__}.merge] Expected entity type: {self.short_name}. "
+                f"Provided: {type(other).__name__}."
+            )
 
-        # Here we must REDIRECT triples pointing
-        # to 'other' to make them point to 'self':
+        # Redirect triples pointing to 'other' to point to 'self'
         for res, entity in self.g_set.res_to_entity.items():
             triples_list: List[tuple] = list(entity.g.triples((res, None, other.res)))
             for triple in triples_list:
@@ -334,6 +340,11 @@ class GraphEntity(AbstractEntity):
         # triples pointing to it, since mark_as_to_be_deleted
         # also removes every triple pointing to 'other'
         other.mark_as_to_be_deleted()
+
+        self._merge_properties(other, prefer_self)
+
+    def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
+        pass
 
     def commit_changes(self):
         self.preexisting_graph = Graph(identifier=self.g.identifier)

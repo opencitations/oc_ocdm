@@ -26,8 +26,7 @@ class ReferencePointer(BibliographicEntity):
        document within the context of a particular sentence or text chunk. A bibliographic
        reference can be denoted in the text by one or more in-text reference pointers."""
 
-    @accepts_only('rp')
-    def merge(self, other: ReferencePointer) -> None:
+    def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
         The merge operation allows combining two ``ReferencePointer`` entities into a single one,
         by marking the second entity as to be deleted while also copying its data into the current
@@ -46,7 +45,8 @@ class ReferencePointer(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        super(ReferencePointer, self).merge(other)
+        super()._merge_properties(other, prefer_self)
+        assert isinstance(other, ReferencePointer)
 
         content: Optional[str] = other.get_content()
         if content is not None:
@@ -203,7 +203,7 @@ class ReferencePointer(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_has_annotation, an_res.res))
 
     @accepts_only('an')
-    def remove_annotation(self, an_res: ReferenceAnnotation = None) -> None:
+    def remove_annotation(self, an_res: ReferenceAnnotation | None = None) -> None:
         """
         Remover method corresponding to the ``oco:hasAnnotation`` RDF predicate.
 

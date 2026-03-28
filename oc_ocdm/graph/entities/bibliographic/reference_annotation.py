@@ -28,8 +28,7 @@ class ReferenceAnnotation(BibliographicEntity):
        annotated, the related citation may be similarly characterized in a more general way
        with a citation function (the reason for that citation)."""
 
-    @accepts_only('an')
-    def merge(self, other: ReferenceAnnotation) -> None:
+    def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
         The merge operation allows combining two ``ReferenceAnnotation`` entities into a single one,
         by marking the second entity as to be deleted while also copying its data into the current
@@ -48,7 +47,8 @@ class ReferenceAnnotation(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        super(ReferenceAnnotation, self).merge(other)
+        super()._merge_properties(other, prefer_self)
+        assert isinstance(other, ReferenceAnnotation)
 
         citation: Optional[Citation] = other.get_body_annotation()
         if citation is not None:

@@ -23,8 +23,7 @@ class ResourceEmbodiment(BibliographicEntity):
     """Resource embodiment (short: re): the particular physical or digital format in which a
        bibliographic resource was made available by its publisher."""
 
-    @accepts_only('re')
-    def merge(self, other: ResourceEmbodiment) -> None:
+    def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
         The merge operation allows combining two ``ResourceEmbodiment`` entities into a single one,
         by marking the second entity as to be deleted while also copying its data into the current
@@ -43,7 +42,8 @@ class ResourceEmbodiment(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        super(ResourceEmbodiment, self).merge(other)
+        super()._merge_properties(other, prefer_self)
+        assert isinstance(other, ResourceEmbodiment)
 
         media_type: Optional[URIRef] = other.get_media_type()
         if media_type is not None:

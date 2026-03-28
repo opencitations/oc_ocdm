@@ -32,8 +32,7 @@ class Citation(BibliographicEntity):
        the inclusion within the citing work of a link, in the form of an HTTP Uniform Resource
        Locator (URL), to the cited bibliographic resource on the World Wide Web."""
 
-    @accepts_only('ci')
-    def merge(self, other: Citation) -> None:
+    def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
         The merge operation allows combining two ``Citation`` entities into a single one,
         by marking the second entity as to be deleted while also copying its data into the current
@@ -52,7 +51,8 @@ class Citation(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        super(Citation, self).merge(other)
+        super()._merge_properties(other, prefer_self)
+        assert isinstance(other, Citation)
 
         citing_br: Optional[BibliographicResource] = other.get_citing_entity()
         if citing_br is not None:

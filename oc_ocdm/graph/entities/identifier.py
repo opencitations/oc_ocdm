@@ -25,8 +25,7 @@ class Identifier(GraphEntity):
        Citation Identifier) associated with the bibliographic entity. Members of this class of
        metadata are themselves given unique corpus identifiers e.g. 'id/0420129'."""
 
-    @accepts_only('id')
-    def merge(self, other: Identifier):
+    def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
         The merge operation allows combining two ``Identifier`` entities into a single one,
         by marking the second entity as to be deleted while also copying its data into the current
@@ -45,7 +44,8 @@ class Identifier(GraphEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        super(Identifier, self).merge(other)
+        super()._merge_properties(other, prefer_self)
+        assert isinstance(other, Identifier)
 
         literal_value: Optional[str] = other.get_literal_value()
         scheme: Optional[URIRef] = other.get_scheme()

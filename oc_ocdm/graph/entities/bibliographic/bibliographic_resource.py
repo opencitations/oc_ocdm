@@ -28,8 +28,7 @@ class BibliographicResource(BibliographicEntity):
     """Bibliographic resource (short: br): a published bibliographic resource that cites/is
        cited by another published bibliographic resource."""
 
-    @accepts_only('br')
-    def merge(self, other: BibliographicResource, prefer_self: bool = False) -> None:
+    def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
         The merge operation allows combining two `BibliographicResource` entities into a single one,
         by marking the second entity as to be deleted while also copying its data into the current
@@ -50,7 +49,8 @@ class BibliographicResource(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        super(BibliographicResource, self).merge(other, prefer_self=prefer_self)
+        super()._merge_properties(other, prefer_self)
+        assert isinstance(other, BibliographicResource)
 
         title: Optional[str] = other.get_title()
         if title is not None:
@@ -240,7 +240,7 @@ class BibliographicResource(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_cites, br_res.res))
 
     @accepts_only('br')
-    def remove_citation(self, br_res: BibliographicResource = None) -> None:
+    def remove_citation(self, br_res: BibliographicResource | None = None) -> None:
         """
         Remover method corresponding to the ``cito:cites`` RDF predicate.
 
@@ -324,7 +324,7 @@ class BibliographicResource(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_embodiment, re_res.res))
 
     @accepts_only('re')
-    def remove_format(self, re_res: ResourceEmbodiment = None) -> None:
+    def remove_format(self, re_res: ResourceEmbodiment | None = None) -> None:
         """
         Remover method corresponding to the ``frbr:embodiment`` RDF predicate.
 
@@ -443,7 +443,7 @@ class BibliographicResource(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_contains_reference, be_res.res))
 
     @accepts_only('be')
-    def remove_contained_in_reference_list(self, be_res: BibliographicReference = None) -> None:
+    def remove_contained_in_reference_list(self, be_res: BibliographicReference | None = None) -> None:
         """
         Remover method corresponding to the ``frbr:part`` RDF predicate.
 
@@ -490,7 +490,7 @@ class BibliographicResource(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_contains_de, de_res.res))
 
     @accepts_only('de')
-    def remove_contained_discourse_element(self, de_res: DiscourseElement = None) -> None:
+    def remove_contained_discourse_element(self, de_res: DiscourseElement | None = None) -> None:
         """
         Remover method corresponding to the ``frbr:part`` RDF predicate.
 
@@ -534,7 +534,7 @@ class BibliographicResource(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_is_document_context_for, ar_res.res))
 
     @accepts_only('ar')
-    def remove_contributor(self, ar_res: AgentRole = None):
+    def remove_contributor(self, ar_res: AgentRole | None = None):
         """
         Remover method corresponding to the ``frbr:part`` RDF predicate.
 
@@ -579,7 +579,7 @@ class BibliographicResource(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_relation, thing_res))
 
     @accepts_only('thing')
-    def remove_related_document(self, thing_res: URIRef = None) -> None:
+    def remove_related_document(self, thing_res: URIRef | None = None) -> None:
         """
         Remover method corresponding to the ``dcterms:relation`` RDF predicate.
 

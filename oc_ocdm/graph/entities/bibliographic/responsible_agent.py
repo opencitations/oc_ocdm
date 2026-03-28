@@ -24,8 +24,7 @@ class ResponsibleAgent(BibliographicEntity):
        a certain role with respect to a bibliographic resource (e.g. an author of a paper or
        book, or an editor of a journal)."""
 
-    @accepts_only('ra')
-    def merge(self, other: ResponsibleAgent) -> None:
+    def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
         The merge operation allows combining two ``ResponsibleAgent`` entities into a single one,
         by marking the second entity as to be deleted while also copying its data into the current
@@ -44,7 +43,8 @@ class ResponsibleAgent(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        super(ResponsibleAgent, self).merge(other)
+        super()._merge_properties(other, prefer_self)
+        assert isinstance(other, ResponsibleAgent)
 
         name: Optional[str] = other.get_name()
         if name is not None:
@@ -191,7 +191,7 @@ class ResponsibleAgent(BibliographicEntity):
         self.g.add((self.res, GraphEntity.iri_relation, thing_res))
 
     @accepts_only('thing')
-    def remove_related_agent(self, thing_res: URIRef = None) -> None:
+    def remove_related_agent(self, thing_res: URIRef | None = None) -> None:
         """
         Remover method corresponding to the ``dcterms:relation`` RDF predicate.
 

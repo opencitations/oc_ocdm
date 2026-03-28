@@ -22,19 +22,19 @@ from oc_ocdm.graph.graph_entity import GraphEntity
 class BibliographicEntity(GraphEntity):
     """The base class for each bibliographic entity of the OpenCitations DataModel (OCDM)."""
 
-    def merge(self, other: BibliographicEntity, prefer_self: bool = False) -> None:
+    def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
-        **WARNING:** ``BibliographicEntity`` **is an abstract class that cannot be instantiated at runtime.
-        As such, it's only possible to execute this method on entities generated from**
-        ``BibliographicEntity``'s **subclasses. Please, refer to their documentation of the** `merge` **method.**
+        Hook method called by ``merge`` to copy properties specific to bibliographic entities.
+        Merges identifiers from the other entity and removes duplicates.
 
-        :param other: The entity which will be marked as to be deleted and whose properties will
-         be merged into the current entity.
+        :param other: The entity whose properties will be merged into the current entity.
         :type other: BibliographicEntity
-        :raises TypeError: if the parameter is of the wrong type
+        :param prefer_self: If True, prefer values from the current entity for non-functional properties
+        :type prefer_self: bool
         :return: None
         """
-        super(BibliographicEntity, self).merge(other, prefer_self=prefer_self)
+        super()._merge_properties(other, prefer_self)
+        assert isinstance(other, BibliographicEntity)
 
         id_list: List[Identifier] = other.get_identifiers()
         for cur_id in id_list:
@@ -75,7 +75,7 @@ class BibliographicEntity(GraphEntity):
         self.g.add((self.res, GraphEntity.iri_has_identifier, id_res.res))
 
     @accepts_only('id')
-    def remove_identifier(self, id_res: Identifier = None) -> None:
+    def remove_identifier(self, id_res: Identifier | None = None) -> None:
         """
         Remover method corresponding to the ``datacite:hasIdentifier`` RDF predicate.
 
