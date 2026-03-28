@@ -1,3 +1,20 @@
+# [10.0.0](https://github.com/opencitations/oc_ocdm/compare/9.4.4...10.0.0) (2026-03-28)
+
+
+* fix(graph)!: make res_type a required parameter in GraphEntity ([0cf909b](https://github.com/opencitations/oc_ocdm/commit/0cf909b06857f5e5e217d28264584a9e3dfa28b6))
+* refactor!: fix type annotations and restructure metadata layer ([fa2b3f4](https://github.com/opencitations/oc_ocdm/commit/fa2b3f4c0e2fce2ebb159a42c305c82dcb32034a))
+
+
+### BREAKING CHANGES
+
+* MetadataEntity.__init__ now requires res_type as a
+positional parameter. Storer.upload_all drops prepare_bulk_load and
+bulk_load_dir. serialize_graph_to_nquads and get_separated_queries are
+removed from query_utils. SqliteCounterHandler methods align with the
+CounterHandler base signature.
+* GraphEntity.__init__ signature changed — res_type is
+now the third positional argument (required), res is fourth (optional).
+
 <!--
 SPDX-FileCopyrightText: 2025 Arcangelo Massari <arcangelo.massari@unibo.it>
 
