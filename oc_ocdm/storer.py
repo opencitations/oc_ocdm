@@ -182,7 +182,7 @@ class Storer(object):
                 if entity.to_be_deleted:
                     destination_g.remove((entity.res, None, None, None))  # type: ignore[arg-type]
                 else:
-                    if len(entity.preexisting_graph) > 0:
+                    if len(entity._preexisting_triples) > 0:
                         """
                         We're not in 'append mode', so we need to remove
                         the entity that we're going to overwrite.

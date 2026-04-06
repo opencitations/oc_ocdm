@@ -191,7 +191,7 @@ class GraphEntity(AbstractEntity):
         self.source: str | None = source
         self.short_name: str = short_name
         self.g_set: GraphSet = g_set
-        self.preexisting_graph: Graph = Graph(identifier=g.identifier)
+        self._preexisting_triples: frozenset = frozenset()
         self._merge_list: tuple[GraphEntity, ...] = ()
         # FLAGS
         self._to_be_deleted: bool = False
@@ -217,9 +217,11 @@ class GraphEntity(AbstractEntity):
             # allowing the user to set this value later through a method would mean that the user could
             # set the preexisting graph AFTER having modified self.g (which would not make sense).
             self.remove_every_triple()
+            triples = []
             for p, o in preexisting_graph.predicate_objects(self.res):
                 self.g.add((self.res, p, o))
-                self.preexisting_graph.add((self.res, p, o))
+                triples.append((self.res, p, o))
+            self._preexisting_triples = frozenset(triples)
         else:
             # Add mandatory information to the entity graph
             self._create_type(res_type)
@@ -347,12 +349,11 @@ class GraphEntity(AbstractEntity):
         pass
 
     def commit_changes(self):
-        self.preexisting_graph = Graph(identifier=self.g.identifier)
         if self._to_be_deleted:
+            self._preexisting_triples = frozenset()
             self.remove_every_triple()
         else:
-            for triple in self.g.triples((self.res, None, None)):
-                self.preexisting_graph.add(triple)
+            self._preexisting_triples = frozenset(self.g.triples((self.res, None, None)))
         self._is_restored = False
         self._to_be_deleted = False
         self._was_merged = False

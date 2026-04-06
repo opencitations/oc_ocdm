@@ -6,7 +6,7 @@
 
 # -*- coding: utf-8 -*-
 import unittest
-from rdflib import Graph, URIRef, Literal
+from rdflib import URIRef, Literal
 from rdflib.namespace import RDF, DCTERMS
 
 from oc_ocdm.graph.graph_set import GraphSet
@@ -76,9 +76,7 @@ class TestQueryUtils(unittest.TestCase):
         """Test get_update_query returns empty for unchanged entity."""
         br = self.graph_set.add_br(self.base_iri + "br/1")
         br.has_title("Test Title")
-        br.preexisting_graph = Graph(identifier=br.g.identifier)
-        for triple in br.g:
-            br.preexisting_graph.add(triple)
+        br._preexisting_triples = frozenset(br.g.triples((br.res, None, None)))
 
         queries, added, removed = get_update_query(br, entity_type="graph")
 
@@ -103,9 +101,7 @@ class TestQueryUtils(unittest.TestCase):
         br = self.graph_set.add_br(self.base_iri + "br/1")
         br.has_title("Original Title")
 
-        br.preexisting_graph = Graph(identifier=br.g.identifier)
-        for triple in br.g:
-            br.preexisting_graph.add(triple)
+        br._preexisting_triples = frozenset(br.g.triples((br.res, None, None)))
 
         br.g.add((br.res, URIRef("http://example.org/newProp"), Literal("New Value")))
 
@@ -120,9 +116,7 @@ class TestQueryUtils(unittest.TestCase):
         """Test get_update_query for deleted entity generates DELETE."""
         br = self.graph_set.add_br(self.base_iri + "br/1")
         br.has_title("To Delete")
-        br.preexisting_graph = Graph(identifier=br.g.identifier)
-        for triple in br.g:
-            br.preexisting_graph.add(triple)
+        br._preexisting_triples = frozenset(br.g.triples((br.res, None, None)))
 
         br.mark_as_to_be_deleted()
 
@@ -155,9 +149,7 @@ class TestQueryUtils(unittest.TestCase):
         """Test early-exit optimization when graphs have same length."""
         br = self.graph_set.add_br(self.base_iri + "br/1")
         br.has_title("Test Title")
-        br.preexisting_graph = Graph(identifier=br.g.identifier)
-        for triple in br.g:
-            br.preexisting_graph.add(triple)
+        br._preexisting_triples = frozenset(br.g.triples((br.res, None, None)))
 
         queries, added, removed = get_update_query(br, entity_type="graph")
 
@@ -169,9 +161,7 @@ class TestQueryUtils(unittest.TestCase):
         """Test that graphs with different lengths generate queries."""
         br = self.graph_set.add_br(self.base_iri + "br/1")
         br.has_title("Original")
-        br.preexisting_graph = Graph(identifier=br.g.identifier)
-        for triple in br.g:
-            br.preexisting_graph.add(triple)
+        br._preexisting_triples = frozenset(br.g.triples((br.res, None, None)))
 
         br.has_subtitle("New Subtitle")
 
@@ -186,9 +176,7 @@ class TestQueryUtils(unittest.TestCase):
         """Test entity with only new triples generates INSERT only."""
         br = self.graph_set.add_br(self.base_iri + "br/1")
         br.has_title("Original")
-        br.preexisting_graph = Graph(identifier=br.g.identifier)
-        for triple in br.g:
-            br.preexisting_graph.add(triple)
+        br._preexisting_triples = frozenset(br.g.triples((br.res, None, None)))
 
         br.has_subtitle("Additional Info")
 
@@ -220,11 +208,9 @@ class TestQueryUtils(unittest.TestCase):
         """Test _compute_graph_changes with deleted entity."""
         br = self.graph_set.add_br(self.base_iri + "br/1")
         br.has_title("To Delete")
-        br.preexisting_graph = Graph(identifier=br.g.identifier)
-        for triple in br.g:
-            br.preexisting_graph.add(triple)
+        br._preexisting_triples = frozenset(br.g.triples((br.res, None, None)))
 
-        original_count = len(br.preexisting_graph)
+        original_count = len(br._preexisting_triples)
         br.mark_as_to_be_deleted()
 
         to_insert, to_delete, added, removed = _compute_graph_changes(br, "graph")
@@ -238,9 +224,7 @@ class TestQueryUtils(unittest.TestCase):
         """Test _compute_graph_changes with unchanged entity."""
         br = self.graph_set.add_br(self.base_iri + "br/1")
         br.has_title("Test")
-        br.preexisting_graph = Graph(identifier=br.g.identifier)
-        for triple in br.g:
-            br.preexisting_graph.add(triple)
+        br._preexisting_triples = frozenset(br.g.triples((br.res, None, None)))
 
         to_insert, to_delete, added, removed = _compute_graph_changes(br, "graph")
 
@@ -253,9 +237,7 @@ class TestQueryUtils(unittest.TestCase):
         """Test _compute_graph_changes with modified entity."""
         br = self.graph_set.add_br(self.base_iri + "br/1")
         br.has_title("Original")
-        br.preexisting_graph = Graph(identifier=br.g.identifier)
-        for triple in br.g:
-            br.preexisting_graph.add(triple)
+        br._preexisting_triples = frozenset(br.g.triples((br.res, None, None)))
 
         br.has_subtitle("New Subtitle")
 

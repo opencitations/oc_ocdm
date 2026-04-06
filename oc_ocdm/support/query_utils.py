@@ -83,19 +83,17 @@ def _compute_graph_changes(entity: AbstractEntity, entity_type: str) -> Tuple[Se
 
     assert isinstance(entity, GraphEntity)
     to_be_deleted: bool = entity.to_be_deleted
-    preexisting_graph = entity.preexisting_graph
+    preexisting_triples = entity._preexisting_triples
 
     if to_be_deleted:
-        preexisting_triples = set(preexisting_graph)
-        return set(), preexisting_triples, 0, len(preexisting_triples)
+        return set(), set(preexisting_triples), 0, len(preexisting_triples)
 
-    preexisting_triples = set(preexisting_graph)
     current_triples = set(entity.g)
 
     if preexisting_triples == current_triples:
         return set(), set(), 0, 0
 
-    removed_triples = preexisting_triples - current_triples
+    removed_triples = set(preexisting_triples) - current_triples
     added_triples = current_triples - preexisting_triples
 
     return added_triples, removed_triples, len(added_triples), len(removed_triples)
