@@ -1,3 +1,10 @@
+## [10.0.1](https://github.com/opencitations/oc_ocdm/compare/10.0.0...10.0.1) (2026-04-06)
+
+
+### Bug Fixes
+
+* **perf:** replace preexisting_graph with frozenset of triples [release] ([9f32f57](https://github.com/opencitations/oc_ocdm/commit/9f32f57de0f4a706f6bfd9739095adbefe4c5906))
+
 # [10.0.0](https://github.com/opencitations/oc_ocdm/compare/9.4.4...10.0.0) (2026-03-28)
 
 
