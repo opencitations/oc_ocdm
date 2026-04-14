@@ -10,13 +10,14 @@ import os
 import pickle
 import unittest
 
+from rdflib import URIRef
+
 from oc_ocdm.counter_handler.sqlite_counter_handler import SqliteCounterHandler
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.entities.snapshot_entity import SnapshotEntity
 from oc_ocdm.prov.prov_set import ProvSet
 from oc_ocdm.reader import Reader
 from oc_ocdm.storer import Storer
-from rdflib import URIRef
 
 
 class TestProvSet(unittest.TestCase):
@@ -45,7 +46,7 @@ class TestProvSet(unittest.TestCase):
         a.merge(b, prefer_self=True)
 
         result = self.prov_set.generate_provenance(self.cur_time)
-        se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
+        se_a = self.prov_set.get_entity(a.res + '/prov/se/1')
         assert isinstance(se_a, SnapshotEntity)
         self.assertEqual(a.res, se_a.get_is_snapshot_of())
         self.assertEqual(self.cur_time_str, se_a.get_generation_time())
@@ -67,7 +68,7 @@ class TestProvSet(unittest.TestCase):
 
         result = self.prov_set.generate_provenance(self.cur_time)
         
-        se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
+        se_a_2 = self.prov_set.get_entity(a.res + '/prov/se/2')
         self.assertIsNone(se_a_2)
 
     def test_modification_merged_entity(self):
@@ -82,7 +83,7 @@ class TestProvSet(unittest.TestCase):
         
         self.assertEqual(self.cur_time_str, se_a_1.get_invalidation_time())
 
-        se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
+        se_a_2 = self.prov_set.get_entity(a.res + '/prov/se/2')
         assert isinstance(se_a_2, SnapshotEntity)
         self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
         self.assertEqual(self.cur_time_str, se_a_2.get_generation_time())
@@ -101,22 +102,22 @@ class TestProvSet(unittest.TestCase):
 
         se_a_1 = self.prov_set.add_se(a)
         se_a_1.has_generation_time("2020-01-01T00:00:00+00:00")
-        se_a_1.has_primary_source(URIRef("http://example.org/source_a"))
+        se_a_1.has_primary_source("http://example.org/source_a")
         
         se_b_1 = self.prov_set.add_se(b)
         se_b_1.has_generation_time("2020-02-01T00:00:00+00:00")
-        se_b_1.has_primary_source(URIRef("http://example.org/source_b"))
+        se_b_1.has_primary_source("http://example.org/source_b")
         
         se_c_1 = self.prov_set.add_se(c)
         se_c_1.has_generation_time("2020-03-01T00:00:00+00:00")
-        se_c_1.has_primary_source(URIRef("http://example.org/source_c"))
+        se_c_1.has_primary_source("http://example.org/source_c")
 
         a.merge(b)
         a.merge(c)
 
         result = self.prov_set.generate_provenance(self.cur_time)
 
-        se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
+        se_a_2 = self.prov_set.get_entity(a.res + '/prov/se/2')
         assert isinstance(se_a_2, SnapshotEntity)
         self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
         self.assertEqual(self.cur_time_str, se_a_2.get_generation_time())
@@ -125,7 +126,7 @@ class TestProvSet(unittest.TestCase):
         if a.resp_agent is not None:
             self.assertEqual(a.resp_agent, str(se_a_2.get_resp_agent()))
         self.assertNotEqual("2020-01-01T00:00:00+00:00", se_a_2.get_generation_time())
-        self.assertNotEqual(URIRef("http://example.org/source_a"), se_a_2.get_primary_source())
+        self.assertNotEqual("http://example.org/source_a", se_a_2.get_primary_source())
         self.assertEqual(self.cur_time_str, se_a_2.get_generation_time())
         if a.source is not None:
             self.assertEqual(a.source, str(se_a_2.get_primary_source()))
@@ -138,7 +139,7 @@ class TestProvSet(unittest.TestCase):
 
         result = self.prov_set.generate_provenance(self.cur_time)
         
-        se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
+        se_a = self.prov_set.get_entity(a.res + '/prov/se/1')
         assert isinstance(se_a, SnapshotEntity)
         self.assertEqual(a.res, se_a.get_is_snapshot_of())
         self.assertEqual(self.cur_time_str, se_a.get_generation_time())
@@ -154,7 +155,7 @@ class TestProvSet(unittest.TestCase):
 
         result = self.prov_set.generate_provenance(self.cur_time)
         
-        se_a = self.prov_set.get_entity(URIRef(a.res + '/prov/se/1'))
+        se_a = self.prov_set.get_entity(a.res + '/prov/se/1')
         self.assertIsNone(se_a)
 
     def test_no_snapshot_merged_entity_scenario2(self):
@@ -167,7 +168,7 @@ class TestProvSet(unittest.TestCase):
 
         result = self.prov_set.generate_provenance(self.cur_time)
         
-        se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
+        se_a_2 = self.prov_set.get_entity(a.res + '/prov/se/2')
         self.assertIsNone(se_a_2)
 
     def test_deletion_non_merged_entity(self):
@@ -181,7 +182,7 @@ class TestProvSet(unittest.TestCase):
         
         self.assertEqual(self.cur_time_str, se_a_1.get_invalidation_time())
 
-        se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
+        se_a_2 = self.prov_set.get_entity(a.res + '/prov/se/2')
         assert isinstance(se_a_2, SnapshotEntity)
         self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
         self.assertEqual(self.cur_time_str, se_a_2.get_generation_time())
@@ -202,7 +203,7 @@ class TestProvSet(unittest.TestCase):
         
         self.assertEqual(self.cur_time_str, se_a_1.get_invalidation_time())
 
-        se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
+        se_a_2 = self.prov_set.get_entity(a.res + '/prov/se/2')
         assert isinstance(se_a_2, SnapshotEntity)
         self.assertEqual(a.res, se_a_2.get_is_snapshot_of())
         self.assertEqual(self.cur_time_str, se_a_2.get_generation_time())
@@ -248,7 +249,7 @@ class TestProvSet(unittest.TestCase):
         deletion_time = self.cur_time_str
         
         # Get the deletion snapshot
-        se_a_2 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
+        se_a_2 = self.prov_set.get_entity(a.res + '/prov/se/2')
         assert isinstance(se_a_2, SnapshotEntity)
         self.assertEqual(deletion_time, se_a_2.get_generation_time())
         self.assertEqual(deletion_time, se_a_2.get_invalidation_time())
@@ -262,7 +263,7 @@ class TestProvSet(unittest.TestCase):
         result = self.prov_set.generate_provenance(1607462259.846196)  # One day later
 
         # Check the restoration snapshot
-        se_a_3 = self.prov_set.get_entity(URIRef(a.res + '/prov/se/3'))
+        se_a_3 = self.prov_set.get_entity(a.res + '/prov/se/3')
         assert isinstance(se_a_3, SnapshotEntity)
         self.assertEqual(restoration_time, se_a_3.get_generation_time())
         self.assertIsNone(se_a_3.get_invalidation_time())  # No invalidation time for restoration
@@ -277,10 +278,10 @@ class TestProvSet(unittest.TestCase):
 
         # Generate provenance
         self.prov_set.generate_provenance(self.cur_time)
-        se = self.prov_set.get_entity(URIRef(br.res + '/prov/se/1'))
+        se = self.prov_set.get_entity(br.res + '/prov/se/1')
         assert isinstance(se, SnapshotEntity)
         se.has_description("Initial creation")
-        se.has_primary_source(URIRef("http://example.org/source"))
+        se.has_primary_source("http://example.org/source")
 
         # Pickle and unpickle the ProvSet
         pickled = pickle.dumps(self.prov_set)
@@ -296,7 +297,7 @@ class TestProvSet(unittest.TestCase):
         restored_se = restored.get_entity(se.res)
         assert isinstance(restored_se, SnapshotEntity)
         self.assertEqual(restored_se.get_description(), "Initial creation")
-        self.assertEqual(restored_se.get_primary_source(), URIRef("http://example.org/source"))
+        self.assertEqual(restored_se.get_primary_source(), "http://example.org/source")
 
         # Verify the related graph_set is also pickled
         self.assertIsNotNone(restored.prov_g)
@@ -325,15 +326,15 @@ class TestProvSetWorkflow(unittest.TestCase):
         # Create initial snapshots with specific metadata
         se_a = prov_set.add_se(a)
         se_a.has_generation_time("2020-01-01T00:00:00Z")
-        se_a.has_primary_source(URIRef("http://example.org/source_a"))
+        se_a.has_primary_source("http://example.org/source_a")
 
         se_b = prov_set.add_se(b)
         se_b.has_generation_time("2020-02-01T00:00:00Z")
-        se_b.has_primary_source(URIRef("http://example.org/source_b"))
+        se_b.has_primary_source("http://example.org/source_b")
 
         se_c = prov_set.add_se(c)
         se_c.has_generation_time("2020-03-01T00:00:00Z")
-        se_c.has_primary_source(URIRef("http://example.org/source_c"))
+        se_c.has_primary_source("http://example.org/source_c")
 
         # Step 2: Save the data
         storer = Storer(graph_set)
@@ -394,7 +395,7 @@ class TestProvSetWorkflow(unittest.TestCase):
 
         # Check the final state
         final_a = final_graph_set.get_entity(a.res)
-        final_se_a = new_prov_set.get_entity(URIRef(a.res + '/prov/se/2'))
+        final_se_a = new_prov_set.get_entity(a.res + '/prov/se/2')
 
         self.assertIsNotNone(final_se_a)
         # self.assertEqual(cur_time, final_se_a.get_generation_time())

@@ -11,17 +11,18 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from oc_ocdm.decorators import accepts_only
+from oc_ocdm.light_graph import RDFTerm
 from oc_ocdm.support.support import get_datatype_from_iso_8601
 
 if TYPE_CHECKING:
-    from typing import Optional, List
-    from rdflib import URIRef
-    from oc_ocdm.graph.entities.bibliographic.bibliographic_reference import BibliographicReference
+    from typing import List, Optional
+
     from oc_ocdm.graph.entities.bibliographic.agent_role import AgentRole
+    from oc_ocdm.graph.entities.bibliographic.bibliographic_reference import BibliographicReference
     from oc_ocdm.graph.entities.bibliographic.discourse_element import DiscourseElement
     from oc_ocdm.graph.entities.bibliographic.resource_embodiment import ResourceEmbodiment
-from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
+from oc_ocdm.graph.graph_entity import GraphEntity
 
 
 class BibliographicResource(BibliographicEntity):
@@ -101,7 +102,7 @@ class BibliographicResource(BibliographicEntity):
             for agent_role in ar_list:
                 self.has_contributor(agent_role)
 
-        related_doc_list: List[URIRef] = other.get_related_documents()
+        related_doc_list: List[str] = other.get_related_documents()
         if not (prefer_self and self.get_related_documents()):
             for doc in related_doc_list:
                 self.has_related_document(doc)
@@ -181,7 +182,7 @@ class BibliographicResource(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_part_of, 'br')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_part_of, 'br')
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source, uri)
 
@@ -201,7 +202,7 @@ class BibliographicResource(BibliographicEntity):
         :return: None
         """
         self.remove_is_part_of()
-        self.g.add((self.res, GraphEntity.iri_part_of, br_res.res))
+        self.g.add((self.res, GraphEntity.iri_part_of, RDFTerm("uri", str(br_res.res))))
 
     def remove_is_part_of(self) -> None:
         """
@@ -218,7 +219,7 @@ class BibliographicResource(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_cites, 'br')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_cites, 'br')
         result: List[BibliographicResource] = []
         for uri in uri_list:
             result.append(self.g_set.add_br(self.resp_agent, self.source, uri))
@@ -237,7 +238,7 @@ class BibliographicResource(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, GraphEntity.iri_cites, br_res.res))
+        self.g.add((self.res, GraphEntity.iri_cites, RDFTerm("uri", str(br_res.res))))
 
     @accepts_only('br')
     def remove_citation(self, br_res: BibliographicResource | None = None) -> None:
@@ -254,7 +255,7 @@ class BibliographicResource(BibliographicEntity):
         :return: None
         """
         if br_res is not None:
-            self.g.remove((self.res, GraphEntity.iri_cites, br_res.res))
+            self.g.remove((self.res, GraphEntity.iri_cites, RDFTerm("uri", str(br_res.res))))
         else:
             self.g.remove((self.res, GraphEntity.iri_cites, None))
 
@@ -302,7 +303,7 @@ class BibliographicResource(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_embodiment, 're')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_embodiment, 're')
         result: List[ResourceEmbodiment] = []
         for uri in uri_list:
             result.append(self.g_set.add_re(self.resp_agent, self.source, uri))
@@ -321,7 +322,7 @@ class BibliographicResource(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, GraphEntity.iri_embodiment, re_res.res))
+        self.g.add((self.res, GraphEntity.iri_embodiment, RDFTerm("uri", str(re_res.res))))
 
     @accepts_only('re')
     def remove_format(self, re_res: ResourceEmbodiment | None = None) -> None:
@@ -338,7 +339,7 @@ class BibliographicResource(BibliographicEntity):
         :return: None
         """
         if re_res is not None:
-            self.g.remove((self.res, GraphEntity.iri_embodiment, re_res.res))
+            self.g.remove((self.res, GraphEntity.iri_embodiment, RDFTerm("uri", str(re_res.res))))
         else:
             self.g.remove((self.res, GraphEntity.iri_embodiment, None))
 
@@ -421,7 +422,7 @@ class BibliographicResource(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_reference, 'be')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_contains_reference, 'be')
         result: List[BibliographicReference] = []
         for uri in uri_list:
             result.append(self.g_set.add_be(self.resp_agent, self.source, uri))
@@ -440,7 +441,7 @@ class BibliographicResource(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, GraphEntity.iri_contains_reference, be_res.res))
+        self.g.add((self.res, GraphEntity.iri_contains_reference, RDFTerm("uri", str(be_res.res))))
 
     @accepts_only('be')
     def remove_contained_in_reference_list(self, be_res: BibliographicReference | None = None) -> None:
@@ -457,7 +458,7 @@ class BibliographicResource(BibliographicEntity):
         :return: None
         """
         if be_res is not None:
-            self.g.remove((self.res, GraphEntity.iri_contains_reference, be_res.res))
+            self.g.remove((self.res, GraphEntity.iri_contains_reference, RDFTerm("uri", str(be_res.res))))
         else:
             self.g.remove((self.res, GraphEntity.iri_contains_reference, None))
 
@@ -468,7 +469,7 @@ class BibliographicResource(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_de, 'de')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_contains_de, 'de')
         result: List[DiscourseElement] = []
         for uri in uri_list:
             result.append(self.g_set.add_de(self.resp_agent, self.source, uri))
@@ -487,7 +488,7 @@ class BibliographicResource(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, GraphEntity.iri_contains_de, de_res.res))
+        self.g.add((self.res, GraphEntity.iri_contains_de, RDFTerm("uri", str(de_res.res))))
 
     @accepts_only('de')
     def remove_contained_discourse_element(self, de_res: DiscourseElement | None = None) -> None:
@@ -504,7 +505,7 @@ class BibliographicResource(BibliographicEntity):
         :return: None
         """
         if de_res is not None:
-            self.g.remove((self.res, GraphEntity.iri_contains_de, de_res.res))
+            self.g.remove((self.res, GraphEntity.iri_contains_de, RDFTerm("uri", str(de_res.res))))
         else:
             self.g.remove((self.res, GraphEntity.iri_contains_de, None))
 
@@ -515,7 +516,7 @@ class BibliographicResource(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_document_context_for, 'ar')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_is_document_context_for, 'ar')
         result: List[AgentRole] = []
         for uri in uri_list:
             result.append(self.g_set.add_ar(self.resp_agent, self.source, uri))
@@ -531,7 +532,7 @@ class BibliographicResource(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, GraphEntity.iri_is_document_context_for, ar_res.res))
+        self.g.add((self.res, GraphEntity.iri_is_document_context_for, RDFTerm("uri", str(ar_res.res))))
 
     @accepts_only('ar')
     def remove_contributor(self, ar_res: AgentRole | None = None):
@@ -548,22 +549,22 @@ class BibliographicResource(BibliographicEntity):
         :return: None
         """
         if ar_res is not None:
-            self.g.remove((self.res, GraphEntity.iri_is_document_context_for, ar_res.res))
+            self.g.remove((self.res, GraphEntity.iri_is_document_context_for, RDFTerm("uri", str(ar_res.res))))
         else:
             self.g.remove((self.res, GraphEntity.iri_is_document_context_for, None))
 
     # HAS RELATED DOCUMENT
-    def get_related_documents(self) -> List[URIRef]:
+    def get_related_documents(self) -> List[str]:
         """
         Getter method corresponding to the ``dcterms:relation`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_relation)
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_relation)
         return uri_list
 
     @accepts_only('thing')
-    def has_related_document(self, thing_res: URIRef) -> None:
+    def has_related_document(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``dcterms:relation`` RDF predicate.
 
@@ -576,10 +577,10 @@ class BibliographicResource(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, GraphEntity.iri_relation, thing_res))
+        self.g.add((self.res, GraphEntity.iri_relation, RDFTerm("uri", str(thing_res))))
 
     @accepts_only('thing')
-    def remove_related_document(self, thing_res: URIRef | None = None) -> None:
+    def remove_related_document(self, thing_res: str | None = None) -> None:
         """
         Remover method corresponding to the ``dcterms:relation`` RDF predicate.
 
@@ -593,7 +594,7 @@ class BibliographicResource(BibliographicEntity):
         :return: None
         """
         if thing_res is not None:
-            self.g.remove((self.res, GraphEntity.iri_relation, thing_res))
+            self.g.remove((self.res, GraphEntity.iri_relation, RDFTerm("uri", str(thing_res))))
         else:
             self.g.remove((self.res, GraphEntity.iri_relation, None))
     

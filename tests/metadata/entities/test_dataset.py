@@ -7,9 +7,11 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from rdflib import XSD, URIRef
+
+from oc_ocdm.light_graph import RDFTerm
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from oc_ocdm.metadata.metadata_set import MetadataSet
-from rdflib import XSD, Literal, URIRef
 
 
 class TestDataset(unittest.TestCase):
@@ -29,7 +31,7 @@ class TestDataset(unittest.TestCase):
         result = self.dataset.has_title(title)
         self.assertIsNone(result)
 
-        triple = self.dataset.res, MetadataEntity.iri_title, Literal(title, datatype=XSD.string)
+        triple = self.dataset.res, MetadataEntity.iri_title, RDFTerm("literal", title, str(XSD.string))
         self.assertIn(triple, self.dataset.g)
 
     def test_has_description(self):
@@ -37,7 +39,7 @@ class TestDataset(unittest.TestCase):
         result = self.dataset.has_description(description)
         self.assertIsNone(result)
 
-        triple = self.dataset.res, MetadataEntity.iri_description, Literal(description, datatype=XSD.string)
+        triple = self.dataset.res, MetadataEntity.iri_description, RDFTerm("literal", description, str(XSD.string))
         self.assertIn(triple, self.dataset.g)
 
     def test_has_publication_date(self):
@@ -45,8 +47,7 @@ class TestDataset(unittest.TestCase):
         result = self.dataset.has_publication_date(string)
         self.assertIsNone(result)
 
-        triple = self.dataset.res, MetadataEntity.iri_issued, Literal(string, datatype=XSD.dateTime,
-                                                                      normalize=False)
+        triple = self.dataset.res, MetadataEntity.iri_issued, RDFTerm("literal", string, str(XSD.dateTime))
         self.assertIn(triple, self.dataset.g)
 
     def test_has_modification_date(self):
@@ -54,8 +55,7 @@ class TestDataset(unittest.TestCase):
         result = self.dataset.has_modification_date(string)
         self.assertIsNone(result)
 
-        triple = self.dataset.res, MetadataEntity.iri_modified, Literal(string, datatype=XSD.dateTime,
-                                                                        normalize=False)
+        triple = self.dataset.res, MetadataEntity.iri_modified, RDFTerm("literal", string, str(XSD.dateTime))
         self.assertIn(triple, self.dataset.g)
 
     def test_has_keyword(self):
@@ -63,7 +63,7 @@ class TestDataset(unittest.TestCase):
         result = self.dataset.has_keyword(keyword)
         self.assertIsNone(result)
 
-        triple = self.dataset.res, MetadataEntity.iri_keyword, Literal(keyword, datatype=XSD.string)
+        triple = self.dataset.res, MetadataEntity.iri_keyword, RDFTerm("literal", keyword, str(XSD.string))
         self.assertIn(triple, self.dataset.g)
 
     def test_has_subject(self):
@@ -71,7 +71,7 @@ class TestDataset(unittest.TestCase):
         result = self.dataset.has_subject(subject)
         self.assertIsNone(result)
 
-        triple = self.dataset.res, MetadataEntity.iri_subject, subject
+        triple = self.dataset.res, MetadataEntity.iri_subject, RDFTerm("uri", str(subject))
         self.assertIn(triple, self.dataset.g)
 
     def test_has_landing_page(self):
@@ -79,14 +79,14 @@ class TestDataset(unittest.TestCase):
         result = self.dataset.has_landing_page(page)
         self.assertIsNone(result)
 
-        triple = self.dataset.res, MetadataEntity.iri_landing_page, page
+        triple = self.dataset.res, MetadataEntity.iri_landing_page, RDFTerm("uri", str(page))
         self.assertIn(triple, self.dataset.g)
 
     def test_has_sub_dataset(self):
         result = self.dataset.has_sub_dataset(self.sub_dataset)
         self.assertIsNone(result)
 
-        triple = self.dataset.res, MetadataEntity.iri_subset, self.sub_dataset.res
+        triple = self.dataset.res, MetadataEntity.iri_subset, RDFTerm("uri", str(self.sub_dataset.res))
         self.assertIn(triple, self.dataset.g)
 
     def test_has_sparql_endpoint(self):
@@ -94,14 +94,14 @@ class TestDataset(unittest.TestCase):
         result = self.dataset.has_sparql_endpoint(endpoint)
         self.assertIsNone(result)
 
-        triple = self.dataset.res, MetadataEntity.iri_sparql_endpoint, endpoint
+        triple = self.dataset.res, MetadataEntity.iri_sparql_endpoint, RDFTerm("uri", str(endpoint))
         self.assertIn(triple, self.dataset.g)
 
     def test_has_distribution(self):
         result = self.dataset.has_distribution(self.di)
         self.assertIsNone(result)
 
-        triple = self.dataset.res, MetadataEntity.iri_distribution, self.di.res
+        triple = self.dataset.res, MetadataEntity.iri_distribution, RDFTerm("uri", str(self.di.res))
         self.assertIn(triple, self.dataset.g)
 
     def test_merge_with_title(self):
@@ -193,7 +193,7 @@ class TestDataset(unittest.TestCase):
         ds1 = self.metadata_set.add_dataset("ds1", self.resp_agent)
         ds2 = self.metadata_set.add_dataset("ds2", self.resp_agent)
 
-        endpoint = URIRef("http://sparql.endpoint/")
+        endpoint = "http://sparql.endpoint/"
         ds2.has_sparql_endpoint(endpoint)
 
         ds1.merge(ds2)
@@ -253,7 +253,7 @@ class TestDataset(unittest.TestCase):
         self.assertEqual(len(sub_datasets), 1)
 
     def test_get_sparql_endpoint(self):
-        endpoint = URIRef("http://sparql.endpoint/")
+        endpoint = "http://sparql.endpoint/"
         self.dataset.has_sparql_endpoint(endpoint)
         self.assertEqual(self.dataset.get_sparql_endpoint(), endpoint)
 

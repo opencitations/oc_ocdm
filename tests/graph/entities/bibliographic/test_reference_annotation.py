@@ -9,6 +9,7 @@ import unittest
 
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
+from oc_ocdm.light_graph import RDFTerm
 
 
 class TestReferenceAnnotation(unittest.TestCase):
@@ -28,7 +29,7 @@ class TestReferenceAnnotation(unittest.TestCase):
         result = self.an.has_body_annotation(self.ci)
         self.assertIsNone(result)
 
-        triple = self.an.res, GraphEntity.iri_has_body, self.ci.res
+        triple = self.an.res, GraphEntity.iri_has_body, RDFTerm("uri", str(self.ci.res))
         self.assertIn(triple, self.an.g)
 
 

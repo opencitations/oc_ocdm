@@ -10,14 +10,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from oc_ocdm.decorators import accepts_only
+from oc_ocdm.light_graph import RDFTerm
 
 if TYPE_CHECKING:
-    from typing import Optional, List
-    from rdflib import URIRef
+    from typing import List, Optional
+
     from oc_ocdm.graph.entities.bibliographic.bibliographic_reference import BibliographicReference
     from oc_ocdm.graph.entities.bibliographic.reference_annotation import ReferenceAnnotation
-from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
+from oc_ocdm.graph.graph_entity import GraphEntity
 
 
 class ReferencePointer(BibliographicEntity):
@@ -106,7 +107,7 @@ class ReferencePointer(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_next, 'rp')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_next, 'rp')
         if uri is not None:
             return self.g_set.add_rp(self.resp_agent, self.source, uri)
 
@@ -126,7 +127,7 @@ class ReferencePointer(BibliographicEntity):
         :return: None
         """
         self.remove_next_rp()
-        self.g.add((self.res, GraphEntity.iri_has_next, rp_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_next, RDFTerm("uri", str(rp_res.res))))
 
     def remove_next_rp(self) -> None:
         """
@@ -143,7 +144,7 @@ class ReferencePointer(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_denotes, 'be')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_denotes, 'be')
         if uri is not None:
             return self.g_set.add_be(self.resp_agent, self.source, uri)
 
@@ -163,7 +164,7 @@ class ReferencePointer(BibliographicEntity):
         :return: None
         """
         self.remove_denoted_be()
-        self.g.add((self.res, GraphEntity.iri_denotes, be_res.res))
+        self.g.add((self.res, GraphEntity.iri_denotes, RDFTerm("uri", str(be_res.res))))
 
     def remove_denoted_be(self) -> None:
         """
@@ -180,7 +181,7 @@ class ReferencePointer(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_annotation, 'an')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_has_annotation, 'an')
         result: List[ReferenceAnnotation] = []
         for uri in uri_list:
             result.append(self.g_set.add_an(self.resp_agent, self.source, uri))
@@ -200,7 +201,7 @@ class ReferencePointer(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, GraphEntity.iri_has_annotation, an_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_annotation, RDFTerm("uri", str(an_res.res))))
 
     @accepts_only('an')
     def remove_annotation(self, an_res: ReferenceAnnotation | None = None) -> None:
@@ -217,6 +218,6 @@ class ReferencePointer(BibliographicEntity):
         :return: None
         """
         if an_res is not None:
-            self.g.remove((self.res, GraphEntity.iri_has_annotation, an_res.res))
+            self.g.remove((self.res, GraphEntity.iri_has_annotation, RDFTerm("uri", str(an_res.res))))
         else:
             self.g.remove((self.res, GraphEntity.iri_has_annotation, None))

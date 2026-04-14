@@ -11,10 +11,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from oc_ocdm.decorators import accepts_only
+from oc_ocdm.light_graph import RDFTerm
 
 if TYPE_CHECKING:
-    from typing import List, Dict, Optional
-    from rdflib import URIRef
+    from typing import Dict, List, Optional
+
     from oc_ocdm.graph.entities.identifier import Identifier
 from oc_ocdm.graph.graph_entity import GraphEntity
 
@@ -52,7 +53,7 @@ class BibliographicEntity(GraphEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_identifier, 'id')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_has_identifier, 'id')
         result: List[Identifier] = []
         for uri in uri_list:
             result.append(self.g_set.add_id(self.resp_agent, self.source, uri))
@@ -72,7 +73,7 @@ class BibliographicEntity(GraphEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, GraphEntity.iri_has_identifier, id_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_identifier, RDFTerm("uri", str(id_res.res))))
 
     @accepts_only('id')
     def remove_identifier(self, id_res: Identifier | None = None) -> None:
@@ -89,7 +90,7 @@ class BibliographicEntity(GraphEntity):
         :return: None
         """
         if id_res is not None:
-            self.g.remove((self.res, GraphEntity.iri_has_identifier, id_res.res))
+            self.g.remove((self.res, GraphEntity.iri_has_identifier, RDFTerm("uri", str(id_res.res))))
         else:
             self.g.remove((self.res, GraphEntity.iri_has_identifier, None))
 
@@ -115,9 +116,9 @@ class BibliographicEntity(GraphEntity):
         # We use a nested dictionary which associates the 'schema-literal_value'
         # pair to the corresponding identifier object
         # (ex. id_dict[ISSN][1234-5678] <- base_iri:id/34).
-        id_dict: Dict[URIRef, Dict[str, Identifier]] = {}
+        id_dict: Dict[str, Dict[str, Identifier]] = {}
         for identifier in id_list:
-            schema: Optional[URIRef] = identifier.get_scheme()
+            schema: Optional[str] = identifier.get_scheme()
             literal_value: Optional[str] = identifier.get_literal_value()
             if schema is not None and literal_value is not None:
                 if schema not in id_dict:

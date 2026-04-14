@@ -7,7 +7,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
-import os
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
@@ -16,20 +15,18 @@ from oc_ocdm.prov.entities.snapshot_entity import SnapshotEntity
 from oc_ocdm.support.query_utils import get_update_query
 
 if TYPE_CHECKING:
-    from typing import Optional, Tuple, List, Dict, ClassVar
+    from typing import ClassVar, Dict, List, Optional, Tuple
+
     from oc_ocdm.graph.graph_entity import GraphEntity
 
-from rdflib import Graph, URIRef
-
 from oc_ocdm.counter_handler.counter_handler import CounterHandler
-from oc_ocdm.counter_handler.filesystem_counter_handler import \
-    FilesystemCounterHandler
-from oc_ocdm.counter_handler.in_memory_counter_handler import \
-    InMemoryCounterHandler
+from oc_ocdm.counter_handler.filesystem_counter_handler import FilesystemCounterHandler
+from oc_ocdm.counter_handler.in_memory_counter_handler import InMemoryCounterHandler
 from oc_ocdm.counter_handler.sqlite_counter_handler import SqliteCounterHandler
 from oc_ocdm.graph.graph_set import GraphSet
+from oc_ocdm.light_graph import LightGraph
 from oc_ocdm.prov.prov_entity import ProvEntity
-from oc_ocdm.support.support import (get_count, get_prefix, get_short_name)
+from oc_ocdm.support.support import get_count, get_prefix, get_short_name
 
 
 class ProvSet(AbstractSet[ProvEntity]):
@@ -42,7 +39,7 @@ class ProvSet(AbstractSet[ProvEntity]):
                  supplier_prefix: str = "") -> None:
         super(ProvSet, self).__init__()
         self.prov_g: GraphSet = prov_subj_graph_set
-        self.res_to_entity: Dict[URIRef, ProvEntity] = {}
+        self.res_to_entity: Dict[str, ProvEntity] = {}
         self.base_iri: str = base_iri
         self.wanted_label: bool = wanted_label
         self.info_dir = info_dir
@@ -54,11 +51,11 @@ class ProvSet(AbstractSet[ProvEntity]):
         else:
             self.counter_handler = InMemoryCounterHandler()
 
-    def get_entity(self, res: URIRef) -> Optional[ProvEntity]:
+    def get_entity(self, res: str) -> Optional[ProvEntity]:
         if res in self.res_to_entity:
             return self.res_to_entity[res]
 
-    def add_se(self, prov_subject: GraphEntity, res: Optional[URIRef] = None) -> SnapshotEntity:
+    def add_se(self, prov_subject: GraphEntity, res: Optional[str] = None) -> SnapshotEntity:
         if res is not None and get_short_name(res) != "se":
             raise ValueError(f"Given res: <{res}> is inappropriate for a SnapshotEntity entity.")
         if res is not None and res in self.res_to_entity:
@@ -76,15 +73,15 @@ class ProvSet(AbstractSet[ProvEntity]):
         new_snapshot.is_snapshot_of(cur_subj)
         new_snapshot.has_generation_time(cur_time)
         if cur_subj.source is not None:
-            new_snapshot.has_primary_source(URIRef(cur_subj.source))
+            new_snapshot.has_primary_source(cur_subj.source)
         if cur_subj.resp_agent is not None:
-            new_snapshot.has_resp_agent(URIRef(cur_subj.resp_agent))
+            new_snapshot.has_resp_agent(cur_subj.resp_agent)
         return new_snapshot
 
     def _get_snapshots_from_merge_list(self, cur_subj: GraphEntity) -> List[SnapshotEntity]:
         snapshots_list: List[SnapshotEntity] = []
         for entity in cur_subj.merge_list:
-            last_entity_snapshot_res: Optional[URIRef] = self._retrieve_last_snapshot(entity.res)
+            last_entity_snapshot_res: Optional[str] = self._retrieve_last_snapshot(entity.res)
             if last_entity_snapshot_res is not None:
                 snapshots_list.append(self.add_se(prov_subject=entity, res=last_entity_snapshot_res))
         return snapshots_list
@@ -117,7 +114,7 @@ class ProvSet(AbstractSet[ProvEntity]):
                 continue
 
             # Previous snapshot
-            last_snapshot_res: Optional[URIRef] = self._retrieve_last_snapshot(cur_subj.res)
+            last_snapshot_res: Optional[str] = self._retrieve_last_snapshot(cur_subj.res)
             if last_snapshot_res is None:
                 # CREATION SNAPSHOT
                 cur_snapshot: SnapshotEntity = self._create_snapshot(cur_subj, cur_time)
@@ -158,7 +155,7 @@ class ProvSet(AbstractSet[ProvEntity]):
                 # since we already processed those entities in the previous loop.
                 continue
 
-            last_snapshot_res: Optional[URIRef] = self._retrieve_last_snapshot(cur_subj.res)
+            last_snapshot_res: Optional[str] = self._retrieve_last_snapshot(cur_subj.res)
             if last_snapshot_res is None:
                 if cur_subj.to_be_deleted:
                     # We can ignore this entity because it was deleted even before being created.
@@ -207,9 +204,8 @@ class ProvSet(AbstractSet[ProvEntity]):
         return modified_entities
     
     def _add_prov(self, graph_url: str, short_name: str, prov_subject: GraphEntity,
-                res: Optional[URIRef] = None, supplier_prefix: str = "") -> Tuple[Graph, Optional[str], Optional[str]]:
-        cur_g: Graph = Graph(identifier=graph_url)
-        self._set_ns(cur_g)
+                res: Optional[str] = None, supplier_prefix: str = "") -> Tuple[LightGraph, Optional[str], Optional[str]]:
+        cur_g = LightGraph(identifier=graph_url)
 
         count: Optional[str] = None
         label: Optional[str] = None
@@ -251,11 +247,7 @@ class ProvSet(AbstractSet[ProvEntity]):
 
         return cur_g, count, label
 
-    @staticmethod
-    def _set_ns(g: Graph) -> None:
-        g.namespace_manager.bind("prov", ProvEntity.PROV)
-
-    def _retrieve_last_snapshot(self, prov_subject: URIRef) -> Optional[URIRef]:
+    def _retrieve_last_snapshot(self, prov_subject: str) -> Optional[str]:
         subj_short_name: str = get_short_name(prov_subject)
         try:
             subj_count: str = get_count(prov_subject)
@@ -275,7 +267,7 @@ class ProvSet(AbstractSet[ProvEntity]):
         if int(last_snapshot_count) <= 0:
             return None
         else:
-            return URIRef(str(prov_subject) + '/prov/se/' + last_snapshot_count)
+            return str(prov_subject) + '/prov/se/' + last_snapshot_count
 
     def get_se(self) -> Tuple[SnapshotEntity, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, SnapshotEntity))

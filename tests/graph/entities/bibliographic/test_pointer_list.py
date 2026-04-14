@@ -7,9 +7,11 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from rdflib import XSD
+
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
-from rdflib import XSD, Literal
+from oc_ocdm.light_graph import RDFTerm
 
 
 class TestPointerList(unittest.TestCase):
@@ -28,14 +30,14 @@ class TestPointerList(unittest.TestCase):
         result = self.pl.has_content(content)
         self.assertIsNone(result)
 
-        triple = self.pl.res, GraphEntity.iri_has_content, Literal(content, datatype=XSD.string)
+        triple = self.pl.res, GraphEntity.iri_has_content, RDFTerm("literal", content, str(XSD.string))
         self.assertIn(triple, self.pl.g)
 
     def test_contains_element(self):
         result = self.pl.contains_element(self.rp)
         self.assertIsNone(result)
 
-        triple = self.pl.res, GraphEntity.iri_has_element, self.rp.res
+        triple = self.pl.res, GraphEntity.iri_has_element, RDFTerm("uri", str(self.rp.res))
         self.assertIn(triple, self.pl.g)
 
 

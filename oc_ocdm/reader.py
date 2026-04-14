@@ -13,14 +13,17 @@ import os
 from typing import TYPE_CHECKING
 from zipfile import ZipFile
 
+from rdflib import RDF, Dataset, Graph, URIRef
+from sparqlite import EndpointError, SPARQLClient
+
 from oc_ocdm.graph.graph_entity import GraphEntity
+from oc_ocdm.light_graph import LightGraph, rdflib_to_rdfterm
 from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import build_graph_from_results, normalize_graph_literals
-from rdflib import RDF, Dataset, Graph, URIRef
-from sparqlite import SPARQLClient, EndpointError
 
 if TYPE_CHECKING:
     from typing import Any, Dict, List, Optional, Set
+
     from oc_ocdm.graph.graph_set import GraphSet
 
 from pyshacl import validate
@@ -119,10 +122,10 @@ class Reader(object):
         return False  # None of the formats succeeded
 
     @staticmethod
-    def get_graph_from_subject(graph: Graph, subject: URIRef) -> Graph:
-        g: Graph = Graph(identifier=graph.identifier)
+    def get_graph_from_subject(graph: Graph, subject: URIRef) -> LightGraph:
+        g = LightGraph(identifier=str(graph.identifier))
         for p, o in graph.predicate_objects(subject, unique=True):
-            g.add((subject, p, o))
+            g.add((str(subject), str(p), rdflib_to_rdfterm(o)))
         return g
 
     @staticmethod
@@ -179,53 +182,53 @@ class Reader(object):
             graph = reader.graph_validation(graph, closed)
         imported_entities: List[GraphEntity] = []
         for subject in Reader._extract_subjects(graph):
-            types = []
-            for o in graph.objects(subject, RDF.type):
-                types.append(o)
+            types: List[str] = [str(o) for o in graph.objects(subject, RDF.type)]
+            res_str: str = str(subject)
+            preexisting = Reader.get_graph_from_subject(graph, subject)
             # ReferenceAnnotation
             if GraphEntity.iri_note in types:
-                imported_entities.append(g_set.add_an(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
+                imported_entities.append(g_set.add_an(resp_agent=resp_agent, res=res_str,
+                                         preexisting_graph=preexisting))
             # AgentRole
             elif GraphEntity.iri_role_in_time in types:
-                imported_entities.append(g_set.add_ar(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
+                imported_entities.append(g_set.add_ar(resp_agent=resp_agent, res=res_str,
+                                         preexisting_graph=preexisting))
             # BibliographicReference
             elif GraphEntity.iri_bibliographic_reference in types:
-                imported_entities.append(g_set.add_be(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
+                imported_entities.append(g_set.add_be(resp_agent=resp_agent, res=res_str,
+                                         preexisting_graph=preexisting))
             # BibliographicResource
             elif GraphEntity.iri_expression in types:
-                imported_entities.append(g_set.add_br(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
+                imported_entities.append(g_set.add_br(resp_agent=resp_agent, res=res_str,
+                                         preexisting_graph=preexisting))
             # Citation
             elif GraphEntity.iri_citation in types:
-                imported_entities.append(g_set.add_ci(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
+                imported_entities.append(g_set.add_ci(resp_agent=resp_agent, res=res_str,
+                                         preexisting_graph=preexisting))
             # DiscourseElement
             elif GraphEntity.iri_discourse_element in types:
-                imported_entities.append(g_set.add_de(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
+                imported_entities.append(g_set.add_de(resp_agent=resp_agent, res=res_str,
+                                         preexisting_graph=preexisting))
             # Identifier
             elif GraphEntity.iri_identifier in types:
-                imported_entities.append(g_set.add_id(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
+                imported_entities.append(g_set.add_id(resp_agent=resp_agent, res=res_str,
+                                         preexisting_graph=preexisting))
             # PointerList
             elif GraphEntity.iri_singleloc_pointer_list in types:
-                imported_entities.append(g_set.add_pl(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
+                imported_entities.append(g_set.add_pl(resp_agent=resp_agent, res=res_str,
+                                         preexisting_graph=preexisting))
             # ResponsibleAgent
             elif GraphEntity.iri_agent in types:
-                imported_entities.append(g_set.add_ra(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
+                imported_entities.append(g_set.add_ra(resp_agent=resp_agent, res=res_str,
+                                         preexisting_graph=preexisting))
             # ResourceEmbodiment
             elif GraphEntity.iri_manifestation in types:
-                imported_entities.append(g_set.add_re(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
+                imported_entities.append(g_set.add_re(resp_agent=resp_agent, res=res_str,
+                                         preexisting_graph=preexisting))
             # ReferencePointer
             elif GraphEntity.iri_intextref_pointer in types:
-                imported_entities.append(g_set.add_rp(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=Reader.get_graph_from_subject(graph, subject)))
+                imported_entities.append(g_set.add_rp(resp_agent=resp_agent, res=res_str,
+                                         preexisting_graph=preexisting))
         return imported_entities
 
     @staticmethod

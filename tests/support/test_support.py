@@ -8,16 +8,20 @@
 import os
 import unittest
 
-from rdflib import Graph, Literal, Namespace, URIRef, XSD
+from rdflib import XSD, Graph, Literal, Namespace, URIRef
 
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
-from oc_ocdm.support.support import (build_graph_from_results, create_date,
-                                     create_literal, find_paths,
-                                     get_datatype_from_iso_8601,
-                                     get_ordered_contributors_from_br,
-                                     normalize_graph_literals,
-                                     sparql_binding_to_term)
+from oc_ocdm.support.support import (
+    build_graph_from_results,
+    create_date,
+    create_literal,
+    find_paths,
+    get_datatype_from_iso_8601,
+    get_ordered_contributors_from_br,
+    normalize_graph_literals,
+    sparql_binding_to_term,
+)
 
 
 class TestSupport(unittest.TestCase):

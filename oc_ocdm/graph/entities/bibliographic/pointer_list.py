@@ -10,13 +10,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from oc_ocdm.decorators import accepts_only
+from oc_ocdm.light_graph import RDFTerm
 
 if TYPE_CHECKING:
-    from typing import Optional, List
-    from rdflib import URIRef
+    from typing import List, Optional
+
     from oc_ocdm.graph.entities.bibliographic.reference_pointer import ReferencePointer
-from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
+from oc_ocdm.graph.graph_entity import GraphEntity
 
 
 class PointerList(BibliographicEntity):
@@ -93,7 +94,7 @@ class PointerList(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_element, 'rp')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_has_element, 'rp')
         result: List[ReferencePointer] = []
         for uri in uri_list:
             result.append(self.g_set.add_rp(self.resp_agent, self.source, uri))
@@ -112,7 +113,7 @@ class PointerList(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, GraphEntity.iri_has_element, rp_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_element, RDFTerm("uri", str(rp_res.res))))
 
     @accepts_only('rp')
     def remove_contained_element(self, rp_res: ReferencePointer | None = None) -> None:
@@ -129,6 +130,6 @@ class PointerList(BibliographicEntity):
         :return: None
         """
         if rp_res is not None:
-            self.g.remove((self.res, GraphEntity.iri_has_element, rp_res.res))
+            self.g.remove((self.res, GraphEntity.iri_has_element, RDFTerm("uri", str(rp_res.res))))
         else:
             self.g.remove((self.res, GraphEntity.iri_has_element, None))

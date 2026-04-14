@@ -7,13 +7,10 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from rdflib import Graph, BNode
-
 from oc_ocdm.graph.graph_set import GraphSet
-
-from oc_ocdm.metadata.metadata_set import MetadataSet
 from oc_ocdm.metadata.entities.dataset import Dataset
 from oc_ocdm.metadata.entities.distribution import Distribution
+from oc_ocdm.metadata.metadata_set import MetadataSet
 
 
 class TestMetadataSet(unittest.TestCase):
@@ -34,14 +31,14 @@ class TestMetadataSet(unittest.TestCase):
 
         self.assertIsNotNone(dataset)
         self.assertIsInstance(dataset, Dataset)
-        self.assertIsInstance(dataset.g.identifier, BNode)
+        self.assertIsNone(dataset.g.identifier)
 
     def test_add_di(self):
         di = self.metadata_set.add_di("ocdmTest", self.resp_agent)
 
         self.assertIsNotNone(di)
         self.assertIsInstance(di, Distribution)
-        self.assertIsInstance(di.g.identifier, BNode)
+        self.assertIsNone(di.g.identifier)
 
     def test_graphs(self):
         count = 10
@@ -51,7 +48,7 @@ class TestMetadataSet(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertEqual(len(result), count)
         for graph in result:
-            self.assertIsInstance(graph, Graph)
+            self.assertTrue(len(graph) > 0)
 
     def test_get_graph_iri(self):
         ar = self.metadata_set.add_dataset("ocdmTest", self.resp_agent)

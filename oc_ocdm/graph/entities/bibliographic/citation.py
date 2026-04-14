@@ -12,14 +12,15 @@ from typing import TYPE_CHECKING
 from rdflib import XSD
 
 from oc_ocdm.decorators import accepts_only
+from oc_ocdm.light_graph import RDFTerm
 from oc_ocdm.support.support import get_datatype_from_iso_8601
 
 if TYPE_CHECKING:
     from typing import Optional
-    from rdflib import URIRef
+
     from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import BibliographicResource
-from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
+from oc_ocdm.graph.graph_entity import GraphEntity
 
 
 class Citation(BibliographicEntity):
@@ -70,7 +71,7 @@ class Citation(BibliographicEntity):
         if time_span is not None:
             self.has_citation_time_span(time_span)
 
-        characterization: Optional[URIRef] = other.get_citation_characterization()
+        characterization: Optional[str] = other.get_citation_characterization()
         if characterization is not None:
             self.has_citation_characterization(characterization)
 
@@ -81,7 +82,7 @@ class Citation(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_citing_entity, 'br')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_citing_entity, 'br')
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source, uri)
 
@@ -100,7 +101,7 @@ class Citation(BibliographicEntity):
         :return: None
         """
         self.remove_citing_entity()
-        self.g.add((self.res, GraphEntity.iri_has_citing_entity, citing_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_citing_entity, RDFTerm("uri", str(citing_res.res))))
 
     def remove_citing_entity(self) -> None:
         """
@@ -117,7 +118,7 @@ class Citation(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_cited_entity, 'br')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_cited_entity, 'br')
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source, uri)
 
@@ -136,7 +137,7 @@ class Citation(BibliographicEntity):
         :return: None
         """
         self.remove_cited_entity()
-        self.g.add((self.res, GraphEntity.iri_has_cited_entity, cited_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_cited_entity, RDFTerm("uri", str(cited_res.res))))
 
     def remove_cited_entity(self) -> None:
         """
@@ -223,17 +224,17 @@ class Citation(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.iri_has_citation_time_span, None))
 
     # HAS CITATION CHARACTERIZATION
-    def get_citation_characterization(self) -> Optional[URIRef]:
+    def get_citation_characterization(self) -> Optional[str]:
         """
         Getter method corresponding to the ``cito:hasCitationCharacterisation`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_citation_characterisation)
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_citation_characterisation)
         return uri
 
     @accepts_only('thing')
-    def has_citation_characterization(self, thing_res: URIRef) -> None:
+    def has_citation_characterization(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``cito:hasCitationCharacterisation`` RDF predicate.
 
@@ -247,7 +248,7 @@ class Citation(BibliographicEntity):
         :return: None
         """
         self.remove_citation_characterization()
-        self.g.add((self.res, GraphEntity.iri_citation_characterisation, thing_res))
+        self.g.add((self.res, GraphEntity.iri_citation_characterisation, RDFTerm("uri", str(thing_res))))
 
     def remove_citation_characterization(self) -> None:
         """

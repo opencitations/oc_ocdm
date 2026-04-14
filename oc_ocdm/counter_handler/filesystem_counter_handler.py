@@ -9,12 +9,10 @@
 from __future__ import annotations
 
 import os
-from shutil import copymode, move
-from tempfile import mkstemp
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import BinaryIO, Tuple, List, Dict
+    from typing import Dict, List, Tuple
 
 from oc_ocdm.counter_handler.counter_handler import CounterHandler
 from oc_ocdm.support.support import is_string_empty

@@ -11,11 +11,10 @@ from pathlib import Path
 
 import pytest
 
+from benchmarks.generators.data_factory import DataFactory
 from oc_ocdm.counter_handler.redis_counter_handler import RedisCounterHandler
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
-
-from benchmarks.generators.data_factory import DataFactory
 
 REDIS_HOST = os.environ["REDIS_HOST"]
 REDIS_PORT = int(os.environ["REDIS_PORT"])

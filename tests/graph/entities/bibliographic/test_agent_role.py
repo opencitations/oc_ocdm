@@ -9,6 +9,7 @@ import unittest
 
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
+from oc_ocdm.light_graph import RDFTerm
 
 
 class TestAgentRole(unittest.TestCase):
@@ -28,35 +29,35 @@ class TestAgentRole(unittest.TestCase):
         result = self.ar1.has_next(self.ar2)
         self.assertIsNone(result)
 
-        triple = self.ar1.res, GraphEntity.iri_has_next, self.ar2.res
+        triple = self.ar1.res, GraphEntity.iri_has_next, RDFTerm("uri", str(self.ar2.res))
         self.assertIn(triple, self.ar1.g)
 
     def test_is_held_by(self):
         result = self.ar1.is_held_by(self.ra)
         self.assertIsNone(result)
 
-        triple = self.ar1.res, GraphEntity.iri_is_held_by, self.ra.res
+        triple = self.ar1.res, GraphEntity.iri_is_held_by, RDFTerm("uri", str(self.ra.res))
         self.assertIn(triple, self.ar1.g)
 
     def test_create_publisher(self):
         result = self.ar1.create_publisher()
         self.assertIsNone(result)
 
-        triple = self.ar1.res, GraphEntity.iri_with_role, GraphEntity.iri_publisher
+        triple = self.ar1.res, GraphEntity.iri_with_role, RDFTerm("uri", str(GraphEntity.iri_publisher))
         self.assertIn(triple, self.ar1.g)
 
     def test_create_author(self):
         result = self.ar1.create_author()
         self.assertIsNone(result)
 
-        triple = self.ar1.res, GraphEntity.iri_with_role, GraphEntity.iri_author
+        triple = self.ar1.res, GraphEntity.iri_with_role, RDFTerm("uri", str(GraphEntity.iri_author))
         self.assertIn(triple, self.ar1.g)
 
     def test_create_editor(self):
         result = self.ar1.create_editor()
         self.assertIsNone(result)
 
-        triple = self.ar1.res, GraphEntity.iri_with_role, GraphEntity.iri_editor
+        triple = self.ar1.res, GraphEntity.iri_with_role, RDFTerm("uri", str(GraphEntity.iri_editor))
         self.assertIn(triple, self.ar1.g)
 
 

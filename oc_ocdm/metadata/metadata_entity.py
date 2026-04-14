@@ -9,11 +9,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List
 
+from rdflib import Namespace
+
 from oc_ocdm.abstract_entity import AbstractEntity
-from rdflib import URIRef, Namespace, Graph
+from oc_ocdm.light_graph import LightGraph, RDFTerm, rdflib_to_rdfterm
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict
+
     from oc_ocdm.metadata.metadata_set import MetadataSet
 
 
@@ -22,35 +25,35 @@ class MetadataEntity(AbstractEntity):
     DCAT = Namespace("http://www.w3.org/ns/dcat#")
     VOID = Namespace("http://rdfs.org/ns/void#")
 
-    iri_dataset = DCAT.Dataset
-    iri_datafile = DCAT.Distribution
+    iri_dataset = str(DCAT.Dataset)
+    iri_datafile = str(DCAT.Distribution)
 
-    iri_title = DCTERMS["title"]
-    iri_description = DCTERMS.description
-    iri_issued = DCTERMS.issued
-    iri_modified = DCTERMS.modified
-    iri_keyword = DCAT.keyword
-    iri_subject = DCAT.theme
-    iri_landing_page = DCAT.landingPage
-    iri_subset = VOID.subset
-    iri_sparql_endpoint = VOID.sparqlEndpoint
-    iri_distribution = DCAT.distribution
-    iri_license = DCTERMS.license
-    iri_download_url = DCAT.downloadURL
-    iri_media_type = DCAT.mediaType
-    iri_byte_size = DCAT.byte_size
+    iri_title = str(DCTERMS["title"])
+    iri_description = str(DCTERMS.description)
+    iri_issued = str(DCTERMS.issued)
+    iri_modified = str(DCTERMS.modified)
+    iri_keyword = str(DCAT.keyword)
+    iri_subject = str(DCAT.theme)
+    iri_landing_page = str(DCAT.landingPage)
+    iri_subset = str(VOID.subset)
+    iri_sparql_endpoint = str(VOID.sparqlEndpoint)
+    iri_distribution = str(DCAT.distribution)
+    iri_license = str(DCTERMS.license)
+    iri_download_url = str(DCAT.downloadURL)
+    iri_media_type = str(DCAT.mediaType)
+    iri_byte_size = str(DCAT.byte_size)
 
-    short_name_to_type_iri: ClassVar[Dict[str, URIRef]] = {
+    short_name_to_type_iri: ClassVar[Dict[str, str]] = {
         '_dataset_': iri_dataset,
         'di': iri_datafile
     }
 
-    def __init__(self, g: Graph, base_iri: str, dataset_name: str, m_set: MetadataSet,
-                 res_type: URIRef, res: URIRef | None = None, resp_agent: str | None = None,
+    def __init__(self, g: LightGraph, base_iri: str, dataset_name: str, m_set: MetadataSet,
+                 res_type: str, res: str | None = None, resp_agent: str | None = None,
                  source: str | None = None, count: str | None = None, label: str | None = None, short_name: str = "",
-                 preexisting_graph: Graph | None = None) -> None:
+                 preexisting_graph: LightGraph | None = None) -> None:
         super(MetadataEntity, self).__init__()
-        self.g: Graph = g
+        self.g: LightGraph = g
         self.base_iri: str = base_iri
         self.dataset_name: str = dataset_name
         self.resp_agent: str | None = resp_agent
@@ -79,17 +82,10 @@ class MetadataEntity(AbstractEntity):
                 m_set.res_to_entity[self.res] = self
 
         if preexisting_graph is not None:
-            # Triples inside self.g are entirely replaced by triples from preexisting_graph.
-            # This has maximum priority with respect to every other self.g initializations.
-            # It's fundamental that the preexisting graph gets passed as an argument of the constructor:
-            # allowing the user to set this value later through a method would mean that the user could
-            # set the preexisting graph AFTER having modified self.g (which would not make sense).
             self.remove_every_triple()
-            triples = []
             for p, o in preexisting_graph.predicate_objects(self.res):
-                self.g.add((self.res, p, o))
-                triples.append((self.res, p, o))
-            self._preexisting_triples = frozenset(triples)
+                self.g.add((self.res, p, rdflib_to_rdfterm(o)))
+            self._preexisting_triples = frozenset(self.g)
         else:
             # Add mandatory information to the entity graph
             self._create_type(res_type)
@@ -97,12 +93,12 @@ class MetadataEntity(AbstractEntity):
                 self.create_label(label)
 
     @staticmethod
-    def _generate_new_res(count: str | None, base_res: str, short_name: str) -> URIRef:
+    def _generate_new_res(count: str | None, base_res: str, short_name: str) -> str:
         if short_name == '_dataset_':
-            return URIRef(base_res)
+            return base_res
         else:
             assert count is not None
-            return URIRef(base_res + short_name + "/" + count)
+            return base_res + short_name + "/" + count
 
     @property
     def to_be_deleted(self) -> bool:
@@ -120,7 +116,7 @@ class MetadataEntity(AbstractEntity):
         # Here we must REMOVE triples pointing
         # to 'self' [THIS CANNOT BE UNDONE]:
         for res, entity in self.m_set.res_to_entity.items():
-            triples_list: List[tuple] = list(entity.g.triples((res, None, self.res)))
+            triples_list: List[tuple] = list(entity.g.triples((res, None, RDFTerm("uri", str(self.res)))))
             for triple in triples_list:
                 entity.g.remove(triple)
 
@@ -147,13 +143,13 @@ class MetadataEntity(AbstractEntity):
         # Here we must REDIRECT triples pointing
         # to 'other' to make them point to 'self':
         for res, entity in self.m_set.res_to_entity.items():
-            triples_list: List[tuple] = list(entity.g.triples((res, None, other.res)))
+            triples_list: List[tuple] = list(entity.g.triples((res, None, RDFTerm("uri", str(other.res)))))
             for triple in triples_list:
                 entity.g.remove(triple)
-                new_triple = (triple[0], triple[1], self.res)
+                new_triple = (triple[0], triple[1], RDFTerm("uri", str(self.res)))
                 entity.g.add(new_triple)
 
-        types: List[URIRef] = other.get_types()
+        types: List[str] = other.get_types()
         for cur_type in types:
             self._create_type(cur_type)
 

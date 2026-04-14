@@ -7,9 +7,11 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from rdflib import RDF, XSD, URIRef
+
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
-from rdflib import RDF, XSD, Literal, URIRef
+from oc_ocdm.light_graph import RDFTerm
 
 
 class TestResourceEmbodiment(unittest.TestCase):
@@ -27,7 +29,7 @@ class TestResourceEmbodiment(unittest.TestCase):
         result = self.re.has_media_type(media_type)
         self.assertIsNone(result)
 
-        triple = self.re.res, GraphEntity.iri_has_format, media_type
+        triple = self.re.res, GraphEntity.iri_has_format, RDFTerm("uri", str(media_type))
         self.assertIn(triple, self.re.g)
 
     def test_has_starting_page(self):
@@ -35,7 +37,7 @@ class TestResourceEmbodiment(unittest.TestCase):
         result = self.re.has_starting_page(starting_page)
         self.assertIsNone(result)
 
-        triple = self.re.res, GraphEntity.iri_starting_page, Literal(starting_page, datatype=XSD.string)
+        triple = self.re.res, GraphEntity.iri_starting_page, RDFTerm("literal", starting_page, str(XSD.string))
         self.assertIn(triple, self.re.g)
 
     def test_has_ending_page(self):
@@ -43,7 +45,7 @@ class TestResourceEmbodiment(unittest.TestCase):
         result = self.re.has_ending_page(ending_page)
         self.assertIsNone(result)
 
-        triple = self.re.res, GraphEntity.iri_ending_page, Literal(ending_page, datatype=XSD.string)
+        triple = self.re.res, GraphEntity.iri_ending_page, RDFTerm("literal", ending_page, str(XSD.string))
         self.assertIn(triple, self.re.g)
 
     def test_has_url(self):
@@ -51,21 +53,21 @@ class TestResourceEmbodiment(unittest.TestCase):
         result = self.re.has_url(url)
         self.assertIsNone(result)
 
-        triple = self.re.res, GraphEntity.iri_has_url, url
+        triple = self.re.res, GraphEntity.iri_has_url, RDFTerm("uri", str(url))
         self.assertIn(triple, self.re.g)
 
     def test_create_digital_embodiment(self):
         result = self.re.create_digital_embodiment()
         self.assertIsNone(result)
 
-        triple = self.re.res, RDF.type, GraphEntity.iri_digital_manifestation
+        triple = self.re.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_digital_manifestation))
         self.assertIn(triple, self.re.g)
 
     def test_create_print_embodiment(self):
         result = self.re.create_print_embodiment()
         self.assertIsNone(result)
 
-        triple = self.re.res, RDF.type, GraphEntity.iri_print_object
+        triple = self.re.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_print_object))
         self.assertIn(triple, self.re.g)
 
 

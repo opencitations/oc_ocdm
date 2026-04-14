@@ -8,10 +8,6 @@
 import pickle
 import unittest
 
-from rdflib import Graph
-
-from oc_ocdm.graph.graph_set import GraphSet
-from oc_ocdm.graph.entities.identifier import Identifier
 from oc_ocdm.graph.entities.bibliographic.agent_role import AgentRole
 from oc_ocdm.graph.entities.bibliographic.bibliographic_reference import BibliographicReference
 from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import BibliographicResource
@@ -22,6 +18,8 @@ from oc_ocdm.graph.entities.bibliographic.reference_annotation import ReferenceA
 from oc_ocdm.graph.entities.bibliographic.reference_pointer import ReferencePointer
 from oc_ocdm.graph.entities.bibliographic.resource_embodiment import ResourceEmbodiment
 from oc_ocdm.graph.entities.bibliographic.responsible_agent import ResponsibleAgent
+from oc_ocdm.graph.entities.identifier import Identifier
+from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestGraphSet(unittest.TestCase):
@@ -122,7 +120,7 @@ class TestGraphSet(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertEqual(len(result), count)
         for graph in result:
-            self.assertIsInstance(graph, Graph)
+            self.assertTrue(len(graph) > 0)
 
     def test_get_graph_iri(self):
         ar = self.graph_set.add_ar(self.resp_agent)

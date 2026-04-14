@@ -10,17 +10,31 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, Set
 
-from rdflib import URIRef
+from oc_ocdm.light_graph import RDFTerm
 
 if TYPE_CHECKING:
     from typing import Tuple
+
     from oc_ocdm.abstract_entity import AbstractEntity
 
 MAX_TRIPLES_PER_QUERY = 500
 
 
+def _term_to_nt(term) -> str:
+    if isinstance(term, RDFTerm):
+        if term.type == "literal":
+            escaped = term.value.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r')
+            if term.lang:
+                return f'"{escaped}"@{term.lang}'
+            return f'"{escaped}"^^<{term.datatype}>'
+        return f'<{term.value}>'
+    if isinstance(term, str):
+        return f'<{term}>'
+    return term.n3()
+
+
 def _serialize_triples_to_nt(triples: Set) -> str:
-    return "".join(f"{s.n3()} {p.n3()} {o.n3()} ." for s, p, o in triples)
+    return "".join(f"{_term_to_nt(s)} {_term_to_nt(p)} {_term_to_nt(o)} ." for s, p, o in triples)
 
 
 def _chunk_set(data: Set, chunk_size: int) -> List[Set]:
@@ -28,7 +42,7 @@ def _chunk_set(data: Set, chunk_size: int) -> List[Set]:
     return [set(data_list[i:i + chunk_size]) for i in range(0, len(data_list), chunk_size)]
 
 
-def get_delete_query(graph_iri: URIRef, data: Set) -> Tuple[List[str], int]:
+def get_delete_query(graph_iri: str, data: Set) -> Tuple[List[str], int]:
     num_of_statements: int = len(data)
     if num_of_statements <= 0:
         return [], 0
@@ -45,7 +59,7 @@ def get_delete_query(graph_iri: URIRef, data: Set) -> Tuple[List[str], int]:
     return queries, num_of_statements
 
 
-def get_insert_query(graph_iri: URIRef, data: Set) -> Tuple[List[str], int]:
+def get_insert_query(graph_iri: str, data: Set) -> Tuple[List[str], int]:
     num_of_statements: int = len(data)
     if num_of_statements <= 0:
         return [], 0
@@ -106,7 +120,8 @@ def get_update_query(entity: AbstractEntity, entity_type: str = "graph") -> Tupl
         return [], 0, 0
 
     graph_iri = entity.g.identifier
-    assert isinstance(graph_iri, URIRef)
+    if graph_iri is None:
+        raise ValueError("Entity graph has no identifier")
 
     delete_queries, _ = get_delete_query(graph_iri, to_delete)
     insert_queries, _ = get_insert_query(graph_iri, to_insert)

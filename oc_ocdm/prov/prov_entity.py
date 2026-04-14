@@ -9,10 +9,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from rdflib import Graph, Namespace, URIRef
+from rdflib import Namespace
 
 from oc_ocdm.abstract_entity import AbstractEntity
 from oc_ocdm.graph.graph_entity import GraphEntity
+from oc_ocdm.light_graph import LightGraph
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict, Optional
@@ -29,28 +30,28 @@ class ProvEntity(AbstractEntity):
 
     PROV: ClassVar[Namespace] = Namespace("http://www.w3.org/ns/prov#")
 
-    iri_entity: ClassVar[URIRef] = PROV.Entity
-    iri_generated_at_time: ClassVar[URIRef] = PROV.generatedAtTime
-    iri_invalidated_at_time: ClassVar[URIRef] = PROV.invalidatedAtTime
-    iri_specialization_of: ClassVar[URIRef] = PROV.specializationOf
-    iri_was_derived_from: ClassVar[URIRef] = PROV.wasDerivedFrom
-    iri_had_primary_source: ClassVar[URIRef] = PROV.hadPrimarySource
-    iri_was_attributed_to: ClassVar[URIRef] = PROV.wasAttributedTo
-    iri_description: ClassVar[URIRef] = GraphEntity.DCTERMS.description
-    iri_has_update_query: ClassVar[URIRef] = GraphEntity.OCO.hasUpdateQuery
+    iri_entity: ClassVar[str] = str(PROV.Entity)
+    iri_generated_at_time: ClassVar[str] = str(PROV.generatedAtTime)
+    iri_invalidated_at_time: ClassVar[str] = str(PROV.invalidatedAtTime)
+    iri_specialization_of: ClassVar[str] = str(PROV.specializationOf)
+    iri_was_derived_from: ClassVar[str] = str(PROV.wasDerivedFrom)
+    iri_had_primary_source: ClassVar[str] = str(PROV.hadPrimarySource)
+    iri_was_attributed_to: ClassVar[str] = str(PROV.wasAttributedTo)
+    iri_description: ClassVar[str] = str(GraphEntity.DCTERMS.description)
+    iri_has_update_query: ClassVar[str] = str(GraphEntity.OCO.hasUpdateQuery)
 
-    short_name_to_type_iri: ClassVar[Dict[str, URIRef]] = {
+    short_name_to_type_iri: ClassVar[Dict[str, str]] = {
         'se': iri_entity
     }
 
-    def __init__(self, prov_subject: GraphEntity, g: Graph, p_set: ProvSet,
-                 res: Optional[URIRef] = None, resp_agent: Optional[str] = None, source: Optional[str] = None,
+    def __init__(self, prov_subject: GraphEntity, g: LightGraph, p_set: ProvSet,
+                 res: Optional[str] = None, resp_agent: Optional[str] = None, source: Optional[str] = None,
                  count: Optional[str] = None, label: Optional[str] = None,
                  short_name: str = "se") -> None:
         super(ProvEntity, self).__init__()
         self.prov_subject: GraphEntity = prov_subject
 
-        self.g: Graph = g
+        self.g: LightGraph = g
         self.resp_agent: Optional[str] = resp_agent
         self.source: Optional[str] = source
         self.short_name: str = short_name
@@ -74,5 +75,5 @@ class ProvEntity(AbstractEntity):
             self.create_label(label)
 
     @staticmethod
-    def _generate_new_res(g: Graph, count: str, short_name: str) -> URIRef:
-        return URIRef(str(g.identifier) + short_name + "/" + count)
+    def _generate_new_res(g: LightGraph, count: str, short_name: str) -> str:
+        return str(g.identifier) + short_name + "/" + count

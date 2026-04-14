@@ -7,10 +7,11 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from rdflib import URIRef, Literal, XSD
+from rdflib import XSD, URIRef
 
-from oc_ocdm.metadata.metadata_set import MetadataSet
+from oc_ocdm.light_graph import RDFTerm
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
+from oc_ocdm.metadata.metadata_set import MetadataSet
 
 
 class TestBibliographicResource(unittest.TestCase):
@@ -28,7 +29,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.di.has_title(title)
         self.assertIsNone(result)
 
-        triple = self.di.res, MetadataEntity.iri_title, Literal(title, datatype=XSD.string)
+        triple = self.di.res, MetadataEntity.iri_title, RDFTerm("literal", title, str(XSD.string))
         self.assertIn(triple, self.di.g)
 
     def test_has_description(self):
@@ -36,7 +37,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.di.has_description(description)
         self.assertIsNone(result)
 
-        triple = self.di.res, MetadataEntity.iri_description, Literal(description, datatype=XSD.string)
+        triple = self.di.res, MetadataEntity.iri_description, RDFTerm("literal", description, str(XSD.string))
         self.assertIn(triple, self.di.g)
 
     def test_has_publication_date(self):
@@ -44,8 +45,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.di.has_publication_date(string)
         self.assertIsNone(result)
 
-        triple = self.di.res, MetadataEntity.iri_issued, Literal(string, datatype=XSD.dateTime,
-                                                                 normalize=False)
+        triple = self.di.res, MetadataEntity.iri_issued, RDFTerm("literal", string, str(XSD.dateTime))
         self.assertIn(triple, self.di.g)
 
     def test_has_license(self):
@@ -53,7 +53,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.di.has_license(license)
         self.assertIsNone(result)
 
-        triple = self.di.res, MetadataEntity.iri_license, license
+        triple = self.di.res, MetadataEntity.iri_license, RDFTerm("uri", str(license))
         self.assertIn(triple, self.di.g)
 
     def test_has_download_url(self):
@@ -61,7 +61,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.di.has_download_url(download_url)
         self.assertIsNone(result)
 
-        triple = self.di.res, MetadataEntity.iri_download_url, download_url
+        triple = self.di.res, MetadataEntity.iri_download_url, RDFTerm("uri", str(download_url))
         self.assertIn(triple, self.di.g)
 
     def test_has_media_type(self):
@@ -69,7 +69,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.di.has_media_type(media_type)
         self.assertIsNone(result)
 
-        triple = self.di.res, MetadataEntity.iri_media_type, media_type
+        triple = self.di.res, MetadataEntity.iri_media_type, RDFTerm("uri", str(media_type))
         self.assertIn(triple, self.di.g)
 
     def test_has_byte_size(self):
@@ -77,8 +77,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.di.has_byte_size(byte_size)
         self.assertIsNone(result)
 
-        triple = self.di.res, MetadataEntity.iri_byte_size, Literal(byte_size, datatype=XSD.decimal,
-                                                                    normalize=False)
+        triple = self.di.res, MetadataEntity.iri_byte_size, RDFTerm("literal", byte_size, str(XSD.decimal))
         self.assertIn(triple, self.di.g)
 
     def test_merge_with_title(self):

@@ -5,9 +5,8 @@
 import pytest
 from rdflib import URIRef
 
-from oc_ocdm.support.support import find_paths
-
 from benchmarks.conftest import BASE_IRI, BENCHMARK_ROUNDS
+from oc_ocdm.support.support import find_paths
 
 
 class TestFindPaths:

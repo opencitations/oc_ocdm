@@ -16,16 +16,17 @@ from typing import TYPE_CHECKING
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from filelock import FileLock
+from rdflib import Dataset, URIRef
+from sparqlite import EndpointError, SPARQLClient
 
 from oc_ocdm.graph.graph_entity import GraphEntity
+from oc_ocdm.light_graph import LightGraph
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.reader import Reader
 from oc_ocdm.support.query_utils import get_update_query
 from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import find_paths
-from rdflib import Dataset, URIRef
-from sparqlite import SPARQLClient, EndpointError
 
 if TYPE_CHECKING:
     from typing import Any, Dict, List, Set, Tuple
@@ -80,6 +81,13 @@ class Storer(object):
         else:
             self.reperr: Reporter = reperr
 
+    @staticmethod
+    def _entity_quads(entity_g) -> list:
+        if isinstance(entity_g, LightGraph):
+            return list(entity_g.to_rdflib_quads())
+        graph_id = entity_g.identifier
+        return [(*item, graph_id) for item in entity_g]
+
     def store_graphs_in_file(self, file_path: str, context_path: str | None = None) -> None:
         self.repok.new_article()
         self.reperr.new_article()
@@ -87,7 +95,7 @@ class Storer(object):
 
         cg: Dataset = Dataset()
         for g in self.a_set.graphs():
-            cg.addN(item + (g.identifier,) for item in g)  # type: ignore[arg-type]
+            cg.addN(self._entity_quads(g))
 
         self._store_in_file(cg, file_path, context_path)
 
@@ -141,7 +149,7 @@ class Storer(object):
         created_dirs = set()
         for entity in self.a_set.res_to_entity.values():
             is_relevant = True
-            if self.modified_entities is not None and URIRef(entity.res.split('/prov/se/')[0]) not in self.modified_entities:
+            if self.modified_entities is not None and entity.res.split('/prov/se/')[0] not in self.modified_entities:
                 is_relevant = False
             if is_relevant:
                 cur_dir_path, cur_file_path = self._dir_and_file_paths(entity.res, base_dir, base_iri, process_id)
@@ -167,37 +175,24 @@ class Storer(object):
 
         return list(relevant_paths.keys())
 
+    def _entity_triples_as_rdflib_quads(self, entity: AbstractEntity) -> List[Tuple]:
+        return [q for q in entity.g.to_rdflib_quads()
+                if q[0] == URIRef(str(entity.res))]
+
     def store(self, entity: AbstractEntity, destination_g: Dataset, cur_file_path: str, context_path: str | None = None, store_now: bool = True) -> Dataset | None:
         self.repok.new_article()
         self.reperr.new_article()
 
         try:
             if isinstance(entity, ProvEntity):
-                quads: List[Tuple] = []
-                graph_identifier = URIRef(str(entity.g.identifier))
-                for triple in entity.g.triples((entity.res, None, None)):
-                    quads.append((*triple, graph_identifier))
-                destination_g.addN(quads)
+                destination_g.addN(self._entity_triples_as_rdflib_quads(entity))
             elif isinstance(entity, GraphEntity) or isinstance(entity, MetadataEntity):
                 if entity.to_be_deleted:
-                    destination_g.remove((entity.res, None, None, None))  # type: ignore[arg-type]
+                    destination_g.remove((URIRef(entity.res), None, None, None))  # type: ignore[arg-type]
                 else:
                     if len(entity._preexisting_triples) > 0:
-                        """
-                        We're not in 'append mode', so we need to remove
-                        the entity that we're going to overwrite.
-                        """
-                        destination_g.remove((entity.res, None, None, None))  # type: ignore[arg-type]
-                    """
-                    Here we copy data from the entity into the stored graph.
-                    If the entity was marked as to be deleted, then we're
-                    done because we already removed all of its triples.
-                    """
-                    quads: List[Tuple] = []
-                    graph_identifier = URIRef(str(entity.g.identifier))
-                    for triple in entity.g.triples((entity.res, None, None)):
-                        quads.append((*triple, graph_identifier))
-                    destination_g.addN(quads)
+                        destination_g.remove((URIRef(entity.res), None, None, None))  # type: ignore[arg-type]
+                    destination_g.addN(self._entity_triples_as_rdflib_quads(entity))
 
             if store_now:
                 self._store_in_file(destination_g, cur_file_path, context_path)
@@ -271,7 +266,7 @@ class Storer(object):
         if self.modified_entities is not None:
             entities_to_process = [
                 entity for entity in entities_to_process
-                if URIRef(str(entity.res).split('/prov/se/')[0]) in self.modified_entities
+                if str(entity.res).split('/prov/se/')[0] in self.modified_entities
             ]
 
         for entity in entities_to_process:

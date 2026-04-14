@@ -7,15 +7,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from rdflib import XSD
 
 from oc_ocdm.decorators import accepts_only
+from oc_ocdm.light_graph import RDFTerm
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
-
-if TYPE_CHECKING:
-    from rdflib import URIRef
 
 
 class Distribution(MetadataEntity):
@@ -60,15 +56,15 @@ class Distribution(MetadataEntity):
         if byte_size is not None:
             self.has_byte_size(byte_size)
 
-        license_uri: URIRef | None = other.get_license()
+        license_uri: str | None = other.get_license()
         if license_uri is not None:
             self.has_license(license_uri)
 
-        download_url: URIRef | None = other.get_download_url()
+        download_url: str | None = other.get_download_url()
         if download_url is not None:
             self.has_download_url(download_url)
 
-        media_type: URIRef | None = other.get_media_type()
+        media_type: str | None = other.get_media_type()
         if media_type is not None:
             self.has_media_type(media_type)
 
@@ -211,7 +207,7 @@ class Distribution(MetadataEntity):
         self.g.remove((self.res, MetadataEntity.iri_byte_size, None))
 
     # HAS LICENSE
-    def get_license(self) -> URIRef | None:
+    def get_license(self) -> str | None:
         """
         Getter method corresponding to the ``dcterms:license`` RDF predicate.
 
@@ -220,7 +216,7 @@ class Distribution(MetadataEntity):
         return self._get_uri_reference(MetadataEntity.iri_license)
 
     @accepts_only('thing')
-    def has_license(self, thing_res: URIRef) -> None:
+    def has_license(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``dcterms:license`` RDF predicate.
 
@@ -234,7 +230,7 @@ class Distribution(MetadataEntity):
         :return: None
         """
         self.remove_license()
-        self.g.add((self.res, MetadataEntity.iri_license, thing_res))
+        self.g.add((self.res, MetadataEntity.iri_license, RDFTerm("uri", str(thing_res))))
 
     def remove_license(self) -> None:
         """
@@ -245,7 +241,7 @@ class Distribution(MetadataEntity):
         self.g.remove((self.res, MetadataEntity.iri_license, None))
 
     # HAS DOWNLOAD URL
-    def get_download_url(self) -> URIRef | None:
+    def get_download_url(self) -> str | None:
         """
         Getter method corresponding to the ``dcat:downloadURL`` RDF predicate.
 
@@ -254,7 +250,7 @@ class Distribution(MetadataEntity):
         return self._get_uri_reference(MetadataEntity.iri_download_url)
 
     @accepts_only('thing')
-    def has_download_url(self, thing_res: URIRef) -> None:
+    def has_download_url(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``dcat:downloadURL`` RDF predicate.
 
@@ -268,7 +264,7 @@ class Distribution(MetadataEntity):
         :return: None
         """
         self.remove_download_url()
-        self.g.add((self.res, MetadataEntity.iri_download_url, thing_res))
+        self.g.add((self.res, MetadataEntity.iri_download_url, RDFTerm("uri", str(thing_res))))
 
     def remove_download_url(self) -> None:
         """
@@ -279,7 +275,7 @@ class Distribution(MetadataEntity):
         self.g.remove((self.res, MetadataEntity.iri_download_url, None))
 
     # HAS_MEDIA_TYPE
-    def get_media_type(self) -> URIRef | None:
+    def get_media_type(self) -> str | None:
         """
         Getter method corresponding to the ``dcat:mediaType`` RDF predicate.
 
@@ -288,7 +284,7 @@ class Distribution(MetadataEntity):
         return self._get_uri_reference(MetadataEntity.iri_media_type)
 
     @accepts_only('thing')
-    def has_media_type(self, thing_res: URIRef) -> None:
+    def has_media_type(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``dcat:mediaType`` RDF predicate.
 
@@ -302,7 +298,7 @@ class Distribution(MetadataEntity):
         :return: None
         """
         self.remove_media_type()
-        self.g.add((self.res, MetadataEntity.iri_media_type, thing_res))
+        self.g.add((self.res, MetadataEntity.iri_media_type, RDFTerm("uri", str(thing_res))))
 
     def remove_media_type(self) -> None:
         """

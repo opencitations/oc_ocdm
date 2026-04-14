@@ -10,13 +10,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from oc_ocdm.decorators import accepts_only
+from oc_ocdm.light_graph import RDFTerm
 
 if TYPE_CHECKING:
     from typing import Optional
-    from rdflib import URIRef
+
     from oc_ocdm.graph.entities.bibliographic.responsible_agent import ResponsibleAgent
-from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
+from oc_ocdm.graph.graph_entity import GraphEntity
 
 
 class AgentRole(BibliographicEntity):
@@ -52,7 +53,7 @@ class AgentRole(BibliographicEntity):
         if resp_agent is not None:
             self.is_held_by(resp_agent)
 
-        role_type: Optional[URIRef] = other.get_role_type()
+        role_type: Optional[str] = other.get_role_type()
         if role_type is not None:
             if role_type == GraphEntity.iri_publisher:
                 self.create_publisher()
@@ -68,7 +69,7 @@ class AgentRole(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_next, 'ar')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_next, 'ar')
         if uri is not None:
             return self.g_set.add_ar(self.resp_agent, self.source, uri)
 
@@ -88,7 +89,7 @@ class AgentRole(BibliographicEntity):
         :return: None
         """
         self.remove_next()
-        self.g.add((self.res, GraphEntity.iri_has_next, ar_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_next, RDFTerm("uri", str(ar_res.res))))
 
     def remove_next(self) -> None:
         """
@@ -105,7 +106,7 @@ class AgentRole(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_is_held_by, 'ra')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_is_held_by, 'ra')
         if uri is not None:
             return self.g_set.add_ra(self.resp_agent, self.source, uri)
 
@@ -124,7 +125,7 @@ class AgentRole(BibliographicEntity):
         :return: None
         """
         self.remove_is_held_by()
-        self.g.add((self.res, GraphEntity.iri_is_held_by, ra_res.res))
+        self.g.add((self.res, GraphEntity.iri_is_held_by, RDFTerm("uri", str(ra_res.res))))
 
     def remove_is_held_by(self) -> None:
         """
@@ -135,13 +136,13 @@ class AgentRole(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.iri_is_held_by, None))
 
     # HAS ROLE TYPE
-    def get_role_type(self) -> Optional[URIRef]:
+    def get_role_type(self) -> Optional[str]:
         """
         Getter method corresponding to the ``pro:withRole`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_with_role)
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_with_role)
         return uri
 
     def create_publisher(self) -> None:
@@ -156,7 +157,7 @@ class AgentRole(BibliographicEntity):
         :return: None
         """
         self.remove_role_type()
-        self.g.add((self.res, GraphEntity.iri_with_role, GraphEntity.iri_publisher))
+        self.g.add((self.res, GraphEntity.iri_with_role, RDFTerm("uri", str(GraphEntity.iri_publisher))))
 
     def create_author(self) -> None:
         """
@@ -170,7 +171,7 @@ class AgentRole(BibliographicEntity):
         :return: None
         """
         self.remove_role_type()
-        self.g.add((self.res, GraphEntity.iri_with_role, GraphEntity.iri_author))
+        self.g.add((self.res, GraphEntity.iri_with_role, RDFTerm("uri", str(GraphEntity.iri_author))))
 
     def create_editor(self) -> None:
         """
@@ -184,7 +185,7 @@ class AgentRole(BibliographicEntity):
         :return: None
         """
         self.remove_role_type()
-        self.g.add((self.res, GraphEntity.iri_with_role, GraphEntity.iri_editor))
+        self.g.add((self.res, GraphEntity.iri_with_role, RDFTerm("uri", str(GraphEntity.iri_editor))))
 
     def remove_role_type(self) -> None:
         """

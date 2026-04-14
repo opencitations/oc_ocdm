@@ -11,12 +11,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from oc_ocdm.decorators import accepts_only
+from oc_ocdm.light_graph import RDFTerm
 
 if TYPE_CHECKING:
-    from typing import Optional, List
-    from rdflib import URIRef
-from oc_ocdm.graph.graph_entity import GraphEntity
+    from typing import List, Optional
 from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
+from oc_ocdm.graph.graph_entity import GraphEntity
 
 
 class ResponsibleAgent(BibliographicEntity):
@@ -58,7 +58,7 @@ class ResponsibleAgent(BibliographicEntity):
         if family_name is not None:
             self.has_family_name(family_name)
 
-        related_agents: List[URIRef] = other.get_related_agents()
+        related_agents: List[str] = other.get_related_agents()
         for cur_agent in related_agents:
             self.has_related_agent(cur_agent)
 
@@ -166,17 +166,17 @@ class ResponsibleAgent(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.iri_family_name, None))
 
     # HAS RELATED AGENT
-    def get_related_agents(self) -> List[URIRef]:
+    def get_related_agents(self) -> List[str]:
         """
         Getter method corresponding to the ``dcterms:relation`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_relation)
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_relation)
         return uri_list
 
     @accepts_only('thing')
-    def has_related_agent(self, thing_res: URIRef) -> None:
+    def has_related_agent(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``dcterms:relation`` RDF predicate.
 
@@ -188,10 +188,10 @@ class ResponsibleAgent(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, GraphEntity.iri_relation, thing_res))
+        self.g.add((self.res, GraphEntity.iri_relation, RDFTerm("uri", str(thing_res))))
 
     @accepts_only('thing')
-    def remove_related_agent(self, thing_res: URIRef | None = None) -> None:
+    def remove_related_agent(self, thing_res: str | None = None) -> None:
         """
         Remover method corresponding to the ``dcterms:relation`` RDF predicate.
 
@@ -205,6 +205,6 @@ class ResponsibleAgent(BibliographicEntity):
         :return: None
         """
         if thing_res is not None:
-            self.g.remove((self.res, GraphEntity.iri_relation, thing_res))
+            self.g.remove((self.res, GraphEntity.iri_relation, RDFTerm("uri", str(thing_res))))
         else:
             self.g.remove((self.res, GraphEntity.iri_relation, None))

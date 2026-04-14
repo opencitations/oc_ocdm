@@ -9,13 +9,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from rdflib import XSD
+
 from oc_ocdm.decorators import accepts_only
+from oc_ocdm.light_graph import RDFTerm
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
-from rdflib import Literal, XSD
 
 if TYPE_CHECKING:
     from typing import List
-    from rdflib import URIRef
+
     from oc_ocdm.metadata.entities.distribution import Distribution
 
 
@@ -65,11 +67,11 @@ class Dataset(MetadataEntity):
         for cur_keyword in keywords_list:
             self.has_keyword(cur_keyword)
 
-        subjects_list: List[URIRef] = other.get_subjects()
+        subjects_list: List[str] = other.get_subjects()
         for cur_subject in subjects_list:
             self.has_subject(cur_subject)
 
-        landing_page: URIRef | None = other.get_landing_page()
+        landing_page: str | None = other.get_landing_page()
         if landing_page is not None:
             self.has_landing_page(landing_page)
 
@@ -77,7 +79,7 @@ class Dataset(MetadataEntity):
         for cur_sub_dataset in sub_datasets_list:
             self.has_sub_dataset(cur_sub_dataset)
 
-        sparql_endpoint: URIRef | None = other.get_sparql_endpoint()
+        sparql_endpoint: str | None = other.get_sparql_endpoint()
         if sparql_endpoint is not None:
             self.has_sparql_endpoint(sparql_endpoint)
 
@@ -261,22 +263,22 @@ class Dataset(MetadataEntity):
         :return: None
         """
         if string is not None:
-            self.g.remove((self.res, MetadataEntity.iri_keyword, Literal(string)))
+            self.g.remove((self.res, MetadataEntity.iri_keyword, RDFTerm("literal", string, "http://www.w3.org/2001/XMLSchema#string")))
         else:
             self.g.remove((self.res, MetadataEntity.iri_keyword, None))
 
     # HAS SUBJECT
-    def get_subjects(self) -> List[URIRef]:
+    def get_subjects(self) -> List[str]:
         """
         Getter method corresponding to the ``dcat:theme`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(MetadataEntity.iri_subject)
+        uri_list: List[str] = self._get_multiple_uri_references(MetadataEntity.iri_subject)
         return uri_list
 
     @accepts_only('thing')
-    def has_subject(self, thing_res: URIRef) -> None:
+    def has_subject(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``dcat:theme`` RDF predicate.
 
@@ -287,10 +289,10 @@ class Dataset(MetadataEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, MetadataEntity.iri_subject, thing_res))
+        self.g.add((self.res, MetadataEntity.iri_subject, RDFTerm("uri", str(thing_res))))
 
     @accepts_only('thing')
-    def remove_subject(self, thing_res: URIRef | None = None) -> None:
+    def remove_subject(self, thing_res: str | None = None) -> None:
         """
         Remover method corresponding to the ``dcat:theme`` RDF predicate.
 
@@ -304,12 +306,12 @@ class Dataset(MetadataEntity):
         :return: None
         """
         if thing_res is not None:
-            self.g.remove((self.res, MetadataEntity.iri_subject, thing_res))
+            self.g.remove((self.res, MetadataEntity.iri_subject, RDFTerm("uri", str(thing_res))))
         else:
             self.g.remove((self.res, MetadataEntity.iri_subject, None))
 
     # HAS LANDING PAGE
-    def get_landing_page(self) -> URIRef | None:
+    def get_landing_page(self) -> str | None:
         """
         Getter method corresponding to the ``dcat:landingPage`` RDF predicate.
 
@@ -318,7 +320,7 @@ class Dataset(MetadataEntity):
         return self._get_uri_reference(MetadataEntity.iri_landing_page)
 
     @accepts_only('thing')
-    def has_landing_page(self, thing_res: URIRef) -> None:
+    def has_landing_page(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``dcat:landingPage`` RDF predicate.
 
@@ -332,7 +334,7 @@ class Dataset(MetadataEntity):
         :return: None
         """
         self.remove_landing_page()
-        self.g.add((self.res, MetadataEntity.iri_landing_page, thing_res))
+        self.g.add((self.res, MetadataEntity.iri_landing_page, RDFTerm("uri", str(thing_res))))
 
     def remove_landing_page(self) -> None:
         """
@@ -349,7 +351,7 @@ class Dataset(MetadataEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(MetadataEntity.iri_subset, '_dataset_')
+        uri_list: List[str] = self._get_multiple_uri_references(MetadataEntity.iri_subset, '_dataset_')
         result: List[Dataset] = []
         for uri in uri_list:
             result.append(self.m_set.add_dataset(self.dataset_name, self.resp_agent or "", self.source, uri))
@@ -367,7 +369,7 @@ class Dataset(MetadataEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, MetadataEntity.iri_subset, obj.res))
+        self.g.add((self.res, MetadataEntity.iri_subset, RDFTerm("uri", str(obj.res))))
 
     @accepts_only('_dataset_')
     def remove_sub_dataset(self, dataset_res: Dataset | None = None) -> None:
@@ -384,22 +386,22 @@ class Dataset(MetadataEntity):
         :return: None
         """
         if dataset_res is not None:
-            self.g.remove((self.res, MetadataEntity.iri_subset, dataset_res.res))
+            self.g.remove((self.res, MetadataEntity.iri_subset, RDFTerm("uri", str(dataset_res.res))))
         else:
             self.g.remove((self.res, MetadataEntity.iri_subset, None))
 
     # HAS SPARQL ENDPOINT
-    def get_sparql_endpoint(self) -> URIRef | None:
+    def get_sparql_endpoint(self) -> str | None:
         """
         Getter method corresponding to the ``void:sparqlEndpoint`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
-        uri: URIRef | None = self._get_uri_reference(MetadataEntity.iri_sparql_endpoint)
+        uri: str | None = self._get_uri_reference(MetadataEntity.iri_sparql_endpoint)
         return uri
 
     @accepts_only('thing')
-    def has_sparql_endpoint(self, thing_res: URIRef) -> None:
+    def has_sparql_endpoint(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``void:sparqlEndpoint`` RDF predicate.
 
@@ -413,7 +415,7 @@ class Dataset(MetadataEntity):
         :return: None
         """
         self.remove_sparql_endpoint()
-        self.g.add((self.res, MetadataEntity.iri_sparql_endpoint, thing_res))
+        self.g.add((self.res, MetadataEntity.iri_sparql_endpoint, RDFTerm("uri", str(thing_res))))
 
     def remove_sparql_endpoint(self) -> None:
         """
@@ -430,7 +432,7 @@ class Dataset(MetadataEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(MetadataEntity.iri_distribution, 'di')
+        uri_list: List[str] = self._get_multiple_uri_references(MetadataEntity.iri_distribution, 'di')
         result: List[Distribution] = []
         for uri in uri_list:
             result.append(self.m_set.add_di(self.dataset_name, self.resp_agent or "", self.source, uri))
@@ -448,7 +450,7 @@ class Dataset(MetadataEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, MetadataEntity.iri_distribution, obj.res))
+        self.g.add((self.res, MetadataEntity.iri_distribution, RDFTerm("uri", str(obj.res))))
 
     @accepts_only('di')
     def remove_distribution(self, di_res: Distribution | None = None) -> None:
@@ -465,6 +467,6 @@ class Dataset(MetadataEntity):
         :return: None
         """
         if di_res is not None:
-            self.g.remove((self.res, MetadataEntity.iri_distribution, di_res.res))
+            self.g.remove((self.res, MetadataEntity.iri_distribution, RDFTerm("uri", str(di_res.res))))
         else:
             self.g.remove((self.res, MetadataEntity.iri_distribution, None))

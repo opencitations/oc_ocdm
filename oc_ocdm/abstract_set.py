@@ -12,10 +12,10 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from oc_ocdm.abstract_entity import AbstractEntity
+from oc_ocdm.light_graph import LightGraph
 
 if TYPE_CHECKING:
-    from typing import List, ClassVar, Dict, Optional
-    from rdflib import URIRef, Graph
+    from typing import ClassVar, Dict, List, Optional
 
 E = TypeVar('E', bound=AbstractEntity)
 
@@ -26,22 +26,22 @@ class AbstractSet(ABC, Generic[E]):
     It is the base class for each concrete set of entities.
     """
 
-    short_name_to_type_iri: ClassVar[Dict[str, URIRef]] = {}
+    short_name_to_type_iri: ClassVar[Dict[str, str]] = {}
 
     def __init__(self) -> None:
         """
         Constructor of the ``AbstractSet`` class.
         """
-        self.res_to_entity: Dict[URIRef, E] = {}
+        self.res_to_entity: Dict[str, E] = {}
 
-    def graphs(self) -> List[Graph]:
+    def graphs(self) -> List[LightGraph]:
         """
-        A utility method that allows to retrieve the list of ``rdflib.Graph``
+        A utility method that allows to retrieve the list of ``LightGraph``
         instances corresponding to each entity contained in the set.
 
         :return: The requested list of graphs
         """
-        result: List[Graph] = []
+        result: List[LightGraph] = []
         for entity in self.res_to_entity.values():
             if len(entity.g) > 0:
                 result.append(entity.g)
@@ -66,7 +66,7 @@ class AbstractSet(ABC, Generic[E]):
         vars(self).update(state)
 
     @abstractmethod
-    def get_entity(self, res: URIRef) -> Optional[E]:
+    def get_entity(self, res: str) -> Optional[E]:
         """
         Method signature for concrete implementations that allow
         to retrieve a contained entity identified by its URI.
@@ -78,7 +78,7 @@ class AbstractSet(ABC, Generic[E]):
         raise NotImplementedError
 
     @staticmethod
-    def get_graph_iri(g: Graph) -> str:
+    def get_graph_iri(g: LightGraph) -> str:
         """
         A utility method that allows to retrieve the IRI which represents
         the name of a given named graph.

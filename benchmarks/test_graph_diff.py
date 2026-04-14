@@ -5,9 +5,8 @@
 import pytest
 from rdflib import Graph
 
-from oc_ocdm.support.query_utils import _compute_graph_changes
-
 from benchmarks.conftest import BENCHMARK_ROUNDS, create_populated_graph_set
+from oc_ocdm.support.query_utils import _compute_graph_changes
 
 
 class MockEntity:

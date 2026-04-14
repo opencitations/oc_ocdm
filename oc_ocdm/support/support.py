@@ -12,16 +12,19 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
-from typing import TYPE_CHECKING
-from rdflib import URIRef, Graph
+from typing import TYPE_CHECKING, Union
+from urllib.parse import quote
+
+from rdflib import RDF, XSD, Graph, Literal, URIRef
+
+from oc_ocdm.light_graph import _XSD_STRING, LightGraph, RDFTerm
 
 if TYPE_CHECKING:
-    from typing import Optional, List, Tuple, Match, Dict, Set
+    from typing import Dict, List, Optional, Set, Tuple
+
+    from oc_ocdm.graph.entities.bibliographic.agent_role import AgentRole
     from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import BibliographicResource
     from oc_ocdm.graph.entities.bibliographic.responsible_agent import ResponsibleAgent
-    from oc_ocdm.graph.entities.bibliographic.agent_role import AgentRole
-
-from urllib.parse import quote
 
 
 @dataclass
@@ -34,9 +37,6 @@ class ParsedURI:
     prov_subject_short_name: str
     prov_subject_prefix: str
     prov_subject_count: str
-
-from rdflib import RDF, XSD, Literal
-from typing import Union
 
 
 def sparql_binding_to_term(binding: dict) -> Union[URIRef, Literal]:
@@ -80,7 +80,7 @@ def create_date(date_list: Optional[List[Optional[int]]] = None) -> Optional[str
     return string
 
 
-def get_datatype_from_iso_8601(string: str) -> Tuple[URIRef, str]:
+def get_datatype_from_iso_8601(string: str) -> Tuple[str, str]:
     # Keep only the "yyyy-mm-dd" part of the string
     string = string[:10]
 
@@ -98,25 +98,25 @@ def get_datatype_from_iso_8601(string: str) -> Tuple[URIRef, str]:
         return XSD.gYear, datetime(date_parts[0], 1, 1).strftime('%Y')
 
 def get_ordered_contributors_from_br(br: BibliographicResource,
-                                     contributor_type: URIRef):
+                                     contributor_type: str):
 
     ar_list: List[AgentRole] = br.get_contributors()
 
     list_id: int = 0
-    heads: Dict[URIRef, Dict] = {}
-    tails: Dict[URIRef, Dict] = {}
+    heads: Dict[str, Dict] = {}
+    tails: Dict[str, Dict] = {}
     sub_lists: List[Dict] = []
-    from_id_to_res_in_heads: Dict[int, URIRef] = {}
+    from_id_to_res_in_heads: Dict[int, str] = {}
     for ar in ar_list:
-        role_type: Optional[URIRef] = ar.get_role_type()
+        role_type: Optional[str] = ar.get_role_type()
         ra: Optional[ResponsibleAgent] = ar.get_is_held_by()
         next_ar: Optional[AgentRole] = ar.get_next()
         if next_ar is not None:
-            next_ar_res: Optional[URIRef] = next_ar.res
+            next_ar_res: Optional[str] = next_ar.res
         else:
-            next_ar_res: Optional[URIRef] = None
+            next_ar_res: Optional[str] = None
 
-        if role_type is not None and role_type == contributor_type and ra is not None:
+        if role_type is not None and role_type == str(contributor_type) and ra is not None:
             if next_ar_res is not None and next_ar_res in heads:
                 sub_list: Dict = heads[next_ar_res]
                 sub_list['list'].insert(0, ra)
@@ -158,7 +158,7 @@ def get_ordered_contributors_from_br(br: BibliographicResource,
         while not finished:
             found: bool = False
             if cur_id in from_id_to_res_in_heads:
-                res: URIRef = from_id_to_res_in_heads[cur_id]
+                res: str = from_id_to_res_in_heads[cur_id]
                 subl: Dict = heads[res]
                 subl_id: int = subl['id']
                 if subl_id not in already_merged_list_ids:
@@ -186,14 +186,21 @@ def encode_url(u: str) -> str:
     return quote(u, "://")
 
 
-def create_literal(g: Graph, res: URIRef, p: URIRef, s: str, dt: Optional[URIRef] = None, nor: bool = True) -> None:
+def create_literal(g, res, p: str, s: str, dt: str | None = None, nor: bool = True) -> None:
     if not is_string_empty(s):
-        dt = dt if dt is not None else XSD.string
-        g.add((res, p, Literal(s, datatype=dt, normalize=nor)))
+        if isinstance(g, LightGraph):
+            dt_str = str(dt) if dt is not None else _XSD_STRING
+            g.add((res, p, RDFTerm("literal", s, dt_str)))
+        else:
+            dt = dt if dt is not None else XSD.string
+            g.add((res, p, Literal(s, datatype=dt, normalize=nor)))
 
 
-def create_type(g: Graph, res: URIRef, res_type: URIRef) -> None:
-    g.add((res, RDF.type, res_type))
+def create_type(g, res: str, res_type: str) -> None:
+    if isinstance(g, LightGraph):
+        g.add((res, RDF.type, RDFTerm("uri", str(res_type))))
+    else:
+        g.add((res, RDF.type, res_type))
 
 
 def is_string_empty(string: Optional[str]) -> bool:
@@ -209,7 +216,7 @@ _compiled_prov_regex = re.compile(prov_regex)
 
 
 @lru_cache(maxsize=4096)
-def parse_uri(res: URIRef) -> ParsedURI:
+def parse_uri(res: str) -> ParsedURI:
     string_iri = str(res)
     if "/prov/" in string_iri:
         match = _compiled_prov_regex.match(string_iri)
@@ -240,29 +247,29 @@ def parse_uri(res: URIRef) -> ParsedURI:
     return ParsedURI("", "", "", "", False, "", "", "")
 
 
-def get_base_iri(res: URIRef) -> str:
+def get_base_iri(res: str) -> str:
     return parse_uri(res).base_iri
 
 
-def get_short_name(res: URIRef) -> str:
+def get_short_name(res: str) -> str:
     return parse_uri(res).short_name
 
 
-def get_prefix(res: URIRef) -> str:
+def get_prefix(res: str) -> str:
     return parse_uri(res).prefix
 
 
-def get_count(res: URIRef) -> str:
+def get_count(res: str) -> str:
     return parse_uri(res).count
 
 
-def get_resource_number(res: URIRef) -> int:
+def get_resource_number(res: str) -> int:
     parsed = parse_uri(res)
     count = parsed.prov_subject_count if parsed.is_prov else parsed.count
     return int(count) if count else 0
 
 
-def find_local_line_id(res: URIRef, n_file_item: int = 1) -> int:
+def find_local_line_id(res: str, n_file_item: int = 1) -> int:
     cur_number: int = get_resource_number(res)
 
     cur_file_split: int = 0
@@ -276,7 +283,7 @@ def find_local_line_id(res: URIRef, n_file_item: int = 1) -> int:
     return cur_number - cur_file_split
 
 
-def find_paths(res: URIRef, base_dir: str, base_iri: str, default_dir: str, dir_split: int,
+def find_paths(res: str, base_dir: str, base_iri: str, default_dir: str, dir_split: int,
                n_file_item: int, is_json: bool = True, process_id: int|str|None = None) -> Tuple[str, str]:
     """
     This function is responsible for looking for the correct JSON file that contains the data related to the
@@ -334,7 +341,7 @@ def find_paths(res: URIRef, base_dir: str, base_iri: str, default_dir: str, dir_
 
     return cur_dir_path, cur_file_path
 
-def has_supplier_prefix(res: URIRef, base_iri: str) -> bool:
+def has_supplier_prefix(res: str, base_iri: str) -> bool:
     string_iri: str = str(res)
     return re.search(r"^%s[a-z][a-z]/0" % base_iri, string_iri) is not None
 
@@ -348,6 +355,6 @@ def build_graph_from_results(results: List[Dict]) -> Graph:
     return graph
 
 
-def is_dataset(res: URIRef) -> bool:
+def is_dataset(res: str) -> bool:
     string_iri: str = str(res)
     return re.search(r"^.+/[0-9]+(-[0-9]+)?(/[0-9]+)?$", string_iri) is None

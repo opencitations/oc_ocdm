@@ -11,14 +11,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from oc_ocdm.decorators import accepts_only
+from oc_ocdm.light_graph import RDFTerm
 
 if TYPE_CHECKING:
-    from typing import Optional, List
-    from rdflib import URIRef
-    from oc_ocdm.graph.entities.bibliographic.reference_pointer import ReferencePointer
+    from typing import List, Optional
+
     from oc_ocdm.graph.entities.bibliographic.pointer_list import PointerList
-from oc_ocdm.graph.graph_entity import GraphEntity
+    from oc_ocdm.graph.entities.bibliographic.reference_pointer import ReferencePointer
 from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
+from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.support.support import create_type
 
 
@@ -119,7 +120,7 @@ class DiscourseElement(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_contains_de, 'de')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_contains_de, 'de')
         result: List[DiscourseElement] = []
         for uri in uri_list:
             result.append(self.g_set.add_de(self.resp_agent, self.source, uri))
@@ -138,7 +139,7 @@ class DiscourseElement(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, GraphEntity.iri_contains_de, de_res.res))
+        self.g.add((self.res, GraphEntity.iri_contains_de, RDFTerm("uri", str(de_res.res))))
 
     @accepts_only('de')
     def remove_contained_discourse_element(self, de_res: DiscourseElement | None = None) -> None:
@@ -155,7 +156,7 @@ class DiscourseElement(BibliographicEntity):
         :return: None
         """
         if de_res is not None:
-            self.g.remove((self.res, GraphEntity.iri_contains_de, de_res.res))
+            self.g.remove((self.res, GraphEntity.iri_contains_de, RDFTerm("uri", str(de_res.res))))
         else:
             self.g.remove((self.res, GraphEntity.iri_contains_de, None))
 
@@ -166,7 +167,7 @@ class DiscourseElement(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_next, 'de')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_next, 'de')
         if uri is not None:
             return self.g_set.add_de(self.resp_agent, self.source, uri)
 
@@ -185,7 +186,7 @@ class DiscourseElement(BibliographicEntity):
         :return: None
         """
         self.remove_next_de()
-        self.g.add((self.res, GraphEntity.iri_has_next, de_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_next, RDFTerm("uri", str(de_res.res))))
 
     def remove_next_de(self) -> None:
         """
@@ -202,7 +203,7 @@ class DiscourseElement(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of, 'rp')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of, 'rp')
         result: List[ReferencePointer] = []
         for uri in uri_list:
             result.append(self.g_set.add_rp(self.resp_agent, self.source, uri))
@@ -221,7 +222,7 @@ class DiscourseElement(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, GraphEntity.iri_is_context_of, rp_res.res))
+        self.g.add((self.res, GraphEntity.iri_is_context_of, RDFTerm("uri", str(rp_res.res))))
 
     @accepts_only('rp')
     def remove_is_context_of_rp(self, rp_res: ReferencePointer | None = None) -> None:
@@ -238,7 +239,7 @@ class DiscourseElement(BibliographicEntity):
         :return: None
         """
         if rp_res is not None:
-            self.g.remove((self.res, GraphEntity.iri_is_context_of, rp_res.res))
+            self.g.remove((self.res, GraphEntity.iri_is_context_of, RDFTerm("uri", str(rp_res.res))))
         else:
             self.g.remove((self.res, GraphEntity.iri_is_context_of, None))
 
@@ -249,7 +250,7 @@ class DiscourseElement(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of, 'pl')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of, 'pl')
         result: List[PointerList] = []
         for uri in uri_list:
             result.append(self.g_set.add_pl(self.resp_agent, self.source, uri))
@@ -268,7 +269,7 @@ class DiscourseElement(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, GraphEntity.iri_is_context_of, pl_res.res))
+        self.g.add((self.res, GraphEntity.iri_is_context_of, RDFTerm("uri", str(pl_res.res))))
 
     @accepts_only('pl')
     def remove_is_context_of_pl(self, pl_res: PointerList | None = None) -> None:
@@ -285,7 +286,7 @@ class DiscourseElement(BibliographicEntity):
         :return: None
         """
         if pl_res is not None:
-            self.g.remove((self.res, GraphEntity.iri_is_context_of, pl_res.res))
+            self.g.remove((self.res, GraphEntity.iri_is_context_of, RDFTerm("uri", str(pl_res.res))))
         else:
             self.g.remove((self.res, GraphEntity.iri_is_context_of, None))
 
@@ -357,7 +358,7 @@ class DiscourseElement(BibliographicEntity):
 
     # HAS TYPE
     @accepts_only('thing')
-    def create_discourse_element(self, de_class: URIRef | None = None) -> None:
+    def create_discourse_element(self, de_class: str | None = None) -> None:
         """
         Setter method corresponding to the ``rdf:type`` RDF predicate.
         If parameter is None, it implicitly sets the object value ``deo:DiscourseElement``.

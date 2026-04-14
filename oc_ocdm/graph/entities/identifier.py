@@ -13,10 +13,10 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Optional
-    from rdflib import URIRef
 
 from oc_ocdm.decorators import accepts_only
 from oc_ocdm.graph.graph_entity import GraphEntity
+from oc_ocdm.light_graph import RDFTerm
 from oc_ocdm.support.support import encode_url, is_string_empty
 
 
@@ -48,7 +48,7 @@ class Identifier(GraphEntity):
         assert isinstance(other, Identifier)
 
         literal_value: Optional[str] = other.get_literal_value()
-        scheme: Optional[URIRef] = other.get_scheme()
+        scheme: Optional[str] = other.get_scheme()
         if literal_value is not None and scheme is not None:
             self._associate_identifier_with_scheme(literal_value, scheme)
 
@@ -61,13 +61,13 @@ class Identifier(GraphEntity):
         """
         return self._get_literal(GraphEntity.iri_has_literal_value)
 
-    def get_scheme(self) -> Optional[URIRef]:
+    def get_scheme(self) -> Optional[str]:
         """
         Getter method corresponding to the ``datacite:usesIdentifierScheme`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_uses_identifier_scheme)
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_uses_identifier_scheme)
         return uri
 
     @accepts_only('literal')
@@ -410,11 +410,11 @@ class Identifier(GraphEntity):
         """
         self._associate_identifier_with_scheme(string, GraphEntity.iri_viaf)
 
-    def _associate_identifier_with_scheme(self, string: str, id_type: URIRef) -> None:
+    def _associate_identifier_with_scheme(self, string: str, id_type: str) -> None:
         if not is_string_empty(string):
             self.remove_identifier_with_scheme()
             self._create_literal(GraphEntity.iri_has_literal_value, string)
-            self.g.add((self.res, GraphEntity.iri_uses_identifier_scheme, id_type))
+            self.g.add((self.res, GraphEntity.iri_uses_identifier_scheme, RDFTerm("uri", str(id_type))))
 
     def remove_identifier_with_scheme(self) -> None:
         """

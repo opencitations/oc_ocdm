@@ -10,14 +10,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from oc_ocdm.decorators import accepts_only
+from oc_ocdm.light_graph import RDFTerm
 
 if TYPE_CHECKING:
-    from typing import Optional, List
-    from rdflib import URIRef
-    from oc_ocdm.graph.entities.bibliographic.reference_annotation import ReferenceAnnotation
+    from typing import List, Optional
+
     from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import BibliographicResource
-from oc_ocdm.graph.graph_entity import GraphEntity
+    from oc_ocdm.graph.entities.bibliographic.reference_annotation import ReferenceAnnotation
 from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
+from oc_ocdm.graph.graph_entity import GraphEntity
 
 
 class BibliographicReference(BibliographicEntity):
@@ -110,7 +111,7 @@ class BibliographicReference(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(GraphEntity.iri_has_annotation, 'an')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_has_annotation, 'an')
         result: List[ReferenceAnnotation] = []
         for uri in uri_list:
             result.append(self.g_set.add_an(self.resp_agent, self.source, uri))
@@ -129,7 +130,7 @@ class BibliographicReference(BibliographicEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, GraphEntity.iri_has_annotation, an_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_annotation, RDFTerm("uri", str(an_res.res))))
 
     @accepts_only('an')
     def remove_annotation(self, an_res: ReferenceAnnotation | None = None) -> None:
@@ -146,7 +147,7 @@ class BibliographicReference(BibliographicEntity):
         :return: None
         """
         if an_res is not None:
-            self.g.remove((self.res, GraphEntity.iri_has_annotation, an_res.res))
+            self.g.remove((self.res, GraphEntity.iri_has_annotation, RDFTerm("uri", str(an_res.res))))
         else:
             self.g.remove((self.res, GraphEntity.iri_has_annotation, None))
 
@@ -157,7 +158,7 @@ class BibliographicReference(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_references, 'br')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_references, 'br')
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source, uri)
 
@@ -176,7 +177,7 @@ class BibliographicReference(BibliographicEntity):
         :return: None
         """
         self.remove_referenced_br()
-        self.g.add((self.res, GraphEntity.iri_references, br_res.res))
+        self.g.add((self.res, GraphEntity.iri_references, RDFTerm("uri", str(br_res.res))))
 
     def remove_referenced_br(self) -> None:
         """

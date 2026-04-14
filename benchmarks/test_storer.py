@@ -8,10 +8,9 @@ import tempfile
 
 import pytest
 
+from benchmarks.conftest import BASE_IRI, BENCHMARK_ROUNDS, create_populated_graph_set
 from oc_ocdm.prov.prov_set import ProvSet
 from oc_ocdm.storer import Storer
-
-from benchmarks.conftest import BASE_IRI, BENCHMARK_ROUNDS, create_populated_graph_set
 
 
 class TestStorer:

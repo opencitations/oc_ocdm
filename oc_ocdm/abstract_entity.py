@@ -11,12 +11,13 @@ from __future__ import annotations
 from abc import ABC
 from typing import TYPE_CHECKING
 
-from oc_ocdm.support.support import create_type, create_literal, get_short_name, is_dataset, is_string_empty
-from rdflib import URIRef, RDFS, RDF, Literal, Graph
+from rdflib import RDF, RDFS
+
+from oc_ocdm.light_graph import LightGraph
+from oc_ocdm.support.support import create_literal, create_type, get_short_name, is_dataset, is_string_empty
 
 if TYPE_CHECKING:
-    from typing import Optional, List, ClassVar, Dict, Iterable
-    from rdflib.term import IdentifiedNode, Node
+    from typing import ClassVar, Dict, List, Optional
 
 
 class AbstractEntity(ABC):
@@ -25,14 +26,11 @@ class AbstractEntity(ABC):
     at the top of the entity class hierarchy.
     """
 
-    short_name_to_type_iri: ClassVar[Dict[str, URIRef]] = {}
+    short_name_to_type_iri: ClassVar[Dict[str, str]] = {}
 
     def __init__(self) -> None:
-        """
-        Constructor of the ``AbstractEntity`` class.
-        """
-        self.g: Graph = Graph()
-        self.res: URIRef = URIRef("")
+        self.g: LightGraph = LightGraph()
+        self.res: str = ""
         self.short_name: str = ""
 
     def remove_every_triple(self) -> None:
@@ -78,16 +76,16 @@ class AbstractEntity(ABC):
         """
         self.g.remove((self.res, RDFS.label, None))
 
-    def _create_literal(self, p: URIRef, s: str, dt: Optional[URIRef] = None, nor: bool = True) -> None:
+    def _create_literal(self, p: str, s: str, dt: str | None = None, nor: bool = True) -> None:
         """
         Adds an RDF triple with a literal object inside the graph of the entity
 
         :param p: The predicate
-        :type p: URIRef
+        :type p: str
         :param s: The string to add as a literal value
         :type s: str
         :param dt: The object's datatype, if present
-        :type dt: URIRef, optional
+        :type dt: str, optional
         :param nor: Whether to normalize the graph or not
         :type nor: bool, optional
         :return: None
@@ -95,16 +93,16 @@ class AbstractEntity(ABC):
         create_literal(self.g, self.res, p, s, dt, nor)
 
     # TYPE
-    def get_types(self) -> List[URIRef]:
+    def get_types(self) -> List[str]:
         """
         Getter method corresponding to the ``rdf:type`` RDF predicate.
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(RDF.type)
+        uri_list: List[str] = self._get_multiple_uri_references(RDF.type)
         return uri_list
 
-    def _create_type(self, res_type: URIRef) -> None:
+    def _create_type(self, res_type: str) -> None:
         """
         Setter method corresponding to the ``rdf:type`` RDF predicate.
 
@@ -113,7 +111,7 @@ class AbstractEntity(ABC):
         will be overwritten!**
 
         :param res_type: The value that will be set as the object of the property related to this method
-        :type res_type: URIRef
+        :type res_type: str
         :return: None
         """
         self.remove_type()  # <-- It doesn't remove the main type!
@@ -130,66 +128,47 @@ class AbstractEntity(ABC):
         """
         self.g.remove((self.res, RDF.type, None))
         # Restore the main type IRI
-        iri_main_type: URIRef = self.short_name_to_type_iri[self.short_name]
+        iri_main_type: str = self.short_name_to_type_iri[self.short_name]
         create_type(self.g, self.res, iri_main_type)
 
     # Overrides __str__ method
     def __str__(self) -> str:
         return str(self.res)
 
-    def add_triples(self, iterable_of_triples: Iterable[tuple[IdentifiedNode, URIRef, Node]]) -> None:
-        """
-        A utility method that allows to add a batch of triples into the graph of the entity.
-
-        **WARNING: Only triples that have this entity as their subject will be imported!**
-
-        :param iterable_of_triples: A collection of triples to be added to the entity
-        :type iterable_of_triples: Iterable[Tuple[term]]
-        :return: None
-        """
-        for s, p, o in iterable_of_triples:
-            if s == self.res:  # This guarantees that only triples belonging to the resource will be added
-                self.g.add((s, p, o))
-
-    def _get_literal(self, predicate: URIRef) -> Optional[str]:
-        result: Optional[str] = None
+    def _get_literal(self, predicate: str) -> Optional[str]:
         for o in self.g.objects(self.res, predicate):
-            if type(o) == Literal:
-                result = str(o)
-                break
-        return result
+            if o.type == "literal":
+                return o.value
+        return None
 
-    def _get_multiple_literals(self, predicate: URIRef) -> List[str]:
+    def _get_multiple_literals(self, predicate: str) -> List[str]:
         result: List[str] = []
         for o in self.g.objects(self.res, predicate):
-            if type(o) == Literal:
-                result.append(str(o))
+            if o.type == "literal":
+                result.append(o.value)
         return result
 
-    def _get_uri_reference(self, predicate: URIRef, short_name: Optional[str] = None) -> Optional[URIRef]:
-        result: Optional[URIRef] = None
+    def _get_uri_reference(self, predicate: str, short_name: Optional[str] = None) -> Optional[str]:
         for o in self.g.objects(self.res, predicate):
-            if type(o) == URIRef:
-                if not is_string_empty(short_name):
-                    # If a particular short_name is explicitly requested,
-                    # then the following additional check must be performed:
-                    if (short_name == '_dataset_' and is_dataset(o)) or get_short_name(o) == short_name:
-                        result = o
-                        break
-                else:
-                    result = o
-                    break
-        return result
+            if o.type != "uri":
+                continue
+            uri = o.value
+            if not is_string_empty(short_name):
+                if (short_name == '_dataset_' and is_dataset(uri)) or get_short_name(uri) == short_name:
+                    return uri
+            else:
+                return uri
+        return None
 
-    def _get_multiple_uri_references(self, predicate: URIRef, short_name: Optional[str] = None) -> List[URIRef]:
-        result: List[URIRef] = []
+    def _get_multiple_uri_references(self, predicate: str, short_name: Optional[str] = None) -> List[str]:
+        result: List[str] = []
         for o in self.g.objects(self.res, predicate):
-            if type(o) == URIRef:
-                if not is_string_empty(short_name):
-                    # If a particular short_name is explicitly requested,
-                    # then the following additional check must be performed:
-                    if (short_name == '_dataset_' and is_dataset(o)) or get_short_name(o) == short_name:
-                        result.append(o)
-                else:
-                    result.append(o)
+            if o.type != "uri":
+                continue
+            uri = o.value
+            if not is_string_empty(short_name):
+                if (short_name == '_dataset_' and is_dataset(uri)) or get_short_name(uri) == short_name:
+                    result.append(uri)
+            else:
+                result.append(uri)
         return result

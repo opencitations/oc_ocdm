@@ -12,11 +12,11 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Optional
-    from rdflib import URIRef
 
-from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.decorators import accepts_only
 from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
+from oc_ocdm.graph.graph_entity import GraphEntity
+from oc_ocdm.light_graph import RDFTerm
 
 
 class ResourceEmbodiment(BibliographicEntity):
@@ -45,7 +45,7 @@ class ResourceEmbodiment(BibliographicEntity):
         super()._merge_properties(other, prefer_self)
         assert isinstance(other, ResourceEmbodiment)
 
-        media_type: Optional[URIRef] = other.get_media_type()
+        media_type: Optional[str] = other.get_media_type()
         if media_type is not None:
             self.has_media_type(media_type)
 
@@ -57,22 +57,22 @@ class ResourceEmbodiment(BibliographicEntity):
         if ending_page is not None:
             self.has_ending_page(ending_page)
 
-        url: Optional[URIRef] = other.get_url()
+        url: Optional[str] = other.get_url()
         if url is not None:
             self.has_url(url)
 
     # HAS FORMAT
-    def get_media_type(self) -> Optional[URIRef]:
+    def get_media_type(self) -> Optional[str]:
         """
         Getter method corresponding to the ``dcterms:format`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_format)
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_format)
         return uri
 
     @accepts_only('thing')
-    def has_media_type(self, thing_res: URIRef) -> None:
+    def has_media_type(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``dcterms:format`` RDF predicate.
 
@@ -86,7 +86,7 @@ class ResourceEmbodiment(BibliographicEntity):
         :return: None
         """
         self.remove_media_type()
-        self.g.add((self.res, GraphEntity.iri_has_format, thing_res))
+        self.g.add((self.res, GraphEntity.iri_has_format, RDFTerm("uri", str(thing_res))))
 
     def remove_media_type(self) -> None:
         """
@@ -181,17 +181,17 @@ class ResourceEmbodiment(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.iri_ending_page, None))
 
     # HAS URL
-    def get_url(self) -> Optional[URIRef]:
+    def get_url(self) -> Optional[str]:
         """
         Getter method corresponding to the ``frbr:exemplar`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_url)
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_url)
         return uri
 
     @accepts_only('thing')
-    def has_url(self, thing_res: URIRef) -> None:
+    def has_url(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``frbr:exemplar`` RDF predicate.
 
@@ -205,7 +205,7 @@ class ResourceEmbodiment(BibliographicEntity):
         :return: None
         """
         self.remove_url()
-        self.g.add((self.res, GraphEntity.iri_has_url, thing_res))
+        self.g.add((self.res, GraphEntity.iri_has_url, RDFTerm("uri", str(thing_res))))
 
     def remove_url(self) -> None:
         """

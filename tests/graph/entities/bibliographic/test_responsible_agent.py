@@ -7,9 +7,11 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from rdflib import XSD, URIRef
+
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
-from rdflib import XSD, Literal, URIRef
+from oc_ocdm.light_graph import RDFTerm
 
 
 class TestResponsibleAgent(unittest.TestCase):
@@ -28,7 +30,7 @@ class TestResponsibleAgent(unittest.TestCase):
         result = self.ra.has_name(name)
         self.assertIsNone(result)
 
-        triple = self.ra.res, GraphEntity.iri_name, Literal(name, datatype=XSD.string)
+        triple = self.ra.res, GraphEntity.iri_name, RDFTerm("literal", name, str(XSD.string))
         self.assertIn(triple, self.ra.g)
 
     def test_has_given_name(self):
@@ -36,7 +38,7 @@ class TestResponsibleAgent(unittest.TestCase):
         result = self.ra.has_given_name(given_name)
         self.assertIsNone(result)
 
-        triple = self.ra.res, GraphEntity.iri_given_name, Literal(given_name, datatype=XSD.string)
+        triple = self.ra.res, GraphEntity.iri_given_name, RDFTerm("literal", given_name, str(XSD.string))
         self.assertIn(triple, self.ra.g)
 
     def test_has_family_name(self):
@@ -44,7 +46,7 @@ class TestResponsibleAgent(unittest.TestCase):
         result = self.ra.has_family_name(family_name)
         self.assertIsNone(result)
 
-        triple = self.ra.res, GraphEntity.iri_family_name, Literal(family_name, datatype=XSD.string)
+        triple = self.ra.res, GraphEntity.iri_family_name, RDFTerm("literal", family_name, str(XSD.string))
         self.assertIn(triple, self.ra.g)
 
     def test_has_related_agent(self):
@@ -52,7 +54,7 @@ class TestResponsibleAgent(unittest.TestCase):
         result = self.ra.has_related_agent(related_agent)
         self.assertIsNone(result)
 
-        triple = self.ra.res, GraphEntity.iri_relation, related_agent
+        triple = self.ra.res, GraphEntity.iri_relation, RDFTerm("uri", str(related_agent))
         self.assertIn(triple, self.ra.g)
 
 

@@ -11,9 +11,10 @@ import os
 import re
 import tempfile
 import unittest
+from multiprocessing import Pool
+from shutil import rmtree
 from unittest.mock import patch
 from zipfile import ZipFile
-from multiprocessing import Pool
 
 from rdflib import Dataset, Graph, URIRef, compare
 from sparqlite import SPARQLClient
@@ -21,10 +22,9 @@ from sparqlite import SPARQLClient
 from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import BibliographicResource
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
-from oc_ocdm.storer import Storer
 from oc_ocdm.reader import Reader
+from oc_ocdm.storer import Storer
 from oc_ocdm.support.reporter import Reporter
-from shutil import rmtree
 
 
 def dataset_to_graph(dataset: Dataset) -> Graph:
@@ -375,7 +375,7 @@ class TestStorer(unittest.TestCase):
         br3 = self.graph_set.add_br(self.resp_agent)
         br3.has_title("Third Resource")
 
-        modified_entities = {URIRef(br1.res), URIRef(br3.res)}
+        modified_entities = {br1.res, br3.res}
 
         storer = Storer(self.graph_set, modified_entities=modified_entities)
         result = storer.upload_all(self.ts)
@@ -499,7 +499,7 @@ def process_entity(entity):
     info_dir = os.path.join("tests", "storer", "test_provenance", "info_dir")
     graph_set = GraphSet(base_iri, "", "060", False)
     Reader.import_entity_from_triplestore(graph_set, ts, URIRef(entity), resp_agent)
-    br = graph_set.get_entity(URIRef(entity))
+    br = graph_set.get_entity(entity)
     assert isinstance(br, BibliographicResource)
     br.has_title("Hola")
     prov_set = ProvSet(graph_set, base_iri, info_dir=info_dir)

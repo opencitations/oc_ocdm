@@ -7,10 +7,9 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from rdflib import Namespace
-
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
+from oc_ocdm.light_graph import RDFTerm
 
 
 class TestBibliographicEntity(unittest.TestCase):
@@ -28,7 +27,7 @@ class TestBibliographicEntity(unittest.TestCase):
         result = self.entity.has_identifier(self.identifier)
         self.assertIsNone(result)
 
-        triple = self.entity.res, GraphEntity.iri_has_identifier, self.identifier.res
+        triple = self.entity.res, GraphEntity.iri_has_identifier, RDFTerm("uri", str(self.identifier.res))
         self.assertIn(triple, self.entity.g)
 
     def test_remove_duplicated_identifiers(self):
@@ -57,10 +56,9 @@ class TestBibliographicEntity(unittest.TestCase):
         # Tuples were used down below inside the sets because they're are hashable (since they're immutable):
         id_list_set = {(i.get_scheme(), i.get_literal_value()) for i in id_list}
 
-        datacite = Namespace("http://purl.org/spar/datacite/")
-        non_duplicated_ids = {(datacite.issn, '1111-2222'),
-                              (datacite.issn, '3333-4444'),
-                              (datacite.doi, '1111-2222')}
+        non_duplicated_ids = {(str(GraphEntity.iri_issn), '1111-2222'),
+                              (str(GraphEntity.iri_issn), '3333-4444'),
+                              (str(GraphEntity.iri_doi), '1111-2222')}
 
         self.assertSetEqual(id_list_set, non_duplicated_ids)
 

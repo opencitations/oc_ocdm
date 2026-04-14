@@ -7,9 +7,11 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from rdflib import XSD
+
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
-from rdflib import XSD, Literal
+from oc_ocdm.light_graph import RDFTerm
 
 
 class TestReferencePointer(unittest.TestCase):
@@ -30,28 +32,28 @@ class TestReferencePointer(unittest.TestCase):
         result = self.rp1.has_content(content)
         self.assertIsNone(result)
 
-        triple = self.rp1.res, GraphEntity.iri_has_content, Literal(content, datatype=XSD.string)
+        triple = self.rp1.res, GraphEntity.iri_has_content, RDFTerm("literal", content, str(XSD.string))
         self.assertIn(triple, self.rp1.g)
 
     def test_has_next_rp(self):
         result = self.rp1.has_next_rp(self.rp2)
         self.assertIsNone(result)
 
-        triple = self.rp1.res, GraphEntity.iri_has_next, self.rp2.res
+        triple = self.rp1.res, GraphEntity.iri_has_next, RDFTerm("uri", str(self.rp2.res))
         self.assertIn(triple, self.rp1.g)
 
     def test_denotes_be(self):
         result = self.rp1.denotes_be(self.be)
         self.assertIsNone(result)
 
-        triple = self.rp1.res, GraphEntity.iri_denotes, self.be.res
+        triple = self.rp1.res, GraphEntity.iri_denotes, RDFTerm("uri", str(self.be.res))
         self.assertIn(triple, self.rp1.g)
 
     def test_has_annotation(self):
         result = self.rp1.has_annotation(self.an)
         self.assertIsNone(result)
 
-        triple = self.rp1.res, GraphEntity.iri_has_annotation, self.an.res
+        triple = self.rp1.res, GraphEntity.iri_has_annotation, RDFTerm("uri", str(self.an.res))
         self.assertIn(triple, self.rp1.g)
 
 

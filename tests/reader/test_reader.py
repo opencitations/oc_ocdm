@@ -6,16 +6,17 @@
 
 # -*- coding: utf-8 -*-
 
+import json
 import os
 import tempfile
 import unittest
-import json
+
+from rdflib import RDF, XSD, BNode, Dataset, Graph, Literal, Namespace, URIRef
+from sparqlite import SPARQLClient
 
 from oc_ocdm.graph import GraphSet
 from oc_ocdm.reader import Reader
 from oc_ocdm.support.reporter import Reporter
-from rdflib import BNode, Graph, Literal, URIRef, Dataset, Namespace, RDF, XSD
-from sparqlite import SPARQLClient
 
 
 class TestReader(unittest.TestCase):
@@ -84,11 +85,12 @@ class TestReader(unittest.TestCase):
         self.assertEqual(len(imported), len(entities))
         
         # Check if specific properties were imported correctly
-        br_0605 = self.g_set.get_entity(URIRef('https://w3id.org/oc/meta/br/0605'))
+        br_0605 = self.g_set.get_entity('https://w3id.org/oc/meta/br/0605')
         assert br_0605 is not None
         # Check title
-        title = next(br_0605.g.objects(br_0605.res, URIRef('http://purl.org/dc/terms/title')))
-        self.assertEqual(str(title), "A Review Of Hemolytic Uremic Syndrome In Patients Treated With Gemcitabine Therapy")
+        title_obj = next(br_0605.g.objects(br_0605.res, URIRef('http://purl.org/dc/terms/title')))
+        title = title_obj.value
+        self.assertEqual(title, "A Review Of Hemolytic Uremic Syndrome In Patients Treated With Gemcitabine Therapy")
     
     def test_import_invalid_entity(self):
         """Test importing a non-existent entity."""

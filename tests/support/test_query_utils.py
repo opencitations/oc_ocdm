@@ -6,14 +6,13 @@
 
 # -*- coding: utf-8 -*-
 import unittest
-from rdflib import URIRef, Literal
-from rdflib.namespace import RDF, DCTERMS
+
+from rdflib import Literal, URIRef
+from rdflib.namespace import DCTERMS, RDF
 
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
-from oc_ocdm.support.query_utils import (
-    get_update_query, get_insert_query, get_delete_query, _compute_graph_changes
-)
+from oc_ocdm.support.query_utils import _compute_graph_changes, get_delete_query, get_insert_query, get_update_query
 
 
 class TestQueryUtils(unittest.TestCase):
@@ -103,7 +102,8 @@ class TestQueryUtils(unittest.TestCase):
 
         br._preexisting_triples = frozenset(br.g.triples((br.res, None, None)))
 
-        br.g.add((br.res, URIRef("http://example.org/newProp"), Literal("New Value")))
+        from oc_ocdm.light_graph import RDFTerm
+        br.g.add((br.res, "http://example.org/newProp", RDFTerm("literal", "New Value", "http://www.w3.org/2001/XMLSchema#string")))
 
         queries, added, removed = get_update_query(br, entity_type="graph")
 

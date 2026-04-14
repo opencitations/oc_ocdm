@@ -7,9 +7,11 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from rdflib import XSD
+
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
-from rdflib import XSD, Literal
+from oc_ocdm.light_graph import RDFTerm
 
 
 class TestBibliographicReference(unittest.TestCase):
@@ -29,21 +31,21 @@ class TestBibliographicReference(unittest.TestCase):
         result = self.be.has_content(content)
         self.assertIsNone(result)
 
-        triple = self.be.res, GraphEntity.iri_has_content, Literal(content, datatype=XSD.string)
+        triple = self.be.res, GraphEntity.iri_has_content, RDFTerm("literal", content, str(XSD.string))
         self.assertIn(triple, self.be.g)
 
     def test_has_annotation(self):
         result = self.be.has_annotation(self.an)
         self.assertIsNone(result)
 
-        triple = self.be.res, GraphEntity.iri_has_annotation, self.an.res
+        triple = self.be.res, GraphEntity.iri_has_annotation, RDFTerm("uri", str(self.an.res))
         self.assertIn(triple, self.be.g)
 
     def test_references(self):
         result = self.be.references_br(self.br)
         self.assertIsNone(result)
 
-        triple = self.be.res, GraphEntity.iri_references, self.br.res
+        triple = self.be.res, GraphEntity.iri_references, RDFTerm("uri", str(self.br.res))
         self.assertIn(triple, self.be.g)
 
 

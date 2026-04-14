@@ -13,14 +13,13 @@ import random
 import string
 from typing import List, Optional, Tuple
 
-from oc_ocdm.graph.graph_set import GraphSet
+from oc_ocdm.graph.entities.bibliographic.agent_role import AgentRole
 from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import (
     BibliographicResource,
 )
-from oc_ocdm.graph.entities.bibliographic.agent_role import AgentRole
 from oc_ocdm.graph.entities.identifier import Identifier
+from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.support import create_date
-
 
 FIRST_NAMES = [
     "John", "Jane", "Michael", "Emily", "David", "Sarah", "James", "Emma",

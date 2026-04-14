@@ -13,12 +13,11 @@ from rdflib import XSD
 
 from oc_ocdm.decorators import accepts_only
 from oc_ocdm.graph.graph_entity import GraphEntity
+from oc_ocdm.light_graph import RDFTerm
 from oc_ocdm.prov.prov_entity import ProvEntity
 
 if TYPE_CHECKING:
     from typing import List, Optional
-
-    from rdflib import URIRef
 
 
 class SnapshotEntity(ProvEntity):
@@ -101,13 +100,13 @@ class SnapshotEntity(ProvEntity):
         self.g.remove((self.res, ProvEntity.iri_invalidated_at_time, None))
 
     # IS SNAPSHOT OF
-    def get_is_snapshot_of(self) -> Optional[URIRef]:
+    def get_is_snapshot_of(self) -> Optional[str]:
         """
         Getter method corresponding to the ``prov:specializationOf`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(ProvEntity.iri_specialization_of)
+        uri: Optional[str] = self._get_uri_reference(ProvEntity.iri_specialization_of)
         return uri
 
     def is_snapshot_of(self, en_res: GraphEntity) -> None:
@@ -124,7 +123,7 @@ class SnapshotEntity(ProvEntity):
         :return: None
         """
         self.remove_is_snapshot_of()
-        self.g.add((self.res, ProvEntity.iri_specialization_of, en_res.res))
+        self.g.add((self.res, ProvEntity.iri_specialization_of, RDFTerm("uri", str(en_res.res))))
 
     def remove_is_snapshot_of(self) -> None:
         """
@@ -141,7 +140,7 @@ class SnapshotEntity(ProvEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[URIRef] = self._get_multiple_uri_references(ProvEntity.iri_was_derived_from, 'se')
+        uri_list: List[str] = self._get_multiple_uri_references(ProvEntity.iri_was_derived_from, 'se')
         result: List[ProvEntity] = []
         for uri in uri_list:
             # TODO: what is the prov_subject of these snapshots?
@@ -161,7 +160,7 @@ class SnapshotEntity(ProvEntity):
         :raises TypeError: if the parameter is of the wrong type
         :return: None
         """
-        self.g.add((self.res, ProvEntity.iri_was_derived_from, se_res.res))
+        self.g.add((self.res, ProvEntity.iri_was_derived_from, RDFTerm("uri", str(se_res.res))))
 
     @accepts_only('se')
     def remove_derives_from(self, se_res: Optional[ProvEntity] = None) -> None:
@@ -178,22 +177,22 @@ class SnapshotEntity(ProvEntity):
         :return: None
         """
         if se_res is not None:
-            self.g.remove((self.res, ProvEntity.iri_was_derived_from, se_res.res))
+            self.g.remove((self.res, ProvEntity.iri_was_derived_from, RDFTerm("uri", str(se_res.res))))
         else:
             self.g.remove((self.res, ProvEntity.iri_was_derived_from, None))
 
     # HAS PRIMARY SOURCE
-    def get_primary_source(self) -> Optional[URIRef]:
+    def get_primary_source(self) -> Optional[str]:
         """
         Getter method corresponding to the ``prov:hadPrimarySource`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(ProvEntity.iri_had_primary_source)
+        uri: Optional[str] = self._get_uri_reference(ProvEntity.iri_had_primary_source)
         return uri
 
     @accepts_only('thing')
-    def has_primary_source(self, any_res: URIRef) -> None:
+    def has_primary_source(self, any_res: str) -> None:
         """
         Setter method corresponding to the ``prov:hadPrimarySource`` RDF predicate.
 
@@ -208,7 +207,7 @@ class SnapshotEntity(ProvEntity):
         :return: None
         """
         self.remove_primary_source()
-        self.g.add((self.res, ProvEntity.iri_had_primary_source, any_res))
+        self.g.add((self.res, ProvEntity.iri_had_primary_source, RDFTerm("uri", str(any_res))))
 
     def remove_primary_source(self) -> None:
         """
@@ -291,17 +290,17 @@ class SnapshotEntity(ProvEntity):
         self.g.remove((self.res, ProvEntity.iri_description, None))
 
     # IS ATTRIBUTED TO
-    def get_resp_agent(self) -> Optional[URIRef]:
+    def get_resp_agent(self) -> Optional[str]:
         """
         Getter method corresponding to the ``prov:wasAttributedTo`` RDF predicate.
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(ProvEntity.iri_was_attributed_to)
+        uri: Optional[str] = self._get_uri_reference(ProvEntity.iri_was_attributed_to)
         return uri
 
     @accepts_only('thing')
-    def has_resp_agent(self, se_agent: URIRef) -> None:
+    def has_resp_agent(self, se_agent: str) -> None:
         """
         Setter method corresponding to the ``prov:wasAttributedTo`` RDF predicate.
 
@@ -314,7 +313,7 @@ class SnapshotEntity(ProvEntity):
         :return: None
         """
         self.remove_resp_agent()
-        self.g.add((self.res, ProvEntity.iri_was_attributed_to, se_agent))
+        self.g.add((self.res, ProvEntity.iri_was_attributed_to, RDFTerm("uri", str(se_agent))))
 
     def remove_resp_agent(self) -> None:
         """

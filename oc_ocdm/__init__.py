@@ -8,5 +8,5 @@
 # -*- coding: utf-8 -*-
 __version__ = '9.1.1'
 
-from oc_ocdm.storer import Storer
 from oc_ocdm.reader import Reader
+from oc_ocdm.storer import Storer

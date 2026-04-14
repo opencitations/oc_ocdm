@@ -10,13 +10,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from oc_ocdm.decorators import accepts_only
+from oc_ocdm.light_graph import RDFTerm
 
 if TYPE_CHECKING:
     from typing import Optional
-    from rdflib import URIRef
+
     from oc_ocdm.graph.entities.bibliographic.citation import Citation
-from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
+from oc_ocdm.graph.graph_entity import GraphEntity
 
 
 class ReferenceAnnotation(BibliographicEntity):
@@ -61,7 +62,7 @@ class ReferenceAnnotation(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[URIRef] = self._get_uri_reference(GraphEntity.iri_has_body, 'ci')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_body, 'ci')
         if uri is not None:
             return self.g_set.add_ci(self.resp_agent, self.source, uri)
 
@@ -81,7 +82,7 @@ class ReferenceAnnotation(BibliographicEntity):
         :return: None
         """
         self.remove_body_annotation()
-        self.g.add((self.res, GraphEntity.iri_has_body, ci_res.res))
+        self.g.add((self.res, GraphEntity.iri_has_body, RDFTerm("uri", str(ci_res.res))))
 
     def remove_body_annotation(self) -> None:
         """

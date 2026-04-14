@@ -7,11 +7,12 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from rdflib import URIRef
+
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.metadata.metadata_set import MetadataSet
 from oc_ocdm.prov.entities.snapshot_entity import SnapshotEntity
 from oc_ocdm.prov.prov_set import ProvSet
-from rdflib import URIRef
 
 
 class TestBibliographicReferenceRemovers(unittest.TestCase):

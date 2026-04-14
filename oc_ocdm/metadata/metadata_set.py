@@ -14,15 +14,14 @@ from oc_ocdm.counter_handler.filesystem_counter_handler import FilesystemCounter
 from oc_ocdm.counter_handler.in_memory_counter_handler import InMemoryCounterHandler
 from oc_ocdm.metadata.entities.dataset import Dataset
 from oc_ocdm.metadata.entities.distribution import Distribution
-from oc_ocdm.support.support import get_count, is_dataset, get_short_name
+from oc_ocdm.support.support import get_count, get_short_name, is_dataset
 
 if TYPE_CHECKING:
-    from typing import Dict, Tuple, ClassVar
+    from typing import ClassVar, Dict, Tuple
 
-from rdflib import Graph, URIRef
-
-from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from oc_ocdm.abstract_set import AbstractSet
+from oc_ocdm.light_graph import LightGraph
+from oc_ocdm.metadata.metadata_entity import MetadataEntity
 
 
 class MetadataSet(AbstractSet[MetadataEntity]):
@@ -34,8 +33,8 @@ class MetadataSet(AbstractSet[MetadataEntity]):
 
     def __init__(self, base_iri: str, info_dir: str = "", wanted_label: bool = True) -> None:
         super(MetadataSet, self).__init__()
-        # The following variable maps a URIRef with the related metadata entity
-        self.res_to_entity: Dict[URIRef, MetadataEntity] = {}
+        # The following variable maps a str with the related metadata entity
+        self.res_to_entity: Dict[str, MetadataEntity] = {}
         self.base_iri: str = base_iri
         if self.base_iri[-1] != '/':
             self.base_iri += '/'
@@ -46,12 +45,12 @@ class MetadataSet(AbstractSet[MetadataEntity]):
         else:
             self.counter_handler: CounterHandler = InMemoryCounterHandler()
 
-    def get_entity(self, res: URIRef) -> MetadataEntity | None:
+    def get_entity(self, res: str) -> MetadataEntity | None:
         if res in self.res_to_entity:
             return self.res_to_entity[res]
 
-    def add_dataset(self, dataset_name: str, resp_agent: str, source: str | None = None, res: URIRef | None = None,
-                    preexisting_graph: Graph | None = None) -> Dataset:
+    def add_dataset(self, dataset_name: str, resp_agent: str, source: str | None = None, res: str | None = None,
+                    preexisting_graph: LightGraph | None = None) -> Dataset:
         if res is not None and not is_dataset(res):
             raise ValueError(f"Given res: <{res}> is inappropriate for a Dataset entity.")
         if res is not None and res in self.res_to_entity:
@@ -66,7 +65,7 @@ class MetadataSet(AbstractSet[MetadataEntity]):
                        preexisting_graph)
 
     def add_di(self, dataset_name: str, resp_agent: str, source: str | None = None,
-               res: URIRef | None = None, preexisting_graph: Graph | None = None) -> Distribution:
+               res: str | None = None, preexisting_graph: LightGraph | None = None) -> Distribution:
         if res is not None and get_short_name(res) != "di":
             raise ValueError(f"Given res: <{res}> is inappropriate for a Distribution entity.")
         if res is not None and res in self.res_to_entity:
@@ -78,9 +77,8 @@ class MetadataSet(AbstractSet[MetadataEntity]):
                             preexisting_graph)
 
     def _add_metadata(self, short_name: str, dataset_name: str,
-                      res: URIRef | None = None) -> Tuple[Graph, str | None, str | None]:
-        cur_g: Graph = Graph()
-        self._set_ns(cur_g)
+                      res: str | None = None) -> Tuple[LightGraph, str | None, str | None]:
+        cur_g = LightGraph()
 
         count: str | None = None
         label: str | None = None
@@ -108,12 +106,6 @@ class MetadataSet(AbstractSet[MetadataEntity]):
             entity.commit_changes()
             if entity.to_be_deleted:
                 del self.res_to_entity[res]
-
-    @staticmethod
-    def _set_ns(g: Graph) -> None:
-        g.namespace_manager.bind("dcterms", MetadataEntity.DCTERMS)
-        g.namespace_manager.bind("dcat", MetadataEntity.DCAT)
-        g.namespace_manager.bind("void", MetadataEntity.VOID)
 
     def get_dataset(self) -> tuple[Dataset, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, Dataset))
