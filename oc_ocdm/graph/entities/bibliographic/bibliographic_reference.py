@@ -71,7 +71,6 @@ class BibliographicReference(BibliographicEntity):
         """
         return self._get_literal(GraphEntity.iri_has_content)
 
-    @accepts_only('literal')
     def has_content(self, string: str) -> None:
         """
         Setter method corresponding to the ``c4o:hasContent`` RDF predicate.

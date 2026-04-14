@@ -156,7 +156,6 @@ class Citation(BibliographicEntity):
         """
         return self._get_literal(GraphEntity.iri_has_citation_creation_date)
 
-    @accepts_only('literal')
     def has_citation_creation_date(self, string: str) -> None:
         """
         Setter method corresponding to the ``cito:hasCitationCreationDate`` RDF predicate.
@@ -196,7 +195,6 @@ class Citation(BibliographicEntity):
         """
         return self._get_literal(GraphEntity.iri_has_citation_time_span)
 
-    @accepts_only('literal')
     def has_citation_time_span(self, string: str) -> None:
         """
         Setter method corresponding to the ``cito:hasCitationTimeSpan`` RDF predicate.
@@ -233,7 +231,6 @@ class Citation(BibliographicEntity):
         uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_citation_characterisation)
         return uri
 
-    @accepts_only('thing')
     def has_citation_characterization(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``cito:hasCitationCharacterisation`` RDF predicate.

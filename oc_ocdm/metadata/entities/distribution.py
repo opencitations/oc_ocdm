@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from rdflib import XSD
 
-from oc_ocdm.decorators import accepts_only
 from oc_ocdm.light_graph import RDFTerm
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 
@@ -77,7 +76,6 @@ class Distribution(MetadataEntity):
         """
         return self._get_literal(MetadataEntity.iri_title)
 
-    @accepts_only('literal')
     def has_title(self, string: str) -> None:
         """
         Setter method corresponding to the ``dcterms:title`` RDF predicate.
@@ -111,7 +109,6 @@ class Distribution(MetadataEntity):
         """
         return self._get_literal(MetadataEntity.iri_description)
 
-    @accepts_only('literal')
     def has_description(self, string: str) -> None:
         """
         Setter method corresponding to the ``dcterms:description`` RDF predicate.
@@ -145,7 +142,6 @@ class Distribution(MetadataEntity):
         """
         return self._get_literal(MetadataEntity.iri_issued)
 
-    @accepts_only('literal')
     def has_publication_date(self, string: str) -> None:
         """
         Setter method corresponding to the ``dcterms:issued`` RDF predicate.
@@ -180,7 +176,6 @@ class Distribution(MetadataEntity):
         """
         return self._get_literal(MetadataEntity.iri_byte_size)
 
-    @accepts_only('literal')
     def has_byte_size(self, string: str) -> None:
         """
         Setter method corresponding to the ``dcat:byte_size`` RDF predicate.
@@ -215,7 +210,6 @@ class Distribution(MetadataEntity):
         """
         return self._get_uri_reference(MetadataEntity.iri_license)
 
-    @accepts_only('thing')
     def has_license(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``dcterms:license`` RDF predicate.
@@ -249,7 +243,6 @@ class Distribution(MetadataEntity):
         """
         return self._get_uri_reference(MetadataEntity.iri_download_url)
 
-    @accepts_only('thing')
     def has_download_url(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``dcat:downloadURL`` RDF predicate.
@@ -283,7 +276,6 @@ class Distribution(MetadataEntity):
         """
         return self._get_uri_reference(MetadataEntity.iri_media_type)
 
-    @accepts_only('thing')
     def has_media_type(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``dcat:mediaType`` RDF predicate.

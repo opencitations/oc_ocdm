@@ -10,7 +10,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from oc_ocdm.decorators import accepts_only
 from oc_ocdm.light_graph import RDFTerm
 
 if TYPE_CHECKING:
@@ -71,7 +70,6 @@ class ResponsibleAgent(BibliographicEntity):
         """
         return self._get_literal(GraphEntity.iri_name)
 
-    @accepts_only('literal')
     def has_name(self, string: str) -> None:
         """
         Setter method corresponding to the ``foaf:name`` RDF predicate.
@@ -106,7 +104,6 @@ class ResponsibleAgent(BibliographicEntity):
         """
         return self._get_literal(GraphEntity.iri_given_name)
 
-    @accepts_only('literal')
     def has_given_name(self, string: str) -> None:
         """
         Setter method corresponding to the ``foaf:givenName`` RDF predicate.
@@ -140,7 +137,6 @@ class ResponsibleAgent(BibliographicEntity):
         """
         return self._get_literal(GraphEntity.iri_family_name)
 
-    @accepts_only('literal')
     def has_family_name(self, string: str) -> None:
         """
         Setter method corresponding to the ``foaf:familyName`` RDF predicate.
@@ -175,7 +171,6 @@ class ResponsibleAgent(BibliographicEntity):
         uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_relation)
         return uri_list
 
-    @accepts_only('thing')
     def has_related_agent(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``dcterms:relation`` RDF predicate.
@@ -190,7 +185,6 @@ class ResponsibleAgent(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.iri_relation, RDFTerm("uri", str(thing_res))))
 
-    @accepts_only('thing')
     def remove_related_agent(self, thing_res: str | None = None) -> None:
         """
         Remover method corresponding to the ``dcterms:relation`` RDF predicate.

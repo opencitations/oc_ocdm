@@ -116,7 +116,6 @@ class BibliographicResource(BibliographicEntity):
         """
         return self._get_literal(GraphEntity.iri_title)
 
-    @accepts_only('literal')
     def has_title(self, string: str) -> None:
         """
         Setter method corresponding to the ``dcterms:title`` RDF predicate.
@@ -150,7 +149,6 @@ class BibliographicResource(BibliographicEntity):
         """
         return self._get_literal(GraphEntity.iri_has_subtitle)
 
-    @accepts_only('literal')
     def has_subtitle(self, string: str) -> None:
         """
         Setter method corresponding to the ``fabio:hasSubtitle`` RDF predicate.
@@ -268,7 +266,6 @@ class BibliographicResource(BibliographicEntity):
         """
         return self._get_literal(GraphEntity.iri_has_publication_date)
 
-    @accepts_only('literal')
     def has_pub_date(self, string: str) -> None:
         """
         Setter method corresponding to the ``prism:publicationDate`` RDF predicate.
@@ -352,7 +349,6 @@ class BibliographicResource(BibliographicEntity):
         """
         return self._get_literal(GraphEntity.iri_has_sequence_identifier)
 
-    @accepts_only('literal')
     def has_number(self, string: str) -> None:
         """
         Setter method corresponding to the ``fabio:hasSequenceIdentifier`` RDF predicate.
@@ -389,7 +385,6 @@ class BibliographicResource(BibliographicEntity):
         """
         return self._get_literal(GraphEntity.iri_has_edition)
 
-    @accepts_only('literal')
     def has_edition(self, string: str) -> None:
         """
         Setter method corresponding to the ``prism:edition`` RDF predicate.
@@ -563,7 +558,6 @@ class BibliographicResource(BibliographicEntity):
         uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_relation)
         return uri_list
 
-    @accepts_only('thing')
     def has_related_document(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``dcterms:relation`` RDF predicate.
@@ -579,7 +573,6 @@ class BibliographicResource(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.iri_relation, RDFTerm("uri", str(thing_res))))
 
-    @accepts_only('thing')
     def remove_related_document(self, thing_res: str | None = None) -> None:
         """
         Remover method corresponding to the ``dcterms:relation`` RDF predicate.

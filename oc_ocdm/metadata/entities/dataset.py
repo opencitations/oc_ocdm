@@ -96,7 +96,6 @@ class Dataset(MetadataEntity):
         """
         return self._get_literal(MetadataEntity.iri_title)
 
-    @accepts_only('literal')
     def has_title(self, string: str) -> None:
         """
         Setter method corresponding to the ``dcterms:title`` RDF predicate.
@@ -130,7 +129,6 @@ class Dataset(MetadataEntity):
         """
         return self._get_literal(MetadataEntity.iri_description)
 
-    @accepts_only('literal')
     def has_description(self, string: str) -> None:
         """
         Setter method corresponding to the ``dcterms:description`` RDF predicate.
@@ -164,7 +162,6 @@ class Dataset(MetadataEntity):
         """
         return self._get_literal(MetadataEntity.iri_issued)
 
-    @accepts_only('literal')
     def has_publication_date(self, string: str) -> None:
         """
         Setter method corresponding to the ``dcterms:issued`` RDF predicate.
@@ -199,7 +196,6 @@ class Dataset(MetadataEntity):
         """
         return self._get_literal(MetadataEntity.iri_modified)
 
-    @accepts_only('literal')
     def has_modification_date(self, string: str) -> None:
         """
         Setter method corresponding to the ``dcterms:modified`` RDF predicate.
@@ -234,7 +230,6 @@ class Dataset(MetadataEntity):
         """
         return self._get_multiple_literals(MetadataEntity.iri_keyword)
 
-    @accepts_only('literal')
     def has_keyword(self, string: str) -> None:
         """
         Setter method corresponding to the ``dcat:keyword`` RDF predicate.
@@ -248,7 +243,6 @@ class Dataset(MetadataEntity):
         """
         self._create_literal(MetadataEntity.iri_keyword, string)
 
-    @accepts_only('literal')
     def remove_keyword(self, string: str | None = None) -> None:
         """
         Remover method corresponding to the ``dcat:keyword`` RDF predicate.
@@ -277,7 +271,6 @@ class Dataset(MetadataEntity):
         uri_list: List[str] = self._get_multiple_uri_references(MetadataEntity.iri_subject)
         return uri_list
 
-    @accepts_only('thing')
     def has_subject(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``dcat:theme`` RDF predicate.
@@ -291,7 +284,6 @@ class Dataset(MetadataEntity):
         """
         self.g.add((self.res, MetadataEntity.iri_subject, RDFTerm("uri", str(thing_res))))
 
-    @accepts_only('thing')
     def remove_subject(self, thing_res: str | None = None) -> None:
         """
         Remover method corresponding to the ``dcat:theme`` RDF predicate.
@@ -319,7 +311,6 @@ class Dataset(MetadataEntity):
         """
         return self._get_uri_reference(MetadataEntity.iri_landing_page)
 
-    @accepts_only('thing')
     def has_landing_page(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``dcat:landingPage`` RDF predicate.
@@ -400,7 +391,6 @@ class Dataset(MetadataEntity):
         uri: str | None = self._get_uri_reference(MetadataEntity.iri_sparql_endpoint)
         return uri
 
-    @accepts_only('thing')
     def has_sparql_endpoint(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``void:sparqlEndpoint`` RDF predicate.

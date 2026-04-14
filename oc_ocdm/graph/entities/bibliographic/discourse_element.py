@@ -88,7 +88,6 @@ class DiscourseElement(BibliographicEntity):
         """
         return self._get_literal(GraphEntity.iri_title)
 
-    @accepts_only('literal')
     def has_title(self, string: str) -> None:
         """
         Setter method corresponding to the ``dcterms:title`` RDF predicate.
@@ -299,7 +298,6 @@ class DiscourseElement(BibliographicEntity):
         """
         return self._get_literal(GraphEntity.iri_has_content)
 
-    @accepts_only('literal')
     def has_content(self, string: str) -> None:
         """
         Setter method corresponding to the ``c4o:hasContent`` RDF predicate.
@@ -333,7 +331,6 @@ class DiscourseElement(BibliographicEntity):
         """
         return self._get_literal(GraphEntity.iri_has_sequence_identifier)
 
-    @accepts_only('literal')
     def has_number(self, string: str) -> None:
         """
         Setter method corresponding to the ``fabio:hasSequenceIdentifier`` RDF predicate.
@@ -357,7 +354,6 @@ class DiscourseElement(BibliographicEntity):
         self.g.remove((self.res, GraphEntity.iri_has_sequence_identifier, None))
 
     # HAS TYPE
-    @accepts_only('thing')
     def create_discourse_element(self, de_class: str | None = None) -> None:
         """
         Setter method corresponding to the ``rdf:type`` RDF predicate.

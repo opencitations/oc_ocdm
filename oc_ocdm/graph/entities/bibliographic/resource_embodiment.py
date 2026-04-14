@@ -13,7 +13,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Optional
 
-from oc_ocdm.decorators import accepts_only
 from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.light_graph import RDFTerm
@@ -71,7 +70,6 @@ class ResourceEmbodiment(BibliographicEntity):
         uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_format)
         return uri
 
-    @accepts_only('thing')
     def has_media_type(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``dcterms:format`` RDF predicate.
@@ -105,7 +103,6 @@ class ResourceEmbodiment(BibliographicEntity):
         """
         return self._get_literal(GraphEntity.iri_starting_page)
 
-    @accepts_only('literal')
     def has_starting_page(self, string: str) -> None:
         """
         Setter method corresponding to the ``prism:startingPage`` RDF predicate.
@@ -147,7 +144,6 @@ class ResourceEmbodiment(BibliographicEntity):
         """
         return self._get_literal(GraphEntity.iri_ending_page)
 
-    @accepts_only('literal')
     def has_ending_page(self, string: str) -> None:
         """
         Setter method corresponding to the ``prism:endingPage`` RDF predicate.
@@ -190,7 +186,6 @@ class ResourceEmbodiment(BibliographicEntity):
         uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_url)
         return uri
 
-    @accepts_only('thing')
     def has_url(self, thing_res: str) -> None:
         """
         Setter method corresponding to the ``frbr:exemplar`` RDF predicate.

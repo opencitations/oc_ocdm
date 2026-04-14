@@ -26,8 +26,6 @@ def accepts_only(param_type: str) -> Callable[[F], F]:
 
     The expected type can be expressed through a short string:
 
-      * 'literal' for the ``str`` type;
-      * 'thing' for the ``str`` type (URI as plain string);
       * '_dataset_' for the ``Dataset`` entities;
       * the OCDM short name in case of any other entity (e.g. 'br' for ``BibliographicResource``).
 
@@ -40,8 +38,6 @@ def accepts_only(param_type: str) -> Callable[[F], F]:
         def accepts_only_wrapper(self: object, param: object = None, **kwargs: object) -> object:
             lowercase_type = param_type.lower()
             if param is None or \
-                    (lowercase_type == 'literal' and isinstance(param, str)) or \
-                    (lowercase_type == 'thing' and isinstance(param, str)) or \
                     (isinstance(param, AbstractEntity) and param.short_name == lowercase_type):
                 return function(self, param, **kwargs)
             else:
