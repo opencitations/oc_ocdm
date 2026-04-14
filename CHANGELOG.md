@@ -1,3 +1,20 @@
+# [11.0.0](https://github.com/opencitations/oc_ocdm/compare/10.0.1...11.0.0) (2026-04-14)
+
+
+* refactor!: replace rdflib Graph/URIRef with lightweight LightGraph/str ([355f76a](https://github.com/opencitations/oc_ocdm/commit/355f76a3ee2498ab853ba18a1333095cb2321f07))
+
+
+### Performance Improvements
+
+* reduce memory and redundant work across core modules ([91001d2](https://github.com/opencitations/oc_ocdm/commit/91001d27c79c4105283d2fe25ee84acd74540d13))
+
+
+### BREAKING CHANGES
+
+* entity.res is now str (was URIRef), entity.g is now
+LightGraph (was rdflib.Graph), all factory methods accept str instead
+of URIRef, all getters return str instead of URIRef
+
 ## [10.0.1](https://github.com/opencitations/oc_ocdm/compare/10.0.0...10.0.1) (2026-04-06)
 
 
