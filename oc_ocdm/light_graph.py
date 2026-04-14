@@ -33,35 +33,34 @@ SPOIndex = dict[str, dict[str, set[RDFTerm]]]
 
 
 class LightGraph:
-    __slots__ = ("_spo", "_triples", "identifier")
+    __slots__ = ("_spo", "_len", "identifier")
 
     def __init__(self, identifier: str | None = None) -> None:
         self._spo: SPOIndex = {}
-        self._triples: set[Triple] = set()
+        self._len: int = 0
         self.identifier: str | None = identifier
 
     def add(self, triple: tuple[str, str, RDFTerm]) -> None:
         s, p, o = str(triple[0]), str(triple[1]), triple[2]
-        t = (s, p, o)
-        if t in self._triples:
-            return
-        self._triples.add(t)
-        self._spo.setdefault(s, {}).setdefault(p, set()).add(o)
+        obj_set = self._spo.setdefault(s, {}).setdefault(p, set())
+        if o not in obj_set:
+            obj_set.add(o)
+            self._len += 1
 
     def remove(self, triple: tuple[str | None, str | None, RDFTerm | None]) -> None:
         s, p, o = triple
         if s is None and p is None and o is None:
             self._spo.clear()
-            self._triples.clear()
+            self._len = 0
             return
         s_str = str(s) if s is not None else None
         p_str = str(p) if p is not None else None
         o_cmp = o
         to_remove: list[Triple] = []
         if s_str is not None and p_str is not None and o_cmp is not None:
-            t = (s_str, p_str, o_cmp)
-            if t in self._triples:
-                to_remove.append(t)
+            obj_set = self._spo.get(s_str, {}).get(p_str)
+            if obj_set is not None and o_cmp in obj_set:
+                to_remove.append((s_str, p_str, o_cmp))
         elif s_str is not None:
             pred_dict = self._spo.get(s_str, {})
             if p_str is not None:
@@ -74,16 +73,18 @@ class LightGraph:
                         if o_cmp is None or obj == o_cmp:
                             to_remove.append((s_str, pred, obj))
         else:
-            for t in list(self._triples):
-                if (p_str is None or t[1] == p_str) and (o_cmp is None or t[2] == o_cmp):
-                    to_remove.append(t)
+            for subj, pred_dict in self._spo.items():
+                for pred, objs in pred_dict.items():
+                    for obj in list(objs):
+                        if (p_str is None or pred == p_str) and (o_cmp is None or obj == o_cmp):
+                            to_remove.append((subj, pred, obj))
         for ts, tp, to in to_remove:
-            self._triples.discard((ts, tp, to))
             pred_dict = self._spo.get(ts)
             if pred_dict is not None:
                 obj_set = pred_dict.get(tp)
                 if obj_set is not None:
                     obj_set.discard(to)
+                    self._len -= 1
                     if not obj_set:
                         del pred_dict[tp]
                 if not pred_dict:
@@ -111,9 +112,13 @@ class LightGraph:
                         if o_cmp is None or obj == o_cmp:
                             yield s_str, pred, obj
         else:
-            for t in self._triples:
-                if (p_str is None or t[1] == p_str) and (o_cmp is None or t[2] == o_cmp):
-                    yield t
+            for subj, pred_dict in self._spo.items():
+                for pred, objs in pred_dict.items():
+                    if p_str is not None and pred != p_str:
+                        continue
+                    for obj in objs:
+                        if o_cmp is None or obj == o_cmp:
+                            yield subj, pred, obj
 
     def objects(self, subject=None, predicate=None) -> Iterator[RDFTerm]:
         s_str = str(subject) if subject is not None else None
@@ -125,9 +130,12 @@ class LightGraph:
             for objs in self._spo.get(s_str, {}).values():
                 yield from objs
             return
-        for t in self._triples:
-            if p_str is None or t[1] == p_str:
-                yield t[2]
+        for pred_dict in self._spo.values():
+            if p_str is not None:
+                yield from pred_dict.get(p_str, set())
+            else:
+                for objs in pred_dict.values():
+                    yield from objs
 
     def predicate_objects(self, subject=None, **_kwargs) -> Iterator[tuple[str, RDFTerm]]:
         s_str = str(subject) if subject is not None else None
@@ -136,22 +144,27 @@ class LightGraph:
                 for obj in objs:
                     yield pred, obj
             return
-        for t in self._triples:
-            yield t[1], t[2]
+        for pred_dict in self._spo.values():
+            for pred, objs in pred_dict.items():
+                for obj in objs:
+                    yield pred, obj
 
     def __contains__(self, triple: tuple[str, str, RDFTerm]) -> bool:
         s, p, o = triple
-        return (str(s), str(p), o) in self._triples
+        return o in self._spo.get(str(s), {}).get(str(p), set())
 
     def __iter__(self) -> Iterator[Triple]:
-        return iter(self._triples)
+        for subj, pred_dict in self._spo.items():
+            for pred, objs in pred_dict.items():
+                for obj in objs:
+                    yield subj, pred, obj
 
     def __len__(self) -> int:
-        return len(self._triples)
+        return self._len
 
     def to_rdflib_quads(self):
         graph_id = URIRef(self.identifier) if self.identifier else None
-        for s, p, o in self._triples:
+        for s, p, o in self:
             s_ref = URIRef(s)
             p_ref = URIRef(p)
             if o.type == "literal":

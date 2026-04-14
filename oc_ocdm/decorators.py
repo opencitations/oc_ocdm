@@ -33,10 +33,10 @@ def accepts_only(param_type: str) -> Callable[[F], F]:
     :type param_type: str
     """
     def accepts_only_decorator(function: F) -> F:
+        lowercase_type = param_type.lower()
 
         @wraps(function)
         def accepts_only_wrapper(self: object, param: object = None, **kwargs: object) -> object:
-            lowercase_type = param_type.lower()
             if param is None or \
                     (isinstance(param, AbstractEntity) and param.short_name == lowercase_type):
                 return function(self, param, **kwargs)

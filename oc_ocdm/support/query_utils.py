@@ -8,7 +8,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Set
+from typing import TYPE_CHECKING, AbstractSet, List, Set
 
 from oc_ocdm.light_graph import RDFTerm
 
@@ -33,16 +33,16 @@ def _term_to_nt(term) -> str:
     return term.n3()
 
 
-def _serialize_triples_to_nt(triples: Set) -> str:
+def _serialize_triples_to_nt(triples: AbstractSet) -> str:
     return "".join(f"{_term_to_nt(s)} {_term_to_nt(p)} {_term_to_nt(o)} ." for s, p, o in triples)
 
 
-def _chunk_set(data: Set, chunk_size: int) -> List[Set]:
+def _chunk_set(data: AbstractSet, chunk_size: int) -> List[Set]:
     data_list = list(data)
     return [set(data_list[i:i + chunk_size]) for i in range(0, len(data_list), chunk_size)]
 
 
-def get_delete_query(graph_iri: str, data: Set) -> Tuple[List[str], int]:
+def get_delete_query(graph_iri: str, data: AbstractSet) -> Tuple[List[str], int]:
     num_of_statements: int = len(data)
     if num_of_statements <= 0:
         return [], 0
@@ -59,7 +59,7 @@ def get_delete_query(graph_iri: str, data: Set) -> Tuple[List[str], int]:
     return queries, num_of_statements
 
 
-def get_insert_query(graph_iri: str, data: Set) -> Tuple[List[str], int]:
+def get_insert_query(graph_iri: str, data: AbstractSet) -> Tuple[List[str], int]:
     num_of_statements: int = len(data)
     if num_of_statements <= 0:
         return [], 0
@@ -76,7 +76,7 @@ def get_insert_query(graph_iri: str, data: Set) -> Tuple[List[str], int]:
     return queries, num_of_statements
 
 
-def _compute_graph_changes(entity: AbstractEntity, entity_type: str) -> Tuple[Set, Set, int, int]:
+def _compute_graph_changes(entity: AbstractEntity, entity_type: str) -> Tuple[AbstractSet, AbstractSet, int, int]:
     """
     Computes the triples to insert and delete for an entity.
 
@@ -104,10 +104,10 @@ def _compute_graph_changes(entity: AbstractEntity, entity_type: str) -> Tuple[Se
 
     current_triples = set(entity.g)
 
-    if preexisting_triples == current_triples:
+    if len(preexisting_triples) == len(current_triples) and preexisting_triples == current_triples:
         return set(), set(), 0, 0
 
-    removed_triples = set(preexisting_triples) - current_triples
+    removed_triples = preexisting_triples - current_triples
     added_triples = current_triples - preexisting_triples
 
     return added_triples, removed_triples, len(added_triples), len(removed_triples)

@@ -74,14 +74,34 @@ class Reader(object):
 
         return loaded_graph
 
+    _EXT_TO_FORMATS: dict[str, list[str]] = {
+        ".json": ["json-ld"],
+        ".jsonld": ["json-ld"],
+        ".xml": ["rdfxml"],
+        ".rdf": ["rdfxml"],
+        ".ttl": ["turtle"],
+        ".trig": ["trig"],
+        ".nt": ["nt11"],
+        ".nq": ["nquads"],
+    }
+    _ALL_FORMATS: list[str] = ["json-ld", "rdfxml", "turtle", "trig", "nt11", "nquads"]
+
+    @staticmethod
+    def _formats_for_file(file_name: str) -> list[str]:
+        ext = os.path.splitext(file_name)[1].lower()
+        preferred = Reader._EXT_TO_FORMATS.get(ext)
+        if preferred is not None:
+            return preferred + [f for f in Reader._ALL_FORMATS if f not in preferred]
+        return Reader._ALL_FORMATS
+
     def _load_graph(self, file_path: str) -> Dataset:
-        formats = ["json-ld", "rdfxml", "turtle", "trig", "nt11", "nquads"]
         loaded_graph = Dataset()
 
         if file_path.endswith('.zip'):
             try:
                 with ZipFile(file=file_path, mode="r") as archive:
                     for zf_name in archive.namelist():
+                        formats = self._formats_for_file(zf_name)
                         with archive.open(zf_name) as f:
                             if self._try_parse(loaded_graph, f, formats):
                                 for graph in loaded_graph.graphs():
@@ -90,6 +110,7 @@ class Reader(object):
             except Exception as e:
                 raise IOError(f"Error opening or reading zip file '{file_path}': {e}")
         else:
+            formats = self._formats_for_file(file_path)
             try:
                 with open(file_path, 'rt', encoding='utf-8') as f:
                     if self._try_parse(loaded_graph, f, formats):
@@ -103,7 +124,7 @@ class Reader(object):
 
     def _try_parse(self, graph: Dataset, file_obj, formats: List[str]) -> bool:
         for cur_format in formats:
-            file_obj.seek(0)  # Reset file pointer to the beginning for each new attempt
+            file_obj.seek(0)
             try:
                 if cur_format == "json-ld":
                     json_ld_file = json.load(file_obj)
@@ -112,14 +133,13 @@ class Reader(object):
                     for json_ld_resource in json_ld_file:
                         if "@context" in json_ld_resource and json_ld_resource["@context"] in self.context_map:
                             json_ld_resource["@context"] = self.context_map[json_ld_resource["@context"]]["@context"]
-                    data = json.dumps(json_ld_file, ensure_ascii=False)
-                    graph.parse(data=data, format=cur_format)
+                    graph.parse(data=json.dumps(json_ld_file, ensure_ascii=False), format=cur_format)
                 else:
                     graph.parse(file=file_obj, format=cur_format)
-                return True  # Success, no need to try other formats
-            except Exception as e:
-                continue  # Try the next format
-        return False  # None of the formats succeeded
+                return True
+            except Exception:
+                continue
+        return False
 
     @staticmethod
     def get_graph_from_subject(graph: Graph, subject: URIRef) -> LightGraph:

@@ -302,14 +302,10 @@ def find_paths(res: str, base_dir: str, base_iri: str, default_dir: str, dir_spl
     parsed = parse_uri(res)
     cur_number: int = int(parsed.prov_subject_count) if parsed.is_prov else int(parsed.count)
 
-    cur_file_split: int = 0
-    while cur_number > cur_file_split:
-        cur_file_split += n_file_item
+    cur_file_split: int = ((cur_number - 1) // n_file_item + 1) * n_file_item if cur_number > 0 else n_file_item
 
     if dir_split and not string_iri.startswith(base_iri + "prov/"):
-        cur_split: int = 0
-        while cur_number > cur_split:
-            cur_split += dir_split
+        cur_split: int = ((cur_number - 1) // dir_split + 1) * dir_split if cur_number > 0 else dir_split
 
         if parsed.is_prov:
             sub_folder = parsed.prov_subject_prefix or default_dir or "_"

@@ -159,6 +159,7 @@ class Storer(object):
                 relevant_paths.setdefault(cur_file_path, list())
                 relevant_paths[cur_file_path].append(entity)
 
+        reader = Reader(context_map=self.context_map)
         for relevant_path, entities_in_path in relevant_paths.items():
             stored_g = None
             # Here we try to obtain a reference to the currently stored graph
@@ -166,7 +167,7 @@ class Storer(object):
             lock = FileLock(f"{output_filepath}.lock")
             with lock:
                 if os.path.exists(output_filepath):
-                    stored_g = Reader(context_map=self.context_map).load(output_filepath)
+                    stored_g = reader.load(output_filepath)
                 if stored_g is None:
                     stored_g = Dataset()
                 for entity_in_path in entities_in_path:
