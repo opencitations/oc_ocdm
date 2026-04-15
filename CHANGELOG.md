@@ -1,3 +1,10 @@
+## [11.0.2](https://github.com/opencitations/oc_ocdm/compare/11.0.1...11.0.2) (2026-04-15)
+
+
+### Bug Fixes
+
+* configure semantic-release to bump on refactor and perf commits [release] ([d6d2798](https://github.com/opencitations/oc_ocdm/commit/d6d27985a590d431d1384824b34ede5c738a46bc))
+
 ## [11.0.1](https://github.com/opencitations/oc_ocdm/compare/11.0.0...11.0.1) (2026-04-15)
 
 
