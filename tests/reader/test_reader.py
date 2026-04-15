@@ -69,7 +69,7 @@ class TestReader(unittest.TestCase):
         br_0605 = self.g_set.get_entity('https://w3id.org/oc/meta/br/0605')
         assert br_0605 is not None
         # Check title
-        title_obj = next(br_0605.g.objects(br_0605.res, URIRef('http://purl.org/dc/terms/title')))
+        title_obj = next(br_0605.g.objects(br_0605.res, 'http://purl.org/dc/terms/title'))
         title = title_obj.value
         self.assertEqual(title, "A Review Of Hemolytic Uremic Syndrome In Patients Treated With Gemcitabine Therapy")
     
@@ -117,7 +117,7 @@ class TestReader(unittest.TestCase):
         # Check if entities of different types were imported correctly
         entity_types = set()
         for entity in imported:
-            for _, _, o in entity.g.triples((entity.res, URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), None)):
+            for _, _, o in entity.g.triples((entity.res, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', None)):
                 entity_types.add(str(o))
                 
         self.assertTrue(len(entity_types) >= 2)  # Should have multiple types
