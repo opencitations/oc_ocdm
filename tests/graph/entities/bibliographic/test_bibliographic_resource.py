@@ -7,8 +7,9 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from rdflib import RDF, XSD, URIRef
+from rdflib import URIRef
 
+from oc_ocdm.constants import RDF_TYPE, XSD_DATE, XSD_GYEAR, XSD_GYEARMONTH, XSD_STRING
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
 from triplelite import RDFTerm
@@ -34,7 +35,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.br1.has_title(title)
         self.assertIsNone(result)
 
-        triple = self.br1.res, GraphEntity.iri_title, RDFTerm("literal", title, str(XSD.string))
+        triple = self.br1.res, GraphEntity.iri_title, RDFTerm("literal", title, XSD_STRING)
         self.assertIn(triple, self.br1.g)
 
     def test_has_subtitle(self):
@@ -42,7 +43,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.br1.has_subtitle(subtitle)
         self.assertIsNone(result)
 
-        triple = self.br1.res, GraphEntity.iri_has_subtitle, RDFTerm("literal", subtitle, str(XSD.string))
+        triple = self.br1.res, GraphEntity.iri_has_subtitle, RDFTerm("literal", subtitle, XSD_STRING)
         self.assertIn(triple, self.br1.g)
 
     def test_is_part_of(self):
@@ -62,27 +63,24 @@ class TestBibliographicResource(unittest.TestCase):
     def test_has_pub_date(self):
         with self.subTest("date is '2020-05-25'"):
             string = "2020-05-25"
-            datatype = XSD.date
             result = self.br1.has_pub_date(string)
             self.assertIsNone(result)
 
-            triple = self.br1.res, GraphEntity.iri_has_publication_date, RDFTerm("literal", string, str(datatype))
+            triple = self.br1.res, GraphEntity.iri_has_publication_date, RDFTerm("literal", string, XSD_DATE)
             self.assertIn(triple, self.br1.g)
         with self.subTest("date is '2020-05'"):
             string = "2020-05"
-            datatype = XSD.gYearMonth
             result = self.br1.has_pub_date(string)
             self.assertIsNone(result)
 
-            triple = self.br1.res, GraphEntity.iri_has_publication_date, RDFTerm("literal", string, str(datatype))
+            triple = self.br1.res, GraphEntity.iri_has_publication_date, RDFTerm("literal", string, XSD_GYEARMONTH)
             self.assertIn(triple, self.br1.g)
         with self.subTest("date is '2020'"):
             string = "2020"
-            datatype = XSD.gYear
             result = self.br1.has_pub_date(string)
             self.assertIsNone(result)
 
-            triple = self.br1.res, GraphEntity.iri_has_publication_date, RDFTerm("literal", string, str(datatype))
+            triple = self.br1.res, GraphEntity.iri_has_publication_date, RDFTerm("literal", string, XSD_GYEAR)
             self.assertIn(triple, self.br1.g)
 
     def test_has_format(self):
@@ -97,7 +95,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.br1.has_number(number)
         self.assertIsNone(result)
 
-        triple = self.br1.res, GraphEntity.iri_has_sequence_identifier, RDFTerm("literal", number, str(XSD.string))
+        triple = self.br1.res, GraphEntity.iri_has_sequence_identifier, RDFTerm("literal", number, XSD_STRING)
         self.assertIn(triple, self.br1.g)
 
     def test_has_edition(self):
@@ -105,7 +103,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.br1.has_edition(edition)
         self.assertIsNone(result)
 
-        triple = self.br1.res, GraphEntity.iri_has_edition, RDFTerm("literal", edition, str(XSD.string))
+        triple = self.br1.res, GraphEntity.iri_has_edition, RDFTerm("literal", edition, XSD_STRING)
         self.assertIn(triple, self.br1.g)
 
     def test_contains_in_reference_list(self):
@@ -141,196 +139,196 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.br1.create_archival_document()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_archival_document))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_archival_document)
         self.assertIn(triple, self.br1.g)
 
     def test_create_book(self):
         result = self.br1.create_book()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_book))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_book)
         self.assertIn(triple, self.br1.g)
 
     def test_create_book_chapter(self):
         result = self.br1.create_book_chapter()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_book_chapter))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_book_chapter)
         self.assertIn(triple, self.br1.g)
 
     def test_create_book_part(self):
         result = self.br1.create_book_part()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_part))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_part)
         self.assertIn(triple, self.br1.g)
 
     def test_create_book_section(self):
         result = self.br1.create_book_section()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_expression_collection))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_expression_collection)
         self.assertIn(triple, self.br1.g)
 
     def test_create_book_series(self):
         result = self.br1.create_book_series()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_book_series))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_book_series)
         self.assertIn(triple, self.br1.g)
 
     def test_create_book_set(self):
         result = self.br1.create_book_set()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_book_set))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_book_set)
         self.assertIn(triple, self.br1.g)
 
     def test_create_book_track(self):
         result = self.br1.create_book_track()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_expression))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_expression)
         self.assertIn(triple, self.br1.g)
 
     def test_create_component(self):
         result = self.br1.create_component()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_expression))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_expression)
         self.assertIn(triple, self.br1.g)
 
     def test_create_dataset(self):
         result = self.br1.create_dataset()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_data_file))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_data_file)
         self.assertIn(triple, self.br1.g)
 
     def test_create_dissertation(self):
         result = self.br1.create_dissertation()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_thesis))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_thesis)
         self.assertIn(triple, self.br1.g)
 
     def test_create_edited_book(self):
         result = self.br1.create_edited_book()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_book))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_book)
         self.assertIn(triple, self.br1.g)
 
     def test_create_journal_article(self):
         result = self.br1.create_journal_article()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_journal_article))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_journal_article)
         self.assertIn(triple, self.br1.g)
 
     def test_create_issue(self):
         result = self.br1.create_issue()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_journal_issue))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_journal_issue)
         self.assertIn(triple, self.br1.g)
 
     def test_create_volume(self):
         result = self.br1.create_volume()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_journal_volume))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_journal_volume)
         self.assertIn(triple, self.br1.g)
 
     def test_create_journal(self):
         result = self.br1.create_journal()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_journal))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_journal)
         self.assertIn(triple, self.br1.g)
 
     def test_create_monograph(self):
         result = self.br1.create_monograph()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_book))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_book)
         self.assertIn(triple, self.br1.g)
 
     def test_create_proceedings_article(self):
         result = self.br1.create_proceedings_article()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_proceedings_paper))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_proceedings_paper)
         self.assertIn(triple, self.br1.g)
 
     def test_create_proceedings(self):
         result = self.br1.create_proceedings()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_academic_proceedings))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_academic_proceedings)
         self.assertIn(triple, self.br1.g)
 
     def test_create_reference_book(self):
         result = self.br1.create_reference_book()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_reference_book))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_reference_book)
         self.assertIn(triple, self.br1.g)
 
     def test_create_reference_entry(self):
         result = self.br1.create_reference_entry()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_reference_entry))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_reference_entry)
         self.assertIn(triple, self.br1.g)
 
     def test_create_report_series(self):
         result = self.br1.create_report_series()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_series))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_series)
         self.assertIn(triple, self.br1.g)
 
     def test_create_report(self):
         result = self.br1.create_report()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_report_document))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_report_document)
         self.assertIn(triple, self.br1.g)
 
     def test_create_standard_series(self):
         result = self.br1.create_standard_series()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_series))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_series)
         self.assertIn(triple, self.br1.g)
 
     def test_create_standard(self):
         result = self.br1.create_standard()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_specification_document))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_specification_document)
         self.assertIn(triple, self.br1.g)
 
     def test_create_series(self):
         result = self.br1.create_series()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_series))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_series)
         self.assertIn(triple, self.br1.g)
 
     def test_create_expression_collection(self):
         result = self.br1.create_expression_collection()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_expression_collection))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_expression_collection)
         self.assertIn(triple, self.br1.g)
 
     def test_create_other(self):
         result = self.br1.create_other()
         self.assertIsNone(result)
 
-        triple = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_expression))
+        triple = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_expression)
         self.assertIn(triple, self.br1.g)
 
     def test_assign_more_types_br(self):
@@ -339,8 +337,8 @@ class TestBibliographicResource(unittest.TestCase):
         result2 = self.br1.create_preprint()
         self.assertIsNone(result2)
 
-        triple1 = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_series))
-        triple2 = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_preprint))
+        triple1 = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_series)
+        triple2 = self.br1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_preprint)
         self.assertIn(triple2, self.br1.g)
         self.assertNotIn(triple1, self.br1.g)
 
@@ -354,14 +352,14 @@ class TestBibliographicResource(unittest.TestCase):
         br_specific.create_journal_article()
         
         # Verify initial types
-        self.assertIn((br_specific.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_journal_article))), br_specific.g)
-        self.assertIn((br_specific.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_expression))), br_specific.g)
-        self.assertIn((br_generic.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_expression))), br_generic.g)
+        self.assertIn((br_specific.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_journal_article)), br_specific.g)
+        self.assertIn((br_specific.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_expression)), br_specific.g)
+        self.assertIn((br_generic.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_expression)), br_generic.g)
         
         # Merge and verify types are preserved correctly
         br_generic.merge(br_specific)
-        self.assertIn((br_generic.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_journal_article))), br_generic.g)
-        self.assertIn((br_generic.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_expression))), br_generic.g)
+        self.assertIn((br_generic.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_journal_article)), br_generic.g)
+        self.assertIn((br_generic.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_expression)), br_generic.g)
         
         # Case 2: Merge generic type into specific type
         br_specific_2 = self.graph_set.add_br(self.resp_agent)
@@ -370,8 +368,8 @@ class TestBibliographicResource(unittest.TestCase):
         br_specific_2.create_journal_article()
         
         br_specific_2.merge(br_generic_2)
-        self.assertIn((br_specific_2.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_journal_article))), br_specific_2.g)
-        self.assertIn((br_specific_2.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_expression))), br_specific_2.g)
+        self.assertIn((br_specific_2.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_journal_article)), br_specific_2.g)
+        self.assertIn((br_specific_2.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_expression)), br_specific_2.g)
         
         # Case 3: Merge between two specific types (prefer_self=True)
         br_article = self.graph_set.add_br(self.resp_agent)
@@ -381,9 +379,9 @@ class TestBibliographicResource(unittest.TestCase):
         br_book.create_book()
         
         br_article.merge(br_book, prefer_self=True)
-        self.assertIn((br_article.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_journal_article))), br_article.g)
-        self.assertIn((br_article.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_expression))), br_article.g)
-        self.assertNotIn((br_article.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_book))), br_article.g)
+        self.assertIn((br_article.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_journal_article)), br_article.g)
+        self.assertIn((br_article.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_expression)), br_article.g)
+        self.assertNotIn((br_article.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_book)), br_article.g)
         
         # Case 4: Merge between two specific types (prefer_self=False)
         br_article_2 = self.graph_set.add_br(self.resp_agent)
@@ -393,9 +391,9 @@ class TestBibliographicResource(unittest.TestCase):
         br_book_2.create_book()
         
         br_article_2.merge(br_book_2, prefer_self=False)
-        self.assertIn((br_article_2.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_book))), br_article_2.g)
-        self.assertIn((br_article_2.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_expression))), br_article_2.g)
-        self.assertNotIn((br_article_2.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_journal_article))), br_article_2.g)
+        self.assertIn((br_article_2.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_book)), br_article_2.g)
+        self.assertIn((br_article_2.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_expression)), br_article_2.g)
+        self.assertNotIn((br_article_2.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_journal_article)), br_article_2.g)
 
         # Case 5: Merge a generic entity into a specific entity (prefer_self=True)
         br_specific_3 = self.graph_set.add_br(self.resp_agent)
@@ -404,14 +402,14 @@ class TestBibliographicResource(unittest.TestCase):
         br_specific_3.create_journal_article()
         
         # Verify initial types
-        self.assertIn((br_specific_3.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_journal_article))), br_specific_3.g)
-        self.assertIn((br_specific_3.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_expression))), br_specific_3.g)
-        self.assertIn((br_generic_3.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_expression))), br_generic_3.g)
+        self.assertIn((br_specific_3.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_journal_article)), br_specific_3.g)
+        self.assertIn((br_specific_3.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_expression)), br_specific_3.g)
+        self.assertIn((br_generic_3.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_expression)), br_generic_3.g)
         
         # Merge and verify types are preserved correctly
         br_specific_3.merge(br_generic_3, prefer_self=True)
-        self.assertIn((br_specific_3.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_journal_article))), br_specific_3.g)
-        self.assertIn((br_specific_3.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_expression))), br_specific_3.g)
+        self.assertIn((br_specific_3.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_journal_article)), br_specific_3.g)
+        self.assertIn((br_specific_3.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_expression)), br_specific_3.g)
 
         # Case 6: Merge a generic entity into a specific entity (prefer_self=False)
         br_specific_4 = self.graph_set.add_br(self.resp_agent)
@@ -420,8 +418,8 @@ class TestBibliographicResource(unittest.TestCase):
         br_specific_4.create_journal_article()
         
         br_specific_4.merge(br_generic_4, prefer_self=False)
-        self.assertIn((br_specific_4.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_expression))), br_specific_4.g)
-        self.assertIn((br_specific_4.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_journal_article))), br_specific_4.g)
+        self.assertIn((br_specific_4.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_expression)), br_specific_4.g)
+        self.assertIn((br_specific_4.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_journal_article)), br_specific_4.g)
 
 if __name__ == '__main__':
     unittest.main()

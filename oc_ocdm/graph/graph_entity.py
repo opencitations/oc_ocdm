@@ -8,9 +8,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from rdflib import RDF, Namespace
-
 from oc_ocdm.abstract_entity import AbstractEntity
+from oc_ocdm.constants import RDF_TYPE, Namespace
 from triplelite import RDFTerm, TripleLite
 
 if TYPE_CHECKING:
@@ -38,137 +37,137 @@ class GraphEntity(AbstractEntity):
     PRISM: ClassVar[Namespace] = Namespace("http://prismstandard.org/namespaces/basic/2.0/")
     PRO: ClassVar[Namespace] = Namespace("http://purl.org/spar/pro/")
 
-    iri_has_subtitle: ClassVar[str] = str(FABIO.hasSubtitle)
-    iri_has_publication_date: ClassVar[str] = str(PRISM.publicationDate)
-    iri_bibliographic_reference: ClassVar[str] = str(BIRO.BibliographicReference)
-    iri_references: ClassVar[str] = str(BIRO.references)
-    iri_denotes: ClassVar[str] = str(C4O.denotes)
-    iri_has_content: ClassVar[str] = str(C4O.hasContent)
-    iri_intextref_pointer: ClassVar[str] = str(C4O.InTextReferencePointer)
-    iri_is_context_of: ClassVar[str] = str(C4O.isContextOf)
-    iri_singleloc_pointer_list: ClassVar[str] = str(C4O.SingleLocationPointerList)
-    iri_has_element: ClassVar[str] = str(CO.element)
-    iri_citation: ClassVar[str] = str(CITO.Citation)
-    iri_cites: ClassVar[str] = str(CITO.cites)
-    iri_citation_characterisation: ClassVar[str] = str(CITO.hasCitationCharacterisation)
-    iri_has_citing_entity: ClassVar[str] = str(CITO.hasCitingEntity)
-    iri_has_cited_entity: ClassVar[str] = str(CITO.hasCitedEntity)
-    iri_openalex: ClassVar[str] = str(DATACITE.openalex)
-    iri_arxiv: ClassVar[str] = str(DATACITE.arxiv)
-    iri_oci: ClassVar[str] = str(DATACITE.oci)
-    iri_doi: ClassVar[str] = str(DATACITE.doi)
-    iri_pmid: ClassVar[str] = str(DATACITE.pmid)
-    iri_pmcid: ClassVar[str] = str(DATACITE.pmcid)
-    iri_orcid: ClassVar[str] = str(DATACITE.orcid)
-    iri_xpath: ClassVar[str] = str(DATACITE["local-resource-identifier-scheme"])
-    iri_intrepid: ClassVar[str] = str(DATACITE.intrepid)
-    iri_xmlid: ClassVar[str] = str(DATACITE["local-resource-identifier-scheme"])
-    iri_has_identifier: ClassVar[str] = str(DATACITE.hasIdentifier)
-    iri_identifier: ClassVar[str] = str(DATACITE.Identifier)
-    iri_isbn: ClassVar[str] = str(DATACITE.isbn)
-    iri_issn: ClassVar[str] = str(DATACITE.issn)
-    iri_url: ClassVar[str] = str(DATACITE.url)
-    iri_uses_identifier_scheme: ClassVar[str] = str(DATACITE.usesIdentifierScheme)
-    iri_title: ClassVar[str] = str(DCTERMS["title"])
-    iri_caption: ClassVar[str] = str(DEO.Caption)
-    iri_discourse_element: ClassVar[str] = str(DEO.DiscourseElement)
-    iri_footnote: ClassVar[str] = str(DOCO.Footnote)
-    iri_paragraph: ClassVar[str] = str(DOCO.Paragraph)
-    iri_part: ClassVar[str] = str(DOCO.Part)
-    iri_section: ClassVar[str] = str(DOCO.Section)
-    iri_introduction: ClassVar[str] = str(DEO.Introduction)
-    iri_methods: ClassVar[str] = str(DEO.Methods)
-    iri_materials: ClassVar[str] = str(DEO.Materials)
-    iri_related_work: ClassVar[str] = str(DEO.RelatedWork)
-    iri_results: ClassVar[str] = str(DEO.Results)
-    iri_discussion: ClassVar[str] = str(DEO.Discussion)
-    iri_conclusion: ClassVar[str] = str(DEO.Conclusion)
-    iri_section_title: ClassVar[str] = str(DOCO.SectionTitle)
-    iri_sentence: ClassVar[str] = str(DOCO.Sentence)
-    iri_table: ClassVar[str] = str(DOCO.Table)
-    iri_text_chunk: ClassVar[str] = str(DOCO.TextChunk)
-    iri_abstract: ClassVar[str] = str(DOCO.Abstract)
-    iri_academic_proceedings: ClassVar[str] = str(FABIO.AcademicProceedings)
-    iri_audio_document: ClassVar[str] = str(FABIO.AudioDocument)
-    iri_book: ClassVar[str] = str(FABIO.Book)
-    iri_book_chapter: ClassVar[str] = str(FABIO.BookChapter)
-    iri_book_series: ClassVar[str] = str(FABIO.BookSeries)
-    iri_book_set: ClassVar[str] = str(FABIO.BookSet)
-    iri_computer_program: ClassVar[str] = str(FABIO.ComputerProgram)
-    iri_data_file: ClassVar[str] = str(FABIO.DataFile)
-    iri_data_management_plan: ClassVar[str] = str(FABIO.DataManagementPlan)
-    iri_editorial: ClassVar[str] = str(FABIO.Editorial)
-    iri_expression: ClassVar[str] = str(FABIO.Expression)
-    iri_expression_collection: ClassVar[str] = str(FABIO.ExpressionCollection)
-    iri_has_sequence_identifier: ClassVar[str] = str(FABIO.hasSequenceIdentifier)
-    iri_journal: ClassVar[str] = str(FABIO.Journal)
-    iri_journal_article: ClassVar[str] = str(FABIO.JournalArticle)
-    iri_journal_editorial: ClassVar[str] = str(FABIO.JournalEditorial)
-    iri_journal_issue: ClassVar[str] = str(FABIO.JournalIssue)
-    iri_journal_volume: ClassVar[str] = str(FABIO.JournalVolume)
-    iri_manifestation: ClassVar[str] = str(FABIO.Manifestation)
-    iri_newspaper: ClassVar[str] = str(FABIO.Newspaper)
-    iri_newspaper_article: ClassVar[str] = str(FABIO.NewspaperArticle)
-    iri_newspaper_editorial: ClassVar[str] = str(FABIO.NewspaperEditorial)
-    iri_newspaper_issue: ClassVar[str] = str(FABIO.NewspaperIssue)
-    iri_peer_review: ClassVar[str] = str(FR.ReviewVersion)
-    iri_preprint: ClassVar[str] = str(FABIO.Preprint)
-    iri_presentation: ClassVar[str] = str(FABIO.Presentation)
-    iri_proceedings_paper: ClassVar[str] = str(FABIO.ProceedingsPaper)
-    iri_proceedings_series: ClassVar[str] = str(FABIO.Series)
-    iri_reference_book: ClassVar[str] = str(FABIO.ReferenceBook)
-    iri_reference_entry: ClassVar[str] = str(FABIO.ReferenceEntry)
-    iri_report_document: ClassVar[str] = str(FABIO.ReportDocument)
-    iri_retraction_notice: ClassVar[str] = str(FABIO.RetractionNotice)
-    iri_series: ClassVar[str] = str(FABIO.Series)
-    iri_specification_document: ClassVar[str] = str(FABIO.SpecificationDocument)
-    iri_thesis: ClassVar[str] = str(FABIO.Thesis)
-    iri_web_content: ClassVar[str] = str(FABIO.WebContent)
-    iri_agent: ClassVar[str] = str(FOAF.Agent)
-    iri_family_name: ClassVar[str] = str(FOAF.familyName)
-    iri_given_name: ClassVar[str] = str(FOAF.givenName)
-    iri_name: ClassVar[str] = str(FOAF.name)
-    iri_embodiment: ClassVar[str] = str(FRBR.embodiment)
-    iri_part_of: ClassVar[str] = str(FRBR.partOf)
-    iri_contains_reference: ClassVar[str] = str(FRBR.part)
-    iri_contains_de: ClassVar[str] = str(FRBR.part)
-    iri_has_literal_value: ClassVar[str] = str(LITERAL.hasLiteralValue)
-    iri_ending_page: ClassVar[str] = str(PRISM.endingPage)
-    iri_starting_page: ClassVar[str] = str(PRISM.startingPage)
-    iri_author: ClassVar[str] = str(PRO.author)
-    iri_editor: ClassVar[str] = str(PRO.editor)
-    iri_is_held_by: ClassVar[str] = str(PRO.isHeldBy)
-    iri_publisher: ClassVar[str] = str(PRO.publisher)
-    iri_is_document_context_for: ClassVar[str] = str(PRO.isDocumentContextFor)
-    iri_role_in_time: ClassVar[str] = str(PRO.RoleInTime)
-    iri_with_role: ClassVar[str] = str(PRO.withRole)
-    iri_note: ClassVar[str] = str(OA.Annotation)
-    iri_has_body: ClassVar[str] = str(OA.hasBody)
-    iri_has_annotation: ClassVar[str] = str(OCO.hasAnnotation)  # inverse of OA.hasTarget
-    iri_has_next: ClassVar[str] = str(OCO.hasNext)
-    iri_archival_document: ClassVar[str] = str(FABIO.ArchivalDocument)
-    iri_viaf: ClassVar[str] = str(DATACITE.viaf)
-    iri_crossref: ClassVar[str] = str(DATACITE.crossref)  # TODO: add to datacite!
-    iri_datacite: ClassVar[str] = str(DATACITE.datacite)  # TODO: add to datacite!
-    iri_jid: ClassVar[str] = str(DATACITE.jid)  # TODO: add to datacite!
-    iri_wikidata: ClassVar[str] = str(DATACITE.wikidata)  # TODO: add to datacite!
-    iri_wikipedia: ClassVar[str] = str(DATACITE.wikipedia)  # TODO: add to datacite!
-    iri_has_edition: ClassVar[str] = str(PRISM.edition)
-    iri_relation: ClassVar[str] = str(DCTERMS.relation)
-    iri_has_citation_creation_date: ClassVar[str] = str(CITO.hasCitationCreationDate)
-    iri_has_citation_time_span: ClassVar[str] = str(CITO.hasCitationTimeSpan)
-    iri_digital_manifestation: ClassVar[str] = str(FABIO.DigitalManifestation)
-    iri_print_object: ClassVar[str] = str(FABIO.PrintObject)
-    iri_has_url: ClassVar[str] = str(FRBR.exemplar)
-    iri_self_citation: ClassVar[str] = str(CITO.SelfCitation)
-    iri_affiliation_self_citation: ClassVar[str] = str(CITO.AffiliationSelfCitation)
-    iri_author_network_self_citation: ClassVar[str] = str(CITO.AuthorNetworkSelfCitation)
-    iri_author_self_citation: ClassVar[str] = str(CITO.AuthorSelfCitation)
-    iri_funder_self_citation: ClassVar[str] = str(CITO.FunderSelfCitation)
-    iri_journal_self_citation: ClassVar[str] = str(CITO.JournalSelfCitation)
-    iri_journal_cartel_citation: ClassVar[str] = str(CITO.JournalCartelCitation)
-    iri_distant_citation: ClassVar[str] = str(CITO.DistantCitation)
-    iri_has_format: ClassVar[str] = str(DCTERMS["format"])
+    iri_has_subtitle: ClassVar[str] = FABIO.hasSubtitle
+    iri_has_publication_date: ClassVar[str] = PRISM.publicationDate
+    iri_bibliographic_reference: ClassVar[str] = BIRO.BibliographicReference
+    iri_references: ClassVar[str] = BIRO.references
+    iri_denotes: ClassVar[str] = C4O.denotes
+    iri_has_content: ClassVar[str] = C4O.hasContent
+    iri_intextref_pointer: ClassVar[str] = C4O.InTextReferencePointer
+    iri_is_context_of: ClassVar[str] = C4O.isContextOf
+    iri_singleloc_pointer_list: ClassVar[str] = C4O.SingleLocationPointerList
+    iri_has_element: ClassVar[str] = CO.element
+    iri_citation: ClassVar[str] = CITO.Citation
+    iri_cites: ClassVar[str] = CITO.cites
+    iri_citation_characterisation: ClassVar[str] = CITO.hasCitationCharacterisation
+    iri_has_citing_entity: ClassVar[str] = CITO.hasCitingEntity
+    iri_has_cited_entity: ClassVar[str] = CITO.hasCitedEntity
+    iri_openalex: ClassVar[str] = DATACITE.openalex
+    iri_arxiv: ClassVar[str] = DATACITE.arxiv
+    iri_oci: ClassVar[str] = DATACITE.oci
+    iri_doi: ClassVar[str] = DATACITE.doi
+    iri_pmid: ClassVar[str] = DATACITE.pmid
+    iri_pmcid: ClassVar[str] = DATACITE.pmcid
+    iri_orcid: ClassVar[str] = DATACITE.orcid
+    iri_xpath: ClassVar[str] = DATACITE["local-resource-identifier-scheme"]
+    iri_intrepid: ClassVar[str] = DATACITE.intrepid
+    iri_xmlid: ClassVar[str] = DATACITE["local-resource-identifier-scheme"]
+    iri_has_identifier: ClassVar[str] = DATACITE.hasIdentifier
+    iri_identifier: ClassVar[str] = DATACITE.Identifier
+    iri_isbn: ClassVar[str] = DATACITE.isbn
+    iri_issn: ClassVar[str] = DATACITE.issn
+    iri_url: ClassVar[str] = DATACITE.url
+    iri_uses_identifier_scheme: ClassVar[str] = DATACITE.usesIdentifierScheme
+    iri_title: ClassVar[str] = DCTERMS.title
+    iri_caption: ClassVar[str] = DEO.Caption
+    iri_discourse_element: ClassVar[str] = DEO.DiscourseElement
+    iri_footnote: ClassVar[str] = DOCO.Footnote
+    iri_paragraph: ClassVar[str] = DOCO.Paragraph
+    iri_part: ClassVar[str] = DOCO.Part
+    iri_section: ClassVar[str] = DOCO.Section
+    iri_introduction: ClassVar[str] = DEO.Introduction
+    iri_methods: ClassVar[str] = DEO.Methods
+    iri_materials: ClassVar[str] = DEO.Materials
+    iri_related_work: ClassVar[str] = DEO.RelatedWork
+    iri_results: ClassVar[str] = DEO.Results
+    iri_discussion: ClassVar[str] = DEO.Discussion
+    iri_conclusion: ClassVar[str] = DEO.Conclusion
+    iri_section_title: ClassVar[str] = DOCO.SectionTitle
+    iri_sentence: ClassVar[str] = DOCO.Sentence
+    iri_table: ClassVar[str] = DOCO.Table
+    iri_text_chunk: ClassVar[str] = DOCO.TextChunk
+    iri_abstract: ClassVar[str] = DOCO.Abstract
+    iri_academic_proceedings: ClassVar[str] = FABIO.AcademicProceedings
+    iri_audio_document: ClassVar[str] = FABIO.AudioDocument
+    iri_book: ClassVar[str] = FABIO.Book
+    iri_book_chapter: ClassVar[str] = FABIO.BookChapter
+    iri_book_series: ClassVar[str] = FABIO.BookSeries
+    iri_book_set: ClassVar[str] = FABIO.BookSet
+    iri_computer_program: ClassVar[str] = FABIO.ComputerProgram
+    iri_data_file: ClassVar[str] = FABIO.DataFile
+    iri_data_management_plan: ClassVar[str] = FABIO.DataManagementPlan
+    iri_editorial: ClassVar[str] = FABIO.Editorial
+    iri_expression: ClassVar[str] = FABIO.Expression
+    iri_expression_collection: ClassVar[str] = FABIO.ExpressionCollection
+    iri_has_sequence_identifier: ClassVar[str] = FABIO.hasSequenceIdentifier
+    iri_journal: ClassVar[str] = FABIO.Journal
+    iri_journal_article: ClassVar[str] = FABIO.JournalArticle
+    iri_journal_editorial: ClassVar[str] = FABIO.JournalEditorial
+    iri_journal_issue: ClassVar[str] = FABIO.JournalIssue
+    iri_journal_volume: ClassVar[str] = FABIO.JournalVolume
+    iri_manifestation: ClassVar[str] = FABIO.Manifestation
+    iri_newspaper: ClassVar[str] = FABIO.Newspaper
+    iri_newspaper_article: ClassVar[str] = FABIO.NewspaperArticle
+    iri_newspaper_editorial: ClassVar[str] = FABIO.NewspaperEditorial
+    iri_newspaper_issue: ClassVar[str] = FABIO.NewspaperIssue
+    iri_peer_review: ClassVar[str] = FR.ReviewVersion
+    iri_preprint: ClassVar[str] = FABIO.Preprint
+    iri_presentation: ClassVar[str] = FABIO.Presentation
+    iri_proceedings_paper: ClassVar[str] = FABIO.ProceedingsPaper
+    iri_proceedings_series: ClassVar[str] = FABIO.Series
+    iri_reference_book: ClassVar[str] = FABIO.ReferenceBook
+    iri_reference_entry: ClassVar[str] = FABIO.ReferenceEntry
+    iri_report_document: ClassVar[str] = FABIO.ReportDocument
+    iri_retraction_notice: ClassVar[str] = FABIO.RetractionNotice
+    iri_series: ClassVar[str] = FABIO.Series
+    iri_specification_document: ClassVar[str] = FABIO.SpecificationDocument
+    iri_thesis: ClassVar[str] = FABIO.Thesis
+    iri_web_content: ClassVar[str] = FABIO.WebContent
+    iri_agent: ClassVar[str] = FOAF.Agent
+    iri_family_name: ClassVar[str] = FOAF.familyName
+    iri_given_name: ClassVar[str] = FOAF.givenName
+    iri_name: ClassVar[str] = FOAF.name
+    iri_embodiment: ClassVar[str] = FRBR.embodiment
+    iri_part_of: ClassVar[str] = FRBR.partOf
+    iri_contains_reference: ClassVar[str] = FRBR.part
+    iri_contains_de: ClassVar[str] = FRBR.part
+    iri_has_literal_value: ClassVar[str] = LITERAL.hasLiteralValue
+    iri_ending_page: ClassVar[str] = PRISM.endingPage
+    iri_starting_page: ClassVar[str] = PRISM.startingPage
+    iri_author: ClassVar[str] = PRO.author
+    iri_editor: ClassVar[str] = PRO.editor
+    iri_is_held_by: ClassVar[str] = PRO.isHeldBy
+    iri_publisher: ClassVar[str] = PRO.publisher
+    iri_is_document_context_for: ClassVar[str] = PRO.isDocumentContextFor
+    iri_role_in_time: ClassVar[str] = PRO.RoleInTime
+    iri_with_role: ClassVar[str] = PRO.withRole
+    iri_note: ClassVar[str] = OA.Annotation
+    iri_has_body: ClassVar[str] = OA.hasBody
+    iri_has_annotation: ClassVar[str] = OCO.hasAnnotation  # inverse of OA.hasTarget
+    iri_has_next: ClassVar[str] = OCO.hasNext
+    iri_archival_document: ClassVar[str] = FABIO.ArchivalDocument
+    iri_viaf: ClassVar[str] = DATACITE.viaf
+    iri_crossref: ClassVar[str] = DATACITE.crossref  # TODO: add to datacite!
+    iri_datacite: ClassVar[str] = DATACITE.datacite  # TODO: add to datacite!
+    iri_jid: ClassVar[str] = DATACITE.jid  # TODO: add to datacite!
+    iri_wikidata: ClassVar[str] = DATACITE.wikidata  # TODO: add to datacite!
+    iri_wikipedia: ClassVar[str] = DATACITE.wikipedia  # TODO: add to datacite!
+    iri_has_edition: ClassVar[str] = PRISM.edition
+    iri_relation: ClassVar[str] = DCTERMS.relation
+    iri_has_citation_creation_date: ClassVar[str] = CITO.hasCitationCreationDate
+    iri_has_citation_time_span: ClassVar[str] = CITO.hasCitationTimeSpan
+    iri_digital_manifestation: ClassVar[str] = FABIO.DigitalManifestation
+    iri_print_object: ClassVar[str] = FABIO.PrintObject
+    iri_has_url: ClassVar[str] = FRBR.exemplar
+    iri_self_citation: ClassVar[str] = CITO.SelfCitation
+    iri_affiliation_self_citation: ClassVar[str] = CITO.AffiliationSelfCitation
+    iri_author_network_self_citation: ClassVar[str] = CITO.AuthorNetworkSelfCitation
+    iri_author_self_citation: ClassVar[str] = CITO.AuthorSelfCitation
+    iri_funder_self_citation: ClassVar[str] = CITO.FunderSelfCitation
+    iri_journal_self_citation: ClassVar[str] = CITO.JournalSelfCitation
+    iri_journal_cartel_citation: ClassVar[str] = CITO.JournalCartelCitation
+    iri_distant_citation: ClassVar[str] = CITO.DistantCitation
+    iri_has_format: ClassVar[str] = DCTERMS.format
 
     short_name_to_type_iri: ClassVar[Dict[str, str]] = {
         'an': iri_note,
@@ -272,8 +271,8 @@ class GraphEntity(AbstractEntity):
         self._to_be_deleted = True
 
     def _get_specific_type(self) -> Optional[str]:
-        base_type_str = str(self.short_name_to_type_iri[self.short_name])
-        for _, _, type_uri in self.g.triples((self.res, RDF.type, None)):
+        base_type_str = self.short_name_to_type_iri[self.short_name]
+        for _, _, type_uri in self.g.triples((self.res, RDF_TYPE, None)):
             if type_uri.type == "uri" and type_uri.value != base_type_str:
                 return type_uri.value
         return None
@@ -317,11 +316,11 @@ class GraphEntity(AbstractEntity):
         elif self_specific_type:
             final_specific_type = self_specific_type
 
-        self.g.remove((self.res, RDF.type, None))
+        self.g.remove((self.res, RDF_TYPE, None))
         base_type = self.short_name_to_type_iri[self.short_name]
-        self.g.add((self.res, RDF.type, RDFTerm("uri", str(base_type))))
+        self.g.add((self.res, RDF_TYPE, RDFTerm("uri", base_type)))
         if final_specific_type:
-            self.g.add((self.res, RDF.type, RDFTerm("uri", str(final_specific_type))))
+            self.g.add((self.res, RDF_TYPE, RDFTerm("uri", final_specific_type)))
 
         label: Optional[str] = other.get_label()
         if label is not None:

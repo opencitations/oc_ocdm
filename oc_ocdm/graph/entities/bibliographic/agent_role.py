@@ -157,7 +157,7 @@ class AgentRole(BibliographicEntity):
         :return: None
         """
         self.remove_role_type()
-        self.g.add((self.res, GraphEntity.iri_with_role, RDFTerm("uri", str(GraphEntity.iri_publisher))))
+        self.g.add((self.res, GraphEntity.iri_with_role, RDFTerm("uri", GraphEntity.iri_publisher)))
 
     def create_author(self) -> None:
         """
@@ -171,7 +171,7 @@ class AgentRole(BibliographicEntity):
         :return: None
         """
         self.remove_role_type()
-        self.g.add((self.res, GraphEntity.iri_with_role, RDFTerm("uri", str(GraphEntity.iri_author))))
+        self.g.add((self.res, GraphEntity.iri_with_role, RDFTerm("uri", GraphEntity.iri_author)))
 
     def create_editor(self) -> None:
         """
@@ -185,7 +185,7 @@ class AgentRole(BibliographicEntity):
         :return: None
         """
         self.remove_role_type()
-        self.g.add((self.res, GraphEntity.iri_with_role, RDFTerm("uri", str(GraphEntity.iri_editor))))
+        self.g.add((self.res, GraphEntity.iri_with_role, RDFTerm("uri", GraphEntity.iri_editor)))
 
     def remove_role_type(self) -> None:
         """

@@ -7,8 +7,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from rdflib import XSD
-
+from oc_ocdm.constants import XSD_STRING
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
 from triplelite import RDFTerm
@@ -31,7 +30,7 @@ class TestBibliographicReference(unittest.TestCase):
         result = self.be.has_content(content)
         self.assertIsNone(result)
 
-        triple = self.be.res, GraphEntity.iri_has_content, RDFTerm("literal", content, str(XSD.string))
+        triple = self.be.res, GraphEntity.iri_has_content, RDFTerm("literal", content, XSD_STRING)
         self.assertIn(triple, self.be.g)
 
     def test_has_annotation(self):

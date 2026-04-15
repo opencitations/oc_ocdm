@@ -9,8 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from rdflib import XSD
-
+from oc_ocdm.constants import XSD_DURATION
 from oc_ocdm.decorators import accepts_only
 from triplelite import RDFTerm
 from oc_ocdm.support.support import get_datatype_from_iso_8601
@@ -211,7 +210,7 @@ class Citation(BibliographicEntity):
         :return: None
         """
         self.remove_citation_time_span()
-        self._create_literal(GraphEntity.iri_has_citation_time_span, string, XSD.duration, False)
+        self._create_literal(GraphEntity.iri_has_citation_time_span, string, XSD_DURATION, False)
 
     def remove_citation_time_span(self) -> None:
         """

@@ -7,7 +7,9 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from rdflib import XSD, URIRef
+from rdflib import URIRef
+
+from oc_ocdm.constants import XSD_DATETIME, XSD_STRING
 
 from oc_ocdm.graph.graph_set import GraphSet
 from triplelite import RDFTerm
@@ -30,20 +32,18 @@ class TestSnapshotEntity(unittest.TestCase):
 
     def test_has_generation_time(self):
         time = "2001-10-26T21:32:52"
-        datatype = XSD.dateTime
         result = self.se.has_generation_time(time)
         self.assertIsNone(result)
 
-        triple = self.se.res, ProvEntity.iri_generated_at_time, RDFTerm("literal", time, str(datatype))
+        triple = self.se.res, ProvEntity.iri_generated_at_time, RDFTerm("literal", time, XSD_DATETIME)
         self.assertIn(triple, self.se.g)
 
     def test_has_invalidation_time(self):
         time = "2001-10-26T21:32:52"
-        datatype = XSD.dateTime
         result = self.se.has_invalidation_time(time)
         self.assertIsNone(result)
 
-        triple = self.se.res, ProvEntity.iri_invalidated_at_time, RDFTerm("literal", time, str(datatype))
+        triple = self.se.res, ProvEntity.iri_invalidated_at_time, RDFTerm("literal", time, XSD_DATETIME)
         self.assertIn(triple, self.se.g)
 
     def test_is_snapshot_of(self):
@@ -74,7 +74,7 @@ class TestSnapshotEntity(unittest.TestCase):
         result = self.se.has_update_action(update_query)
         self.assertIsNone(result)
 
-        triple = self.se.res, ProvEntity.iri_has_update_query, RDFTerm("literal", update_query, str(XSD.string))
+        triple = self.se.res, ProvEntity.iri_has_update_query, RDFTerm("literal", update_query, XSD_STRING)
         self.assertIn(triple, self.se.g)
 
     def test_has_description(self):
@@ -82,7 +82,7 @@ class TestSnapshotEntity(unittest.TestCase):
         result = self.se.has_description(description)
         self.assertIsNone(result)
 
-        triple = self.se.res, ProvEntity.iri_description, RDFTerm("literal", description, str(XSD.string))
+        triple = self.se.res, ProvEntity.iri_description, RDFTerm("literal", description, XSD_STRING)
         self.assertIn(triple, self.se.g)
 
     def test_has_resp_agent(self):

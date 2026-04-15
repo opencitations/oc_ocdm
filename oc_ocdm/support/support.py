@@ -15,8 +15,9 @@ from functools import lru_cache
 from typing import TYPE_CHECKING, Union
 from urllib.parse import quote
 
-from rdflib import RDF, XSD, Graph, Literal, URIRef
+from rdflib import Graph, Literal, URIRef
 
+from oc_ocdm.constants import RDF_TYPE, XSD_DATE, XSD_GYEAR, XSD_GYEARMONTH, XSD_STRING
 from triplelite import _XSD_STRING, RDFTerm, TripleLite
 
 if TYPE_CHECKING:
@@ -51,7 +52,7 @@ def sparql_binding_to_term(binding: dict) -> Union[URIRef, Literal]:
     if datatype is not None:
         datatype = URIRef(datatype)
     elif lang is None:
-        datatype = XSD.string
+        datatype = XSD_STRING
     return Literal(binding['value'], datatype=datatype, lang=lang)
 
 
@@ -59,7 +60,7 @@ def normalize_graph_literals(g: Graph) -> None:
     triples_to_update = []
     for s, p, o in g:
         if isinstance(o, Literal) and o.datatype is None and o.language is None:
-            triples_to_update.append((s, p, o, Literal(str(o), datatype=XSD.string)))
+            triples_to_update.append((s, p, o, Literal(str(o), datatype=XSD_STRING)))
     for s, p, old_o, new_o in triples_to_update:
         g.remove((s, p, old_o))
         g.add((s, p, new_o))
@@ -91,11 +92,11 @@ def get_datatype_from_iso_8601(string: str) -> Tuple[str, str]:
 
     num_of_parts: int = len(date_parts)
     if num_of_parts == 3:
-        return XSD.date, datetime(date_parts[0], date_parts[1], date_parts[2]).strftime('%Y-%m-%d')
+        return XSD_DATE, datetime(date_parts[0], date_parts[1], date_parts[2]).strftime('%Y-%m-%d')
     elif num_of_parts == 2:
-        return XSD.gYearMonth, datetime(date_parts[0], date_parts[1], 1).strftime('%Y-%m')
+        return XSD_GYEARMONTH, datetime(date_parts[0], date_parts[1], 1).strftime('%Y-%m')
     else:
-        return XSD.gYear, datetime(date_parts[0], 1, 1).strftime('%Y')
+        return XSD_GYEAR, datetime(date_parts[0], 1, 1).strftime('%Y')
 
 def get_ordered_contributors_from_br(br: BibliographicResource,
                                      contributor_type: str):
@@ -186,21 +187,13 @@ def encode_url(u: str) -> str:
     return quote(u, "://")
 
 
-def create_literal(g, res, p: str, s: str, dt: str | None = None, nor: bool = True) -> None:
+def create_literal(g: TripleLite, res: str, p: str, s: str, dt: str | None = None, nor: bool = True) -> None:
     if not is_string_empty(s):
-        if isinstance(g, TripleLite):
-            dt_str = str(dt) if dt is not None else _XSD_STRING
-            g.add((res, p, RDFTerm("literal", s, dt_str)))
-        else:
-            dt = dt if dt is not None else XSD.string
-            g.add((res, p, Literal(s, datatype=dt, normalize=nor)))
+        g.add((res, p, RDFTerm("literal", s, dt if dt is not None else _XSD_STRING)))
 
 
-def create_type(g, res: str, res_type: str) -> None:
-    if isinstance(g, TripleLite):
-        g.add((res, RDF.type, RDFTerm("uri", str(res_type))))
-    else:
-        g.add((res, RDF.type, res_type))
+def create_type(g: TripleLite, res: str, res_type: str) -> None:
+    g.add((res, RDF_TYPE, RDFTerm("uri", res_type)))
 
 
 def is_string_empty(string: Optional[str]) -> bool:

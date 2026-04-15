@@ -43,21 +43,21 @@ class TestAgentRole(unittest.TestCase):
         result = self.ar1.create_publisher()
         self.assertIsNone(result)
 
-        triple = self.ar1.res, GraphEntity.iri_with_role, RDFTerm("uri", str(GraphEntity.iri_publisher))
+        triple = self.ar1.res, GraphEntity.iri_with_role, RDFTerm("uri", GraphEntity.iri_publisher)
         self.assertIn(triple, self.ar1.g)
 
     def test_create_author(self):
         result = self.ar1.create_author()
         self.assertIsNone(result)
 
-        triple = self.ar1.res, GraphEntity.iri_with_role, RDFTerm("uri", str(GraphEntity.iri_author))
+        triple = self.ar1.res, GraphEntity.iri_with_role, RDFTerm("uri", GraphEntity.iri_author)
         self.assertIn(triple, self.ar1.g)
 
     def test_create_editor(self):
         result = self.ar1.create_editor()
         self.assertIsNone(result)
 
-        triple = self.ar1.res, GraphEntity.iri_with_role, RDFTerm("uri", str(GraphEntity.iri_editor))
+        triple = self.ar1.res, GraphEntity.iri_with_role, RDFTerm("uri", GraphEntity.iri_editor)
         self.assertIn(triple, self.ar1.g)
 
 

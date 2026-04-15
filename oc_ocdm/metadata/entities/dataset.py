@@ -9,8 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from rdflib import XSD
-
+from oc_ocdm.constants import XSD_DATETIME
 from oc_ocdm.decorators import accepts_only
 from triplelite import RDFTerm
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
@@ -177,7 +176,7 @@ class Dataset(MetadataEntity):
         :return: None
         """
         self.remove_publication_date()
-        self._create_literal(MetadataEntity.iri_issued, string, XSD.dateTime, False)
+        self._create_literal(MetadataEntity.iri_issued, string, XSD_DATETIME, False)
 
     def remove_publication_date(self) -> None:
         """
@@ -211,7 +210,7 @@ class Dataset(MetadataEntity):
         :return: None
         """
         self.remove_modification_date()
-        self._create_literal(MetadataEntity.iri_modified, string, XSD.dateTime, False)
+        self._create_literal(MetadataEntity.iri_modified, string, XSD_DATETIME, False)
 
     def remove_modification_date(self) -> None:
         """

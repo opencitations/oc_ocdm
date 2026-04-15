@@ -7,9 +7,10 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from rdflib import XSD, URIRef
+from rdflib import URIRef
 
 from triplelite import RDFTerm
+from oc_ocdm.constants import XSD_DATETIME, XSD_DECIMAL, XSD_STRING
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from oc_ocdm.metadata.metadata_set import MetadataSet
 
@@ -29,7 +30,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.di.has_title(title)
         self.assertIsNone(result)
 
-        triple = self.di.res, MetadataEntity.iri_title, RDFTerm("literal", title, str(XSD.string))
+        triple = self.di.res, MetadataEntity.iri_title, RDFTerm("literal", title, XSD_STRING)
         self.assertIn(triple, self.di.g)
 
     def test_has_description(self):
@@ -37,7 +38,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.di.has_description(description)
         self.assertIsNone(result)
 
-        triple = self.di.res, MetadataEntity.iri_description, RDFTerm("literal", description, str(XSD.string))
+        triple = self.di.res, MetadataEntity.iri_description, RDFTerm("literal", description, XSD_STRING)
         self.assertIn(triple, self.di.g)
 
     def test_has_publication_date(self):
@@ -45,7 +46,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.di.has_publication_date(string)
         self.assertIsNone(result)
 
-        triple = self.di.res, MetadataEntity.iri_issued, RDFTerm("literal", string, str(XSD.dateTime))
+        triple = self.di.res, MetadataEntity.iri_issued, RDFTerm("literal", string, XSD_DATETIME)
         self.assertIn(triple, self.di.g)
 
     def test_has_license(self):
@@ -77,7 +78,7 @@ class TestBibliographicResource(unittest.TestCase):
         result = self.di.has_byte_size(byte_size)
         self.assertIsNone(result)
 
-        triple = self.di.res, MetadataEntity.iri_byte_size, RDFTerm("literal", byte_size, str(XSD.decimal))
+        triple = self.di.res, MetadataEntity.iri_byte_size, RDFTerm("literal", byte_size, XSD_DECIMAL)
         self.assertIn(triple, self.di.g)
 
     def test_merge_with_title(self):

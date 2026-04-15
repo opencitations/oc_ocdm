@@ -7,8 +7,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from rdflib import XSD
-
+from oc_ocdm.constants import XSD_STRING
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
 from triplelite import RDFTerm
@@ -30,7 +29,7 @@ class TestPointerList(unittest.TestCase):
         result = self.pl.has_content(content)
         self.assertIsNone(result)
 
-        triple = self.pl.res, GraphEntity.iri_has_content, RDFTerm("literal", content, str(XSD.string))
+        triple = self.pl.res, GraphEntity.iri_has_content, RDFTerm("literal", content, XSD_STRING)
         self.assertIn(triple, self.pl.g)
 
     def test_contains_element(self):

@@ -7,8 +7,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from rdflib import RDF, XSD
-
+from oc_ocdm.constants import RDF_TYPE, XSD_STRING
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
 from triplelite import RDFTerm
@@ -32,7 +31,7 @@ class TestDiscourseElement(unittest.TestCase):
         result = self.de1.has_title(title)
         self.assertIsNone(result)
 
-        triple = self.de1.res, GraphEntity.iri_title, RDFTerm("literal", title, str(XSD.string))
+        triple = self.de1.res, GraphEntity.iri_title, RDFTerm("literal", title, XSD_STRING)
         self.assertIn(triple, self.de1.g)
 
     def test_contains_discourse_element(self):
@@ -68,63 +67,63 @@ class TestDiscourseElement(unittest.TestCase):
         result = self.de1.has_content(content)
         self.assertIsNone(result)
 
-        triple = self.de1.res, GraphEntity.iri_has_content, RDFTerm("literal", content, str(XSD.string))
+        triple = self.de1.res, GraphEntity.iri_has_content, RDFTerm("literal", content, XSD_STRING)
         self.assertIn(triple, self.de1.g)
 
     def test_create_section(self):
         result = self.de1.create_section()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_section))
+        triple = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_section)
         self.assertIn(triple, self.de1.g)
 
     def test_create_section_title(self):
         result = self.de1.create_section_title()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_section_title))
+        triple = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_section_title)
         self.assertIn(triple, self.de1.g)
 
     def test_create_paragraph(self):
         result = self.de1.create_paragraph()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_paragraph))
+        triple = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_paragraph)
         self.assertIn(triple, self.de1.g)
 
     def test_create_sentence(self):
         result = self.de1.create_sentence()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_sentence))
+        triple = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_sentence)
         self.assertIn(triple, self.de1.g)
 
     def test_create_text_chunk(self):
         result = self.de1.create_text_chunk()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_text_chunk))
+        triple = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_text_chunk)
         self.assertIn(triple, self.de1.g)
 
     def test_create_table(self):
         result = self.de1.create_table()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_table))
+        triple = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_table)
         self.assertIn(triple, self.de1.g)
 
     def test_create_footnote(self):
         result = self.de1.create_footnote()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_footnote))
+        triple = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_footnote)
         self.assertIn(triple, self.de1.g)
 
     def test_create_caption(self):
         result = self.de1.create_caption()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_caption))
+        triple = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_caption)
         self.assertIn(triple, self.de1.g)
 
     def test_assign_more_structural_types_de(self):
@@ -133,8 +132,8 @@ class TestDiscourseElement(unittest.TestCase):
         result2 = self.de1.create_footnote()
         self.assertIsNone(result2)
 
-        triple1 = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_table))
-        triple2 = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_footnote))
+        triple1 = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_table)
+        triple2 = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_footnote)
         self.assertIn(triple2, self.de1.g)
         self.assertNotIn(triple1, self.de1.g)
 
@@ -144,8 +143,8 @@ class TestDiscourseElement(unittest.TestCase):
         result2 = self.de1.create_methods()
         self.assertIsNone(result2)
 
-        triple1 = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_materials))
-        triple2 = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_methods))
+        triple1 = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_materials)
+        triple2 = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_methods)
         self.assertIn(triple2, self.de1.g)
         self.assertIn(triple1, self.de1.g)
 
@@ -153,35 +152,35 @@ class TestDiscourseElement(unittest.TestCase):
         result = self.de1.create_introduction()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_introduction))
+        triple = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_introduction)
         self.assertIn(triple, self.de1.g)
 
     def test_create_related_work(self):
         result = self.de1.create_related_work()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_related_work))
+        triple = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_related_work)
         self.assertIn(triple, self.de1.g)
 
     def test_create_results(self):
         result = self.de1.create_results()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_results))
+        triple = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_results)
         self.assertIn(triple, self.de1.g)
 
     def test_create_discussion(self):
         result = self.de1.create_discussion()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_discussion))
+        triple = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_discussion)
         self.assertIn(triple, self.de1.g)
 
     def test_create_conclusion(self):
         result = self.de1.create_conclusion()
         self.assertIsNone(result)
 
-        triple = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_conclusion))
+        triple = self.de1.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_conclusion)
         self.assertIn(triple, self.de1.g)
 
 

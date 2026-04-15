@@ -7,8 +7,9 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from rdflib import RDF, XSD, URIRef
+from rdflib import URIRef
 
+from oc_ocdm.constants import RDF_TYPE, XSD_DATE, XSD_DURATION, XSD_GYEAR, XSD_GYEARMONTH
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
 from triplelite import RDFTerm
@@ -44,36 +45,32 @@ class TestCitation(unittest.TestCase):
     def test_has_citation_creation_date(self):
         with self.subTest("date is '2020-05-25'"):
             string = "2020-05-25"
-            datatype = XSD.date
             result = self.ci.has_citation_creation_date(string)
             self.assertIsNone(result)
 
-            triple = self.ci.res, GraphEntity.iri_has_citation_creation_date, RDFTerm("literal", string, str(datatype))
+            triple = self.ci.res, GraphEntity.iri_has_citation_creation_date, RDFTerm("literal", string, XSD_DATE)
             self.assertIn(triple, self.ci.g)
         with self.subTest("date is '2020-05'"):
             string = "2020-05"
-            datatype = XSD.gYearMonth
             result = self.ci.has_citation_creation_date(string)
             self.assertIsNone(result)
 
-            triple = self.ci.res, GraphEntity.iri_has_citation_creation_date, RDFTerm("literal", string, str(datatype))
+            triple = self.ci.res, GraphEntity.iri_has_citation_creation_date, RDFTerm("literal", string, XSD_GYEARMONTH)
             self.assertIn(triple, self.ci.g)
         with self.subTest("date is '2020'"):
             string = "2020"
-            datatype = XSD.gYear
             result = self.ci.has_citation_creation_date(string)
             self.assertIsNone(result)
 
-            triple = self.ci.res, GraphEntity.iri_has_citation_creation_date, RDFTerm("literal", string, str(datatype))
+            triple = self.ci.res, GraphEntity.iri_has_citation_creation_date, RDFTerm("literal", string, XSD_GYEAR)
             self.assertIn(triple, self.ci.g)
 
     def test_has_citation_time_span(self):
         duration = "P2Y6M5DT12H35M30S"  # 2 years, 6 months, 5 days, 12 hours, 35 minutes, 30 seconds
-        datatype = XSD.duration
         result = self.ci.has_citation_time_span(duration)
         self.assertIsNone(result)
 
-        triple = self.ci.res, GraphEntity.iri_has_citation_time_span, RDFTerm("literal", duration, str(datatype))
+        triple = self.ci.res, GraphEntity.iri_has_citation_time_span, RDFTerm("literal", duration, XSD_DURATION)
         self.assertIn(triple, self.ci.g)
 
     def test_has_citation_characterization(self):
@@ -88,55 +85,55 @@ class TestCitation(unittest.TestCase):
         result = self.ci.create_self_citation()
         self.assertIsNone(result)
 
-        triple = self.ci.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_self_citation))
+        triple = self.ci.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_self_citation)
         self.assertIn(triple, self.ci.g)
 
     def test_create_affiliation_self_citation(self):
         result = self.ci.create_affiliation_self_citation()
         self.assertIsNone(result)
 
-        triple = self.ci.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_affiliation_self_citation))
+        triple = self.ci.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_affiliation_self_citation)
         self.assertIn(triple, self.ci.g)
 
     def test_create_author_network_self_citation(self):
         result = self.ci.create_author_network_self_citation()
         self.assertIsNone(result)
 
-        triple = self.ci.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_author_network_self_citation))
+        triple = self.ci.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_author_network_self_citation)
         self.assertIn(triple, self.ci.g)
 
     def test_create_author_self_citation(self):
         result = self.ci.create_author_self_citation()
         self.assertIsNone(result)
 
-        triple = self.ci.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_author_self_citation))
+        triple = self.ci.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_author_self_citation)
         self.assertIn(triple, self.ci.g)
 
     def test_create_funder_self_citation(self):
         result = self.ci.create_funder_self_citation()
         self.assertIsNone(result)
 
-        triple = self.ci.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_funder_self_citation))
+        triple = self.ci.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_funder_self_citation)
         self.assertIn(triple, self.ci.g)
 
     def test_create_journal_self_citation(self):
         result = self.ci.create_journal_self_citation()
         self.assertIsNone(result)
 
-        triple = self.ci.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_journal_self_citation))
+        triple = self.ci.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_journal_self_citation)
         self.assertIn(triple, self.ci.g)
 
     def test_create_journal_cartel_citation(self):
         result = self.ci.create_journal_cartel_citation()
         self.assertIsNone(result)
 
-        triple = self.ci.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_journal_cartel_citation))
+        triple = self.ci.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_journal_cartel_citation)
         self.assertIn(triple, self.ci.g)
 
     def test_create_distant_citation(self):
         result = self.ci.create_distant_citation()
         self.assertIsNone(result)
-        triple = self.ci.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_distant_citation))
+        triple = self.ci.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_distant_citation)
         self.assertIn(triple, self.ci.g)
 
 

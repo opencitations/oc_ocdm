@@ -11,10 +11,9 @@ from __future__ import annotations
 from abc import ABC
 from typing import TYPE_CHECKING
 
-from rdflib import RDF, RDFS
-
-from triplelite import TripleLite
+from oc_ocdm.constants import RDF_TYPE, RDFS_LABEL
 from oc_ocdm.support.support import create_literal, create_type, get_short_name, is_dataset, is_string_empty
+from triplelite import TripleLite
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict, List, Optional
@@ -53,7 +52,7 @@ class AbstractEntity(ABC):
 
         :return: The requested value if found, None otherwise
         """
-        return self._get_literal(RDFS.label)
+        return self._get_literal(RDFS_LABEL)
 
     def create_label(self, string: str) -> None:
         """
@@ -66,7 +65,7 @@ class AbstractEntity(ABC):
         :return: None
         """
         self.remove_label()
-        self._create_literal(RDFS.label, string)
+        self._create_literal(RDFS_LABEL, string)
 
     def remove_label(self) -> None:
         """
@@ -74,7 +73,7 @@ class AbstractEntity(ABC):
 
         :return: None
         """
-        self.g.remove((self.res, RDFS.label, None))
+        self.g.remove((self.res, RDFS_LABEL, None))
 
     def _create_literal(self, p: str, s: str, dt: str | None = None, nor: bool = True) -> None:
         """
@@ -99,7 +98,7 @@ class AbstractEntity(ABC):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[str] = self._get_multiple_uri_references(RDF.type)
+        uri_list: List[str] = self._get_multiple_uri_references(RDF_TYPE)
         return uri_list
 
     def _create_type(self, res_type: str) -> None:
@@ -126,7 +125,7 @@ class AbstractEntity(ABC):
 
         :return: None
         """
-        self.g.remove((self.res, RDF.type, None))
+        self.g.remove((self.res, RDF_TYPE, None))
         # Restore the main type IRI
         iri_main_type: str = self.short_name_to_type_iri[self.short_name]
         create_type(self.g, self.res, iri_main_type)

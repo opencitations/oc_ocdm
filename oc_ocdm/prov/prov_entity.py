@@ -9,9 +9,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from rdflib import Namespace
-
 from oc_ocdm.abstract_entity import AbstractEntity
+from oc_ocdm.constants import Namespace
 from oc_ocdm.graph.graph_entity import GraphEntity
 from triplelite import TripleLite
 
@@ -30,15 +29,15 @@ class ProvEntity(AbstractEntity):
 
     PROV: ClassVar[Namespace] = Namespace("http://www.w3.org/ns/prov#")
 
-    iri_entity: ClassVar[str] = str(PROV.Entity)
-    iri_generated_at_time: ClassVar[str] = str(PROV.generatedAtTime)
-    iri_invalidated_at_time: ClassVar[str] = str(PROV.invalidatedAtTime)
-    iri_specialization_of: ClassVar[str] = str(PROV.specializationOf)
-    iri_was_derived_from: ClassVar[str] = str(PROV.wasDerivedFrom)
-    iri_had_primary_source: ClassVar[str] = str(PROV.hadPrimarySource)
-    iri_was_attributed_to: ClassVar[str] = str(PROV.wasAttributedTo)
-    iri_description: ClassVar[str] = str(GraphEntity.DCTERMS.description)
-    iri_has_update_query: ClassVar[str] = str(GraphEntity.OCO.hasUpdateQuery)
+    iri_entity: ClassVar[str] = PROV.Entity
+    iri_generated_at_time: ClassVar[str] = PROV.generatedAtTime
+    iri_invalidated_at_time: ClassVar[str] = PROV.invalidatedAtTime
+    iri_specialization_of: ClassVar[str] = PROV.specializationOf
+    iri_was_derived_from: ClassVar[str] = PROV.wasDerivedFrom
+    iri_had_primary_source: ClassVar[str] = PROV.hadPrimarySource
+    iri_was_attributed_to: ClassVar[str] = PROV.wasAttributedTo
+    iri_description: ClassVar[str] = GraphEntity.DCTERMS.description
+    iri_has_update_query: ClassVar[str] = GraphEntity.OCO.hasUpdateQuery
 
     short_name_to_type_iri: ClassVar[Dict[str, str]] = {
         'se': iri_entity

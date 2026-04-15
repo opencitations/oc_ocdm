@@ -7,8 +7,9 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from rdflib import RDF, XSD, URIRef
+from rdflib import URIRef
 
+from oc_ocdm.constants import RDF_TYPE, XSD_STRING
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
 from triplelite import RDFTerm
@@ -37,7 +38,7 @@ class TestResourceEmbodiment(unittest.TestCase):
         result = self.re.has_starting_page(starting_page)
         self.assertIsNone(result)
 
-        triple = self.re.res, GraphEntity.iri_starting_page, RDFTerm("literal", starting_page, str(XSD.string))
+        triple = self.re.res, GraphEntity.iri_starting_page, RDFTerm("literal", starting_page, XSD_STRING)
         self.assertIn(triple, self.re.g)
 
     def test_has_ending_page(self):
@@ -45,7 +46,7 @@ class TestResourceEmbodiment(unittest.TestCase):
         result = self.re.has_ending_page(ending_page)
         self.assertIsNone(result)
 
-        triple = self.re.res, GraphEntity.iri_ending_page, RDFTerm("literal", ending_page, str(XSD.string))
+        triple = self.re.res, GraphEntity.iri_ending_page, RDFTerm("literal", ending_page, XSD_STRING)
         self.assertIn(triple, self.re.g)
 
     def test_has_url(self):
@@ -60,14 +61,14 @@ class TestResourceEmbodiment(unittest.TestCase):
         result = self.re.create_digital_embodiment()
         self.assertIsNone(result)
 
-        triple = self.re.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_digital_manifestation))
+        triple = self.re.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_digital_manifestation)
         self.assertIn(triple, self.re.g)
 
     def test_create_print_embodiment(self):
         result = self.re.create_print_embodiment()
         self.assertIsNone(result)
 
-        triple = self.re.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_print_object))
+        triple = self.re.res, RDF_TYPE, RDFTerm("uri", GraphEntity.iri_print_object)
         self.assertIn(triple, self.re.g)
 
 

@@ -9,9 +9,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List
 
-from rdflib import Namespace
-
 from oc_ocdm.abstract_entity import AbstractEntity
+from oc_ocdm.constants import Namespace
 from triplelite import RDFTerm, TripleLite
 from triplelite._rdflib_bridge import _rdflib_to_rdfterm as rdflib_to_rdfterm
 
@@ -26,23 +25,23 @@ class MetadataEntity(AbstractEntity):
     DCAT = Namespace("http://www.w3.org/ns/dcat#")
     VOID = Namespace("http://rdfs.org/ns/void#")
 
-    iri_dataset = str(DCAT.Dataset)
-    iri_datafile = str(DCAT.Distribution)
+    iri_dataset = DCAT.Dataset
+    iri_datafile = DCAT.Distribution
 
-    iri_title = str(DCTERMS["title"])
-    iri_description = str(DCTERMS.description)
-    iri_issued = str(DCTERMS.issued)
-    iri_modified = str(DCTERMS.modified)
-    iri_keyword = str(DCAT.keyword)
-    iri_subject = str(DCAT.theme)
-    iri_landing_page = str(DCAT.landingPage)
-    iri_subset = str(VOID.subset)
-    iri_sparql_endpoint = str(VOID.sparqlEndpoint)
-    iri_distribution = str(DCAT.distribution)
-    iri_license = str(DCTERMS.license)
-    iri_download_url = str(DCAT.downloadURL)
-    iri_media_type = str(DCAT.mediaType)
-    iri_byte_size = str(DCAT.byte_size)
+    iri_title = DCTERMS.title
+    iri_description = DCTERMS.description
+    iri_issued = DCTERMS.issued
+    iri_modified = DCTERMS.modified
+    iri_keyword = DCAT.keyword
+    iri_subject = DCAT.theme
+    iri_landing_page = DCAT.landingPage
+    iri_subset = VOID.subset
+    iri_sparql_endpoint = VOID.sparqlEndpoint
+    iri_distribution = DCAT.distribution
+    iri_license = DCTERMS.license
+    iri_download_url = DCAT.downloadURL
+    iri_media_type = DCAT.mediaType
+    iri_byte_size = DCAT.byte_size
 
     short_name_to_type_iri: ClassVar[Dict[str, str]] = {
         '_dataset_': iri_dataset,

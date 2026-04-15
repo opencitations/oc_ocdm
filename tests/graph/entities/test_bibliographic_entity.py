@@ -56,9 +56,9 @@ class TestBibliographicEntity(unittest.TestCase):
         # Tuples were used down below inside the sets because they're are hashable (since they're immutable):
         id_list_set = {(i.get_scheme(), i.get_literal_value()) for i in id_list}
 
-        non_duplicated_ids = {(str(GraphEntity.iri_issn), '1111-2222'),
-                              (str(GraphEntity.iri_issn), '3333-4444'),
-                              (str(GraphEntity.iri_doi), '1111-2222')}
+        non_duplicated_ids = {(GraphEntity.iri_issn, '1111-2222'),
+                              (GraphEntity.iri_issn, '3333-4444'),
+                              (GraphEntity.iri_doi, '1111-2222')}
 
         self.assertSetEqual(id_list_set, non_duplicated_ids)
 

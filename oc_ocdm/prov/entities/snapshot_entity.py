@@ -9,8 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from rdflib import XSD
-
+from oc_ocdm.constants import XSD_DATETIME
 from oc_ocdm.decorators import accepts_only
 from oc_ocdm.graph.graph_entity import GraphEntity
 from triplelite import RDFTerm
@@ -51,7 +50,7 @@ class SnapshotEntity(ProvEntity):
         :return: None
         """
         self.remove_generation_time()
-        self._create_literal(ProvEntity.iri_generated_at_time, string, XSD.dateTime)
+        self._create_literal(ProvEntity.iri_generated_at_time, string, XSD_DATETIME)
 
     def remove_generation_time(self) -> None:
         """
@@ -87,7 +86,7 @@ class SnapshotEntity(ProvEntity):
         :return: None
         """
         self.remove_invalidation_time()
-        self._create_literal(ProvEntity.iri_invalidated_at_time, string, XSD.dateTime)
+        self._create_literal(ProvEntity.iri_invalidated_at_time, string, XSD_DATETIME)
 
     def remove_invalidation_time(self) -> None:
         """

@@ -7,8 +7,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
-from rdflib import XSD
-
+from oc_ocdm.constants import XSD_DATETIME, XSD_DECIMAL
 from triplelite import RDFTerm
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 
@@ -157,7 +156,7 @@ class Distribution(MetadataEntity):
         :return: None
         """
         self.remove_publication_date()
-        self._create_literal(MetadataEntity.iri_issued, string, XSD.dateTime, False)
+        self._create_literal(MetadataEntity.iri_issued, string, XSD_DATETIME, False)
 
     def remove_publication_date(self) -> None:
         """
@@ -191,7 +190,7 @@ class Distribution(MetadataEntity):
         :return: None
         """
         self.remove_byte_size()
-        self._create_literal(MetadataEntity.iri_byte_size, string, XSD.decimal)
+        self._create_literal(MetadataEntity.iri_byte_size, string, XSD_DECIMAL)
 
     def remove_byte_size(self) -> None:
         """

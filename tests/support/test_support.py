@@ -10,7 +10,9 @@ import unittest
 
 from rdflib import XSD, Graph, Literal, Namespace, URIRef
 
+from oc_ocdm.constants import XSD_DATE, XSD_GYEAR, XSD_GYEARMONTH
 from oc_ocdm.graph.graph_set import GraphSet
+from triplelite import TripleLite
 from oc_ocdm.prov.prov_set import ProvSet
 from oc_ocdm.support.support import (
     build_graph_from_results,
@@ -234,22 +236,22 @@ class TestGetDatatypeFromIso8601(unittest.TestCase):
 
     def test_full_date(self):
         dt, val = get_datatype_from_iso_8601('2023-06-15')
-        self.assertEqual(dt, XSD.date)
+        self.assertEqual(dt, XSD_DATE)
         self.assertEqual(val, '2023-06-15')
 
     def test_year_month(self):
         dt, val = get_datatype_from_iso_8601('2023-06')
-        self.assertEqual(dt, XSD.gYearMonth)
+        self.assertEqual(dt, XSD_GYEARMONTH)
         self.assertEqual(val, '2023-06')
 
     def test_year_only(self):
         dt, val = get_datatype_from_iso_8601('2023')
-        self.assertEqual(dt, XSD.gYear)
+        self.assertEqual(dt, XSD_GYEAR)
         self.assertEqual(val, '2023')
 
     def test_truncates_after_10_chars(self):
         dt, val = get_datatype_from_iso_8601('2023-06-15T10:30:00')
-        self.assertEqual(dt, XSD.date)
+        self.assertEqual(dt, XSD_DATE)
         self.assertEqual(val, '2023-06-15')
 
     def test_invalid_string_raises(self):
@@ -260,35 +262,33 @@ class TestGetDatatypeFromIso8601(unittest.TestCase):
 class TestCreateLiteral(unittest.TestCase):
 
     def test_adds_literal_with_default_xsd_string(self):
-        g = Graph()
-        res = URIRef('http://example.org/s')
-        p = URIRef('http://example.org/p')
+        g = TripleLite()
+        res = 'http://example.org/s'
+        p = 'http://example.org/p'
         create_literal(g, res, p, 'hello')
         obj = list(g.objects(res, p))[0]
-        assert isinstance(obj, Literal)
-        self.assertEqual(str(obj), 'hello')
-        self.assertEqual(obj.datatype, XSD.string)
+        self.assertEqual(obj.value, 'hello')
+        self.assertEqual(obj.datatype, str(XSD.string))
 
     def test_adds_literal_with_explicit_datatype(self):
-        g = Graph()
-        res = URIRef('http://example.org/s')
-        p = URIRef('http://example.org/p')
-        create_literal(g, res, p, '42', dt=XSD.integer)
+        g = TripleLite()
+        res = 'http://example.org/s'
+        p = 'http://example.org/p'
+        create_literal(g, res, p, '42', dt=str(XSD.integer))
         obj = list(g.objects(res, p))[0]
-        assert isinstance(obj, Literal)
-        self.assertEqual(obj.datatype, XSD.integer)
+        self.assertEqual(obj.datatype, str(XSD.integer))
 
     def test_empty_string_adds_nothing(self):
-        g = Graph()
-        res = URIRef('http://example.org/s')
-        p = URIRef('http://example.org/p')
+        g = TripleLite()
+        res = 'http://example.org/s'
+        p = 'http://example.org/p'
         create_literal(g, res, p, '')
         self.assertEqual(len(g), 0)
 
     def test_whitespace_only_adds_nothing(self):
-        g = Graph()
-        res = URIRef('http://example.org/s')
-        p = URIRef('http://example.org/p')
+        g = TripleLite()
+        res = 'http://example.org/s'
+        p = 'http://example.org/p'
         create_literal(g, res, p, '   ')
         self.assertEqual(len(g), 0)
 

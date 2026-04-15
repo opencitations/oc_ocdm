@@ -8,8 +8,9 @@
 import unittest
 
 from rdflib import Literal, URIRef
-from rdflib.namespace import DCTERMS, RDF
+from rdflib.namespace import DCTERMS
 
+from oc_ocdm.constants import RDF_TYPE
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
 from oc_ocdm.support.query_utils import _compute_graph_changes, get_delete_query, get_insert_query, get_update_query
@@ -37,7 +38,7 @@ class TestQueryUtils(unittest.TestCase):
         graph_iri = URIRef("https://test.org/graph/1")
         subject = URIRef("https://test.org/resource/1")
         triples = {
-            (subject, RDF.type, URIRef("https://test.org/Class")),
+            (subject, URIRef(RDF_TYPE), URIRef("https://test.org/Class")),
             (subject, DCTERMS.title, Literal("Test")),
         }
 
@@ -62,7 +63,7 @@ class TestQueryUtils(unittest.TestCase):
         """Test get_delete_query with triples generates correct query."""
         graph_iri = URIRef("https://test.org/graph/1")
         subject = URIRef("https://test.org/resource/1")
-        triples = {(subject, RDF.type, URIRef("https://test.org/Class"))}
+        triples = {(subject, URIRef(RDF_TYPE), URIRef("https://test.org/Class"))}
 
         queries, count = get_delete_query(graph_iri, triples)
 
