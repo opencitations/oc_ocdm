@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: ISC
 
+import glob
 import os
 import subprocess
 import tempfile
@@ -14,6 +15,7 @@ import pytest
 
 CONTAINER_NAME = "ocdm-test-qlever"
 HTTP_PORT = 7019
+_TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), "reader")
 
 
 def _wait_for_endpoint(url: str, timeout: int = 60) -> None:
@@ -41,9 +43,13 @@ def qlever_endpoint():
 
     with tempfile.TemporaryDirectory() as data_dir:
         input_file = Path(data_dir) / "input.nt"
-        input_file.write_text(
-            "<http://example.org/s> <http://example.org/p> <http://example.org/o> .\n"
-        )
+        with open(input_file, "w") as out:
+            for nt_path in sorted(glob.glob(os.path.join(_TEST_DATA_DIR, "*.nt"))):
+                with open(nt_path) as f:
+                    for line in f:
+                        stripped = line.strip()
+                        if stripped:
+                            out.write(stripped + "\n")
 
         subprocess.run(
             [

@@ -12,7 +12,6 @@ import tempfile
 import unittest
 
 from rdflib import RDF, XSD, BNode, Dataset, Graph, Literal, Namespace, URIRef
-from sparqlite import SPARQLClient
 
 from oc_ocdm.graph import GraphSet
 from oc_ocdm.reader import Reader
@@ -24,25 +23,7 @@ class TestReader(unittest.TestCase):
     def setUpClass(cls):
         cls.endpoint = os.environ["SPARQL_TEST_ENDPOINT"]
         cls.resp_agent = 'https://orcid.org/0000-0002-8420-0696'
-        BASE = os.path.join('tests', 'reader')
 
-        cls.br_file = os.path.abspath(os.path.join(BASE, 'br.nt'))
-        cls.ra_file = os.path.abspath(os.path.join(BASE, 'ra.nt'))
-        cls.id_file = os.path.abspath(os.path.join(BASE, 'id.nt'))
-
-        with SPARQLClient(cls.endpoint) as client:
-            for file_path in [cls.br_file, cls.ra_file, cls.id_file]:
-                if os.path.exists(file_path):
-                    g = Graph()
-                    g.parse(file_path, format='nt')
-
-                    insert_query = "INSERT DATA { GRAPH <https://w3id.org/oc/meta/> {\n"
-                    for s, p, o in g:
-                        insert_query += f"{s.n3()} {p.n3()} {o.n3()} .\n"
-                    insert_query += "} }"
-
-                    client.update(insert_query)
-    
     def setUp(self):
         self.reader = Reader()
         self.g_set = GraphSet('https://w3id.org/oc/meta')
@@ -319,14 +300,6 @@ class TestReader(unittest.TestCase):
         finally:
             os.unlink(context_file)
             os.unlink(jsonld_file)
-
-    @classmethod
-    def tearDownClass(cls):
-        """Clean up the triplestore after tests."""
-        delete_query = "CLEAR GRAPH <https://w3id.org/oc/meta/>"
-        with SPARQLClient(cls.endpoint) as client:
-            client.update(delete_query)
-
 
 class TestReaderNoTriplestore(unittest.TestCase):
 
