@@ -145,8 +145,7 @@ class Reader(object):
     @staticmethod
     def get_graph_from_subject(graph: Graph, subject: URIRef) -> TripleLite:
         g = TripleLite(identifier=str(graph.identifier))
-        for p, o in graph.predicate_objects(subject, unique=True):
-            g.add((str(subject), str(p), rdflib_to_rdfterm(o)))
+        g.add_many((str(subject), str(p), rdflib_to_rdfterm(o)) for p, o in graph.predicate_objects(subject, unique=True))
         return g
 
     @staticmethod

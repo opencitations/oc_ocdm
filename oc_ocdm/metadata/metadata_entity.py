@@ -84,8 +84,7 @@ class MetadataEntity(AbstractEntity):
 
         if preexisting_graph is not None:
             self.remove_every_triple()
-            for p, o in preexisting_graph.predicate_objects(self.res):
-                self.g.add((self.res, p, rdflib_to_rdfterm(o)))
+            self.g.add_many((self.res, p, rdflib_to_rdfterm(o)) for p, o in preexisting_graph.predicate_objects(self.res))
             self._preexisting_triples = frozenset(self.g)
         else:
             # Add mandatory information to the entity graph

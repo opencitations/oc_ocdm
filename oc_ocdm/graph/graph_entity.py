@@ -219,8 +219,7 @@ class GraphEntity(AbstractEntity):
             # allowing the user to set this value later through a method would mean that the user could
             # set the preexisting graph AFTER having modified self.g (which would not make sense).
             self.remove_every_triple()
-            for p, o in preexisting_graph.predicate_objects(self.res):
-                self.g.add((self.res, p, o))
+            self.g.add_many((self.res, p, o) for p, o in preexisting_graph.predicate_objects(self.res))
             self._preexisting_triples = frozenset(self.g)
         else:
             # Add mandatory information to the entity graph
