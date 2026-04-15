@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 
 from rdflib import RDF, RDFS
 
-from oc_ocdm.light_graph import LightGraph
+from triplelite import TripleLite
 from oc_ocdm.support.support import create_literal, create_type, get_short_name, is_dataset, is_string_empty
 
 if TYPE_CHECKING:
@@ -29,7 +29,7 @@ class AbstractEntity(ABC):
     short_name_to_type_iri: ClassVar[Dict[str, str]] = {}
 
     def __init__(self) -> None:
-        self.g: LightGraph = LightGraph()
+        self.g: TripleLite = TripleLite()
         self.res: str = ""
         self.short_name: str = ""
 

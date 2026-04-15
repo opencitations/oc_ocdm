@@ -11,7 +11,7 @@ from rdflib import RDF, XSD
 
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
-from oc_ocdm.light_graph import RDFTerm
+from triplelite import RDFTerm
 
 
 class TestDiscourseElement(unittest.TestCase):
@@ -135,7 +135,8 @@ class TestDiscourseElement(unittest.TestCase):
 
         triple1 = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_table))
         triple2 = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_footnote))
-        self.assertIn(triple2, self.de1.g) and not self.assertIn(triple1, self.de1.g)
+        self.assertIn(triple2, self.de1.g)
+        self.assertNotIn(triple1, self.de1.g)
 
     def test_assign_more_rhetorical_types_de(self):
         result1 = self.de1.create_materials()
@@ -145,7 +146,8 @@ class TestDiscourseElement(unittest.TestCase):
 
         triple1 = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_materials))
         triple2 = self.de1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_methods))
-        self.assertIn(triple2, self.de1.g) and self.assertIn(triple1, self.de1.g)
+        self.assertIn(triple2, self.de1.g)
+        self.assertIn(triple1, self.de1.g)
 
     def test_create_introduction(self):
         result = self.de1.create_introduction()

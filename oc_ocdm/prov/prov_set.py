@@ -24,7 +24,7 @@ from oc_ocdm.counter_handler.filesystem_counter_handler import FilesystemCounter
 from oc_ocdm.counter_handler.in_memory_counter_handler import InMemoryCounterHandler
 from oc_ocdm.counter_handler.sqlite_counter_handler import SqliteCounterHandler
 from oc_ocdm.graph.graph_set import GraphSet
-from oc_ocdm.light_graph import LightGraph
+from triplelite import TripleLite
 from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.support.support import get_count, get_prefix, get_short_name
 
@@ -204,8 +204,8 @@ class ProvSet(AbstractSet[ProvEntity]):
         return modified_entities
     
     def _add_prov(self, graph_url: str, short_name: str, prov_subject: GraphEntity,
-                res: Optional[str] = None, supplier_prefix: str = "") -> Tuple[LightGraph, Optional[str], Optional[str]]:
-        cur_g = LightGraph(identifier=graph_url)
+                res: Optional[str] = None, supplier_prefix: str = "") -> Tuple[TripleLite, Optional[str], Optional[str]]:
+        cur_g = TripleLite(identifier=graph_url)
 
         count: Optional[str] = None
         label: Optional[str] = None

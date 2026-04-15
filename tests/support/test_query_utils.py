@@ -102,7 +102,7 @@ class TestQueryUtils(unittest.TestCase):
 
         br._preexisting_triples = frozenset(br.g.triples((br.res, None, None)))
 
-        from oc_ocdm.light_graph import RDFTerm
+        from triplelite import RDFTerm
         br.g.add((br.res, "http://example.org/newProp", RDFTerm("literal", "New Value", "http://www.w3.org/2001/XMLSchema#string")))
 
         queries, added, removed = get_update_query(br, entity_type="graph")

@@ -12,7 +12,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from oc_ocdm.abstract_entity import AbstractEntity
-from oc_ocdm.light_graph import LightGraph
+from triplelite import TripleLite
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict, List, Optional
@@ -34,14 +34,14 @@ class AbstractSet(ABC, Generic[E]):
         """
         self.res_to_entity: Dict[str, E] = {}
 
-    def graphs(self) -> List[LightGraph]:
+    def graphs(self) -> List[TripleLite]:
         """
-        A utility method that allows to retrieve the list of ``LightGraph``
+        A utility method that allows to retrieve the list of ``TripleLite``
         instances corresponding to each entity contained in the set.
 
         :return: The requested list of graphs
         """
-        result: List[LightGraph] = []
+        result: List[TripleLite] = []
         for entity in self.res_to_entity.values():
             if len(entity.g) > 0:
                 result.append(entity.g)
@@ -78,7 +78,7 @@ class AbstractSet(ABC, Generic[E]):
         raise NotImplementedError
 
     @staticmethod
-    def get_graph_iri(g: LightGraph) -> str:
+    def get_graph_iri(g: TripleLite) -> str:
         """
         A utility method that allows to retrieve the IRI which represents
         the name of a given named graph.

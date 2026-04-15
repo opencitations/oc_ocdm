@@ -13,7 +13,7 @@ from rdflib import Namespace
 
 from oc_ocdm.abstract_entity import AbstractEntity
 from oc_ocdm.graph.graph_entity import GraphEntity
-from oc_ocdm.light_graph import LightGraph
+from triplelite import TripleLite
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict, Optional
@@ -44,14 +44,14 @@ class ProvEntity(AbstractEntity):
         'se': iri_entity
     }
 
-    def __init__(self, prov_subject: GraphEntity, g: LightGraph, p_set: ProvSet,
+    def __init__(self, prov_subject: GraphEntity, g: TripleLite, p_set: ProvSet,
                  res: Optional[str] = None, resp_agent: Optional[str] = None, source: Optional[str] = None,
                  count: Optional[str] = None, label: Optional[str] = None,
                  short_name: str = "se") -> None:
         super(ProvEntity, self).__init__()
         self.prov_subject: GraphEntity = prov_subject
 
-        self.g: LightGraph = g
+        self.g: TripleLite = g
         self.resp_agent: Optional[str] = resp_agent
         self.source: Optional[str] = source
         self.short_name: str = short_name
@@ -75,5 +75,5 @@ class ProvEntity(AbstractEntity):
             self.create_label(label)
 
     @staticmethod
-    def _generate_new_res(g: LightGraph, count: str, short_name: str) -> str:
+    def _generate_new_res(g: TripleLite, count: str, short_name: str) -> str:
         return str(g.identifier) + short_name + "/" + count

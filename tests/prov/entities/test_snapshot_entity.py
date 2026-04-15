@@ -10,7 +10,7 @@ import unittest
 from rdflib import XSD, URIRef
 
 from oc_ocdm.graph.graph_set import GraphSet
-from oc_ocdm.light_graph import RDFTerm
+from triplelite import RDFTerm
 from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.prov.prov_set import ProvSet
 

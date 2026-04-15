@@ -9,7 +9,7 @@ import unittest
 
 from rdflib import XSD, URIRef
 
-from oc_ocdm.light_graph import RDFTerm
+from triplelite import RDFTerm
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from oc_ocdm.metadata.metadata_set import MetadataSet
 

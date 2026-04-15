@@ -12,7 +12,8 @@ from typing import TYPE_CHECKING, List
 from rdflib import Namespace
 
 from oc_ocdm.abstract_entity import AbstractEntity
-from oc_ocdm.light_graph import LightGraph, RDFTerm, rdflib_to_rdfterm
+from triplelite import RDFTerm, TripleLite
+from triplelite._rdflib_bridge import _rdflib_to_rdfterm as rdflib_to_rdfterm
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict
@@ -48,12 +49,12 @@ class MetadataEntity(AbstractEntity):
         'di': iri_datafile
     }
 
-    def __init__(self, g: LightGraph, base_iri: str, dataset_name: str, m_set: MetadataSet,
+    def __init__(self, g: TripleLite, base_iri: str, dataset_name: str, m_set: MetadataSet,
                  res_type: str, res: str | None = None, resp_agent: str | None = None,
                  source: str | None = None, count: str | None = None, label: str | None = None, short_name: str = "",
-                 preexisting_graph: LightGraph | None = None) -> None:
+                 preexisting_graph: TripleLite | None = None) -> None:
         super(MetadataEntity, self).__init__()
-        self.g: LightGraph = g
+        self.g: TripleLite = g
         self.base_iri: str = base_iri
         self.dataset_name: str = dataset_name
         self.resp_agent: str | None = resp_agent

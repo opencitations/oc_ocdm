@@ -31,7 +31,7 @@ class TestGraphDiff:
             for entity in graph_set.res_to_entity.values():
                 preexisting = Graph()
                 for triple in entity.g:
-                    preexisting.add(triple)
+                    preexisting.add(triple)  # type: ignore[arg-type]
                 mock = MockEntity(entity.g, preexisting)
                 entities.append(mock)
             for i, br in enumerate(brs):

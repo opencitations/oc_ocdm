@@ -107,7 +107,9 @@ class DataFactory:
         year = random.randint(start_year, end_year)
         month = random.randint(1, 12)
         day = random.randint(1, 28)
-        return create_date([year, month, day])
+        result = create_date([year, month, day])
+        assert result is not None
+        return result
 
     @staticmethod
     def random_pages() -> Tuple[str, str]:

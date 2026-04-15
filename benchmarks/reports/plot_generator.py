@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from matplotlib.axes import Axes
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
@@ -153,7 +154,7 @@ class BenchmarkPlotGenerator:
         print(f"Saved: {output_path}")
 
     def _draw_comparison_subplot(
-        self, ax: plt.Axes, benchmarks: List[Dict[str, Any]], group: str
+        self, ax: Axes, benchmarks: List[Dict[str, Any]], group: str
     ):
         """Draw comparison bar chart on given axes."""
         names = []
@@ -188,7 +189,7 @@ class BenchmarkPlotGenerator:
             )
 
     def _draw_scaling_subplot(
-        self, ax: plt.Axes, benchmarks: List[Dict[str, Any]], param_name: str
+        self, ax: Axes, benchmarks: List[Dict[str, Any]], param_name: str
     ):
         """Draw scaling line chart on given axes."""
         test_data = {}
@@ -225,7 +226,7 @@ class BenchmarkPlotGenerator:
         ax.grid(True, alpha=0.3)
 
     def _draw_throughput_subplot(
-        self, ax: plt.Axes, benchmarks: List[Dict[str, Any]], param_name: str
+        self, ax: Axes, benchmarks: List[Dict[str, Any]], param_name: str
     ):
         """Draw throughput line chart on given axes."""
         test_data = {}

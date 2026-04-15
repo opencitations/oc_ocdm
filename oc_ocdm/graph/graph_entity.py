@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from rdflib import RDF, Namespace
 
 from oc_ocdm.abstract_entity import AbstractEntity
-from oc_ocdm.light_graph import LightGraph, RDFTerm
+from triplelite import RDFTerm, TripleLite
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict, List, Optional, Self
@@ -184,11 +184,11 @@ class GraphEntity(AbstractEntity):
         'rp': iri_intextref_pointer
     }
 
-    def __init__(self, g: LightGraph, g_set: GraphSet, res_type: str, res: str | None = None,
+    def __init__(self, g: TripleLite, g_set: GraphSet, res_type: str, res: str | None = None,
                  resp_agent: str | None = None, source: str | None = None, count: str | None = None, label: str | None = None,
-                 short_name: str = "", preexisting_graph: LightGraph | None = None) -> None:
+                 short_name: str = "", preexisting_graph: TripleLite | None = None) -> None:
         super(GraphEntity, self).__init__()
-        self.g: LightGraph = g
+        self.g: TripleLite = g
         self.resp_agent: str | None = resp_agent
         self.source: str | None = source
         self.short_name: str = short_name
@@ -229,7 +229,7 @@ class GraphEntity(AbstractEntity):
                 self.create_label(label)
 
     @staticmethod
-    def _generate_new_res(g: LightGraph, count: str | None) -> str:
+    def _generate_new_res(g: TripleLite, count: str | None) -> str:
         assert count is not None
         return str(g.identifier) + count
 

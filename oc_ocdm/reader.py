@@ -17,7 +17,8 @@ from rdflib import RDF, Dataset, Graph, URIRef
 from sparqlite import EndpointError, SPARQLClient
 
 from oc_ocdm.graph.graph_entity import GraphEntity
-from oc_ocdm.light_graph import LightGraph, rdflib_to_rdfterm
+from triplelite import TripleLite
+from triplelite._rdflib_bridge import _rdflib_to_rdfterm as rdflib_to_rdfterm
 from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import build_graph_from_results, normalize_graph_literals
 
@@ -142,8 +143,8 @@ class Reader(object):
         return False
 
     @staticmethod
-    def get_graph_from_subject(graph: Graph, subject: URIRef) -> LightGraph:
-        g = LightGraph(identifier=str(graph.identifier))
+    def get_graph_from_subject(graph: Graph, subject: URIRef) -> TripleLite:
+        g = TripleLite(identifier=str(graph.identifier))
         for p, o in graph.predicate_objects(subject, unique=True):
             g.add((str(subject), str(p), rdflib_to_rdfterm(o)))
         return g

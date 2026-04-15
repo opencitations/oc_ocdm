@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
 from oc_ocdm.graph.graph_entity import GraphEntity
-from oc_ocdm.light_graph import RDFTerm
+from triplelite import RDFTerm
 
 
 class ResourceEmbodiment(BibliographicEntity):

@@ -16,11 +16,11 @@ from typing import TYPE_CHECKING
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from filelock import FileLock
-from rdflib import Dataset, URIRef
+from rdflib import Dataset, Literal, URIRef
 from sparqlite import EndpointError, SPARQLClient
+from triplelite import TripleLite
 
 from oc_ocdm.graph.graph_entity import GraphEntity
-from oc_ocdm.light_graph import LightGraph
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.reader import Reader
@@ -82,9 +82,19 @@ class Storer(object):
             self.reperr: Reporter = reperr
 
     @staticmethod
+    def _to_rdflib_obj(o) -> URIRef | Literal:
+        if o.type == "literal":
+            if o.lang:
+                return Literal(o.value, lang=o.lang)
+            return Literal(o.value, datatype=URIRef(o.datatype))
+        return URIRef(o.value)
+
+    @staticmethod
     def _entity_quads(entity_g) -> list:
-        if isinstance(entity_g, LightGraph):
-            return list(entity_g.to_rdflib_quads())
+        if isinstance(entity_g, TripleLite):
+            graph_id = URIRef(entity_g.identifier) if entity_g.identifier else None
+            return [(URIRef(s), URIRef(p), Storer._to_rdflib_obj(o), graph_id)
+                    for s, p, o in entity_g]
         graph_id = entity_g.identifier
         return [(*item, graph_id) for item in entity_g]
 
@@ -177,8 +187,9 @@ class Storer(object):
         return list(relevant_paths.keys())
 
     def _entity_triples_as_rdflib_quads(self, entity: AbstractEntity) -> List[Tuple]:
-        return [q for q in entity.g.to_rdflib_quads()
-                if q[0] == URIRef(str(entity.res))]
+        graph_id = URIRef(entity.g.identifier) if entity.g.identifier else None
+        return [(URIRef(s), URIRef(p), self._to_rdflib_obj(o), graph_id)
+                for s, p, o in entity.g if s == entity.res]
 
     def store(self, entity: AbstractEntity, destination_g: Dataset, cur_file_path: str, context_path: str | None = None, store_now: bool = True) -> Dataset | None:
         self.repok.new_article()

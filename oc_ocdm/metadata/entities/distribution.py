@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from rdflib import XSD
 
-from oc_ocdm.light_graph import RDFTerm
+from triplelite import RDFTerm
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 
 

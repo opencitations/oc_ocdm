@@ -52,7 +52,7 @@ class TestContextCaching:
             )
             dataset = Dataset()
             for g in graph_set.graphs():
-                dataset.addN((s, p, o, g.identifier) for s, p, o in g)
+                dataset.addN((s, p, o, g.identifier) for s, p, o in g)  # type: ignore[arg-type]
             return (dataset,), {}
 
         def serialize(dataset):
@@ -76,7 +76,7 @@ class TestContextCaching:
             )
             dataset = Dataset()
             for g in graph_set.graphs():
-                dataset.addN((s, p, o, g.identifier) for s, p, o in g)
+                dataset.addN((s, p, o, g.identifier) for s, p, o in g)  # type: ignore[arg-type]
             return (dataset,), {}
 
         def serialize(dataset):

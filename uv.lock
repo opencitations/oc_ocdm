@@ -913,6 +913,7 @@ dependencies = [
     { name = "redis" },
     { name = "sparqlite" },
     { name = "tqdm" },
+    { name = "triplelite" },
 ]
 
 [package.dev-dependencies]
@@ -939,6 +940,7 @@ requires-dist = [
     { name = "redis", specifier = ">=4.5.5,<8.0.0" },
     { name = "sparqlite", specifier = ">=1.0.0" },
     { name = "tqdm", specifier = ">=4.67.1" },
+    { name = "triplelite", specifier = ">=1.0.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -1543,6 +1545,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/09/a9/6ba95a270c6f1fbcd8dac228323f2777d886cb206987444e4bce66338dd4/tqdm-4.67.3.tar.gz", hash = "sha256:7d825f03f89244ef73f1d4ce193cb1774a8179fd96f31d7e1dcde62092b960bb", size = 169598, upload-time = "2026-02-03T17:35:53.048Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/16/e1/3079a9ff9b8e11b846c6ac5c8b5bfb7ff225eee721825310c91b3b50304f/tqdm-4.67.3-py3-none-any.whl", hash = "sha256:ee1e4c0e59148062281c49d80b25b67771a127c85fc9676d3be5f243206826bf", size = 78374, upload-time = "2026-02-03T17:35:50.982Z" },
+]
+
+[[package]]
+name = "triplelite"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/7b/16/c9cfed2100eea7a9ed9c3d9e36e72bc3a697c178f51b0156547a2f075a0a/triplelite-1.0.0.tar.gz", hash = "sha256:87249f5db8a544cf8dc4e8c3d15db9787d214e00d5e81ba160ee860ac533b662", size = 110116, upload-time = "2026-04-15T16:42:37.48Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2d/b0/e7fa73f842ca2b2712ba03294908a13f066dc260f779361be4f06f749a1c/triplelite-1.0.0-py3-none-any.whl", hash = "sha256:b98ab8484150d6b9559d0f48df6d2018f016c699a9976bd62114ff2ee1aaf8a7", size = 6643, upload-time = "2026-04-15T16:42:39.466Z" },
 ]
 
 [[package]]

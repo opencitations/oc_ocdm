@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, AbstractSet, List, Set
 
-from oc_ocdm.light_graph import RDFTerm
+from triplelite import RDFTerm
 
 if TYPE_CHECKING:
     from typing import Tuple

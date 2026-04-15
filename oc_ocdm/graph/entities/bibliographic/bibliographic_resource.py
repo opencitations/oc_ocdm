@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from oc_ocdm.decorators import accepts_only
-from oc_ocdm.light_graph import RDFTerm
+from triplelite import RDFTerm
 from oc_ocdm.support.support import get_datatype_from_iso_8601
 
 if TYPE_CHECKING:

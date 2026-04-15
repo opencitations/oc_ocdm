@@ -11,7 +11,7 @@ from rdflib import RDF, XSD, URIRef
 
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
-from oc_ocdm.light_graph import RDFTerm
+from triplelite import RDFTerm
 
 
 class TestBibliographicResource(unittest.TestCase):
@@ -341,7 +341,8 @@ class TestBibliographicResource(unittest.TestCase):
 
         triple1 = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_series))
         triple2 = self.br1.res, RDF.type, RDFTerm("uri", str(GraphEntity.iri_preprint))
-        self.assertIn(triple2, self.br1.g) and not self.assertIn(triple1, self.br1.g)
+        self.assertIn(triple2, self.br1.g)
+        self.assertNotIn(triple1, self.br1.g)
 
     def test_merge_specific_types(self):
         """Test merging entities with specific types"""

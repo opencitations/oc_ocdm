@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 from rdflib import XSD
 
 from oc_ocdm.decorators import accepts_only
-from oc_ocdm.light_graph import RDFTerm
+from triplelite import RDFTerm
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 
 if TYPE_CHECKING:
