@@ -1,3 +1,12 @@
+## [11.0.1](https://github.com/opencitations/oc_ocdm/compare/11.0.0...11.0.1) (2026-04-15)
+
+
+### Bug Fixes
+
+* **test:** pre-index test data in QLever instead of using SPARQL UPDATE [release] ([6d882d4](https://github.com/opencitations/oc_ocdm/commit/6d882d4dc9a228cc21e4a4aecec5f9dff261a4f2))
+* **test:** use str instead of URIRef for TripleLite queries [release] ([b68cbc9](https://github.com/opencitations/oc_ocdm/commit/b68cbc9adff9a0c9a23e95862f44f519b8b0b931))
+* use add_many for batch triple insertion [release] ([717c991](https://github.com/opencitations/oc_ocdm/commit/717c991e5ebff8d6f115ecbacbad10585c99d3d9))
+
 # [11.0.0](https://github.com/opencitations/oc_ocdm/compare/10.0.1...11.0.0) (2026-04-14)
 
 
