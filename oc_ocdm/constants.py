@@ -9,11 +9,8 @@ import os
 
 
 def _load_context() -> dict:
-    context_path = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-        "metadata", "context.json"
-    )
-    with open(context_path, "rt", encoding="utf-8") as f:
+    path = os.path.join(os.path.dirname(__file__), "data", "context.json")
+    with open(path, "rt", encoding="utf-8") as f:
         return json.load(f)
 
 
