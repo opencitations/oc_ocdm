@@ -11,7 +11,7 @@ import os
 import tempfile
 import unittest
 
-from rdflib import RDF, XSD, BNode, Dataset, Graph, Literal, Namespace, URIRef
+from rdflib import RDF, XSD, Dataset, Graph, Literal, Namespace, URIRef
 
 from oc_ocdm.graph import GraphSet
 from oc_ocdm.reader import Reader
@@ -31,10 +31,10 @@ class TestReader(unittest.TestCase):
     def test_import_entity_from_triplestore(self):
         """Test importing a single entity from triplestore."""
         self.reader.import_entity_from_triplestore(
-            self.g_set, 
-            self.endpoint, 
-            URIRef('https://w3id.org/oc/meta/br/0605'), 
-            self.resp_agent, 
+            self.g_set,
+            self.endpoint,
+            'https://w3id.org/oc/meta/br/0605',
+            self.resp_agent,
             False
         )
         self.assertEqual(
@@ -45,8 +45,8 @@ class TestReader(unittest.TestCase):
     def test_import_entities_from_triplestore_batch(self):
         """Test importing multiple entities in batch."""
         entities = [
-            URIRef('https://w3id.org/oc/meta/br/0605'),
-            URIRef('https://w3id.org/oc/meta/br/0636066666')
+            'https://w3id.org/oc/meta/br/0605',
+            'https://w3id.org/oc/meta/br/0636066666'
         ]
         
         imported = self.reader.import_entities_from_triplestore(
@@ -79,7 +79,7 @@ class TestReader(unittest.TestCase):
             self.reader.import_entity_from_triplestore(
                 self.g_set,
                 self.endpoint,
-                URIRef('https://w3id.org/oc/meta/br/99999'),
+                'https://w3id.org/oc/meta/br/99999',
                 self.resp_agent,
                 False
             )
@@ -87,8 +87,8 @@ class TestReader(unittest.TestCase):
     def test_batch_import_with_empty_results(self):
         """Test batch import with empty results."""
         entities = [
-            URIRef('https://w3id.org/oc/meta/br/nonexistent1'),
-            URIRef('https://w3id.org/oc/meta/br/nonexistent2')
+            'https://w3id.org/oc/meta/br/nonexistent1',
+            'https://w3id.org/oc/meta/br/nonexistent2'
         ]
 
         with self.assertRaises(ValueError):
@@ -102,9 +102,9 @@ class TestReader(unittest.TestCase):
     def test_import_mixed_entity_types(self):
         """Test importing different types of entities in the same batch."""
         entities = [
-            URIRef('https://w3id.org/oc/meta/br/0605'),       # Bibliographic Resource
-            URIRef('https://w3id.org/oc/meta/id/0605'),       # Identifier
-            URIRef('https://w3id.org/oc/meta/re/0605')        # Resource Embodiment
+            'https://w3id.org/oc/meta/br/0605',       # Bibliographic Resource
+            'https://w3id.org/oc/meta/id/0605',       # Identifier
+            'https://w3id.org/oc/meta/re/0605'        # Resource Embodiment
         ]
         
         imported = self.reader.import_entities_from_triplestore(
@@ -305,20 +305,6 @@ class TestReaderNoTriplestore(unittest.TestCase):
 
     def setUp(self):
         self.reader = Reader()
-
-    def test_extract_subjects_filters_bnodes(self):
-        g = Graph()
-        uri = URIRef('http://example.org/s')
-        bnode = BNode()
-        g.add((uri, RDF.type, URIRef('http://example.org/Type')))
-        g.add((bnode, RDF.type, URIRef('http://example.org/OtherType')))
-        subjects = Reader._extract_subjects(g)
-        self.assertEqual(subjects, {uri})
-
-    def test_extract_subjects_empty_graph(self):
-        g = Graph()
-        subjects = Reader._extract_subjects(g)
-        self.assertEqual(subjects, set())
 
     def test_load_normalizes_literals_in_nt_file(self):
         with tempfile.NamedTemporaryFile(mode='w', suffix='.nt', delete=False) as f:

@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from oc_ocdm.abstract_entity import AbstractEntity
 from oc_ocdm.constants import RDF_TYPE, Namespace
-from triplelite import RDFTerm, TripleLite
+from triplelite import RDFTerm, SubgraphView, TripleLite
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict, List, Optional, Self
@@ -185,14 +185,14 @@ class GraphEntity(AbstractEntity):
 
     def __init__(self, g: TripleLite, g_set: GraphSet, res_type: str, res: str | None = None,
                  resp_agent: str | None = None, source: str | None = None, count: str | None = None, label: str | None = None,
-                 short_name: str = "", preexisting_graph: TripleLite | None = None) -> None:
+                 short_name: str = "", preexisting_graph: SubgraphView | None = None) -> None:
         super(GraphEntity, self).__init__()
         self.g: TripleLite = g
         self.resp_agent: str | None = resp_agent
         self.source: str | None = source
         self.short_name: str = short_name
         self.g_set: GraphSet = g_set
-        self._preexisting_triples: frozenset = frozenset()
+        self._preexisting_triples: frozenset | SubgraphView = frozenset()
         self._merge_list: tuple[GraphEntity, ...] = ()
         # FLAGS
         self._to_be_deleted: bool = False
@@ -219,7 +219,7 @@ class GraphEntity(AbstractEntity):
             # set the preexisting graph AFTER having modified self.g (which would not make sense).
             self.remove_every_triple()
             self.g.add_many((self.res, p, o) for p, o in preexisting_graph.predicate_objects(self.res))
-            self._preexisting_triples = frozenset(self.g)
+            self._preexisting_triples = preexisting_graph
         else:
             # Add mandatory information to the entity graph
             self._create_type(res_type)

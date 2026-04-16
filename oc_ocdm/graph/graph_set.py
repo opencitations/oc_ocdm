@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, cast
 
 from rdflib import Graph
 from sparqlite import SPARQLClient
+from triplelite import RDFTerm, SubgraphView, TripleLite, from_rdflib
 
 from oc_ocdm.abstract_set import AbstractSet
 from oc_ocdm.counter_handler.counter_handler import CounterHandler
@@ -27,7 +28,6 @@ from oc_ocdm.graph.entities.bibliographic.resource_embodiment import ResourceEmb
 from oc_ocdm.graph.entities.bibliographic.responsible_agent import ResponsibleAgent
 from oc_ocdm.graph.entities.identifier import Identifier
 from oc_ocdm.graph.graph_entity import GraphEntity
-from triplelite import RDFTerm, TripleLite
 from oc_ocdm.support.support import get_count, get_prefix, get_short_name
 
 if TYPE_CHECKING:
@@ -89,7 +89,7 @@ class GraphSet(AbstractSet[GraphEntity]):
 
     # Add resources related to bibliographic entities
     def add_an(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: TripleLite | None = None) -> ReferenceAnnotation:
+               preexisting_graph: SubgraphView | None = None) -> ReferenceAnnotation:
         if res is not None and get_short_name(res) != "an":
             raise ValueError(f"Given res: <{res}> is inappropriate for a ReferenceAnnotation entity.")
         if res is not None and res in self.res_to_entity:
@@ -100,7 +100,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                                    preexisting_graph)
 
     def add_ar(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: TripleLite | None = None) -> AgentRole:
+               preexisting_graph: SubgraphView | None = None) -> AgentRole:
         if res is not None and get_short_name(res) != "ar":
             raise ValueError(f"Given res: <{res}> is inappropriate for an AgentRole entity.")
         if res is not None and res in self.res_to_entity:
@@ -111,7 +111,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                          preexisting_graph)
 
     def add_be(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: TripleLite | None = None) -> BibliographicReference:
+               preexisting_graph: SubgraphView | None = None) -> BibliographicReference:
         if res is not None and get_short_name(res) != "be":
             raise ValueError(f"Given res: <{res}> is inappropriate for a BibliographicReference entity.")
         if res is not None and res in self.res_to_entity:
@@ -122,7 +122,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                                       preexisting_graph)
 
     def add_br(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: TripleLite | None = None) -> BibliographicResource:
+               preexisting_graph: SubgraphView | None = None) -> BibliographicResource:
         if res is not None and get_short_name(res) != "br":
             raise ValueError(f"Given res: <{res}> is inappropriate for a BibliographicResource entity.")
         if res is not None and res in self.res_to_entity:
@@ -133,7 +133,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                                      preexisting_graph)
 
     def add_ci(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: TripleLite | None = None) -> Citation:
+               preexisting_graph: SubgraphView | None = None) -> Citation:
         if res is not None and get_short_name(res) != "ci":
             raise ValueError(f"Given res: <{res}> is inappropriate for a Citation entity.")
         if res is not None and res in self.res_to_entity:
@@ -144,7 +144,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                         preexisting_graph)
 
     def add_de(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: TripleLite | None = None) -> DiscourseElement:
+               preexisting_graph: SubgraphView | None = None) -> DiscourseElement:
         if res is not None and get_short_name(res) != "de":
             raise ValueError(f"Given res: <{res}> is inappropriate for a DiscourseElement entity.")
         if res is not None and res in self.res_to_entity:
@@ -155,7 +155,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                                 preexisting_graph)
 
     def add_id(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: TripleLite | None = None) -> Identifier:
+               preexisting_graph: SubgraphView | None = None) -> Identifier:
         if res is not None and get_short_name(res) != "id":
             raise ValueError(f"Given res: <{res}> is inappropriate for an Identifier entity.")
         if res is not None and res in self.res_to_entity:
@@ -166,7 +166,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                           preexisting_graph)
 
     def add_pl(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: TripleLite | None = None) -> PointerList:
+               preexisting_graph: SubgraphView | None = None) -> PointerList:
         if res is not None and get_short_name(res) != "pl":
             raise ValueError(f"Given res: <{res}> is inappropriate for a PointerList entity.")
         if res is not None and res in self.res_to_entity:
@@ -177,7 +177,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                            preexisting_graph)
 
     def add_rp(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: TripleLite | None = None) -> ReferencePointer:
+               preexisting_graph: SubgraphView | None = None) -> ReferencePointer:
         if res is not None and get_short_name(res) != "rp":
             raise ValueError(f"Given res: <{res}> is inappropriate for a ReferencePointer entity.")
         if res is not None and res in self.res_to_entity:
@@ -188,7 +188,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                                 preexisting_graph)
 
     def add_ra(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: TripleLite | None = None) -> ResponsibleAgent:
+               preexisting_graph: SubgraphView | None = None) -> ResponsibleAgent:
         if res is not None and get_short_name(res) != "ra":
             raise ValueError(f"Given res: <{res}> is inappropriate for a ResponsibleAgent entity.")
         if res is not None and res in self.res_to_entity:
@@ -199,7 +199,7 @@ class GraphSet(AbstractSet[GraphEntity]):
                                 preexisting_graph)
 
     def add_re(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: TripleLite | None = None) -> ResourceEmbodiment:
+               preexisting_graph: SubgraphView | None = None) -> ResourceEmbodiment:
         if res is not None and get_short_name(res) != "re":
             raise ValueError(f"Given res: <{res}> is inappropriate for a ResourceEmbodiment entity.")
         if res is not None and res in self.res_to_entity:
@@ -256,9 +256,10 @@ class GraphSet(AbstractSet[GraphEntity]):
                     nt_bytes = client.construct(query)
                     if nt_bytes:
                         from oc_ocdm.reader import Reader
-                        result: Graph = Graph()
-                        result.parse(BytesIO(nt_bytes), format='nt')
-                        imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(self, result, resp_agent)
+                        rdflib_g = Graph()
+                        rdflib_g.parse(BytesIO(nt_bytes), format='nt')
+                        graphs = from_rdflib(rdflib_g)
+                        imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(self, graphs[0], resp_agent)
                         for imported_entity in imported_entities:
                             imported_entity.g.remove((imported_entity.res, None, RDFTerm("uri", str(entity_res))))
 

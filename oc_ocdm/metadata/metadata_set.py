@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from typing import ClassVar, Dict, Tuple
 
 from oc_ocdm.abstract_set import AbstractSet
-from triplelite import TripleLite
+from triplelite import SubgraphView, TripleLite
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 
 
@@ -50,7 +50,7 @@ class MetadataSet(AbstractSet[MetadataEntity]):
             return self.res_to_entity[res]
 
     def add_dataset(self, dataset_name: str, resp_agent: str, source: str | None = None, res: str | None = None,
-                    preexisting_graph: TripleLite | None = None) -> Dataset:
+                    preexisting_graph: SubgraphView | None = None) -> Dataset:
         if res is not None and not is_dataset(res):
             raise ValueError(f"Given res: <{res}> is inappropriate for a Dataset entity.")
         if res is not None and res in self.res_to_entity:
@@ -65,7 +65,7 @@ class MetadataSet(AbstractSet[MetadataEntity]):
                        preexisting_graph)
 
     def add_di(self, dataset_name: str, resp_agent: str, source: str | None = None,
-               res: str | None = None, preexisting_graph: TripleLite | None = None) -> Distribution:
+               res: str | None = None, preexisting_graph: SubgraphView | None = None) -> Distribution:
         if res is not None and get_short_name(res) != "di":
             raise ValueError(f"Given res: <{res}> is inappropriate for a Distribution entity.")
         if res is not None and res in self.res_to_entity:

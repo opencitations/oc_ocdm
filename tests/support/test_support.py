@@ -9,10 +9,10 @@ import os
 import unittest
 
 from rdflib import XSD, Graph, Literal, Namespace, URIRef
+from triplelite import RDFTerm, TripleLite
 
-from oc_ocdm.constants import XSD_DATE, XSD_GYEAR, XSD_GYEARMONTH
+from oc_ocdm.constants import XSD_DATE, XSD_GYEAR, XSD_GYEARMONTH, XSD_STRING
 from oc_ocdm.graph.graph_set import GraphSet
-from triplelite import TripleLite
 from oc_ocdm.prov.prov_set import ProvSet
 from oc_ocdm.support.support import (
     build_graph_from_results,
@@ -22,7 +22,7 @@ from oc_ocdm.support.support import (
     get_datatype_from_iso_8601,
     get_ordered_contributors_from_br,
     normalize_graph_literals,
-    sparql_binding_to_term,
+    sparql_binding_to_rdfterm,
 )
 
 
@@ -107,7 +107,7 @@ class TestSupport(unittest.TestCase):
     
     def test_find_paths(self):
         cur_dir_path, cur_file_path = find_paths(
-            res = URIRef('https://w3id.org/oc/meta/br/060169'),
+            res = 'https://w3id.org/oc/meta/br/060169',
             base_dir = os.path.join('support', 'test', 'data', 'rdf'),
             base_iri = 'https://w3id.org/oc/meta',
             default_dir = '_',
@@ -118,7 +118,7 @@ class TestSupport(unittest.TestCase):
 
     def test_find_paths_prov(self):
         cur_dir_path, cur_file_path = find_paths(
-            res = URIRef('https://w3id.org/oc/meta/br/060165/prov/se/1'),
+            res = 'https://w3id.org/oc/meta/br/060165/prov/se/1',
             base_dir = os.path.join('support', 'test', 'data', 'rdf'),
             base_iri = 'https://w3id.org/oc/meta',
             default_dir = '_',
@@ -128,12 +128,12 @@ class TestSupport(unittest.TestCase):
         self.assertEqual((cur_dir_path, cur_file_path), (os.path.join('support', 'test', 'data', 'rdfbr', '060', '10000', '1000', 'prov'), os.path.join('support', 'test', 'data', 'rdfbr', '060', '10000', '1000', 'prov', 'se.json')))
 
 
-class TestSparqlBindingToTerm(unittest.TestCase):
+class TestSparqlBindingToRdfterm(unittest.TestCase):
 
     def test_uri_binding(self):
         binding = {'type': 'uri', 'value': 'http://example.org/resource'}
-        result = sparql_binding_to_term(binding)
-        self.assertEqual(result, URIRef('http://example.org/resource'))
+        result = sparql_binding_to_rdfterm(binding)
+        self.assertEqual(result, RDFTerm('uri', 'http://example.org/resource'))
 
     def test_literal_with_datatype(self):
         binding = {
@@ -141,24 +141,24 @@ class TestSparqlBindingToTerm(unittest.TestCase):
             'value': '42',
             'datatype': 'http://www.w3.org/2001/XMLSchema#integer'
         }
-        result = sparql_binding_to_term(binding)
-        self.assertEqual(result, Literal('42', datatype=XSD.integer))
+        result = sparql_binding_to_rdfterm(binding)
+        self.assertEqual(result.type, 'literal')
+        self.assertEqual(result.value, '42')
+        self.assertEqual(result.datatype, str(XSD.integer))
 
     def test_literal_with_language(self):
         binding = {'type': 'literal', 'value': 'hello', 'xml:lang': 'en'}
-        result = sparql_binding_to_term(binding)
-        self.assertEqual(result, Literal('hello', lang='en'))
-        self.assertIsInstance(result, Literal)
-        assert isinstance(result, Literal)
-        self.assertEqual(result.language, 'en')
+        result = sparql_binding_to_rdfterm(binding)
+        self.assertEqual(result.type, 'literal')
+        self.assertEqual(result.value, 'hello')
+        self.assertEqual(result.lang, 'en')
 
     def test_simple_literal_normalized_to_xsd_string(self):
         binding = {'type': 'literal', 'value': 'plain text'}
-        result = sparql_binding_to_term(binding)
-        self.assertEqual(result, Literal('plain text', datatype=XSD.string))
-        self.assertIsInstance(result, Literal)
-        assert isinstance(result, Literal)
-        self.assertEqual(result.datatype, XSD.string)
+        result = sparql_binding_to_rdfterm(binding)
+        self.assertEqual(result.type, 'literal')
+        self.assertEqual(result.value, 'plain text')
+        self.assertEqual(result.datatype, XSD_STRING)
 
 
 class TestNormalizeGraphLiterals(unittest.TestCase):
@@ -302,10 +302,11 @@ class TestBuildGraphFromResults(unittest.TestCase):
             'o': {'type': 'uri', 'value': 'http://example.org/o'}
         }]
         g = build_graph_from_results(results)
+        self.assertIsInstance(g, TripleLite)
         self.assertEqual(len(g), 1)
-        s, p, o = next(iter(g))
-        self.assertEqual(s, URIRef('http://example.org/s'))
-        self.assertEqual(o, URIRef('http://example.org/o'))
+        s, p, o = next(g.triples((None, None, None)))
+        self.assertEqual(s, 'http://example.org/s')
+        self.assertEqual(o, RDFTerm('uri', 'http://example.org/o'))
 
     def test_literal_object_with_datatype(self):
         results = [{
@@ -315,8 +316,8 @@ class TestBuildGraphFromResults(unittest.TestCase):
         }]
         g = build_graph_from_results(results)
         o = list(g.objects())[0]
-        assert isinstance(o, Literal)
-        self.assertEqual(o.datatype, XSD.integer)
+        self.assertEqual(o.type, 'literal')
+        self.assertEqual(o.datatype, str(XSD.integer))
 
     def test_literal_object_without_datatype_gets_xsd_string(self):
         results = [{
@@ -326,8 +327,8 @@ class TestBuildGraphFromResults(unittest.TestCase):
         }]
         g = build_graph_from_results(results)
         o = list(g.objects())[0]
-        assert isinstance(o, Literal)
-        self.assertEqual(o.datatype, XSD.string)
+        self.assertEqual(o.type, 'literal')
+        self.assertEqual(o.datatype, XSD_STRING)
 
     def test_literal_object_with_language(self):
         results = [{
@@ -337,8 +338,8 @@ class TestBuildGraphFromResults(unittest.TestCase):
         }]
         g = build_graph_from_results(results)
         o = list(g.objects())[0]
-        assert isinstance(o, Literal)
-        self.assertEqual(o.language, 'fr')
+        self.assertEqual(o.type, 'literal')
+        self.assertEqual(o.lang, 'fr')
 
     def test_empty_results(self):
         g = build_graph_from_results([])

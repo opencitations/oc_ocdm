@@ -12,13 +12,16 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 from urllib.parse import quote
 
-from rdflib import Graph, Literal, URIRef
+from rdflib import Graph, Literal
+from rdflib.namespace import XSD as _RDFLIB_XSD
+from triplelite import XSD_STRING, RDFTerm, TripleLite
 
 from oc_ocdm.constants import RDF_TYPE, XSD_DATE, XSD_GYEAR, XSD_GYEARMONTH, XSD_STRING
-from triplelite import XSD_STRING, RDFTerm, TripleLite
+
+_RDFLIB_XSD_STRING = _RDFLIB_XSD.string
 
 if TYPE_CHECKING:
     from typing import Dict, List, Optional, Set, Tuple
@@ -40,27 +43,21 @@ class ParsedURI:
     prov_subject_count: str
 
 
-def sparql_binding_to_term(binding: dict) -> Union[URIRef, Literal]:
-    """Convert a SPARQL JSON result binding to an rdflib term.
-
-    Per RDF 1.1, simple literals (no datatype, no language tag) are normalized to xsd:string.
-    """
+def sparql_binding_to_rdfterm(binding: dict) -> RDFTerm:
     if binding['type'] == 'uri':
-        return URIRef(binding['value'])
-    datatype = binding.get('datatype')
-    lang = binding.get('xml:lang')
-    if datatype is not None:
-        datatype = URIRef(datatype)
-    elif lang is None:
+        return RDFTerm("uri", binding['value'])
+    datatype = binding.get('datatype', '')
+    lang = binding.get('xml:lang', '')
+    if not datatype and not lang:
         datatype = XSD_STRING
-    return Literal(binding['value'], datatype=datatype, lang=lang)
+    return RDFTerm("literal", binding['value'], datatype, lang)
 
 
 def normalize_graph_literals(g: Graph) -> None:
     triples_to_update = []
     for s, p, o in g:
         if isinstance(o, Literal) and o.datatype is None and o.language is None:
-            triples_to_update.append((s, p, o, Literal(str(o), datatype=XSD_STRING)))
+            triples_to_update.append((s, p, o, Literal(str(o), datatype=_RDFLIB_XSD_STRING)))
     for s, p, old_o, new_o in triples_to_update:
         g.remove((s, p, old_o))
         g.add((s, p, new_o))
@@ -334,13 +331,10 @@ def has_supplier_prefix(res: str, base_iri: str) -> bool:
     string_iri: str = str(res)
     return re.search(r"^%s[a-z][a-z]/0" % base_iri, string_iri) is not None
 
-def build_graph_from_results(results: List[Dict]) -> Graph:
-    graph = Graph()
+def build_graph_from_results(results: List[Dict]) -> TripleLite:
+    graph = TripleLite()
     for triple in results:
-        s = sparql_binding_to_term(triple['s'])
-        p = sparql_binding_to_term(triple['p'])
-        o = sparql_binding_to_term(triple['o'])
-        graph.add((s, p, o))
+        graph.add((triple['s']['value'], triple['p']['value'], sparql_binding_to_rdfterm(triple['o'])))
     return graph
 
 

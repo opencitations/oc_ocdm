@@ -24,5 +24,5 @@ from oc_ocdm.support.support import (
     has_supplier_prefix,
     is_dataset,
     is_string_empty,
-    sparql_binding_to_term,
+    sparql_binding_to_rdfterm,
 )

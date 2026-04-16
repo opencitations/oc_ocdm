@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, List
 
 from oc_ocdm.abstract_entity import AbstractEntity
 from oc_ocdm.constants import Namespace
-from triplelite import RDFTerm, TripleLite, rdflib_to_rdfterm
+from triplelite import RDFTerm, SubgraphView, TripleLite, rdflib_to_rdfterm
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict
@@ -50,7 +50,7 @@ class MetadataEntity(AbstractEntity):
     def __init__(self, g: TripleLite, base_iri: str, dataset_name: str, m_set: MetadataSet,
                  res_type: str, res: str | None = None, resp_agent: str | None = None,
                  source: str | None = None, count: str | None = None, label: str | None = None, short_name: str = "",
-                 preexisting_graph: TripleLite | None = None) -> None:
+                 preexisting_graph: SubgraphView | None = None) -> None:
         super(MetadataEntity, self).__init__()
         self.g: TripleLite = g
         self.base_iri: str = base_iri
@@ -59,7 +59,7 @@ class MetadataEntity(AbstractEntity):
         self.source: str | None = source
         self.short_name: str = short_name
         self.m_set: MetadataSet = m_set
-        self._preexisting_triples: frozenset = frozenset()
+        self._preexisting_triples: frozenset | SubgraphView = frozenset()
         self._merge_list: tuple[MetadataEntity, ...] = ()
         # FLAGS
         self._to_be_deleted: bool = False
@@ -83,7 +83,7 @@ class MetadataEntity(AbstractEntity):
         if preexisting_graph is not None:
             self.remove_every_triple()
             self.g.add_many((self.res, p, rdflib_to_rdfterm(o)) for p, o in preexisting_graph.predicate_objects(self.res))
-            self._preexisting_triples = frozenset(self.g)
+            self._preexisting_triples = preexisting_graph
         else:
             # Add mandatory information to the entity graph
             self._create_type(res_type)

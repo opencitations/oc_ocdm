@@ -13,11 +13,12 @@ import os
 from typing import TYPE_CHECKING
 from zipfile import ZipFile
 
-from rdflib import RDF, Dataset, Graph, URIRef
+from rdflib import Dataset, Graph, URIRef
 from sparqlite import EndpointError, SPARQLClient
+from triplelite import TripleLite, from_rdflib
 
+from oc_ocdm.constants import RDF_TYPE
 from oc_ocdm.graph.graph_entity import GraphEntity
-from triplelite import TripleLite, rdflib_to_rdfterm
 from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import build_graph_from_results, normalize_graph_literals
 
@@ -141,20 +142,6 @@ class Reader(object):
                 continue
         return False
 
-    @staticmethod
-    def get_graph_from_subject(graph: Graph, subject: URIRef) -> TripleLite:
-        g = TripleLite(identifier=str(graph.identifier))
-        g.add_many((str(subject), str(p), rdflib_to_rdfterm(o)) for p, o in graph.predicate_objects(subject, unique=True))
-        return g
-
-    @staticmethod
-    def _extract_subjects(graph: Graph) -> Set[URIRef]:
-        subjects: Set[URIRef] = set()
-        for s in graph.subjects(unique=True):
-            if isinstance(s, URIRef):
-                subjects.add(s)
-        return subjects
-
     def graph_validation(self, graph: Graph, closed: bool = False) -> Graph:
         valid_graph: Graph = Graph(identifier=graph.identifier)
         sg = Graph()
@@ -178,80 +165,75 @@ class Reader(object):
         invalid_nodes = set()
         for triple in report_result.triples((None, URIRef('http://www.w3.org/ns/shacl#focusNode'), None)):
             invalid_nodes.add(triple[2])
-        for subject in self._extract_subjects(graph):
-            if subject not in invalid_nodes:
-                for valid_subject_triple in graph.triples((subject, None, None)):
+        for s in graph.subjects(unique=True):
+            if isinstance(s, URIRef) and s not in invalid_nodes:
+                for valid_subject_triple in graph.triples((s, None, None)):
                     valid_graph.add(valid_subject_triple)
         return valid_graph
 
     @staticmethod
-    def import_entities_from_graph(g_set: GraphSet, results: List[Dict]|Graph|Dataset, resp_agent: str,
+    def import_entities_from_graph(g_set: GraphSet, results: List[Dict] | TripleLite | Graph | Dataset, resp_agent: str,
                                    enable_validation: bool = False, closed: bool = False) -> List[GraphEntity]:
         if isinstance(results, list):
-            graph = build_graph_from_results(results)
+            graph: TripleLite | Graph = build_graph_from_results(results)
         elif isinstance(results, Dataset):
-            # Convert Dataset to Graph by flattening all quads into triples
-            graph = Graph()
-            for s, p, o, _ in results.quads((None, None, None, None)):
-                graph.add((s, p, o))
+            merged = TripleLite()
+            for tl in from_rdflib(results):
+                for triple in tl.triples((None, None, None)):
+                    merged.add(triple)
+            graph = merged
+        elif isinstance(results, Graph):
+            graph = results
         else:
             graph = results
         if enable_validation:
             reader = Reader()
+            if not isinstance(graph, Graph):
+                graph = graph.to_rdflib()
             graph = reader.graph_validation(graph, closed)
+        if isinstance(graph, Graph):
+            graph = from_rdflib(graph)[0]
         imported_entities: List[GraphEntity] = []
-        for subject in Reader._extract_subjects(graph):
-            types: List[str] = [str(o) for o in graph.objects(subject, RDF.type)]
-            res_str: str = str(subject)
-            preexisting = Reader.get_graph_from_subject(graph, subject)
-            # ReferenceAnnotation
+        for subject in graph.subjects():
+            types: List[str] = [o.value for o in graph.objects(subject, RDF_TYPE)]
+            preexisting = graph.subgraph(subject)
             if GraphEntity.iri_note in types:
-                imported_entities.append(g_set.add_an(resp_agent=resp_agent, res=res_str,
+                imported_entities.append(g_set.add_an(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=preexisting))
-            # AgentRole
             elif GraphEntity.iri_role_in_time in types:
-                imported_entities.append(g_set.add_ar(resp_agent=resp_agent, res=res_str,
+                imported_entities.append(g_set.add_ar(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=preexisting))
-            # BibliographicReference
             elif GraphEntity.iri_bibliographic_reference in types:
-                imported_entities.append(g_set.add_be(resp_agent=resp_agent, res=res_str,
+                imported_entities.append(g_set.add_be(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=preexisting))
-            # BibliographicResource
             elif GraphEntity.iri_expression in types:
-                imported_entities.append(g_set.add_br(resp_agent=resp_agent, res=res_str,
+                imported_entities.append(g_set.add_br(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=preexisting))
-            # Citation
             elif GraphEntity.iri_citation in types:
-                imported_entities.append(g_set.add_ci(resp_agent=resp_agent, res=res_str,
+                imported_entities.append(g_set.add_ci(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=preexisting))
-            # DiscourseElement
             elif GraphEntity.iri_discourse_element in types:
-                imported_entities.append(g_set.add_de(resp_agent=resp_agent, res=res_str,
+                imported_entities.append(g_set.add_de(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=preexisting))
-            # Identifier
             elif GraphEntity.iri_identifier in types:
-                imported_entities.append(g_set.add_id(resp_agent=resp_agent, res=res_str,
+                imported_entities.append(g_set.add_id(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=preexisting))
-            # PointerList
             elif GraphEntity.iri_singleloc_pointer_list in types:
-                imported_entities.append(g_set.add_pl(resp_agent=resp_agent, res=res_str,
+                imported_entities.append(g_set.add_pl(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=preexisting))
-            # ResponsibleAgent
             elif GraphEntity.iri_agent in types:
-                imported_entities.append(g_set.add_ra(resp_agent=resp_agent, res=res_str,
+                imported_entities.append(g_set.add_ra(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=preexisting))
-            # ResourceEmbodiment
             elif GraphEntity.iri_manifestation in types:
-                imported_entities.append(g_set.add_re(resp_agent=resp_agent, res=res_str,
+                imported_entities.append(g_set.add_re(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=preexisting))
-            # ReferencePointer
             elif GraphEntity.iri_intextref_pointer in types:
-                imported_entities.append(g_set.add_rp(resp_agent=resp_agent, res=res_str,
+                imported_entities.append(g_set.add_rp(resp_agent=resp_agent, res=subject,
                                          preexisting_graph=preexisting))
         return imported_entities
 
     @staticmethod
-    def import_entity_from_triplestore(g_set: GraphSet, ts_url: str, res: URIRef, resp_agent: str,
+    def import_entity_from_triplestore(g_set: GraphSet, ts_url: str, res: str, resp_agent: str,
                                     enable_validation: bool = False) -> GraphEntity:
         query: str = f"SELECT ?s ?p ?o WHERE {{BIND (<{res}> AS ?s). ?s ?p ?o.}}"
         try:
@@ -273,7 +255,7 @@ class Reader(object):
             raise
 
     @staticmethod
-    def import_entities_from_triplestore(g_set: GraphSet, ts_url: str, entities: List[URIRef], resp_agent: str,
+    def import_entities_from_triplestore(g_set: GraphSet, ts_url: str, entities: List[str], resp_agent: str,
                                     enable_validation: bool = False, batch_size: int = 1000) -> List[GraphEntity]:
         if not entities:
             raise ValueError("No entities provided for import")
@@ -284,11 +266,11 @@ class Reader(object):
             with SPARQLClient(ts_url, max_retries=3, backoff_factor=2.5) as client:
                 for i in range(0, len(entities), batch_size):
                     batch = entities[i:i + batch_size]
-                    not_found_entities = set(str(entity) for entity in batch)
+                    not_found_entities = set(batch)
 
                     union_patterns = []
                     for entity in batch:
-                        union_patterns.append(f"{{ BIND(<{str(entity)}> AS ?s) ?s ?p ?o }}")
+                        union_patterns.append(f"{{ BIND(<{entity}> AS ?s) ?s ?p ?o }}")
 
                     query = f"""
                     SELECT ?s ?p ?o
