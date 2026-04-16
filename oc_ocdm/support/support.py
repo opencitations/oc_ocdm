@@ -18,7 +18,7 @@ from urllib.parse import quote
 from rdflib import Graph, Literal, URIRef
 
 from oc_ocdm.constants import RDF_TYPE, XSD_DATE, XSD_GYEAR, XSD_GYEARMONTH, XSD_STRING
-from triplelite import _XSD_STRING, RDFTerm, TripleLite
+from triplelite import XSD_STRING, RDFTerm, TripleLite
 
 if TYPE_CHECKING:
     from typing import Dict, List, Optional, Set, Tuple
@@ -189,7 +189,7 @@ def encode_url(u: str) -> str:
 
 def create_literal(g: TripleLite, res: str, p: str, s: str, dt: str | None = None, nor: bool = True) -> None:
     if not is_string_empty(s):
-        g.add((res, p, RDFTerm("literal", s, dt if dt is not None else _XSD_STRING)))
+        g.add((res, p, RDFTerm("literal", s, dt if dt is not None else XSD_STRING)))
 
 
 def create_type(g: TripleLite, res: str, res_type: str) -> None:

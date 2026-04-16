@@ -17,8 +17,7 @@ from rdflib import RDF, Dataset, Graph, URIRef
 from sparqlite import EndpointError, SPARQLClient
 
 from oc_ocdm.graph.graph_entity import GraphEntity
-from triplelite import TripleLite
-from triplelite._rdflib_bridge import _rdflib_to_rdfterm as rdflib_to_rdfterm
+from triplelite import TripleLite, rdflib_to_rdfterm
 from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import build_graph_from_results, normalize_graph_literals
 

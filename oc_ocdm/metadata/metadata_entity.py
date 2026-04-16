@@ -11,8 +11,7 @@ from typing import TYPE_CHECKING, List
 
 from oc_ocdm.abstract_entity import AbstractEntity
 from oc_ocdm.constants import Namespace
-from triplelite import RDFTerm, TripleLite
-from triplelite._rdflib_bridge import _rdflib_to_rdfterm as rdflib_to_rdfterm
+from triplelite import RDFTerm, TripleLite, rdflib_to_rdfterm
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict
