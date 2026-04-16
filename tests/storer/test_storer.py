@@ -65,48 +65,48 @@ class TestStorer(unittest.TestCase):
         base_dir = os.path.join("tests", "storer", "data", "rdf") + os.sep
         with self.subTest("output_format=json-ld, zip_output=True"):
             modified_entities = self.prov_set.generate_provenance()
-            prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=True)
-            storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=True, modified_entities=modified_entities)
+            prov_storer = Storer(self.prov_set, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=True)
+            storer = Storer(self.graph_set, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=True, modified_entities=modified_entities)
             storer.store_all(base_dir, self.base_iri)
             prov_storer.store_all(base_dir, self.base_iri)
             self.graph_set.commit_changes()
             with ZipFile(os.path.join(base_dir, "br", "060", "10000", "1000.zip"), mode="r") as archive:
                 with archive.open("1000.json") as f:
                     data = json.load(f)
-                    self.assertEqual(data, [{'@graph': [{'@id': 'http://test/br/0601', '@type': ['http://purl.org/spar/fabio/Expression']}], '@id': 'http://test/br/'}])
+                    self.assertEqual(data, [{'@graph': [{'@id': 'http://test/br/0601', '@type': 'document'}], '@id': 'http://test/br/'}])
             with ZipFile(os.path.join(base_dir, "br", "060", "10000", "1000", "prov", "se.zip"), mode="r") as archive:
                 with archive.open("se.json") as f:
-                    data = [{g:[{k:v for k,v in datum.items() if k != "http://www.w3.org/ns/prov#generatedAtTime"} for datum in data] if g == "@graph" else data for g, data in graph.items()} for graph in json.load(f)]
+                    data = [{g:[{k:v for k,v in datum.items() if k != "generated"} for datum in data] if g == "@graph" else data for g, data in graph.items()} for graph in json.load(f)]
                     self.assertEqual(data, [{'@graph': [{
-                        '@id': 'http://test/br/0601/prov/se/1', 
-                        '@type': ['http://www.w3.org/ns/prov#Entity'], 
-                        'http://purl.org/dc/terms/description': [{'@type': 'http://www.w3.org/2001/XMLSchema#string', '@value': "The entity 'http://test/br/0601' has been created."}], 
-                        'http://www.w3.org/ns/prov#specializationOf': [{'@id': 'http://test/br/0601'}], 
-                        'http://www.w3.org/ns/prov#wasAttributedTo': [{'@id': 'http://resp_agent.test/'}]}], '@id': 'http://test/br/0601/prov/'}])
+                        '@id': 'http://test/br/0601/prov/se/1',
+                        '@type': 'metadata_snapshot',
+                        'description': "The entity 'http://test/br/0601' has been created.",
+                        'snapshot_of': 'http://test/br/0601',
+                        'attributed_to': 'http://resp_agent.test/'}], '@id': 'http://test/br/0601/prov/'}])
         with self.subTest("output_format=json-ld, zip_output=False"):
             base_dir_1 = os.path.join("tests", "storer", "data", "rdf_1") + os.sep
-            storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+            storer = Storer(self.graph_set, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
             self.prov_set.generate_provenance()
-            prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+            prov_storer = Storer(self.prov_set, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
             storer.store_all(base_dir_1, self.base_iri)
             prov_storer.store_all(base_dir_1, self.base_iri)
             self.graph_set.commit_changes()
             with open(os.path.join(base_dir_1, "br", "060", "10000", "1000.json")) as f:
                 data = json.load(f)
-                self.assertEqual(data, [{'@graph': [{'@id': 'http://test/br/0601', '@type': ['http://purl.org/spar/fabio/Expression']}], '@id': 'http://test/br/'}])
+                self.assertEqual(data, [{'@graph': [{'@id': 'http://test/br/0601', '@type': 'document'}], '@id': 'http://test/br/'}])
             with open(os.path.join(base_dir_1, "br", "060", "10000", "1000", "prov", "se.json")) as f:
-                data = [{g:[{k:v for k,v in datum.items() if k != "http://www.w3.org/ns/prov#generatedAtTime"} for datum in data] if g == "@graph" else data for g, data in graph.items()} for graph in json.load(f)]
+                data = [{g:[{k:v for k,v in datum.items() if k != "generated"} for datum in data] if g == "@graph" else data for g, data in graph.items()} for graph in json.load(f)]
                 self.assertEqual(data, [{'@graph': [{
-                    '@id': 'http://test/br/0601/prov/se/1', 
-                    '@type': ['http://www.w3.org/ns/prov#Entity'], 
-                    'http://purl.org/dc/terms/description': [{'@type': 'http://www.w3.org/2001/XMLSchema#string', '@value': "The entity 'http://test/br/0601' has been created."}], 
-                    'http://www.w3.org/ns/prov#specializationOf': [{'@id': 'http://test/br/0601'}], 
-                    'http://www.w3.org/ns/prov#wasAttributedTo': [{'@id': 'http://resp_agent.test/'}]}], '@id': 'http://test/br/0601/prov/'}])
+                    '@id': 'http://test/br/0601/prov/se/1',
+                    '@type': 'metadata_snapshot',
+                    'description': "The entity 'http://test/br/0601' has been created.",
+                    'snapshot_of': 'http://test/br/0601',
+                    'attributed_to': 'http://resp_agent.test/'}], '@id': 'http://test/br/0601/prov/'}])
         with self.subTest("output_format=nquads, zip_output=True"):
             base_dir_2 = os.path.join("tests", "storer", "data", "rdf_2") + os.sep
-            storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='nquads', zip_output=True)
+            storer = Storer(self.graph_set, dir_split=10000, n_file_item=1000, default_dir="_", output_format='nquads', zip_output=True)
             self.prov_set.generate_provenance()
-            prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='nquads', zip_output=True)
+            prov_storer = Storer(self.prov_set, dir_split=10000, n_file_item=1000, default_dir="_", output_format='nquads', zip_output=True)
             storer.store_all(base_dir_2, self.base_iri)
             prov_storer.store_all(base_dir_2, self.base_iri)
             self.graph_set.commit_changes()
@@ -132,9 +132,9 @@ class TestStorer(unittest.TestCase):
                     self.assertTrue(compare.isomorphic(dataset_to_graph(data_g), dataset_to_graph(expected_data_g)))
         with self.subTest("output_format=nquads, zip_output=False"):
             base_dir_3 = os.path.join("tests", "storer", "data", "rdf_3") + os.sep
-            storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='nquads', zip_output=False)
+            storer = Storer(self.graph_set, dir_split=10000, n_file_item=1000, default_dir="_", output_format='nquads', zip_output=False)
             self.prov_set.generate_provenance()
-            prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='nquads', zip_output=False)
+            prov_storer = Storer(self.prov_set, dir_split=10000, n_file_item=1000, default_dir="_", output_format='nquads', zip_output=False)
             storer.store_all(base_dir_3, self.base_iri)
             prov_storer.store_all(base_dir_3, self.base_iri)
             self.graph_set.commit_changes()
@@ -157,22 +157,22 @@ class TestStorer(unittest.TestCase):
 
     def test_store_graphs_in_file_multiprocessing(self):
         base_dir = os.path.join("tests", "storer", "data", "multiprocessing") + os.sep
-        storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+        storer = Storer(self.graph_set, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
         self.prov_set.generate_provenance()
-        prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+        prov_storer = Storer(self.prov_set, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
         storer.store_all(base_dir, self.base_iri, process_id=7)
         prov_storer.store_all(base_dir, self.base_iri, process_id=7)
         with open(os.path.join(base_dir, "br", "060", "10000", "1000_7.json")) as f:
             data = json.load(f)
-            self.assertEqual(data, [{'@graph': [{'@id': 'http://test/br/0601', '@type': ['http://purl.org/spar/fabio/Expression']}], '@id': 'http://test/br/'}])
+            self.assertEqual(data, [{'@graph': [{'@id': 'http://test/br/0601', '@type': 'document'}], '@id': 'http://test/br/'}])
         with open(os.path.join(base_dir, "br", "060", "10000", "1000", "prov", "se_7.json")) as f:
-            data = [{g:[{k:v for k,v in datum.items() if k != "http://www.w3.org/ns/prov#generatedAtTime"} for datum in data] if g == "@graph" else data for g, data in graph.items()} for graph in json.load(f)]
+            data = [{g:[{k:v for k,v in datum.items() if k != "generated"} for datum in data] if g == "@graph" else data for g, data in graph.items()} for graph in json.load(f)]
             self.assertEqual(data, [{'@graph': [{
-                '@id': 'http://test/br/0601/prov/se/1', 
-                '@type': ['http://www.w3.org/ns/prov#Entity'], 
-                'http://purl.org/dc/terms/description': [{'@type': 'http://www.w3.org/2001/XMLSchema#string', '@value': "The entity 'http://test/br/0601' has been created."}], 
-                'http://www.w3.org/ns/prov#specializationOf': [{'@id': 'http://test/br/0601'}], 
-                'http://www.w3.org/ns/prov#wasAttributedTo': [{'@id': 'http://resp_agent.test/'}]}], '@id': 'http://test/br/0601/prov/'}])
+                '@id': 'http://test/br/0601/prov/se/1',
+                '@type': 'metadata_snapshot',
+                'description': "The entity 'http://test/br/0601' has been created.",
+                'snapshot_of': 'http://test/br/0601',
+                'attributed_to': 'http://resp_agent.test/'}], '@id': 'http://test/br/0601/prov/'}])
 
     def test_provenance(self):
         self.reset_server()
@@ -183,8 +183,8 @@ class TestStorer(unittest.TestCase):
         graph_set.add_br(self.resp_agent)
         graph_set.add_br(self.resp_agent)
         prov_set.generate_provenance()
-        storer = Storer(graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
-        prov_storer = Storer(prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+        storer = Storer(graph_set, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+        prov_storer = Storer(prov_set, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
         prov_storer.store_all(base_dir, self.base_iri)
         storer.upload_all(self.ts, base_dir)
         graph_set.commit_changes()
@@ -208,79 +208,14 @@ class TestStorer(unittest.TestCase):
         self.assertEqual(storer.repok.prefix, "[Custom OK] ")
         self.assertEqual(storer.reperr.prefix, "[Custom ERROR] ")
 
-    def test_context_map_file_loading(self):
-        """Test loading JSON-LD context from file in storer."""
-        context_data = {
-            "@context": {
-                "dc": "http://purl.org/dc/terms/",
-                "title": "dc:title"
-            }
-        }
-
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
-            json.dump(context_data, f)
-            context_file = f.name
-
-        try:
-            context_map = {
-                "http://example.org/context": context_file
-            }
-            storer = Storer(self.graph_set, context_map=context_map, output_format='json-ld')
-
-            # Verify the context was loaded from file
-            self.assertIn("http://example.org/context", storer.context_map)
-            self.assertEqual(storer.context_map["http://example.org/context"], context_data)
-        finally:
-            os.unlink(context_file)
-
-    def test_store_with_context_path(self):
-        """Test that context_path replaces embedded context with URL and compacts URIs."""
-        context_data = {"@context": {"fabio": "http://purl.org/spar/fabio/"}}
-        context_url = "http://example.org/context"
+    def test_store_compacts_uris_with_context(self):
+        """Test that stored JSON-LD uses compacted URIs from hardcoded context."""
         base_dir = os.path.join("tests", "storer", "data", "context_test") + os.sep
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
-            json.dump(context_data, f)
-            context_file = f.name
-
-        try:
-            os.makedirs(base_dir, exist_ok=True)
-            context_map = {context_url: context_file}
-            storer = Storer(
-                self.graph_set,
-                context_map=context_map,
-                dir_split=10000,
-                n_file_item=1000,
-                output_format='json-ld',
-                zip_output=False
-            )
-            paths = storer.store_all(base_dir, "http://test/", context_path=context_url)
-            self.assertGreater(len(paths), 0)
-
-            with open(paths[0], 'r') as out:
-                data = json.load(out)
-                self.assertIn("@context", data)
-                self.assertEqual(data["@context"], context_url)
-                self.assertIsInstance(data["@context"], str)
-                self.assertIn("@graph", data)
-                self.assertIsInstance(data["@graph"], list)
-                json_str = json.dumps(data)
-                self.assertIn("fabio:", json_str)
-                self.assertNotIn("http://purl.org/spar/fabio/", json_str)
-        finally:
-            os.unlink(context_file)
-            if os.path.exists(base_dir):
-                rmtree(base_dir)
-
-    def test_store_without_context_path(self):
-        """Test that without context_path, URIs are not compacted."""
-        base_dir = os.path.join("tests", "storer", "data", "no_context_test") + os.sep
-
         try:
             os.makedirs(base_dir, exist_ok=True)
             storer = Storer(
                 self.graph_set,
-                context_map={},
                 dir_split=10000,
                 n_file_item=1000,
                 output_format='json-ld',
@@ -290,9 +225,10 @@ class TestStorer(unittest.TestCase):
             self.assertGreater(len(paths), 0)
 
             with open(paths[0], 'r') as out:
-                json_str = out.read()
-                self.assertIn("http://purl.org/spar/fabio/", json_str)
-                self.assertNotIn("fabio:", json_str)
+                data = json.load(out)
+                graph_data = data[0]["@graph"][0]
+                self.assertEqual(graph_data["@type"], "document")
+                self.assertNotIn("http://purl.org/spar/fabio/Expression", json.dumps(data))
         finally:
             if os.path.exists(base_dir):
                 rmtree(base_dir)
@@ -392,9 +328,9 @@ class TestStorer(unittest.TestCase):
 
     def test_store_graphs_save_queries(self):
         base_dir = os.path.join("tests", "storer", "data", "rdf_save_queries") + os.sep
-        storer = Storer(self.graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+        storer = Storer(self.graph_set, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
         self.prov_set.generate_provenance()
-        prov_storer = Storer(self.prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+        prov_storer = Storer(self.prov_set, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
         storer.store_all(base_dir, self.base_iri)
         prov_storer.store_all(base_dir, self.base_iri)
 
@@ -504,8 +440,8 @@ def process_entity(entity):
     br.has_title("Hola")
     prov_set = ProvSet(graph_set, base_iri, info_dir=info_dir)
     prov_set.generate_provenance()
-    storer = Storer(graph_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
-    prov_storer = Storer(prov_set, context_map={}, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+    storer = Storer(graph_set, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
+    prov_storer = Storer(prov_set, dir_split=10000, n_file_item=1000, default_dir="_", output_format='json-ld', zip_output=False)
     prov_storer.store_all(base_dir, base_iri)
     storer.upload_all(ts, base_dir)
 
