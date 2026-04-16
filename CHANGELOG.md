@@ -1,3 +1,5 @@
+## [11.0.7](https://github.com/opencitations/oc_ocdm/compare/11.0.6...11.0.7) (2026-04-16)
+
 ## [11.0.6](https://github.com/opencitations/oc_ocdm/compare/11.0.5...11.0.6) (2026-04-16)
 
 ## [11.0.5](https://github.com/opencitations/oc_ocdm/compare/11.0.4...11.0.5) (2026-04-16)
