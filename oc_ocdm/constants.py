@@ -4,18 +4,6 @@
 
 from __future__ import annotations
 
-import json
-import os
-
-
-def _load_context() -> dict:
-    path = os.path.join(os.path.dirname(__file__), "data", "context.json")
-    with open(path, "rt", encoding="utf-8") as f:
-        return json.load(f)
-
-
-CONTEXT: dict = _load_context()
-
 
 class Namespace:
     __slots__ = ("_base",)

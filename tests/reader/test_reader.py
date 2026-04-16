@@ -162,6 +162,31 @@ class TestReader(unittest.TestCase):
         self.assertEqual(reader.repok.prefix, "[Custom OK] ")
         self.assertEqual(reader.reperr.prefix, "[Custom ERROR] ")
 
+    def test_context_map_file_loading(self):
+        """Test loading JSON-LD context from file."""
+        context_data = {
+            "@context": {
+                "dc": "http://purl.org/dc/terms/",
+                "title": "dc:title"
+            }
+        }
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+            json.dump(context_data, f)
+            context_file = f.name
+
+        try:
+            context_map = {
+                "http://example.org/context": context_file
+            }
+            reader = Reader(context_map=context_map)
+
+            # Verify the context was loaded from file
+            self.assertIn("http://example.org/context", reader.context_map)
+            self.assertEqual(reader.context_map["http://example.org/context"], context_data)
+        finally:
+            os.unlink(context_file)
+
     def test_import_from_dataset(self):
         """Test importing entities from rdflib Dataset."""
         # Create a new GraphSet with a different base IRI for this test
@@ -239,23 +264,41 @@ class TestReader(unittest.TestCase):
             os.unlink(temp_nt_file)
             os.unlink(temp_zip_file)
 
-    def test_context_replacement_in_jsonld(self):
-        """Test that context URLs are replaced with hardcoded context when loading JSON-LD."""
+    def test_context_map_replacement_in_jsonld(self):
+        """Test that context URLs are replaced when loading JSON-LD."""
+        context_data = {
+            "@context": {
+                "dc": "http://purl.org/dc/terms/",
+                "title": "dc:title"
+            }
+        }
+
         jsonld_data = {
             "@context": "http://example.org/custom-context",
             "@id": "http://example.org/resource1",
             "@type": "http://example.org/Type"
         }
 
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as ctx_f:
+            json.dump(context_data, ctx_f)
+            context_file = ctx_f.name
+
         with tempfile.NamedTemporaryFile(mode='w', suffix='.jsonld', delete=False) as data_f:
             json.dump(jsonld_data, data_f)
             jsonld_file = data_f.name
 
         try:
-            reader = Reader()
+            context_map = {
+                "http://example.org/custom-context": context_file
+            }
+            reader = Reader(context_map=context_map)
+
+            # Load JSON-LD file - context should be replaced
             result = reader.load(jsonld_file)
+
             self.assertIsNotNone(result)
         finally:
+            os.unlink(context_file)
             os.unlink(jsonld_file)
 
 class TestReaderNoTriplestore(unittest.TestCase):

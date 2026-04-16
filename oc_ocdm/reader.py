@@ -17,13 +17,13 @@ from rdflib import Dataset, Graph, URIRef
 from sparqlite import EndpointError, SPARQLClient
 from triplelite import TripleLite, from_rdflib
 
-from oc_ocdm.constants import CONTEXT, RDF_TYPE
+from oc_ocdm.constants import RDF_TYPE
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import build_graph_from_results, normalize_graph_literals
 
 if TYPE_CHECKING:
-    from typing import Dict, List, Optional, Set
+    from typing import Any, Dict, List, Optional, Set
 
     from oc_ocdm.graph.graph_set import GraphSet
 
@@ -32,7 +32,19 @@ from pyshacl import validate
 
 class Reader(object):
 
-    def __init__(self, repok: Optional[Reporter] = None, reperr: Optional[Reporter] = None) -> None:
+    def __init__(self, repok: Optional[Reporter] = None, reperr: Optional[Reporter] = None, context_map: Optional[Dict[str, Any]] = None) -> None:
+
+        if context_map is not None:
+            self.context_map: Dict[str, Any] = context_map
+        else:
+            self.context_map: Dict[str, Any] = {}
+        for context_url in self.context_map:
+            ctx_file_path: Any = self.context_map[context_url]
+            if type(ctx_file_path) == str and os.path.isfile(ctx_file_path):
+                # This expensive operation is done only when it's really needed
+                with open(ctx_file_path, 'rt', encoding='utf-8') as ctx_f:
+                    self.context_map[context_url] = json.load(ctx_f)
+
         if repok is None:
             self.repok: Reporter = Reporter(prefix="[Reader: INFO] ")
         else:
@@ -120,7 +132,8 @@ class Reader(object):
                     if isinstance(json_ld_file, dict):
                         json_ld_file = [json_ld_file]
                     for json_ld_resource in json_ld_file:
-                        json_ld_resource["@context"] = CONTEXT["@context"]
+                        if "@context" in json_ld_resource and json_ld_resource["@context"] in self.context_map:
+                            json_ld_resource["@context"] = self.context_map[json_ld_resource["@context"]]["@context"]
                     graph.parse(data=json.dumps(json_ld_file, ensure_ascii=False), format=cur_format)
                 else:
                     graph.parse(file=file_obj, format=cur_format)
