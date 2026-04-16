@@ -1,3 +1,10 @@
+## [11.0.3](https://github.com/opencitations/oc_ocdm/compare/11.0.2...11.0.3) (2026-04-16)
+
+
+### Bug Fixes
+
+* use triplelite public API instead of private imports [release] ([21bdf7a](https://github.com/opencitations/oc_ocdm/commit/21bdf7aea33e9ed0a0f928313742060b3eeee130))
+
 ## [11.0.2](https://github.com/opencitations/oc_ocdm/compare/11.0.1...11.0.2) (2026-04-15)
 
 

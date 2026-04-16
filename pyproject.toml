@@ -1,6 +1,6 @@
 [project]
 name = "oc-ocdm"
-version = "11.0.2"
+version = "11.0.3"
 description = "Object mapping library for manipulating RDF graphs that are compliant with the OpenCitations datamodel."
 readme = "README.md"
 license = "ISC"
