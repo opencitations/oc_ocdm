@@ -1,3 +1,10 @@
+## [11.0.9](https://github.com/opencitations/oc_ocdm/compare/11.0.8...11.0.9) (2026-05-03)
+
+
+### Performance Improvements
+
+* bump triplelite from 1.2.0 to 1.4.0 [release] ([58575d8](https://github.com/opencitations/oc_ocdm/commit/58575d85c7790f401259da1d46aed7928f65a153))
+
 ## [11.0.8](https://github.com/opencitations/oc_ocdm/compare/11.0.7...11.0.8) (2026-04-16)
 
 ## [11.0.7](https://github.com/opencitations/oc_ocdm/compare/11.0.6...11.0.7) (2026-04-16)
