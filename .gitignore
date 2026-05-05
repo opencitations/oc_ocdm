@@ -24,6 +24,8 @@ docs/build/*
 tests/test_db/*
 tests/prov/prov_counter.db
 tests/storer/data/*
+tests/storer/test_provenance/*
+tests/prov/provset_workflow_data/*
 htmlcov/*
 .coverage
 .coverage.*

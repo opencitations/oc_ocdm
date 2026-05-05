@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # SPDX-FileCopyrightText: 2020-2022 Simone Persiani <iosonopersia@gmail.com>
-# SPDX-FileCopyrightText: 2024 Arcangelo Massari <arcangelo.massari@unibo.it>
+# SPDX-FileCopyrightText: 2024-2026 Arcangelo Massari <arcangelo.massari@unibo.it>
 #
 # SPDX-License-Identifier: ISC
 
@@ -19,11 +19,9 @@ from oc_ocdm.support.support import is_string_empty
 
 
 class FilesystemCounterHandler(CounterHandler):
-    """A concrete implementation of the ``CounterHandler`` interface that persistently stores
-    the counter values within the filesystem."""
+    """A concrete implementation of the ``CounterHandler`` interface that persistently stores the counter values within the filesystem.
 
-    _initial_line_len: int = 3
-    _trailing_char: str = " "
+    Counter data is loaded into RAM on first access per supplier prefix (lazy loading) and written back to disk only when ``flush()`` is called."""
 
     def __init__(self, info_dir: str, supplier_prefix: str = "") -> None:
         """
@@ -41,16 +39,65 @@ class FilesystemCounterHandler(CounterHandler):
 
         self.info_dir: str = info_dir
         self.supplier_prefix: str = supplier_prefix
-        self.datasets_dir: str = info_dir + 'datasets' + os.sep
+        self.datasets_dir: str = info_dir + "datasets" + os.sep
         self.short_names: List[str] = ["an", "ar", "be", "br", "ci", "de", "id", "pl", "ra", "re", "rp"]
         self.metadata_short_names: List[str] = ["di"]
-        self.info_files: Dict[str, str] = {key: ("info_file_" + key + ".txt")
-                                           for key in self.short_names}
-        self.prov_files: Dict[str, str] = {key: ("prov_file_" + key + ".txt")
-                                           for key in self.short_names}
+        self.info_files: Dict[str, str] = {key: ("info_file_" + key + ".txt") for key in self.short_names}
+        self.prov_files: Dict[str, str] = {key: ("prov_file_" + key + ".txt") for key in self.short_names}
 
-    def set_counter(self, new_value: int, entity_short_name: str, prov_short_name: str = "",
-                    identifier: int = 1, supplier_prefix: str = "") -> None:
+        self._cache: Dict[str, List[int]] = {}
+        self._dirty: set[str] = set()
+        self._loaded_dirs: set[str] = set()
+
+        self._ensure_loaded(supplier_prefix)
+
+    def __del__(self):
+        try:
+            self.flush()
+        except Exception:
+            pass
+
+    def _get_prefix_dir(self, supplier_prefix: str) -> str:
+        sp = "" if supplier_prefix is None else supplier_prefix
+        if sp == self.supplier_prefix or not self.supplier_prefix:
+            return self.info_dir
+        return self.info_dir.replace(self.supplier_prefix, sp, 1)
+
+    def _ensure_loaded(self, supplier_prefix: str) -> None:
+        prefix_dir = self._get_prefix_dir(supplier_prefix)
+        if prefix_dir in self._loaded_dirs:
+            return
+        if not os.path.isdir(prefix_dir):
+            self._loaded_dirs.add(prefix_dir)
+            return
+        for filename in os.listdir(prefix_dir):
+            if not filename.endswith(".txt"):
+                continue
+            if not (filename.startswith("info_file_") or filename.startswith("prov_file_")):
+                continue
+            filepath = prefix_dir + filename
+            with open(filepath, "r") as f:
+                self._cache[filepath] = [int(line.rstrip("\n")) if line.rstrip("\n") else 0 for line in f]
+        self._loaded_dirs.add(prefix_dir)
+
+    def flush(self) -> None:
+        for file_path in self._dirty:
+            dir_path = os.path.dirname(file_path)
+            if not os.path.exists(dir_path):
+                os.makedirs(dir_path)
+            cache_list = self._cache[file_path]
+            with open(file_path, "w") as f:
+                f.writelines(f"{v}\n" if v else "\n" for v in cache_list)
+        self._dirty.clear()
+
+    def set_counter(
+        self,
+        new_value: int,
+        entity_short_name: str,
+        prov_short_name: str = "",
+        identifier: int = 1,
+        supplier_prefix: str = "",
+    ) -> None:
         """
         It allows to set the counter value of graph and provenance entities.
 
@@ -70,7 +117,7 @@ class FilesystemCounterHandler(CounterHandler):
         """
         if new_value < 0:
             raise ValueError("new_value must be a non negative integer!")
-
+        self._ensure_loaded(supplier_prefix)
         if prov_short_name == "se":
             file_path: str = self._get_prov_path(entity_short_name, supplier_prefix)
         else:
@@ -83,8 +130,13 @@ class FilesystemCounterHandler(CounterHandler):
         `updates` is a dictionary where the key is a tuple (entity_short_name, prov_short_name)
         and the value is a dictionary of line numbers to new counter values.
         """
+        self._ensure_loaded(supplier_prefix)
         for (entity_short_name, prov_short_name), file_updates in updates.items():
-            file_path = self._get_prov_path(entity_short_name, supplier_prefix) if prov_short_name == "se" else self._get_info_path(entity_short_name, supplier_prefix)
+            file_path = (
+                self._get_prov_path(entity_short_name, supplier_prefix)
+                if prov_short_name == "se"
+                else self._get_info_path(entity_short_name, supplier_prefix)
+            )
             self._set_numbers(file_path, file_updates)
 
     def _set_numbers(self, file_path: str, updates: Dict[int, int]) -> None:
@@ -93,24 +145,19 @@ class FilesystemCounterHandler(CounterHandler):
         `updates` is a dictionary where the key is the line number (identifier)
         and the value is the new counter value.
         """
-        self.__initialize_file_if_not_existing(file_path)
-        with open(file_path, 'r') as file:
-            lines = file.readlines()
-        max_line_number = max(updates.keys())
-
-        # Ensure the lines list is long enough
-        while len(lines) < max_line_number + 1:
-            lines.append("\n")  # Default counter value
-
-        # Apply updates
+        if file_path not in self._cache:
+            self._cache[file_path] = [0]
+        cache_list = self._cache[file_path]
+        needed = max(updates.keys()) + 1 - len(cache_list)
+        if needed > 0:
+            cache_list.extend([0] * needed)
         for line_number, new_value in updates.items():
-            lines[line_number-1] = str(new_value).rstrip() + "\n"
+            cache_list[line_number - 1] = new_value
+        self._dirty.add(file_path)
 
-        # Write updated lines back to file
-        with open(file_path, 'w') as file:
-            file.writelines(lines)
-
-    def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
+    def read_counter(
+        self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = ""
+    ) -> int:
         """
         It allows to read the counter value of graph and provenance entities.
 
@@ -126,13 +173,16 @@ class FilesystemCounterHandler(CounterHandler):
         :raises ValueError: if ``identifier`` is less than or equal to zero.
         :return: The requested counter value.
         """
+        self._ensure_loaded(supplier_prefix)
         if prov_short_name == "se":
             file_path: str = self._get_prov_path(entity_short_name, supplier_prefix)
         else:
             file_path: str = self._get_info_path(entity_short_name, supplier_prefix)
         return self._read_number(file_path, identifier)
 
-    def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
+    def increment_counter(
+        self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = ""
+    ) -> int:
         """
         It allows to increment the counter value of graph and provenance entities by one unit.
 
@@ -148,6 +198,7 @@ class FilesystemCounterHandler(CounterHandler):
         :raises ValueError: if ``identifier`` is less than or equal to zero.
         :return: The newly-updated (already incremented) counter value.
         """
+        self._ensure_loaded(supplier_prefix)
         if prov_short_name == "se":
             file_path: str = self._get_prov_path(entity_short_name, supplier_prefix)
         else:
@@ -155,56 +206,29 @@ class FilesystemCounterHandler(CounterHandler):
         return self._add_number(file_path, identifier)
 
     def _get_info_path(self, short_name: str, supplier_prefix: str) -> str:
-        supplier_prefix = "" if supplier_prefix is None else supplier_prefix
-        directory = self.info_dir if supplier_prefix == self.supplier_prefix or not self.supplier_prefix else self.info_dir.replace(self.supplier_prefix, supplier_prefix, 1)
-        return directory + self.info_files[short_name]
+        return self._get_prefix_dir(supplier_prefix) + self.info_files[short_name]
 
     def _get_prov_path(self, short_name: str, supplier_prefix: str) -> str:
-        supplier_prefix = "" if supplier_prefix is None else supplier_prefix
-        directory = self.info_dir if supplier_prefix == self.supplier_prefix or not self.supplier_prefix else self.info_dir.replace(self.supplier_prefix, supplier_prefix, 1)
-        return directory + self.prov_files[short_name]
+        return self._get_prefix_dir(supplier_prefix) + self.prov_files[short_name]
 
     def _get_metadata_path(self, short_name: str, dataset_name: str) -> str:
-        return self.datasets_dir + dataset_name + os.sep + 'metadata_' + short_name + '.txt'
-
-    def __initialize_file_if_not_existing(self, file_path: str):
-        if not os.path.exists(os.path.dirname(file_path)):
-            os.makedirs(os.path.dirname(file_path))
-
-        if not os.path.isfile(file_path):
-            with open(file_path, 'w') as file:
-                file.write("\n")
+        return self.datasets_dir + dataset_name + os.sep + "metadata_" + short_name + ".txt"
 
     def _read_number(self, file_path: str, line_number: int) -> int:
         if line_number <= 0:
             raise ValueError("line_number must be a positive non-zero integer number!")
-
-        self.__initialize_file_if_not_existing(file_path)
-
-        cur_number: int = 0
-        try:
-            with open(file_path, 'r') as file:
-                for i, line in enumerate(file, 1):
-                    if i == line_number:
-                        line = line.strip()
-                        if line:
-                            cur_number = int(line)
-                        break
-                else:
-                    print(file_path)
-        except ValueError as e:
-            print(f"ValueError: {e}")
-            cur_number = 0
-        except Exception as e:
-            print(f"Unexpected error: {e}")
-        return cur_number
+        if file_path in self._cache:
+            idx = line_number - 1
+            cache_list = self._cache[file_path]
+            if idx < len(cache_list):
+                return cache_list[idx]
+            return 0
+        self._cache[file_path] = [0]
+        return 0
 
     def _add_number(self, file_path: str, line_number: int = 1) -> int:
         if line_number <= 0:
             raise ValueError("line_number must be a positive non-zero integer number!")
-
-        self.__initialize_file_if_not_existing(file_path)
-
         current_value = self._read_number(file_path, line_number)
         new_value = current_value + 1
         self._set_number(new_value, file_path, line_number)
@@ -213,27 +237,16 @@ class FilesystemCounterHandler(CounterHandler):
     def _set_number(self, new_value: int, file_path: str, line_number: int = 1) -> None:
         if new_value < 0:
             raise ValueError("new_value must be a non negative integer!")
-
         if line_number <= 0:
             raise ValueError("line_number must be a positive non-zero integer number!")
-
-        self.__initialize_file_if_not_existing(file_path)
-
-        lines = []
-        with open(file_path, 'r') as file:
-            lines = file.readlines()
-
-        # Ensure the file has enough lines
-        while len(lines) < line_number:
-            lines.append("\n")
-
-        # Update the specific line
-        lines[line_number - 1] = f"{new_value}\n"
-
-        # Write back to the file
-        with open(file_path, 'w') as file:
-            file.writelines(lines)
-
+        if file_path not in self._cache:
+            self._cache[file_path] = [0]
+        cache_list = self._cache[file_path]
+        needed = line_number - len(cache_list)
+        if needed > 0:
+            cache_list.extend([0] * needed)
+        cache_list[line_number - 1] = new_value
+        self._dirty.add(file_path)
 
     def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str) -> None:
         """
@@ -251,13 +264,10 @@ class FilesystemCounterHandler(CounterHandler):
         """
         if new_value < 0:
             raise ValueError("new_value must be a non negative integer!")
-
         if dataset_name is None:
             raise ValueError("dataset_name must be provided!")
-
         if entity_short_name not in self.metadata_short_names:
             raise ValueError("entity_short_name is not a known metadata short name!")
-
         file_path: str = self._get_metadata_path(entity_short_name, dataset_name)
         return self._set_number(new_value, file_path, 1)
 
@@ -274,10 +284,8 @@ class FilesystemCounterHandler(CounterHandler):
         """
         if dataset_name is None:
             raise ValueError("dataset_name must be provided!")
-
         if entity_short_name not in self.metadata_short_names:
             raise ValueError("entity_short_name is not a known metadata short name!")
-
         file_path: str = self._get_metadata_path(entity_short_name, dataset_name)
         return self._read_number(file_path, 1)
 
@@ -294,9 +302,7 @@ class FilesystemCounterHandler(CounterHandler):
         """
         if dataset_name is None:
             raise ValueError("dataset_name must be provided!")
-
         if entity_short_name not in self.metadata_short_names:
             raise ValueError("entity_short_name is not a known metadata short name!")
-
         file_path: str = self._get_metadata_path(entity_short_name, dataset_name)
         return self._add_number(file_path, 1)
