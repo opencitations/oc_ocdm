@@ -1,3 +1,10 @@
+## [11.0.10](https://github.com/opencitations/oc_ocdm/compare/11.0.9...11.0.10) (2026-05-05)
+
+
+### Performance Improvements
+
+* **counter_handler:** cache counters in RAM with lazy loading and flush [release] ([d8e2465](https://github.com/opencitations/oc_ocdm/commit/d8e24651207cda29e85467193771fd4cc0fd730a))
+
 ## [11.0.9](https://github.com/opencitations/oc_ocdm/compare/11.0.8...11.0.9) (2026-05-03)
 
 
