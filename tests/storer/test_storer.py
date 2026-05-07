@@ -18,6 +18,7 @@ from zipfile import ZipFile
 
 from rdflib import Dataset, Graph, URIRef, compare
 from sparqlite import SPARQLClient
+from triplelite import SubgraphView
 
 from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import BibliographicResource
 from oc_ocdm.graph.graph_set import GraphSet
@@ -983,6 +984,45 @@ class TestFastPath(unittest.TestCase):
                     "@id": "http://test/br/0601/prov/",
                 }
             ],
+        )
+
+    def test_fast_path_prov_merge_existing_snapshot(self):
+        base_dir = os.path.join(self.data_dir, "prov_merge") + os.sep
+
+        br = self.graph_set.add_br(self.resp_agent)
+        self.prov_set.generate_provenance()
+        Storer(
+            self.prov_set, context_map={}, dir_split=10000, n_file_item=1000,
+            output_format="json-ld", zip_output=False,
+        ).store_all(base_dir, self.base_iri)
+        self.graph_set.commit_changes()
+
+        graph_set2 = GraphSet(self.base_iri, "", "060", False)
+        prov_set2 = ProvSet(graph_set2, self.base_iri, custom_counter_handler=self.prov_set.counter_handler)
+        br2 = graph_set2.add_br(self.resp_agent, res=br.res, preexisting_graph=SubgraphView(br.g, br.res))
+        br2.mark_as_to_be_deleted()
+        prov_set2.generate_provenance()
+        Storer(
+            prov_set2, context_map={}, dir_split=10000, n_file_item=1000,
+            output_format="json-ld", zip_output=False,
+        ).store_all(base_dir, self.base_iri)
+
+        prov_file = os.path.join(base_dir, "br", "060", "10000", "1000", "prov", "se.json")
+        with open(prov_file) as f:
+            data = json.load(f)
+        graph = data[0]
+        entities = {e["@id"]: e for e in graph["@graph"]}
+        se1 = entities["http://test/br/0601/prov/se/1"]
+        se2 = entities["http://test/br/0601/prov/se/2"]
+        self.assertIn("http://www.w3.org/ns/prov#generatedAtTime", se1)
+        self.assertIn("http://www.w3.org/ns/prov#invalidatedAtTime", se1)
+        self.assertEqual(
+            se1["http://purl.org/dc/terms/description"][0]["@value"],
+            "The entity 'http://test/br/0601' has been created.",
+        )
+        self.assertEqual(
+            se2["http://purl.org/dc/terms/description"][0]["@value"],
+            "The entity 'http://test/br/0601' has been deleted.",
         )
 
     def test_fast_path_zip_output(self):

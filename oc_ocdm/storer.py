@@ -91,6 +91,23 @@ class _JsonLdDoc:
             self._entities[graph_iri] = {}
         self._entities[graph_iri][entity_uri] = entity_dict
 
+    def merge_entity(self, graph_iri: str, entity_uri: str, entity_dict: dict) -> None:
+        if graph_iri not in self._entities:
+            self._entities[graph_iri] = {}
+        existing = self._entities[graph_iri].get(entity_uri)
+        if existing is None:
+            self._entities[graph_iri][entity_uri] = entity_dict
+            return
+        for key, value in entity_dict.items():
+            if key == "@id":
+                continue
+            if key not in existing:
+                existing[key] = value
+            else:
+                for v in value:
+                    if v not in existing[key]:
+                        existing[key].append(v)
+
     def remove_entity(self, graph_iri: str, entity_uri: str) -> None:
         if graph_iri in self._entities and entity_uri in self._entities[graph_iri]:
             del self._entities[graph_iri][entity_uri]
@@ -326,7 +343,7 @@ class Storer(object):
                 for entity in entities_in_path:
                     graph_iri = entity.g.identifier
                     if isinstance(entity, ProvEntity):
-                        doc.upsert_entity(graph_iri, entity.res, _entity_to_jsonld_dict(entity))
+                        doc.merge_entity(graph_iri, entity.res, _entity_to_jsonld_dict(entity))
                     elif isinstance(entity, (GraphEntity, MetadataEntity)):
                         if entity.to_be_deleted:
                             doc.remove_entity(graph_iri, entity.res)
