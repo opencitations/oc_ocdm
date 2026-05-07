@@ -34,8 +34,8 @@ storer.store_graphs_in_file("output.jsonld")
 storer = Storer(
     g_set,
     output_format="json-ld",
-    dir_split=10000,
-    n_file_item=1000,
+    dir_split=0,
+    n_file_item=1,
     default_dir="_",
     zip_output=False,
     context_map=None,
@@ -45,9 +45,9 @@ storer = Storer(
 
 **output_format**: the serialization format. Accepted values: `json-ld` (default), `nt`, `nt11`, `ntriples`, `application/n-triples`, `nquads`, `application/n-quads`.
 
-**dir_split**: when using `store_all()`, this controls how entity files are distributed across subdirectories. A value of 10000 means entities 1 through 10000 go in one directory, 10001 through 20000 in the next, and so on. Set to 0 to put everything in a single directory.
+**dir_split**: when using `store_all()`, this controls how entity files are distributed across subdirectories. For example, a value of 10000 means entities 1 through 10000 go in one directory, 10001 through 20000 in the next, and so on. Defaults to 0 (everything in a single directory).
 
-**n_file_item**: the number of entities per output file when using `store_all()`.
+**n_file_item**: the number of entities per output file when using `store_all()`. Defaults to 1.
 
 **default_dir**: when `store_all()` organizes files, it groups them into subdirectories named after the entity's supplier prefix (the `060` in `https://w3id.org/oc/meta/br/0601`). Entities whose IRI has no supplier prefix (e.g. `https://w3id.org/oc/meta/br/1`) use `default_dir` as the subdirectory name instead. Defaults to `"_"`. See [Supplier prefixes](../counter_handlers/#supplier-prefixes) for how prefixes work.
 

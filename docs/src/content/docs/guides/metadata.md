@@ -146,7 +146,7 @@ RDF predicate: `dcterms:description`.
 
 `has_byte_size(string: str)` / `get_byte_size() -> str | None` / `remove_byte_size()`
 
-`xsd:decimal` string. RDF predicate: `dcat:byte_size`.
+`xsd:decimal` string. RDF predicate: `dcat:byteSize`.
 
 ### license
 

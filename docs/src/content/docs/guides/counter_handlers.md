@@ -23,7 +23,7 @@ from oc_ocdm.graph import GraphSet
 g_set = GraphSet("https://w3id.org/oc/meta/")
 ```
 
-**FilesystemCounterHandler** persists counters to text files in a directory (one file per entity type). Counters are loaded lazily into RAM and all mutations happen in memory. Changes are written to disk only when you call `flush()` explicitly. If you forget to call it, data is lost; the destructor tries to flush as a safety net, but Python does not guarantee `__del__` will run. This is the default when `info_dir` is provided. Not thread-safe.
+**FilesystemCounterHandler** persists counters to text files in a directory (two files per entity type: one for entity counters, one for provenance counters). Counters are loaded lazily into RAM and all mutations happen in memory. Changes are written to disk only when you call `flush()` explicitly. If you forget to call it, data is lost; the destructor tries to flush as a safety net, but Python does not guarantee `__del__` will run. This is the default when `info_dir` is provided. Not thread-safe.
 
 ```python
 g_set = GraphSet("https://w3id.org/oc/meta/", info_dir="/data/counters")

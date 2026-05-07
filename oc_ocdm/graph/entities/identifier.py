@@ -205,7 +205,7 @@ class Identifier(GraphEntity):
         """
         cur_string = re.sub("–", "-", string)
         if cur_string != "0000-0000":
-            self._associate_identifier_with_scheme(string, GraphEntity.iri_issn)
+            self._associate_identifier_with_scheme(cur_string, GraphEntity.iri_issn)
 
     def create_isbn(self, string: str) -> None:
         """

@@ -41,7 +41,7 @@ class MetadataEntity(AbstractEntity):
     iri_license = DCTERMS.license
     iri_download_url = DCAT.downloadURL
     iri_media_type = DCAT.mediaType
-    iri_byte_size = DCAT.byte_size
+    iri_byte_size = DCAT.byteSize
 
     short_name_to_type_iri: ClassVar[Dict[str, str]] = {
         '_dataset_': iri_dataset,

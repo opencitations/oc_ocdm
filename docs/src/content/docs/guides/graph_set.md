@@ -41,7 +41,7 @@ Each OCDM entity type has a factory method. They all share the same signature:
 
 ```python
 g_set.add_br(
-    resp_agent: str,
+    resp_agent: str | None,
     source: str | None = None,
     res: str | None = None,
     preexisting_graph: SubgraphView | None = None
@@ -98,7 +98,7 @@ One getter exists per entity type: `get_an()`, `get_ar()`, `get_be()`, `get_br()
 orphans = g_set.get_orphans()
 ```
 
-To remove orphan references from a SPARQL triplestore, call `remove_orphans_from_triplestore()`. It queries the triplestore for triples pointing to deleted entities and removes those references:
+To remove orphan references from a SPARQL triplestore, call `remove_orphans_from_triplestore()`. It queries the triplestore for entities that reference deleted entities, imports them into the `GraphSet`, and removes those references locally. The triplestore itself is updated when you later call `store_all()` or `upload_all()`:
 
 ```python
 g_set.remove_orphans_from_triplestore("http://localhost:9999/sparql", resp_agent)
