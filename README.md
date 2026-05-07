@@ -8,15 +8,15 @@ SPDX-License-Identifier: ISC
 # oc_ocdm
 [<img src="https://img.shields.io/badge/powered%20by-OpenCitations-%239931FC?labelColor=2D22DE" />](http://opencitations.net)
 [![Run tests](https://github.com/opencitations/oc_ocdm/actions/workflows/run_tests.yml/badge.svg)](https://github.com/opencitations/oc_ocdm/actions/workflows/run_tests.yml)
-[![Coverage](https://opencitations.github.io/oc_ocdm/coverage-badge.svg)](https://opencitations.github.io/oc_ocdm/)
-[![Documentation Status](https://readthedocs.org/projects/oc-ocdm/badge/?version=latest)](https://oc-ocdm.readthedocs.io/en/latest/?badge=latest)
+[![Coverage](https://opencitations.github.io/oc_ocdm/coverage/coverage-badge.svg)](https://opencitations.github.io/oc_ocdm/coverage/)
+[![Documentation](https://img.shields.io/badge/docs-Starlight-blue)](https://opencitations.github.io/oc_ocdm/)
 [![REUSE](https://github.com/opencitations/oc_ocdm/actions/workflows/reuse.yml/badge.svg)](https://github.com/opencitations/oc_ocdm/actions/workflows/reuse.yml)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 [![PyPI version](https://badge.fury.io/py/oc-ocdm.svg)](https://badge.fury.io/py/oc-ocdm)
 ![PyPI](https://img.shields.io/pypi/pyversions/oc_meta)
 [![DOI](https://zenodo.org/badge/322327342.svg)](https://zenodo.org/badge/latestdoi/322327342)
 
-Documentation can be found here: [https://oc-ocdm.readthedocs.io](https://oc-ocdm.readthedocs.io).
+Documentation can be found here: [https://opencitations.github.io/oc_ocdm/](https://opencitations.github.io/oc_ocdm/).
 
 **oc_ocdm** is a Python &ge;3.7 library that enables the user to import, produce, modify and export RDF data
 structures which are compliant with the [OCDM v2.0.1](https://figshare.com/articles/Metadata_for_the_OpenCitations_Corpus/3443876) specification.

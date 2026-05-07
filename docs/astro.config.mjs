@@ -8,6 +8,8 @@ import starlight from '@astrojs/starlight';
 import rehypeExternalLinks from 'rehype-external-links';
 
 export default defineConfig({
+	site: 'https://opencitations.github.io',
+	base: '/oc_ocdm/',
 	integrations: [
 		starlight({
 			title: 'oc-ocdm',
