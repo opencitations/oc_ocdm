@@ -4,58 +4,30 @@ version = 1
 path = [
     ".benchmarks/**",
     ".dockerignore",
+    ".gitignore",
+    ".python-version",
+    ".releaserc.json",
+    "CITATION.cff",
+    "REUSE.toml",
     "benchmarks/.benchmarks/**",
     "benchmarks/output/plots/*.png",
+    "docs/package-lock.json",
+    "docs/package.json",
+    "docs/tsconfig.json",
+    "pyproject.toml",
     "tests/reader/*.nt",
     "tests/resources/*.json",
-]
-SPDX-FileCopyrightText = "2025 Arcangelo Massari <arcangelo.massari@unibo.it>"
-SPDX-License-Identifier = "ISC"
-
-[[annotations]]
-path = ".gitignore"
-SPDX-FileCopyrightText = [
-    "2022-2025 Arcangelo Massari <arcangelo.massari@unibo.it>",
-    "2020-2021 Simone Persiani <iosonopersia@gmail.com>",
-]
-SPDX-License-Identifier = "ISC"
-
-[[annotations]]
-path = [
-    ".python-version",
-    "REUSE.toml",
     "uv.lock",
 ]
-SPDX-FileCopyrightText = "2026 Arcangelo Massari <arcangelo.massari@unibo.it>"
-SPDX-License-Identifier = "ISC"
+SPDX-FileCopyrightText = "NONE"
+SPDX-License-Identifier = "CC0-1.0"
 
 [[annotations]]
-path = ".releaserc.json"
-SPDX-FileCopyrightText = "2025-2026 Arcangelo Massari <arcangelo.massari@unibo.it>"
-SPDX-License-Identifier = "ISC"
-
-[[annotations]]
-path = "CITATION.cff"
-SPDX-FileCopyrightText = "2023 Simone Persiani <iosonopersia@gmail.com>"
-SPDX-License-Identifier = "ISC"
-
-[[annotations]]
-path = [
-    "docs/source/tutorials/images/*.svg",
-    "notebooks/*.ipynb",
-]
+path = "notebooks/*.ipynb"
 SPDX-FileCopyrightText = "2022 Simone Persiani <iosonopersia@gmail.com>"
 SPDX-License-Identifier = "ISC"
 
 [[annotations]]
 path = "oc_ocdm/resources/shacle.ttl"
 SPDX-FileCopyrightText = "2023 Arcangelo Massari <arcangelo.massari@unibo.it>"
-SPDX-License-Identifier = "ISC"
-
-[[annotations]]
-path = "pyproject.toml"
-SPDX-FileCopyrightText = [
-    "2022-2026 Arcangelo Massari <arcangelo.massari@unibo.it>",
-    "2020-2022 Simone Persiani <iosonopersia@gmail.com>",
-]
 SPDX-License-Identifier = "ISC"

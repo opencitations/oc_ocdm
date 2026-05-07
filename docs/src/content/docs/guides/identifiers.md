@@ -1,4 +1,8 @@
 ---
+# SPDX-FileCopyrightText: 2026 Arcangelo Massari <arcangelo.massari@unibo.it>
+#
+# SPDX-License-Identifier: ISC
+
 title: Identifiers
 description: Assign DOIs, ORCIDs, ISBNs and other identifier schemes to entities.
 ---
