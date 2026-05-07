@@ -9,10 +9,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from triplelite import TripleLite
+
 from oc_ocdm.abstract_entity import AbstractEntity
 from oc_ocdm.constants import Namespace
 from oc_ocdm.graph.graph_entity import GraphEntity
-from triplelite import TripleLite
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict, Optional

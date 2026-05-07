@@ -7,9 +7,10 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from triplelite import RDFTerm
+
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
-from triplelite import RDFTerm
 
 
 class TestReferenceAnnotation(unittest.TestCase):

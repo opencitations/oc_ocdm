@@ -9,9 +9,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from triplelite import RDFTerm
+
 from oc_ocdm.constants import XSD_DATETIME
 from oc_ocdm.decorators import accepts_only
-from triplelite import RDFTerm
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 
 if TYPE_CHECKING:

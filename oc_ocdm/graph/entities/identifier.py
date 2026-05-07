@@ -14,8 +14,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Optional
 
-from oc_ocdm.graph.graph_entity import GraphEntity
 from triplelite import RDFTerm
+
+from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.support.support import encode_url, is_string_empty
 
 

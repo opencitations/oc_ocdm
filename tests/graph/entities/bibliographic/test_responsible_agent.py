@@ -8,11 +8,11 @@
 import unittest
 
 from rdflib import URIRef
+from triplelite import RDFTerm
 
 from oc_ocdm.constants import XSD_STRING
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
-from triplelite import RDFTerm
 
 
 class TestResponsibleAgent(unittest.TestCase):

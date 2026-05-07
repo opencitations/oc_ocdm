@@ -8,11 +8,11 @@
 import unittest
 
 from rdflib import URIRef
+from triplelite import RDFTerm
 
 from oc_ocdm.constants import RDF_TYPE, XSD_DATE, XSD_GYEAR, XSD_GYEARMONTH, XSD_STRING
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
-from triplelite import RDFTerm
 
 
 class TestBibliographicResource(unittest.TestCase):

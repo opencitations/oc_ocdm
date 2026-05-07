@@ -11,8 +11,9 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from oc_ocdm.abstract_entity import AbstractEntity
 from triplelite import TripleLite
+
+from oc_ocdm.abstract_entity import AbstractEntity
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict, List, Optional

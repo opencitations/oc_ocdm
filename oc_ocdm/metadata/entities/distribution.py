@@ -7,8 +7,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
-from oc_ocdm.constants import XSD_DATETIME, XSD_DECIMAL
 from triplelite import RDFTerm
+
+from oc_ocdm.constants import XSD_DATETIME, XSD_DECIMAL
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 
 

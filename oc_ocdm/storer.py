@@ -15,15 +15,17 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from zipfile import ZIP_DEFLATED, ZipFile
 
+import orjson
 from filelock import FileLock
 from rdflib import Dataset, Literal, URIRef
 from sparqlite import EndpointError, SPARQLClient
 from triplelite import TripleLite
 
+from oc_ocdm.constants import RDF_TYPE, XSD_STRING
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from oc_ocdm.prov.prov_entity import ProvEntity
-from oc_ocdm.reader import Reader
+from oc_ocdm.reader import Reader, _transform_jsonld_graphs
 from oc_ocdm.support.query_utils import get_update_query
 from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import find_paths
@@ -33,6 +35,72 @@ if TYPE_CHECKING:
 
     from oc_ocdm.abstract_entity import AbstractEntity
     from oc_ocdm.abstract_set import AbstractSet
+
+
+def _entity_to_jsonld_dict(entity) -> dict:
+    result: dict = {"@id": entity.res}
+    types: list[str] = []
+    props: dict[str, list] = {}
+    for _, p, o in entity.g.triples((entity.res, None, None)):
+        if p == RDF_TYPE:
+            types.append(o.value)
+        else:
+            if o.type == "uri":
+                val: dict = {"@id": o.value}
+            elif o.lang:
+                val = {"@language": o.lang, "@value": o.value}
+            else:
+                val = {"@type": o.datatype if o.datatype else XSD_STRING, "@value": o.value}
+            props.setdefault(p, []).append(val)
+    if types:
+        result["@type"] = types
+    result.update(props)
+    return result
+
+
+def _compact_uri(uri: str, ns_to_prefix: list[tuple[str, str]]) -> str:
+    for ns, prefix in ns_to_prefix:
+        if uri.startswith(ns):
+            return prefix + ":" + uri[len(ns):]
+    return uri
+
+
+def _compact_jsonld(data: list[dict], context_path: str, ns_to_prefix: list[tuple[str, str]]) -> dict | list[dict]:
+    compacted = _transform_jsonld_graphs(data, lambda uri: _compact_uri(uri, ns_to_prefix))
+    for graph_obj in compacted:
+        graph_obj["@context"] = context_path
+    if len(compacted) == 1:
+        return compacted[0]
+    return compacted
+
+
+class _JsonLdDoc:
+    __slots__ = ("_entities",)
+
+    def __init__(self, data: list[dict]) -> None:
+        self._entities: dict[str, dict[str, dict]] = {}
+        for graph_obj in data:
+            graph_iri = graph_obj["@id"]
+            entity_index: dict[str, dict] = {}
+            for entity_dict in graph_obj["@graph"]:
+                entity_index[entity_dict["@id"]] = entity_dict
+            self._entities[graph_iri] = entity_index
+
+    def upsert_entity(self, graph_iri: str, entity_uri: str, entity_dict: dict) -> None:
+        if graph_iri not in self._entities:
+            self._entities[graph_iri] = {}
+        self._entities[graph_iri][entity_uri] = entity_dict
+
+    def remove_entity(self, graph_iri: str, entity_uri: str) -> None:
+        if graph_iri in self._entities and entity_uri in self._entities[graph_iri]:
+            del self._entities[graph_iri][entity_uri]
+
+    def to_list(self) -> list[dict]:
+        return [
+            {"@id": graph_iri, "@graph": list(entities.values())}
+            for graph_iri, entities in self._entities.items()
+            if entities
+        ]
 
 
 class Storer(object):
@@ -103,6 +171,10 @@ class Storer(object):
         self.reperr.new_article()
         self.repok.add_sentence("Store the graphs into a file: starting process")
 
+        if self.output_format == "json-ld":
+            self._store_graphs_in_file_jsonld_fast(file_path, context_path)
+            return
+
         cg: Dataset = Dataset()
         for g in self.a_set.graphs():
             cg.addN(self._entity_quads(g))
@@ -169,10 +241,12 @@ class Storer(object):
                 relevant_paths.setdefault(cur_file_path, list())
                 relevant_paths[cur_file_path].append(entity)
 
+        if self.output_format == "json-ld":
+            return self._store_all_jsonld_fast(relevant_paths, context_path)
+
         reader = Reader(context_map=self.context_map)
         for relevant_path, entities_in_path in relevant_paths.items():
             stored_g = None
-            # Here we try to obtain a reference to the currently stored graph
             output_filepath = relevant_path.replace(os.path.splitext(relevant_path)[1], ".zip") if self.zip_output else relevant_path
             lock = FileLock(f"{output_filepath}.lock")
             with lock:
@@ -189,7 +263,7 @@ class Storer(object):
     def _entity_triples_as_rdflib_quads(self, entity: AbstractEntity) -> List[Tuple]:
         graph_id = URIRef(entity.g.identifier) if entity.g.identifier else None
         return [(URIRef(s), URIRef(p), self._to_rdflib_obj(o), graph_id)
-                for s, p, o in entity.g if s == entity.res]
+                for s, p, o in entity.g.triples((entity.res, None, None))]
 
     def store(self, entity: AbstractEntity, destination_g: Dataset, cur_file_path: str, context_path: str | None = None, store_now: bool = True) -> Dataset | None:
         self.repok.new_article()
@@ -212,6 +286,76 @@ class Storer(object):
             return destination_g
         except Exception as e:
             self.reperr.add_sentence(f"[1] It was impossible to store the RDF statements in {cur_file_path}. {e}")
+
+    def _build_ns_to_prefix(self, context_path: str) -> list[tuple[str, str]]:
+        ctx = self.context_map[context_path]
+        if isinstance(ctx, dict) and "@context" in ctx:
+            ctx = ctx["@context"]
+        pairs = [
+            (ns, prefix) for prefix, ns in ctx.items()
+            if isinstance(ns, str) and not prefix.startswith("@")
+        ]
+        pairs.sort(key=lambda x: len(x[0]), reverse=True)
+        return pairs
+
+    def _write_jsonld_fast(self, json_bytes: bytes, relevant_path: str) -> None:
+        if self.zip_output:
+            zip_file_path = relevant_path.replace(os.path.splitext(relevant_path)[1], ".zip")
+            with ZipFile(zip_file_path, mode="w", compression=ZIP_DEFLATED, allowZip64=True) as zf:
+                zf.writestr(os.path.basename(relevant_path), json_bytes)
+        else:
+            with open(relevant_path, 'wb') as f:
+                f.write(json_bytes)
+        self.repok.add_sentence(f"File '{relevant_path}' added.")
+
+    def _store_all_jsonld_fast(self, relevant_paths: Dict[str, list], context_path: str | None) -> List[str]:
+        reader = Reader(context_map=self.context_map)
+        ns_to_prefix: list[tuple[str, str]] | None = None
+        if context_path is not None and context_path in self.context_map:
+            ns_to_prefix = self._build_ns_to_prefix(context_path)
+
+        for relevant_path, entities_in_path in relevant_paths.items():
+            output_filepath = relevant_path.replace(os.path.splitext(relevant_path)[1], ".zip") if self.zip_output else relevant_path
+            lock = FileLock(f"{output_filepath}.lock")
+            with lock:
+                existing_data: list[dict] | None = None
+                if os.path.exists(output_filepath):
+                    existing_data = reader.load_jsonld_dict(output_filepath)
+                doc = _JsonLdDoc(existing_data if existing_data is not None else [])
+
+                for entity in entities_in_path:
+                    graph_iri = entity.g.identifier
+                    if isinstance(entity, ProvEntity):
+                        doc.upsert_entity(graph_iri, entity.res, _entity_to_jsonld_dict(entity))
+                    elif isinstance(entity, (GraphEntity, MetadataEntity)):
+                        if entity.to_be_deleted:
+                            doc.remove_entity(graph_iri, entity.res)
+                        else:
+                            if len(entity._preexisting_triples) > 0:
+                                doc.remove_entity(graph_iri, entity.res)
+                            doc.upsert_entity(graph_iri, entity.res, _entity_to_jsonld_dict(entity))
+
+                output_data: list[dict] | dict = doc.to_list()
+                if context_path is not None and ns_to_prefix is not None:
+                    output_data = _compact_jsonld(output_data, context_path, ns_to_prefix)
+                json_bytes = orjson.dumps(output_data)
+                self._write_jsonld_fast(json_bytes, relevant_path)
+
+        return list(relevant_paths.keys())
+
+    def _store_graphs_in_file_jsonld_fast(self, file_path: str, context_path: str | None) -> None:
+        doc = _JsonLdDoc([])
+        for entity in self.a_set.res_to_entity.values():
+            if len(entity.g) > 0:
+                graph_iri = entity.g.identifier
+                doc.upsert_entity(graph_iri, entity.res, _entity_to_jsonld_dict(entity))
+
+        output_data: list[dict] | dict = doc.to_list()
+        if context_path is not None and context_path in self.context_map:
+            ns_to_prefix = self._build_ns_to_prefix(context_path)
+            output_data = _compact_jsonld(output_data, context_path, ns_to_prefix)
+        json_bytes = orjson.dumps(output_data)
+        self._write_jsonld_fast(json_bytes, file_path)
 
     def upload_and_store(self, base_dir: str, triplestore_url: str, base_iri: str, context_path: str | None = None,
                          batch_size: int = 10) -> None:

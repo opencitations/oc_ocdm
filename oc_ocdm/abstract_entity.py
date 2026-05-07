@@ -11,9 +11,10 @@ from __future__ import annotations
 from abc import ABC
 from typing import TYPE_CHECKING
 
+from triplelite import TripleLite
+
 from oc_ocdm.constants import RDF_TYPE, RDFS_LABEL
 from oc_ocdm.support.support import create_literal, create_type, get_short_name, is_dataset, is_string_empty
-from triplelite import TripleLite
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict, List, Optional

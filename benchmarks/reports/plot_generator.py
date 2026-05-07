@@ -13,9 +13,9 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from matplotlib.axes import Axes
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+from matplotlib.axes import Axes
 
 
 class BenchmarkPlotGenerator:

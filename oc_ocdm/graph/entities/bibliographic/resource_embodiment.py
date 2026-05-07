@@ -13,9 +13,10 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Optional
 
+from triplelite import RDFTerm
+
 from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
 from oc_ocdm.graph.graph_entity import GraphEntity
-from triplelite import RDFTerm
 
 
 class ResourceEmbodiment(BibliographicEntity):

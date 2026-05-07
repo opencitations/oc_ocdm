@@ -19,12 +19,13 @@ if TYPE_CHECKING:
 
     from oc_ocdm.graph.graph_entity import GraphEntity
 
+from triplelite import TripleLite
+
 from oc_ocdm.counter_handler.counter_handler import CounterHandler
 from oc_ocdm.counter_handler.filesystem_counter_handler import FilesystemCounterHandler
 from oc_ocdm.counter_handler.in_memory_counter_handler import InMemoryCounterHandler
 from oc_ocdm.counter_handler.sqlite_counter_handler import SqliteCounterHandler
 from oc_ocdm.graph.graph_set import GraphSet
-from triplelite import TripleLite
 from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.support.support import get_count, get_prefix, get_short_name
 

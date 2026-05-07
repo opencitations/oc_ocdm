@@ -22,8 +22,8 @@ from sparqlite import SPARQLClient
 from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import BibliographicResource
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
-from oc_ocdm.reader import Reader
-from oc_ocdm.storer import Storer
+from oc_ocdm.reader import Reader, _expand_jsonld
+from oc_ocdm.storer import Storer, _compact_jsonld, _entity_to_jsonld_dict
 from oc_ocdm.support.reporter import Reporter
 
 
@@ -736,6 +736,396 @@ class TestStorer(unittest.TestCase):
         finally:
             if os.path.exists(base_dir):
                 rmtree(base_dir)
+
+
+class TestFastPath(unittest.TestCase):
+    def setUp(self):
+        self.resp_agent = "http://resp_agent.test/"
+        self.base_iri = "http://test/"
+        self.graph_set = GraphSet(self.base_iri, "", "060", False)
+        self.prov_set = ProvSet(self.graph_set, self.base_iri, "", False)
+        self.data_dir = os.path.join("tests", "storer", "data", "fast_path")
+        if os.path.exists(self.data_dir):
+            rmtree(self.data_dir)
+
+    def tearDown(self):
+        if os.path.exists(self.data_dir):
+            rmtree(self.data_dir)
+
+    def test_entity_to_jsonld_dict_basic(self):
+        br = self.graph_set.add_br(self.resp_agent)
+        self.assertEqual(
+            _entity_to_jsonld_dict(br),
+            {"@id": "http://test/br/0601", "@type": ["http://purl.org/spar/fabio/Expression"]},
+        )
+
+    def test_entity_to_jsonld_dict_with_title(self):
+        br = self.graph_set.add_br(self.resp_agent)
+        br.has_title("Test Title")
+        self.assertEqual(
+            _entity_to_jsonld_dict(br),
+            {
+                "@id": "http://test/br/0601",
+                "@type": ["http://purl.org/spar/fabio/Expression"],
+                "http://purl.org/dc/terms/title": [
+                    {"@type": "http://www.w3.org/2001/XMLSchema#string", "@value": "Test Title"}
+                ],
+            },
+        )
+
+    def test_entity_to_jsonld_dict_uri_object(self):
+        br = self.graph_set.add_br(self.resp_agent)
+        id_entity = self.graph_set.add_id(self.resp_agent)
+        br.has_identifier(id_entity)
+        self.assertEqual(
+            _entity_to_jsonld_dict(br),
+            {
+                "@id": "http://test/br/0601",
+                "@type": ["http://purl.org/spar/fabio/Expression"],
+                "http://purl.org/spar/datacite/hasIdentifier": [{"@id": "http://test/id/0601"}],
+            },
+        )
+
+    def test_entity_to_jsonld_dict_multiple_types(self):
+        br = self.graph_set.add_br(self.resp_agent)
+        br.create_journal_article()
+        self.assertEqual(
+            _entity_to_jsonld_dict(br),
+            {
+                "@id": "http://test/br/0601",
+                "@type": ["http://purl.org/spar/fabio/Expression", "http://purl.org/spar/fabio/JournalArticle"],
+            },
+        )
+
+    def test_fast_path_store_all(self):
+        base_dir = os.path.join(self.data_dir, "store_all") + os.sep
+        br = self.graph_set.add_br(self.resp_agent)
+        br.has_title("Comparison Test")
+        br.create_journal_article()
+        id_entity = self.graph_set.add_id(self.resp_agent)
+        br.has_identifier(id_entity)
+
+        storer = Storer(
+            self.graph_set, context_map={}, dir_split=10000, n_file_item=1000,
+            output_format="json-ld", zip_output=False,
+        )
+        storer.store_all(base_dir, self.base_iri)
+
+        with open(os.path.join(base_dir, "br", "060", "10000", "1000.json")) as f:
+            self.assertEqual(
+                json.load(f),
+                [
+                    {
+                        "@graph": [
+                            {
+                                "@id": "http://test/br/0601",
+                                "@type": [
+                                    "http://purl.org/spar/fabio/Expression",
+                                    "http://purl.org/spar/fabio/JournalArticle",
+                                ],
+                                "http://purl.org/dc/terms/title": [
+                                    {
+                                        "@type": "http://www.w3.org/2001/XMLSchema#string",
+                                        "@value": "Comparison Test",
+                                    }
+                                ],
+                                "http://purl.org/spar/datacite/hasIdentifier": [
+                                    {"@id": "http://test/id/0601"}
+                                ],
+                            }
+                        ],
+                        "@id": "http://test/br/",
+                    }
+                ],
+            )
+
+    def test_fast_path_existing_file_merge(self):
+        base_dir = os.path.join(self.data_dir, "merge") + os.sep
+
+        br1 = self.graph_set.add_br(self.resp_agent)
+        br1.has_title("First")
+        Storer(
+            self.graph_set, context_map={}, dir_split=10000, n_file_item=1000,
+            output_format="json-ld", zip_output=False,
+        ).store_all(base_dir, self.base_iri)
+
+        graph_set2 = GraphSet(self.base_iri, "", "060", False)
+        br2 = graph_set2.add_br(self.resp_agent, res="http://test/br/0602")
+        br2.has_title("Second")
+        Storer(
+            graph_set2, context_map={}, dir_split=10000, n_file_item=1000,
+            output_format="json-ld", zip_output=False,
+        ).store_all(base_dir, self.base_iri)
+
+        with open(os.path.join(base_dir, "br", "060", "10000", "1000.json")) as f:
+            self.assertEqual(
+                json.load(f),
+                [
+                    {
+                        "@graph": [
+                            {
+                                "@id": "http://test/br/0601",
+                                "@type": ["http://purl.org/spar/fabio/Expression"],
+                                "http://purl.org/dc/terms/title": [
+                                    {"@type": "http://www.w3.org/2001/XMLSchema#string", "@value": "First"}
+                                ],
+                            },
+                            {
+                                "@id": "http://test/br/0602",
+                                "@type": ["http://purl.org/spar/fabio/Expression"],
+                                "http://purl.org/dc/terms/title": [
+                                    {"@type": "http://www.w3.org/2001/XMLSchema#string", "@value": "Second"}
+                                ],
+                            },
+                        ],
+                        "@id": "http://test/br/",
+                    }
+                ],
+            )
+
+    def test_fast_path_delete_entity(self):
+        base_dir = os.path.join(self.data_dir, "delete") + os.sep
+
+        br = self.graph_set.add_br(self.resp_agent)
+        br.has_title("To Delete")
+        Storer(
+            self.graph_set, context_map={}, dir_split=10000, n_file_item=1000,
+            output_format="json-ld", zip_output=False,
+        ).store_all(base_dir, self.base_iri)
+
+        br._to_be_deleted = True
+        Storer(
+            self.graph_set, context_map={}, dir_split=10000, n_file_item=1000,
+            output_format="json-ld", zip_output=False,
+        ).store_all(base_dir, self.base_iri)
+
+        with open(os.path.join(base_dir, "br", "060", "10000", "1000.json")) as f:
+            self.assertEqual(json.load(f), [])
+
+    def test_fast_path_replace_entity(self):
+        base_dir = os.path.join(self.data_dir, "replace") + os.sep
+
+        br = self.graph_set.add_br(self.resp_agent)
+        br.has_title("Original")
+        Storer(
+            self.graph_set, context_map={}, dir_split=10000, n_file_item=1000,
+            output_format="json-ld", zip_output=False,
+        ).store_all(base_dir, self.base_iri)
+
+        br._preexisting_triples = frozenset(br.g.triples((None, None, None)))
+        br.has_title("Updated")
+        Storer(
+            self.graph_set, context_map={}, dir_split=10000, n_file_item=1000,
+            output_format="json-ld", zip_output=False,
+        ).store_all(base_dir, self.base_iri)
+
+        with open(os.path.join(base_dir, "br", "060", "10000", "1000.json")) as f:
+            self.assertEqual(
+                json.load(f),
+                [
+                    {
+                        "@graph": [
+                            {
+                                "@id": "http://test/br/0601",
+                                "@type": ["http://purl.org/spar/fabio/Expression"],
+                                "http://purl.org/dc/terms/title": [
+                                    {"@type": "http://www.w3.org/2001/XMLSchema#string", "@value": "Updated"}
+                                ],
+                            }
+                        ],
+                        "@id": "http://test/br/",
+                    }
+                ],
+            )
+
+    def test_fast_path_prov_additive(self):
+        base_dir = os.path.join(self.data_dir, "prov") + os.sep
+
+        self.graph_set.add_br(self.resp_agent)
+        self.prov_set.generate_provenance()
+        Storer(
+            self.prov_set, context_map={}, dir_split=10000, n_file_item=1000,
+            output_format="json-ld", zip_output=False,
+        ).store_all(base_dir, self.base_iri)
+
+        prov_file = os.path.join(base_dir, "br", "060", "10000", "1000", "prov", "se.json")
+        with open(prov_file) as f:
+            data = [
+                {
+                    g: [
+                        {k: v for k, v in datum.items() if k != "http://www.w3.org/ns/prov#generatedAtTime"}
+                        for datum in data
+                    ]
+                    if g == "@graph"
+                    else data
+                    for g, data in graph.items()
+                }
+                for graph in json.load(f)
+            ]
+        self.assertEqual(
+            data,
+            [
+                {
+                    "@graph": [
+                        {
+                            "@id": "http://test/br/0601/prov/se/1",
+                            "@type": ["http://www.w3.org/ns/prov#Entity"],
+                            "http://purl.org/dc/terms/description": [
+                                {
+                                    "@type": "http://www.w3.org/2001/XMLSchema#string",
+                                    "@value": "The entity 'http://test/br/0601' has been created.",
+                                }
+                            ],
+                            "http://www.w3.org/ns/prov#specializationOf": [{"@id": "http://test/br/0601"}],
+                            "http://www.w3.org/ns/prov#wasAttributedTo": [{"@id": "http://resp_agent.test/"}],
+                        }
+                    ],
+                    "@id": "http://test/br/0601/prov/",
+                }
+            ],
+        )
+
+    def test_fast_path_zip_output(self):
+        base_dir = os.path.join(self.data_dir, "zip") + os.sep
+
+        self.graph_set.add_br(self.resp_agent)
+        Storer(
+            self.graph_set, context_map={}, dir_split=10000, n_file_item=1000,
+            output_format="json-ld", zip_output=True,
+        ).store_all(base_dir, self.base_iri)
+
+        with ZipFile(os.path.join(base_dir, "br", "060", "10000", "1000.zip")) as zf:
+            with zf.open("1000.json") as f:
+                self.assertEqual(
+                    json.load(f),
+                    [
+                        {
+                            "@graph": [
+                                {"@id": "http://test/br/0601", "@type": ["http://purl.org/spar/fabio/Expression"]}
+                            ],
+                            "@id": "http://test/br/",
+                        }
+                    ],
+                )
+
+    def test_compact_jsonld(self):
+        data = [
+            {
+                "@graph": [
+                    {
+                        "@id": "http://test/br/0601",
+                        "@type": ["http://purl.org/spar/fabio/Expression"],
+                        "http://purl.org/dc/terms/title": [
+                            {"@type": "http://www.w3.org/2001/XMLSchema#string", "@value": "Test"}
+                        ],
+                    }
+                ],
+                "@id": "http://test/br/",
+            }
+        ]
+        ns_to_prefix = [
+            ("http://purl.org/spar/fabio/", "fabio"),
+            ("http://purl.org/dc/terms/", "dcterms"),
+            ("http://www.w3.org/2001/XMLSchema#", "xsd"),
+        ]
+        self.assertEqual(
+            _compact_jsonld(data, "http://example.org/context", ns_to_prefix),
+            {
+                "@context": "http://example.org/context",
+                "@graph": [
+                    {
+                        "@id": "http://test/br/0601",
+                        "@type": ["fabio:Expression"],
+                        "dcterms:title": [{"@type": "xsd:string", "@value": "Test"}],
+                    }
+                ],
+                "@id": "http://test/br/",
+            },
+        )
+
+    def test_expand_jsonld(self):
+        data = [
+            {
+                "@graph": [
+                    {
+                        "@id": "http://test/br/0601",
+                        "@type": ["fabio:Expression"],
+                        "dcterms:title": [{"@type": "xsd:string", "@value": "Test"}],
+                    }
+                ],
+                "@id": "http://test/br/",
+            }
+        ]
+        prefix_to_ns = {
+            "fabio": "http://purl.org/spar/fabio/",
+            "dcterms": "http://purl.org/dc/terms/",
+            "xsd": "http://www.w3.org/2001/XMLSchema#",
+        }
+        self.assertEqual(
+            _expand_jsonld(data, prefix_to_ns),
+            [
+                {
+                    "@graph": [
+                        {
+                            "@id": "http://test/br/0601",
+                            "@type": ["http://purl.org/spar/fabio/Expression"],
+                            "http://purl.org/dc/terms/title": [
+                                {"@type": "http://www.w3.org/2001/XMLSchema#string", "@value": "Test"}
+                            ],
+                        }
+                    ],
+                    "@id": "http://test/br/",
+                }
+            ],
+        )
+
+    def test_fast_path_with_context_roundtrip(self):
+        context_data = {"@context": {"fabio": "http://purl.org/spar/fabio/"}}
+        context_url = "http://example.org/context"
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+            json.dump(context_data, f)
+            context_file = f.name
+
+        base_dir = os.path.join(self.data_dir, "context_roundtrip") + os.sep
+        try:
+            context_map = {context_url: context_file}
+            storer = Storer(
+                self.graph_set, context_map=context_map, dir_split=10000,
+                n_file_item=1000, output_format="json-ld", zip_output=False,
+            )
+            self.graph_set.add_br(self.resp_agent)
+            paths = storer.store_all(base_dir, self.base_iri, context_path=context_url)
+
+            with open(paths[0]) as f:
+                self.assertEqual(
+                    json.load(f),
+                    {
+                        "@context": context_url,
+                        "@graph": [
+                            {"@id": "http://test/br/0601", "@type": ["fabio:Expression"]}
+                        ],
+                        "@id": "http://test/br/",
+                    },
+                )
+
+            reader = Reader(context_map=storer.context_map)
+            self.assertEqual(
+                reader.load_jsonld_dict(paths[0]),
+                [
+                    {
+                        "@graph": [
+                            {
+                                "@id": "http://test/br/0601",
+                                "@type": ["http://purl.org/spar/fabio/Expression"],
+                            }
+                        ],
+                        "@id": "http://test/br/",
+                    }
+                ],
+            )
+        finally:
+            os.unlink(context_file)
 
 
 def process_entity(entity):

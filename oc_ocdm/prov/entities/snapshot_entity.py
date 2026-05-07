@@ -9,10 +9,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from triplelite import RDFTerm
+
 from oc_ocdm.constants import XSD_DATETIME
 from oc_ocdm.decorators import accepts_only
 from oc_ocdm.graph.graph_entity import GraphEntity
-from triplelite import RDFTerm
 from oc_ocdm.prov.prov_entity import ProvEntity
 
 if TYPE_CHECKING:

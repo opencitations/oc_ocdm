@@ -8,9 +8,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from triplelite import RDFTerm, SubgraphView, TripleLite
+
 from oc_ocdm.abstract_entity import AbstractEntity
 from oc_ocdm.constants import RDF_TYPE, Namespace
-from triplelite import RDFTerm, SubgraphView, TripleLite
 
 if TYPE_CHECKING:
     from typing import ClassVar, Dict, List, Optional, Self

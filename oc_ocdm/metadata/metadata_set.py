@@ -19,8 +19,9 @@ from oc_ocdm.support.support import get_count, get_short_name, is_dataset
 if TYPE_CHECKING:
     from typing import ClassVar, Dict, Tuple
 
-from oc_ocdm.abstract_set import AbstractSet
 from triplelite import SubgraphView, TripleLite
+
+from oc_ocdm.abstract_set import AbstractSet
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 
 

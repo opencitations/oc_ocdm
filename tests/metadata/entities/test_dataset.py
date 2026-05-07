@@ -8,8 +8,8 @@
 import unittest
 
 from rdflib import URIRef
-
 from triplelite import RDFTerm
+
 from oc_ocdm.constants import XSD_DATETIME, XSD_STRING
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from oc_ocdm.metadata.metadata_set import MetadataSet

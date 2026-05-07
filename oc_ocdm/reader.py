@@ -13,6 +13,7 @@ import os
 from typing import TYPE_CHECKING
 from zipfile import ZipFile
 
+import orjson
 from rdflib import Dataset, Graph, URIRef
 from sparqlite import EndpointError, SPARQLClient
 from triplelite import TripleLite, from_rdflib
@@ -23,11 +24,71 @@ from oc_ocdm.support.reporter import Reporter
 from oc_ocdm.support.support import build_graph_from_results, normalize_graph_literals
 
 if TYPE_CHECKING:
-    from typing import Any, Dict, List, Optional, Set
+    from collections.abc import Callable
+    from typing import Any, Dict, List, Optional
 
     from oc_ocdm.graph.graph_set import GraphSet
 
 from pyshacl import validate
+
+
+def _transform_jsonld_value(value: dict | str, uri_fn: Callable[[str], str]) -> dict | str:
+    if isinstance(value, dict):
+        if "@id" in value:
+            return {"@id": uri_fn(value["@id"])}
+        result: dict = {}
+        if "@value" in value:
+            result["@value"] = value["@value"]
+        if "@type" in value:
+            result["@type"] = uri_fn(value["@type"])
+        if "@language" in value:
+            result["@language"] = value["@language"]
+        return result
+    return value
+
+
+def _transform_jsonld_entity(entity: dict, uri_fn: Callable[[str], str]) -> dict:
+    transformed: dict = {}
+    for key, value in entity.items():
+        if key == "@id":
+            transformed["@id"] = uri_fn(value)
+        elif key == "@type":
+            transformed["@type"] = [uri_fn(t) for t in value] if isinstance(value, list) else [uri_fn(value)]
+        elif key.startswith("@"):
+            continue
+        else:
+            new_key = uri_fn(key)
+            if isinstance(value, list):
+                transformed[new_key] = [_transform_jsonld_value(v, uri_fn) for v in value]
+            else:
+                transformed[new_key] = _transform_jsonld_value(value, uri_fn)
+    return transformed
+
+
+def _transform_jsonld_graphs(data: list[dict], uri_fn: Callable[[str], str]) -> list[dict]:
+    result = []
+    for graph_obj in data:
+        new_graph: dict = {}
+        if "@id" in graph_obj:
+            new_graph["@id"] = uri_fn(graph_obj["@id"])
+        if "@graph" in graph_obj:
+            new_graph["@graph"] = [_transform_jsonld_entity(e, uri_fn) for e in graph_obj["@graph"]]
+        result.append(new_graph)
+    return result
+
+
+def _expand_uri(curie: str, prefix_to_ns: dict[str, str]) -> str:
+    colon = curie.find(":")
+    if colon > 0:
+        prefix = curie[:colon]
+        ns = prefix_to_ns.get(prefix)
+        if ns is not None:
+            return ns + curie[colon + 1:]
+    return curie
+
+
+def _expand_jsonld(data: list[dict], prefix_to_ns: dict[str, str]) -> list[dict]:
+    return _transform_jsonld_graphs(data, lambda uri: _expand_uri(uri, prefix_to_ns))
 
 
 class Reader(object):
@@ -141,6 +202,38 @@ class Reader(object):
             except Exception:
                 continue
         return False
+
+    def load_jsonld_dict(self, rdf_file_path: str) -> list[dict]:
+        if rdf_file_path.endswith('.zip'):
+            with ZipFile(file=rdf_file_path, mode="r") as archive:
+                for zf_name in archive.namelist():
+                    ext = os.path.splitext(zf_name)[1].lower()
+                    if ext in ('.json', '.jsonld'):
+                        with archive.open(zf_name) as f:
+                            data = orjson.loads(f.read())
+                            break
+                else:
+                    raise IOError(f"No JSON/JSON-LD file found inside ZIP archive '{rdf_file_path}'.")
+        else:
+            with open(rdf_file_path, 'rb') as f:
+                data = orjson.loads(f.read())
+        if isinstance(data, dict):
+            data = [data]
+        prefix_to_ns: dict[str, str] | None = None
+        for graph_obj in data:
+            ctx_url = graph_obj.get("@context")
+            if ctx_url and ctx_url in self.context_map:
+                ctx = self.context_map[ctx_url]
+                if isinstance(ctx, dict) and "@context" in ctx:
+                    ctx = ctx["@context"]
+                prefix_to_ns = {
+                    k: v for k, v in ctx.items()
+                    if isinstance(v, str) and not k.startswith("@")
+                }
+                break
+        if prefix_to_ns is not None:
+            data = _expand_jsonld(data, prefix_to_ns)
+        return data
 
     def graph_validation(self, graph: Graph, closed: bool = False) -> Graph:
         valid_graph: Graph = Graph(identifier=graph.identifier)
