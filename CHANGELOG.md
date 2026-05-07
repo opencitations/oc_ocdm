@@ -1,3 +1,10 @@
+## [11.0.12](https://github.com/opencitations/oc_ocdm/compare/11.0.11...11.0.12) (2026-05-07)
+
+
+### Bug Fixes
+
+* **storer:** merge prov entity properties instead of replacing on fast path ([edc33ba](https://github.com/opencitations/oc_ocdm/commit/edc33bab0d083e25d8eacc3e1915d7d39918a7f9))
+
 ## [11.0.11](https://github.com/opencitations/oc_ocdm/compare/11.0.10...11.0.11) (2026-05-07)
 
 
