@@ -1,3 +1,10 @@
+## [11.0.11](https://github.com/opencitations/oc_ocdm/compare/11.0.10...11.0.11) (2026-05-07)
+
+
+### Performance Improvements
+
+* **storer:** bypass rdflib JSON-LD parse/serialize with orjson fast path ([4ef1d54](https://github.com/opencitations/oc_ocdm/commit/4ef1d542cef9db90e63d80614cbcb36a303d0626))
+
 ## [11.0.10](https://github.com/opencitations/oc_ocdm/compare/11.0.9...11.0.10) (2026-05-05)
 
 
