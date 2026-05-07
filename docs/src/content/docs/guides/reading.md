@@ -105,4 +105,4 @@ reader = Reader(context_map={
 })
 ```
 
-The reader loads each local file once at initialization and reuses it for all subsequent operations. The same `context_map` parameter is available on the `Storer` constructor for serialization (see [Storing data](/guides/storing/)).
+The reader loads each local file once at initialization and reuses it for all subsequent operations. The same `context_map` parameter is available on the `Storer` constructor for serialization (see [Storing data](../storing/)).

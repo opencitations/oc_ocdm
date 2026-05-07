@@ -49,11 +49,11 @@ storer = Storer(
 
 **n_file_item**: the number of entities per output file when using `store_all()`.
 
-**default_dir**: when `store_all()` organizes files, it groups them into subdirectories named after the entity's supplier prefix (the `060` in `https://w3id.org/oc/meta/br/0601`). Entities whose IRI has no supplier prefix (e.g. `https://w3id.org/oc/meta/br/1`) use `default_dir` as the subdirectory name instead. Defaults to `"_"`. See [Supplier prefixes](/guides/counter_handlers/#supplier-prefixes) for how prefixes work.
+**default_dir**: when `store_all()` organizes files, it groups them into subdirectories named after the entity's supplier prefix (the `060` in `https://w3id.org/oc/meta/br/0601`). Entities whose IRI has no supplier prefix (e.g. `https://w3id.org/oc/meta/br/1`) use `default_dir` as the subdirectory name instead. Defaults to `"_"`. See [Supplier prefixes](../counter_handlers/#supplier-prefixes) for how prefixes work.
 
 **zip_output**: if `True`, output files are compressed as ZIP archives.
 
-**context_map**: maps JSON-LD `@context` URLs to local file paths. During serialization, rdflib uses the local copy to produce compact JSON-LD without fetching the URL over the network. The output file still references the original URL. See [Context maps](/guides/reading/#context-maps) for details.
+**context_map**: maps JSON-LD `@context` URLs to local file paths. During serialization, rdflib uses the local copy to produce compact JSON-LD without fetching the URL over the network. The output file still references the original URL. See [Context maps](../reading/#context-maps) for details.
 
 **modified_entities**: an optional set of entity IRIs. When provided, only entities in this set are stored; others are skipped.
 

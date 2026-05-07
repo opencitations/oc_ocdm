@@ -35,6 +35,52 @@ g_set.commit_changes()
 
 `commit_changes()` resets the internal change-tracking state of the `GraphSet` so the library can correctly detect changes in the next round.
 
+## Change tracking
+
+An entity operates in one of two modes depending on whether its prior state is known.
+
+Without prior state (**append mode**), every setter call just adds triples. RDF semantics prevent duplicates, so adding an existing triple is a no-op.
+
+When a `preexisting_graph` ([`SubgraphView`](https://opencitations.github.io/triplelite/guide/subgraph/#subgraphview-is-a-live-view)) is passed to a factory method, the entity's graph is seeded with the old triples. The library then diffs old state against new state and produces the minimal set of additions and deletions:
+
+```python
+from triplelite import TripleLite, RDFTerm
+
+existing = TripleLite()
+existing.add(("https://w3id.org/oc/meta/br/0605", "http://purl.org/dc/terms/title", RDFTerm("literal", "Old title")))
+
+br = g_set.add_br(
+    resp_agent,
+    res="https://w3id.org/oc/meta/br/0605",
+    preexisting_graph=existing.subgraph("https://w3id.org/oc/meta/br/0605")
+)
+br.has_title("New title")
+```
+
+`Reader.import_entities_from_graph()` does this automatically: it extracts a `SubgraphView` per subject and passes it to the right factory method. See [Reading data](../reading/).
+
+## Merge, delete, restore
+
+**Merging** combines two same-type entities. The surviving entity absorbs the other's triples; the other is marked for deletion:
+
+```python
+br_1.merge(br_2)
+```
+
+By default, single-valued properties take the merged entity's value. Pass `prefer_self=True` to keep the survivor's value instead.
+
+**Deletion** removes all triples from an entity:
+
+```python
+br.mark_as_to_be_deleted()
+```
+
+**Restoration** undoes a deletion before changes are committed:
+
+```python
+br.mark_as_restored()
+```
+
 ## Snapshot types
 
 The library distinguishes four types of snapshots, generated automatically based on what happened to each entity:
@@ -84,7 +130,7 @@ prov_storer.store_graphs_in_file("step1_prov.jsonld")
 
 After this step, the provenance tree contains three creation snapshots, one per entity:
 
-<img src="/images/step1.svg" alt="Provenance tree after step 1: three entities, each with a creation snapshot" style="background: white; padding: 1rem; border-radius: 8px;" />
+<img src="/oc_ocdm/images/step1.svg" alt="Provenance tree after step 1: three entities, each with a creation snapshot" style="background: white; padding: 1rem; border-radius: 8px;" />
 
 ### Step 2: create, modify and merge
 
@@ -113,7 +159,7 @@ prov_storer.store_graphs_in_file("step2_prov.jsonld")
 
 The provenance tree now has a second row of snapshots. Greyed-out nodes are from the previous step.
 
-<img src="/images/step2.svg" alt="Provenance tree after step 2: br/1 merged with br/2, br/3 modified, br/4 created" style="background: white; padding: 1rem; border-radius: 8px;" />
+<img src="/oc_ocdm/images/step2.svg" alt="Provenance tree after step 2: br/1 merged with br/2, br/3 modified, br/4 created" style="background: white; padding: 1rem; border-radius: 8px;" />
 
 The merge snapshot of br/1 derives from both br/1's previous snapshot and br/2's last snapshot. The deletion snapshot of br/2 records that it was merged into br/1.
 
@@ -132,7 +178,7 @@ prov_storer.store_graphs_in_file("step3_prov.jsonld")
 
 Now br/3 is the sole surviving entity. The final tree:
 
-<img src="/images/step3.svg" alt="Provenance tree after step 3: br/3 merged with br/1 and br/4, all others deleted" style="background: white; padding: 1rem; border-radius: 8px;" />
+<img src="/oc_ocdm/images/step3.svg" alt="Provenance tree after step 3: br/3 merged with br/1 and br/4, all others deleted" style="background: white; padding: 1rem; border-radius: 8px;" />
 
 ## Edge cases
 

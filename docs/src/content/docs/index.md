@@ -40,9 +40,10 @@ This produces a JSON-LD file containing the RDF triples for the resource and its
 
 ## Next steps
 
-- [Entities](/guides/entities/): the 11 entity types and how to manipulate them
-- [Identifiers](/guides/identifiers/): DOI, ORCID, ISBN and other identifier schemes
-- [Reading data](/guides/reading/): import entities from RDF files or SPARQL endpoints
-- [Storing data](/guides/storing/): persist changes to files or triplestores
-- [Provenance](/guides/provenance/): track entity history with provenance snapshots
-- [Counter handlers](/guides/counter_handlers/): strategies for generating unique entity IRIs
+- [GraphSet](./guides/graph_set/): create and manage graph entities
+- [Entities](./entities/bibliographic_resource/): entity types and all their methods
+- [Metadata](./guides/metadata/): datasets and distributions
+- [Reading data](./guides/reading/): import entities from RDF files or SPARQL endpoints
+- [Storing data](./guides/storing/): persist changes to files or triplestores
+- [Provenance](./guides/provenance/): track entity history with provenance snapshots
+- [Counter handlers](./guides/counter_handlers/): strategies for generating unique entity IRIs
