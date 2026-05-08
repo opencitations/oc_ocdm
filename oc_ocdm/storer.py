@@ -18,7 +18,6 @@ from zipfile import ZIP_DEFLATED, ZipFile
 import orjson
 from filelock import FileLock
 from rdflib import Dataset, Literal, URIRef
-from sparqlite import EndpointError, SPARQLClient
 from triplelite import TripleLite
 
 from oc_ocdm.constants import RDF_TYPE, XSD_STRING
@@ -28,6 +27,7 @@ from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.reader import Reader, _transform_jsonld_graphs
 from oc_ocdm.support.query_utils import get_update_query
 from oc_ocdm.support.reporter import Reporter
+from oc_ocdm.support.sparql import SPARQLEndpointError, sparql_update
 from oc_ocdm.support.support import find_paths
 
 if TYPE_CHECKING:
@@ -499,8 +499,7 @@ class Storer(object):
             added_statements: int = 0, removed_statements: int = 0) -> bool:
         if query_string != "":
             try:
-                with SPARQLClient(triplestore_url, max_retries=3, backoff_factor=2.5) as client:
-                    client.update(query_string)
+                sparql_update(triplestore_url, query_string, max_retries=3, backoff_factor=2.5)
 
                 self.repok.add_sentence(
                     f"Triplestore updated with {added_statements} added statements and "
@@ -508,7 +507,7 @@ class Storer(object):
 
                 return True
 
-            except EndpointError as e:
+            except SPARQLEndpointError as e:
                 self.reperr.add_sentence("[3] "
                                         "Graph was not loaded into the "
                                         f"triplestore due to communication problems: {e}")

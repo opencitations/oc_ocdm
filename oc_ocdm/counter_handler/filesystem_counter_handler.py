@@ -51,12 +51,6 @@ class FilesystemCounterHandler(CounterHandler):
 
         self._ensure_loaded(supplier_prefix)
 
-    def __del__(self):
-        try:
-            self.flush()
-        except Exception:
-            pass
-
     def _get_prefix_dir(self, supplier_prefix: str) -> str:
         sp = "" if supplier_prefix is None else supplier_prefix
         if sp == self.supplier_prefix or not self.supplier_prefix:

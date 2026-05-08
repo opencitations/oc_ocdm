@@ -9,7 +9,6 @@ from io import BytesIO
 from typing import TYPE_CHECKING, cast
 
 from rdflib import Graph
-from sparqlite import SPARQLClient
 from triplelite import RDFTerm, SubgraphView, TripleLite, from_rdflib
 
 from oc_ocdm.abstract_set import AbstractSet
@@ -28,6 +27,7 @@ from oc_ocdm.graph.entities.bibliographic.resource_embodiment import ResourceEmb
 from oc_ocdm.graph.entities.bibliographic.responsible_agent import ResponsibleAgent
 from oc_ocdm.graph.entities.identifier import Identifier
 from oc_ocdm.graph.graph_entity import GraphEntity
+from oc_ocdm.support.sparql import sparql_construct
 from oc_ocdm.support.support import get_count, get_prefix, get_short_name
 
 if TYPE_CHECKING:
@@ -249,19 +249,18 @@ class GraphSet(AbstractSet[GraphEntity]):
         return result_list
 
     def remove_orphans_from_triplestore(self, ts_url: str, resp_agent: str) -> None:
-        with SPARQLClient(ts_url) as client:
-            for entity_res, entity in self.res_to_entity.items():
-                if entity.to_be_deleted:
-                    query: str = f"CONSTRUCT {{?s ?p ?o}} WHERE {{?s ?p ?o ; ?p_1 <{entity_res}>}}"
-                    nt_bytes = client.construct(query)
-                    if nt_bytes:
-                        from oc_ocdm.reader import Reader
-                        rdflib_g = Graph()
-                        rdflib_g.parse(BytesIO(nt_bytes), format='nt')
-                        graphs = from_rdflib(rdflib_g)
-                        imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(self, graphs[0], resp_agent)
-                        for imported_entity in imported_entities:
-                            imported_entity.g.remove((imported_entity.res, None, RDFTerm("uri", str(entity_res))))
+        for entity_res, entity in self.res_to_entity.items():
+            if entity.to_be_deleted:
+                query: str = f"CONSTRUCT {{?s ?p ?o}} WHERE {{?s ?p ?o ; ?p_1 <{entity_res}>}}"
+                nt_bytes = sparql_construct(ts_url, query)
+                if nt_bytes:
+                    from oc_ocdm.reader import Reader
+                    rdflib_g = Graph()
+                    rdflib_g.parse(BytesIO(nt_bytes), format='nt')
+                    graphs = from_rdflib(rdflib_g)
+                    imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(self, graphs[0], resp_agent)
+                    for imported_entity in imported_entities:
+                        imported_entity.g.remove((imported_entity.res, None, RDFTerm("uri", str(entity_res))))
 
     def commit_changes(self):
         for res, entity in self.res_to_entity.items():

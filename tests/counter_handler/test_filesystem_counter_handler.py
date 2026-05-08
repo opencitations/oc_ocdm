@@ -117,12 +117,12 @@ class TestFilesystemCounterHandler(unittest.TestCase):
         result = self.counter_handler._read_number(self.file_path, 100)
         self.assertEqual(result, 0)
 
-    def test_del_triggers_flush(self):
+    def test_flush_persists_set_counter(self):
         tmp_dir = tempfile.mkdtemp() + os.sep
         handler = FilesystemCounterHandler(tmp_dir)
         handler.set_counter(77, "br")
+        handler.flush()
         info_path = tmp_dir + "info_file_br.txt"
-        del handler
         with open(info_path, "r") as f:
             self.assertEqual(f.readline().strip(), "77")
         shutil.rmtree(tmp_dir)

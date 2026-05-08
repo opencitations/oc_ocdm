@@ -17,7 +17,6 @@ from unittest.mock import patch
 from zipfile import ZipFile
 
 from rdflib import Dataset, Graph, URIRef, compare
-from sparqlite import SPARQLClient
 from triplelite import SubgraphView
 
 from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import BibliographicResource
@@ -26,6 +25,7 @@ from oc_ocdm.prov.prov_set import ProvSet
 from oc_ocdm.reader import Reader, _expand_jsonld
 from oc_ocdm.storer import Storer, _compact_jsonld, _entity_to_jsonld_dict
 from oc_ocdm.support.reporter import Reporter
+from oc_ocdm.support.sparql import SPARQLEndpointError, sparql_query, sparql_update
 
 
 def dataset_to_graph(dataset: Dataset) -> Graph:
@@ -42,17 +42,16 @@ class TestStorer(unittest.TestCase):
         cls.ts = os.environ["SPARQL_TEST_ENDPOINT"]
 
     def reset_server(self) -> None:
-        with SPARQLClient(self.ts) as client:
-            for graph in {
-                "https://w3id.org/oc/meta/br/",
-                "https://w3id.org/oc/meta/ra/",
-                "https://w3id.org/oc/meta/re/",
-                "https://w3id.org/oc/meta/id/",
-                "https://w3id.org/oc/meta/ar/",
-                "http://default.graph/",
-                "http://test/br/",
-            }:
-                client.update(f"CLEAR GRAPH <{graph}>")
+        for graph in {
+            "https://w3id.org/oc/meta/br/",
+            "https://w3id.org/oc/meta/ra/",
+            "https://w3id.org/oc/meta/re/",
+            "https://w3id.org/oc/meta/id/",
+            "https://w3id.org/oc/meta/ar/",
+            "http://default.graph/",
+            "http://test/br/",
+        }:
+            sparql_update(self.ts, f"CLEAR GRAPH <{graph}>")
 
     def setUp(self):
         self.resp_agent = "http://resp_agent.test/"
@@ -557,10 +556,8 @@ class TestStorer(unittest.TestCase):
         storer.store_all(base_dir, self.base_iri)
 
         try:
-            from sparqlite import EndpointError
-
-            with patch("sparqlite.SPARQLClient.update") as mock_update:
-                mock_update.side_effect = EndpointError("Connection failed")
+            with patch("oc_ocdm.storer.sparql_update") as mock_update:
+                mock_update.side_effect = SPARQLEndpointError("Connection failed")
 
                 result = storer.upload_all("http://invalid-endpoint:9999/sparql", base_dir)
                 self.assertFalse(result)
@@ -613,13 +610,12 @@ class TestStorer(unittest.TestCase):
 
         self.assertTrue(result)
 
-        with SPARQLClient(self.ts) as client:
-            results = client.query(f"ASK {{ <{br1.res}> ?p ?o }}")
-            self.assertTrue(results["boolean"])
-            results = client.query(f"ASK {{ <{br2.res}> ?p ?o }}")
-            self.assertFalse(results["boolean"])
-            results = client.query(f"ASK {{ <{br3.res}> ?p ?o }}")
-            self.assertTrue(results["boolean"])
+        results = sparql_query(self.ts, f"ASK {{ <{br1.res}> ?p ?o }}")
+        self.assertTrue(results["boolean"])
+        results = sparql_query(self.ts, f"ASK {{ <{br2.res}> ?p ?o }}")
+        self.assertFalse(results["boolean"])
+        results = sparql_query(self.ts, f"ASK {{ <{br3.res}> ?p ?o }}")
+        self.assertTrue(results["boolean"])
 
     def test_store_graphs_save_queries(self):
         base_dir = os.path.join("tests", "storer", "data", "rdf_save_queries") + os.sep
