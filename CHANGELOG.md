@@ -1,3 +1,10 @@
+## [11.0.14](https://github.com/opencitations/oc_ocdm/compare/11.0.13...11.0.14) (2026-05-08)
+
+
+### Bug Fixes
+
+* **sparql:** parse query params from endpoint URLs ([66d74d8](https://github.com/opencitations/oc_ocdm/commit/66d74d8f8b75a55802ac715ca1c6c2fc78fc2599))
+
 ## [11.0.13](https://github.com/opencitations/oc_ocdm/compare/11.0.12...11.0.13) (2026-05-08)
 
 
