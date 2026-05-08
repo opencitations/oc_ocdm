@@ -1,3 +1,11 @@
+## [11.0.13](https://github.com/opencitations/oc_ocdm/compare/11.0.12...11.0.13) (2026-05-08)
+
+
+### Bug Fixes
+
+* correct docs inaccuracies and two code bugs found ([43b9fc7](https://github.com/opencitations/oc_ocdm/commit/43b9fc737bacffd794e23c6cbddee9ba8736052e))
+* **reuse:** add SPDX headers to docs files and separate CC0 from ISC ([51b8a04](https://github.com/opencitations/oc_ocdm/commit/51b8a04dbae683a87a9514fc32e643d428a6ecba))
+
 ## [11.0.12](https://github.com/opencitations/oc_ocdm/compare/11.0.11...11.0.12) (2026-05-07)
 
 
