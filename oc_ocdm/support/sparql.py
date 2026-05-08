@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import time
 from urllib.error import HTTPError, URLError
+from urllib.parse import parse_qs, urlparse
 
 from SPARQLWrapper import JSON, N3, POST, URLENCODED, SPARQLWrapper
 
@@ -15,6 +16,15 @@ class SPARQLEndpointError(Exception):
     def __init__(self, message: str, status_code: int | None = None):
         super().__init__(message)
         self.status_code = status_code
+
+
+def _make_sparql_client(endpoint: str) -> SPARQLWrapper:
+    parsed = urlparse(endpoint)
+    base_url = f"{parsed.scheme}://{parsed.netloc}{parsed.path}"
+    sparql = SPARQLWrapper(base_url)
+    for key, values in parse_qs(parsed.query).items():
+        sparql.addParameter(key, values[0])
+    return sparql
 
 
 def _execute_with_retry(
@@ -26,7 +36,7 @@ def _execute_with_retry(
     max_retries: int = 5,
     backoff_factor: float = 0.5,
 ) -> bytes:
-    sparql = SPARQLWrapper(endpoint)
+    sparql = _make_sparql_client(endpoint)
     sparql.setQuery(query)
     sparql.setReturnFormat(return_format)
     if is_update:
