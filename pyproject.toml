@@ -38,6 +38,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "cffconvert>=2.0.0",
     "coverage>=6.5.0",
     "genbadge[coverage]>=1.1.3",
     "matplotlib>=3.10.7",
@@ -45,15 +46,12 @@ dev = [
     "pytest>=9.0.2",
     "pytest-benchmark>=5.2.3",
     "ruff>=0.15.9",
-    "sphinx>=4.4.0",
-    "sphinx-rtd-theme>=1.0.0",
-    "wget>=3.2",
 ]
 
 [project.urls]
 Homepage = "https://opencitations.net"
 Repository = "https://github.com/opencitations/oc_ocdm"
-Documentation = "https://oc-ocdm.readthedocs.io"
+Documentation = "https://opencitations.github.io/oc_ocdm/"
 
 [build-system]
 requires = ["hatchling"]

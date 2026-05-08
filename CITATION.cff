@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022-2025 Arcangelo Massari <arcangelo.massari@unibo.it>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 cff-version: 1.2.0
 title: oc_ocdm
 message: >-
@@ -20,32 +24,42 @@ license: ISC
 preferred-citation:
   type: conference-paper
   authors:
-  - family-names: "Simone"
-    given-names: "Persiani"
-  - family-names: "Marilena"
-    given-names: "Daquino"
-    orcid: 'https://orcid.org/0000-0002-1113-7550'
-  - family-names: "Silvio"
-    given-names: "Peroni"
-    orcid: 'https://orcid.org/0000-0003-0530-4305'
+    - given-names: Simone
+      family-names: Persiani
+    - given-names: Marilena
+      family-names: Daquino
+      orcid: 'https://orcid.org/0000-0002-1113-7550'
+    - given-names: Silvio
+      family-names: Peroni
+      orcid: 'https://orcid.org/0000-0003-0530-4305'
+  editors:
+    - given-names: Paul
+      family-names: Groth
+    - given-names: Maria-Esther
+      family-names: Vidal
+    - given-names: Fabian
+      family-names: Suchanek
+    - given-names: Pedro
+      family-names: Szekley
+    - given-names: Pavan
+      family-names: Kapanipathi
+    - given-names: Catia
+      family-names: Pesquita
+    - given-names: Hala
+      family-names: Skaf-Molli
+    - given-names: Minna
+      family-names: Tamper
   doi: "10.1007/978-3-031-06981-9_18"
-  collection-title: "The Semantic Web: 19th International Conference, ESWC 2022, Hersonissos, Crete, Greece, May 29--June 2, 2022, Proceedings"
+  title: "A Programming Interface for Creating Data According to the SPAR Ontologies and the OpenCitations Data Model"
+  collection-title: "The Semantic Web"
   collection-type: proceedings
   publisher:
     name: "Springer International Publishing"
-  month: 5 # May
-  start: 305 # First page number
-  end: 322 # Last page number
-  title: "A Programming Interface for Creating Data According to the SPAR Ontologies and the OpenCitations Data Model"
+    city: Cham
   year: 2022
-  keywords:
-  - OpenCitations
-  - Python
-  - RDF
-  - rdflib
-  - citation data
-  - bibliographic metadata
-  - SPAR Ontologies
+  start: 305
+  end: 322
+  isbn: "978-3-031-06981-9"
   abstract: >-
     The OpenCitations Data Model (OCDM) is a data model for
     bibliographic metadata and citations based on the SPAR
@@ -59,3 +73,11 @@ preferred-citation:
     characteristics, we show a number of projects within the
     OpenCitations infrastructure that adopt it as their
     building block unit.
+  keywords:
+    - OpenCitations
+    - Python
+    - RDF
+    - rdflib
+    - citation data
+    - bibliographic metadata
+    - SPAR Ontologies
