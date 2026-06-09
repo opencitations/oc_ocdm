@@ -1,3 +1,10 @@
+## [11.0.15](https://github.com/opencitations/oc_ocdm/compare/11.0.14...11.0.15) (2026-06-09)
+
+
+### Bug Fixes
+
+* fix a performance bug in triplelite [release] ([7baaf69](https://github.com/opencitations/oc_ocdm/commit/7baaf69eb55a1ccd79017a75e434512b97449da6))
+
 ## [11.0.14](https://github.com/opencitations/oc_ocdm/compare/11.0.13...11.0.14) (2026-05-08)
 
 
