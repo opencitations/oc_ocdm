@@ -76,7 +76,7 @@ class AbstractSet(ABC, Generic[E]):
         :type res: URIRef
         :return: The requested entity if found, None otherwise
         """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @staticmethod
     def get_graph_iri(g: TripleLite) -> str:

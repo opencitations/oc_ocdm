@@ -33,7 +33,7 @@ class CounterHandler(ABC):
         :raises NotImplementedError: always
         :return: None
         """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
     def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
@@ -53,7 +53,7 @@ class CounterHandler(ABC):
         :raises NotImplementedError: always
         :return: The requested counter value.
         """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
     def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
@@ -73,7 +73,7 @@ class CounterHandler(ABC):
         :raises NotImplementedError: always
         :return: The newly-updated (already incremented) counter value.
         """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
     def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str) -> None:
@@ -90,7 +90,7 @@ class CounterHandler(ABC):
         :raises NotImplementedError: always
         :return: None
         """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
     def read_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
@@ -105,7 +105,7 @@ class CounterHandler(ABC):
         :raises NotImplementedError: always
         :return: The requested counter value.
         """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
     def increment_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
@@ -120,4 +120,4 @@ class CounterHandler(ABC):
         :raises NotImplementedError: always
         :return: The newly-updated (already incremented) counter value.
         """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover

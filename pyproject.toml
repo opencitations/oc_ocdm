@@ -6,11 +6,10 @@ readme = "README.md"
 license = "ISC"
 keywords = ["opencitations", "openscience", "datamodel", "mapping"]
 authors = [
-    { name = "Silvio Peroni", email = "essepuntato@gmail.com" },
-    { name = "Marilena Daquino", email = "marilena.daquino2@unibo.it" },
-    { name = "Fabio Mariani", email = "fabio.mariani6@studio.unibo.it" },
-    { name = "Simone Persiani", email = "iosonopersia@gmail.com" },
+    { name = "Simone Persiani" },
     { name = "Arcangelo Massari", email = "arcangelo.massari@unibo.it" },
+    { name = "Marta Soricetti" },
+    { name = "Silvio Peroni", email = "silvio.peroni@unibo.it" },
 ]
 classifiers = [
     "Intended Audience :: Developers",
@@ -33,7 +32,7 @@ dependencies = [
     "redis>=4.5.5,<8.0.0",
     "sparqlwrapper>=2.0.0",
     "tqdm>=4.67.1",
-    "triplelite>=1.4.0",
+    "triplelite>=1.4.1",
 ]
 
 [dependency-groups]
@@ -68,3 +67,9 @@ select = ["I", "F401", "E402"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["oc_ocdm"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["oc_ocdm"]

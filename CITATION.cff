@@ -11,9 +11,10 @@ type: software
 authors:
   - given-names: Simone
     family-names: Persiani
-  - given-names: Marilena
-    family-names: Daquino
-    orcid: 'https://orcid.org/0000-0002-1113-7550'
+  - given-names: Arcangelo
+    family-names: Massari
+  - given-names: Marta
+    family-names: Soricetti
   - given-names: Silvio
     family-names: Peroni
     orcid: 'https://orcid.org/0000-0003-0530-4305'
