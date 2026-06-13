@@ -193,7 +193,7 @@ class GraphEntity(AbstractEntity):
         self.source: str | None = source
         self.short_name: str = short_name
         self.g_set: GraphSet = g_set
-        self._preexisting_triples: frozenset | SubgraphView = frozenset()
+        self._preexisting_triples: frozenset = frozenset()
         self._merge_list: tuple[GraphEntity, ...] = ()
         # FLAGS
         self._to_be_deleted: bool = False
@@ -219,8 +219,10 @@ class GraphEntity(AbstractEntity):
             # allowing the user to set this value later through a method would mean that the user could
             # set the preexisting graph AFTER having modified self.g (which would not make sense).
             self.remove_every_triple()
-            self.g.add_many((self.res, p, o) for p, o in preexisting_graph.predicate_objects(self.res))
-            self._preexisting_triples = preexisting_graph
+            self._preexisting_triples = frozenset(
+                (self.res, p, o) for p, o in preexisting_graph.predicate_objects(self.res)
+            )
+            self.g.add_many(self._preexisting_triples)
         else:
             # Add mandatory information to the entity graph
             self._create_type(res_type)

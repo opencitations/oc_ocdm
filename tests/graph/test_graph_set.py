@@ -8,6 +8,8 @@
 import pickle
 import unittest
 
+from triplelite import RDFTerm, TripleLite
+
 from oc_ocdm.graph.entities.bibliographic.agent_role import AgentRole
 from oc_ocdm.graph.entities.bibliographic.bibliographic_reference import BibliographicReference
 from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import BibliographicResource
@@ -297,6 +299,38 @@ class TestGraphSet(unittest.TestCase):
         # Verify relationships are preserved
         restored_ar = restored.get_entity(ar.res)
         self.assertIsNotNone(restored_ar)
+
+    def test_preexisting_graph_materialized_as_frozenset(self):
+        # A pre-existing entity must store its baseline as a plain frozenset of its own
+        # triples, never a live SubgraphView that references (and would pickle) the whole
+        # parent graph.
+        res = "http://test/br/0601"
+        title_pred = "http://purl.org/dc/terms/title"
+        type_pred = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+        parent = TripleLite()
+        parent.add((res, title_pred, RDFTerm("literal", "Existing Title")))
+        parent.add((res, type_pred, RDFTerm("uri", "http://purl.org/spar/fabio/Expression")))
+        # Many unrelated subjects that must NOT leak into the entity or its pickle.
+        for i in range(1000):
+            parent.add((f"http://test/other/{i}", title_pred, RDFTerm("literal", str(i))))
+
+        br = self.graph_set.add_br(self.resp_agent, res=res, preexisting_graph=parent.subgraph(res))
+
+        expected = {
+            (res, title_pred, RDFTerm("literal", "Existing Title")),
+            (res, type_pred, RDFTerm("uri", "http://purl.org/spar/fabio/Expression")),
+        }
+        self.assertIsInstance(br._preexisting_triples, frozenset)
+        self.assertEqual(set(br._preexisting_triples), expected)
+        self.assertEqual(len(br._preexisting_triples), 2)
+
+        # The baseline pickles in isolation, bounded to the subject's triples.
+        self.assertEqual(pickle.loads(pickle.dumps(br._preexisting_triples)), br._preexisting_triples)
+
+        # Pickling the whole GraphSet does not drag the 1000 unrelated parent triples.
+        restored_br = pickle.loads(pickle.dumps(self.graph_set)).get_entity(res)
+        self.assertIsInstance(restored_br._preexisting_triples, frozenset)
+        self.assertEqual(set(restored_br._preexisting_triples), expected)
 
 
 if __name__ == '__main__':

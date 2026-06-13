@@ -60,7 +60,7 @@ class MetadataEntity(AbstractEntity):
         self.source: str | None = source
         self.short_name: str = short_name
         self.m_set: MetadataSet = m_set
-        self._preexisting_triples: frozenset | SubgraphView = frozenset()
+        self._preexisting_triples: frozenset = frozenset()
         self._merge_list: tuple[MetadataEntity, ...] = ()
         # FLAGS
         self._to_be_deleted: bool = False
@@ -83,8 +83,10 @@ class MetadataEntity(AbstractEntity):
 
         if preexisting_graph is not None:
             self.remove_every_triple()
-            self.g.add_many((self.res, p, rdflib_to_rdfterm(o)) for p, o in preexisting_graph.predicate_objects(self.res))
-            self._preexisting_triples = preexisting_graph
+            self._preexisting_triples = frozenset(
+                (self.res, p, rdflib_to_rdfterm(o)) for p, o in preexisting_graph.predicate_objects(self.res)
+            )
+            self.g.add_many(self._preexisting_triples)
         else:
             # Add mandatory information to the entity graph
             self._create_type(res_type)
