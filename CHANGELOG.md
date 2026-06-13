@@ -1,3 +1,10 @@
+## [11.0.16](https://github.com/opencitations/oc_ocdm/compare/11.0.15...11.0.16) (2026-06-13)
+
+
+### Bug Fixes
+
+* materialize preexisting triples as a frozenset [release] ([176a55d](https://github.com/opencitations/oc_ocdm/commit/176a55d7fbc1540a54229e48eb2e39c369f98f9c))
+
 ## [11.0.15](https://github.com/opencitations/oc_ocdm/compare/11.0.14...11.0.15) (2026-06-09)
 
 
