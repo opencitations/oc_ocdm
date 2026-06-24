@@ -23,7 +23,7 @@ class FilesystemCounterHandler(CounterHandler):
 
     Counter data is loaded into RAM on first access per supplier prefix (lazy loading) and written back to disk only when ``flush()`` is called."""
 
-    def __init__(self, info_dir: str, supplier_prefix: str = "") -> None:
+    def __init__(self, info_dir: str | None, supplier_prefix: str = "") -> None:
         """
         Constructor of the ``FilesystemCounterHandler`` class.
 
@@ -51,7 +51,7 @@ class FilesystemCounterHandler(CounterHandler):
 
         self._ensure_loaded(supplier_prefix)
 
-    def _get_prefix_dir(self, supplier_prefix: str) -> str:
+    def _get_prefix_dir(self, supplier_prefix: str | None) -> str:
         sp = "" if supplier_prefix is None else supplier_prefix
         if sp == self.supplier_prefix or not self.supplier_prefix:
             return self.info_dir
@@ -242,7 +242,7 @@ class FilesystemCounterHandler(CounterHandler):
         cache_list[line_number - 1] = new_value
         self._dirty.add(file_path)
 
-    def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str) -> None:
+    def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str | None) -> None:
         """
         It allows to set the counter value of metadata entities.
 
@@ -265,7 +265,7 @@ class FilesystemCounterHandler(CounterHandler):
         file_path: str = self._get_metadata_path(entity_short_name, dataset_name)
         return self._set_number(new_value, file_path, 1)
 
-    def read_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+    def read_metadata_counter(self, entity_short_name: str, dataset_name: str | None) -> int:
         """
         It allows to read the counter value of metadata entities.
 
@@ -283,7 +283,7 @@ class FilesystemCounterHandler(CounterHandler):
         file_path: str = self._get_metadata_path(entity_short_name, dataset_name)
         return self._read_number(file_path, 1)
 
-    def increment_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+    def increment_metadata_counter(self, entity_short_name: str, dataset_name: str | None) -> int:
         """
         It allows to increment the counter value of metadata entities by one unit.
 

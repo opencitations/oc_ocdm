@@ -6,10 +6,13 @@ from __future__ import annotations
 
 import json
 import time
+from typing import cast
 from urllib.error import HTTPError, URLError
 from urllib.parse import parse_qs, urlparse
 
 from SPARQLWrapper import JSON, N3, POST, URLENCODED, SPARQLWrapper
+
+from oc_ocdm._types import SparqlQueryResult
 
 
 class SPARQLEndpointError(Exception):
@@ -47,22 +50,16 @@ def _execute_with_retry(
 
     for attempt in range(max_retries + 1):
         if attempt > 0:
-            time.sleep(backoff_factor * (2 ** attempt))
+            time.sleep(backoff_factor * (2**attempt))
         try:
             return sparql.query().response.read()
         except HTTPError as e:
             if e.code == 400:
-                raise SPARQLEndpointError(
-                    f"Query syntax error: {e.read().decode()}", status_code=400
-                ) from e
+                raise SPARQLEndpointError(f"Query syntax error: {e.read().decode()}", status_code=400) from e
             if e.code >= 500:
-                last_error = SPARQLEndpointError(
-                    f"Server error: {e.code}", status_code=e.code
-                )
+                last_error = SPARQLEndpointError(f"Server error: {e.code}", status_code=e.code)
                 continue
-            raise SPARQLEndpointError(
-                f"HTTP error: {e.code} - {e.read().decode()}", status_code=e.code
-            ) from e
+            raise SPARQLEndpointError(f"HTTP error: {e.code} - {e.read().decode()}", status_code=e.code) from e
         except URLError as e:
             last_error = SPARQLEndpointError(f"Connection error: {e.reason}")
             continue
@@ -76,11 +73,9 @@ def sparql_query(
     *,
     max_retries: int = 5,
     backoff_factor: float = 0.5,
-) -> dict:
-    raw = _execute_with_retry(
-        endpoint, query, JSON, max_retries=max_retries, backoff_factor=backoff_factor
-    )
-    return json.loads(raw)
+) -> SparqlQueryResult:
+    raw = _execute_with_retry(endpoint, query, JSON, max_retries=max_retries, backoff_factor=backoff_factor)
+    return cast(SparqlQueryResult, json.loads(raw))
 
 
 def sparql_update(
@@ -90,9 +85,7 @@ def sparql_update(
     max_retries: int = 5,
     backoff_factor: float = 0.5,
 ) -> None:
-    _execute_with_retry(
-        endpoint, query, JSON, is_update=True, max_retries=max_retries, backoff_factor=backoff_factor
-    )
+    _execute_with_retry(endpoint, query, JSON, is_update=True, max_retries=max_retries, backoff_factor=backoff_factor)
 
 
 def sparql_construct(
@@ -102,6 +95,4 @@ def sparql_construct(
     max_retries: int = 5,
     backoff_factor: float = 0.5,
 ) -> bytes:
-    return _execute_with_retry(
-        endpoint, query, N3, max_retries=max_retries, backoff_factor=backoff_factor
-    )
+    return _execute_with_retry(endpoint, query, N3, max_retries=max_retries, backoff_factor=backoff_factor)

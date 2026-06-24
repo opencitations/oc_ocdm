@@ -24,9 +24,9 @@ from oc_ocdm.graph.graph_entity import GraphEntity
 
 class ReferencePointer(BibliographicEntity):
     """Reference pointer (long: in-text reference pointer; short: rp): a textual device (e.g.
-       '[1]'), denoting a single bibliographic reference, that is embedded in the text of a
-       document within the context of a particular sentence or text chunk. A bibliographic
-       reference can be denoted in the text by one or more in-text reference pointers."""
+    '[1]'), denoting a single bibliographic reference, that is embedded in the text of a
+    document within the context of a particular sentence or text chunk. A bibliographic
+    reference can be denoted in the text by one or more in-text reference pointers."""
 
     def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
@@ -107,11 +107,11 @@ class ReferencePointer(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_next, 'rp')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_next, "rp")
         if uri is not None:
             return self.g_set.add_rp(self.resp_agent, self.source, uri)
 
-    @accepts_only('rp')
+    @accepts_only("rp")
     def has_next_rp(self, rp_res: ReferencePointer) -> None:
         """
         Setter method corresponding to the ``oco:hasNext`` RDF predicate.
@@ -144,11 +144,11 @@ class ReferencePointer(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_denotes, 'be')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_denotes, "be")
         if uri is not None:
             return self.g_set.add_be(self.resp_agent, self.source, uri)
 
-    @accepts_only('be')
+    @accepts_only("be")
     def denotes_be(self, be_res: BibliographicReference) -> None:
         """
         Setter method corresponding to the ``c4o:denotes`` RDF predicate.
@@ -181,13 +181,13 @@ class ReferencePointer(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_has_annotation, 'an')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_has_annotation, "an")
         result: List[ReferenceAnnotation] = []
         for uri in uri_list:
             result.append(self.g_set.add_an(self.resp_agent, self.source, uri))
         return result
 
-    @accepts_only('an')
+    @accepts_only("an")
     def has_annotation(self, an_res: ReferenceAnnotation) -> None:
         """
         Setter method corresponding to the ``oco:hasAnnotation`` RDF predicate.
@@ -203,7 +203,7 @@ class ReferencePointer(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.iri_has_annotation, RDFTerm("uri", str(an_res.res))))
 
-    @accepts_only('an')
+    @accepts_only("an")
     def remove_annotation(self, an_res: ReferenceAnnotation | None = None) -> None:
         """
         Remover method corresponding to the ``oco:hasAnnotation`` RDF predicate.

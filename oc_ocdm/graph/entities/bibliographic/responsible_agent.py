@@ -20,8 +20,8 @@ from oc_ocdm.graph.graph_entity import GraphEntity
 
 class ResponsibleAgent(BibliographicEntity):
     """Responsible agent (short: ra): the agent (usually a person or an organisation) having
-       a certain role with respect to a bibliographic resource (e.g. an author of a paper or
-       book, or an editor of a journal)."""
+    a certain role with respect to a bibliographic resource (e.g. an author of a paper or
+    book, or an editor of a journal)."""
 
     def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """

@@ -8,13 +8,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from triplelite import RDFTerm, SubgraphView, TripleLite
+from triplelite import RDFTerm, SubgraphView, Triple, TripleLite
 
 from oc_ocdm.abstract_entity import AbstractEntity
 from oc_ocdm.constants import RDF_TYPE, Namespace
 
 if TYPE_CHECKING:
-    from typing import ClassVar, Dict, List, Optional, Self
+    from typing import ClassVar, Dict, List, Optional
 
     from oc_ocdm.graph.graph_set import GraphSet
 
@@ -171,29 +171,39 @@ class GraphEntity(AbstractEntity):
     iri_has_format: ClassVar[str] = DCTERMS.format
 
     short_name_to_type_iri: ClassVar[Dict[str, str]] = {
-        'an': iri_note,
-        'ar': iri_role_in_time,
-        'be': iri_bibliographic_reference,
-        'br': iri_expression,
-        'ci': iri_citation,
-        'de': iri_discourse_element,
-        'id': iri_identifier,
-        'pl': iri_singleloc_pointer_list,
-        'ra': iri_agent,
-        're': iri_manifestation,
-        'rp': iri_intextref_pointer
+        "an": iri_note,
+        "ar": iri_role_in_time,
+        "be": iri_bibliographic_reference,
+        "br": iri_expression,
+        "ci": iri_citation,
+        "de": iri_discourse_element,
+        "id": iri_identifier,
+        "pl": iri_singleloc_pointer_list,
+        "ra": iri_agent,
+        "re": iri_manifestation,
+        "rp": iri_intextref_pointer,
     }
 
-    def __init__(self, g: TripleLite, g_set: GraphSet, res_type: str, res: str | None = None,
-                 resp_agent: str | None = None, source: str | None = None, count: str | None = None, label: str | None = None,
-                 short_name: str = "", preexisting_graph: SubgraphView | None = None) -> None:
+    def __init__(
+        self,
+        g: TripleLite,
+        g_set: GraphSet,
+        res_type: str,
+        res: str | None = None,
+        resp_agent: str | None = None,
+        source: str | None = None,
+        count: str | None = None,
+        label: str | None = None,
+        short_name: str = "",
+        preexisting_graph: SubgraphView | None = None,
+    ) -> None:
         super(GraphEntity, self).__init__()
         self.g: TripleLite = g
         self.resp_agent: str | None = resp_agent
         self.source: str | None = source
         self.short_name: str = short_name
         self.g_set: GraphSet = g_set
-        self._preexisting_triples: frozenset = frozenset()
+        self._preexisting_triples: frozenset[Triple] = frozenset()
         self._merge_list: tuple[GraphEntity, ...] = ()
         # FLAGS
         self._to_be_deleted: bool = False
@@ -207,10 +217,9 @@ class GraphEntity(AbstractEntity):
         else:
             self.res = res
 
-        if g_set is not None:
-            # If not already done, register this GraphEntity instance inside the GraphSet
-            if self.res not in g_set.res_to_entity:
-                g_set.res_to_entity[self.res] = self
+        # If not already done, register this GraphEntity instance inside the GraphSet
+        if self.res not in g_set.res_to_entity:
+            g_set.res_to_entity[self.res] = self
 
         if preexisting_graph is not None:
             # Triples inside self.g are entirely replaced by triples from preexisting_graph.
@@ -246,7 +255,11 @@ class GraphEntity(AbstractEntity):
     def merge_list(self) -> tuple[GraphEntity, ...]:
         return self._merge_list
 
-    @property 
+    @property
+    def preexisting_triples(self) -> frozenset[Triple]:
+        return self._preexisting_triples
+
+    @property
     def is_restored(self) -> bool:
         """Indicates if this entity was restored after being deleted."""
         return self._is_restored
@@ -254,7 +267,7 @@ class GraphEntity(AbstractEntity):
     def mark_as_restored(self) -> None:
         """
         Marks an entity as being restored after deletion.
-                
+
         This state signals to the provenance system that:
         - No new invalidation time should be generated for the previous snapshot
         - The original deletion snapshot's invalidation time should be preserved
@@ -262,12 +275,12 @@ class GraphEntity(AbstractEntity):
         """
         self._to_be_deleted = False
         self._is_restored = True
-            
+
     def mark_as_to_be_deleted(self) -> None:
         # Here we must REMOVE triples pointing
         # to 'self' [THIS CANNOT BE UNDONE]:
         for res, entity in self.g_set.res_to_entity.items():
-            triples_list: List[tuple] = list(entity.g.triples((res, None, RDFTerm("uri", str(self.res)))))
+            triples_list: List[Triple] = list(entity.g.triples((res, None, RDFTerm("uri", str(self.res)))))
             for triple in triples_list:
                 entity.g.remove(triple)
 
@@ -280,7 +293,7 @@ class GraphEntity(AbstractEntity):
                 return type_uri.value
         return None
 
-    def merge(self, other: Self, prefer_self: bool = False) -> None:
+    def merge(self, other: object, prefer_self: bool = False) -> None:
         """
         **WARNING:** ``GraphEntity`` **is an abstract class that cannot be instantiated at runtime.
         As such, it's only possible to execute this method on entities generated from**
@@ -302,7 +315,7 @@ class GraphEntity(AbstractEntity):
 
         # Redirect triples pointing to 'other' to point to 'self'
         for res, entity in self.g_set.res_to_entity.items():
-            triples_list: List[tuple] = list(entity.g.triples((res, None, RDFTerm("uri", str(other.res)))))
+            triples_list: List[Triple] = list(entity.g.triples((res, None, RDFTerm("uri", str(other.res)))))
             for triple in triples_list:
                 entity.g.remove(triple)
                 new_triple = (triple[0], triple[1], RDFTerm("uri", str(self.res)))
@@ -342,7 +355,7 @@ class GraphEntity(AbstractEntity):
     def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         pass
 
-    def commit_changes(self):
+    def commit_changes(self) -> None:
         if self._to_be_deleted:
             self._preexisting_triples = frozenset()
             self.remove_every_triple()

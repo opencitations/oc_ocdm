@@ -26,9 +26,9 @@ from oc_ocdm.support.support import create_type
 
 class DiscourseElement(BibliographicEntity):
     """Discourse element (short: de): a document component, either structural (e.g.
-       paragraph, section, chapter, table, caption, footnote, title) or rhetorical (e.g.
-       introduction, discussion, acknowledgements, reference list, figure, appendix), in which
-       the content of a bibliographic resource can be organized."""
+    paragraph, section, chapter, table, caption, footnote, title) or rhetorical (e.g.
+    introduction, discussion, acknowledgements, reference list, figure, appendix), in which
+    the content of a bibliographic resource can be organized."""
 
     def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
@@ -112,7 +112,7 @@ class DiscourseElement(BibliographicEntity):
         :return: None
         """
         self.g.remove((self.res, GraphEntity.iri_title, None))
-    
+
     # HAS PART (DiscourseElement)
     def get_contained_discourse_elements(self) -> List[DiscourseElement]:
         """
@@ -120,13 +120,13 @@ class DiscourseElement(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_contains_de, 'de')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_contains_de, "de")
         result: List[DiscourseElement] = []
         for uri in uri_list:
             result.append(self.g_set.add_de(self.resp_agent, self.source, uri))
         return result
 
-    @accepts_only('de')
+    @accepts_only("de")
     def contains_discourse_element(self, de_res: DiscourseElement) -> None:
         """
         Setter method corresponding to the ``frbr:part`` RDF predicate.
@@ -141,7 +141,7 @@ class DiscourseElement(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.iri_contains_de, RDFTerm("uri", str(de_res.res))))
 
-    @accepts_only('de')
+    @accepts_only("de")
     def remove_contained_discourse_element(self, de_res: DiscourseElement | None = None) -> None:
         """
         Remover method corresponding to the ``frbr:part`` RDF predicate.
@@ -167,11 +167,11 @@ class DiscourseElement(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_next, 'de')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_next, "de")
         if uri is not None:
             return self.g_set.add_de(self.resp_agent, self.source, uri)
 
-    @accepts_only('de')
+    @accepts_only("de")
     def has_next_de(self, de_res: DiscourseElement) -> None:
         """
         Setter method corresponding to the ``oco:hasNext`` RDF predicate.
@@ -203,13 +203,13 @@ class DiscourseElement(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of, 'rp')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of, "rp")
         result: List[ReferencePointer] = []
         for uri in uri_list:
             result.append(self.g_set.add_rp(self.resp_agent, self.source, uri))
         return result
 
-    @accepts_only('rp')
+    @accepts_only("rp")
     def is_context_of_rp(self, rp_res: ReferencePointer) -> None:
         """
         Setter method corresponding to the ``c4o:isContextOf`` RDF predicate.
@@ -224,7 +224,7 @@ class DiscourseElement(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.iri_is_context_of, RDFTerm("uri", str(rp_res.res))))
 
-    @accepts_only('rp')
+    @accepts_only("rp")
     def remove_is_context_of_rp(self, rp_res: ReferencePointer | None = None) -> None:
         """
         Remover method corresponding to the ``c4o:isContextOf`` RDF predicate.
@@ -250,13 +250,13 @@ class DiscourseElement(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of, 'pl')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_is_context_of, "pl")
         result: List[PointerList] = []
         for uri in uri_list:
             result.append(self.g_set.add_pl(self.resp_agent, self.source, uri))
         return result
 
-    @accepts_only('pl')
+    @accepts_only("pl")
     def is_context_of_pl(self, pl_res: PointerList) -> None:
         """
         Setter method corresponding to the ``c4o:isContextOf`` RDF predicate.
@@ -271,7 +271,7 @@ class DiscourseElement(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.iri_is_context_of, RDFTerm("uri", str(pl_res.res))))
 
-    @accepts_only('pl')
+    @accepts_only("pl")
     def remove_is_context_of_pl(self, pl_res: PointerList | None = None) -> None:
         """
         Remover method corresponding to the ``c4o:isContextOf`` RDF predicate.
@@ -504,7 +504,6 @@ class DiscourseElement(BibliographicEntity):
         :return: None
         """
         self._create_type(GraphEntity.iri_caption)
-
 
     def create_introduction(self) -> None:
         """

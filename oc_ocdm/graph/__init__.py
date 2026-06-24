@@ -8,3 +8,5 @@
 
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.graph.graph_set import GraphSet
+
+__all__ = ["GraphEntity", "GraphSet"]

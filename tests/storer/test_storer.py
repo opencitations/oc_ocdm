@@ -803,8 +803,12 @@ class TestFastPath(unittest.TestCase):
         br.has_identifier(id_entity)
 
         storer = Storer(
-            self.graph_set, context_map={}, dir_split=10000, n_file_item=1000,
-            output_format="json-ld", zip_output=False,
+            self.graph_set,
+            context_map={},
+            dir_split=10000,
+            n_file_item=1000,
+            output_format="json-ld",
+            zip_output=False,
         )
         storer.store_all(base_dir, self.base_iri)
 
@@ -826,9 +830,7 @@ class TestFastPath(unittest.TestCase):
                                         "@value": "Comparison Test",
                                     }
                                 ],
-                                "http://purl.org/spar/datacite/hasIdentifier": [
-                                    {"@id": "http://test/id/0601"}
-                                ],
+                                "http://purl.org/spar/datacite/hasIdentifier": [{"@id": "http://test/id/0601"}],
                             }
                         ],
                         "@id": "http://test/br/",
@@ -842,16 +844,24 @@ class TestFastPath(unittest.TestCase):
         br1 = self.graph_set.add_br(self.resp_agent)
         br1.has_title("First")
         Storer(
-            self.graph_set, context_map={}, dir_split=10000, n_file_item=1000,
-            output_format="json-ld", zip_output=False,
+            self.graph_set,
+            context_map={},
+            dir_split=10000,
+            n_file_item=1000,
+            output_format="json-ld",
+            zip_output=False,
         ).store_all(base_dir, self.base_iri)
 
         graph_set2 = GraphSet(self.base_iri, "", "060", False)
         br2 = graph_set2.add_br(self.resp_agent, res="http://test/br/0602")
         br2.has_title("Second")
         Storer(
-            graph_set2, context_map={}, dir_split=10000, n_file_item=1000,
-            output_format="json-ld", zip_output=False,
+            graph_set2,
+            context_map={},
+            dir_split=10000,
+            n_file_item=1000,
+            output_format="json-ld",
+            zip_output=False,
         ).store_all(base_dir, self.base_iri)
 
         with open(os.path.join(base_dir, "br", "060", "10000", "1000.json")) as f:
@@ -886,14 +896,22 @@ class TestFastPath(unittest.TestCase):
         br = self.graph_set.add_br(self.resp_agent)
         br.has_title("To Delete")
         Storer(
-            self.graph_set, context_map={}, dir_split=10000, n_file_item=1000,
-            output_format="json-ld", zip_output=False,
+            self.graph_set,
+            context_map={},
+            dir_split=10000,
+            n_file_item=1000,
+            output_format="json-ld",
+            zip_output=False,
         ).store_all(base_dir, self.base_iri)
 
         br._to_be_deleted = True
         Storer(
-            self.graph_set, context_map={}, dir_split=10000, n_file_item=1000,
-            output_format="json-ld", zip_output=False,
+            self.graph_set,
+            context_map={},
+            dir_split=10000,
+            n_file_item=1000,
+            output_format="json-ld",
+            zip_output=False,
         ).store_all(base_dir, self.base_iri)
 
         with open(os.path.join(base_dir, "br", "060", "10000", "1000.json")) as f:
@@ -905,15 +923,23 @@ class TestFastPath(unittest.TestCase):
         br = self.graph_set.add_br(self.resp_agent)
         br.has_title("Original")
         Storer(
-            self.graph_set, context_map={}, dir_split=10000, n_file_item=1000,
-            output_format="json-ld", zip_output=False,
+            self.graph_set,
+            context_map={},
+            dir_split=10000,
+            n_file_item=1000,
+            output_format="json-ld",
+            zip_output=False,
         ).store_all(base_dir, self.base_iri)
 
         br._preexisting_triples = frozenset(br.g.triples((None, None, None)))
         br.has_title("Updated")
         Storer(
-            self.graph_set, context_map={}, dir_split=10000, n_file_item=1000,
-            output_format="json-ld", zip_output=False,
+            self.graph_set,
+            context_map={},
+            dir_split=10000,
+            n_file_item=1000,
+            output_format="json-ld",
+            zip_output=False,
         ).store_all(base_dir, self.base_iri)
 
         with open(os.path.join(base_dir, "br", "060", "10000", "1000.json")) as f:
@@ -941,8 +967,12 @@ class TestFastPath(unittest.TestCase):
         self.graph_set.add_br(self.resp_agent)
         self.prov_set.generate_provenance()
         Storer(
-            self.prov_set, context_map={}, dir_split=10000, n_file_item=1000,
-            output_format="json-ld", zip_output=False,
+            self.prov_set,
+            context_map={},
+            dir_split=10000,
+            n_file_item=1000,
+            output_format="json-ld",
+            zip_output=False,
         ).store_all(base_dir, self.base_iri)
 
         prov_file = os.path.join(base_dir, "br", "060", "10000", "1000", "prov", "se.json")
@@ -988,8 +1018,12 @@ class TestFastPath(unittest.TestCase):
         br = self.graph_set.add_br(self.resp_agent)
         self.prov_set.generate_provenance()
         Storer(
-            self.prov_set, context_map={}, dir_split=10000, n_file_item=1000,
-            output_format="json-ld", zip_output=False,
+            self.prov_set,
+            context_map={},
+            dir_split=10000,
+            n_file_item=1000,
+            output_format="json-ld",
+            zip_output=False,
         ).store_all(base_dir, self.base_iri)
         self.graph_set.commit_changes()
 
@@ -999,8 +1033,12 @@ class TestFastPath(unittest.TestCase):
         br2.mark_as_to_be_deleted()
         prov_set2.generate_provenance()
         Storer(
-            prov_set2, context_map={}, dir_split=10000, n_file_item=1000,
-            output_format="json-ld", zip_output=False,
+            prov_set2,
+            context_map={},
+            dir_split=10000,
+            n_file_item=1000,
+            output_format="json-ld",
+            zip_output=False,
         ).store_all(base_dir, self.base_iri)
 
         prov_file = os.path.join(base_dir, "br", "060", "10000", "1000", "prov", "se.json")
@@ -1026,8 +1064,12 @@ class TestFastPath(unittest.TestCase):
 
         self.graph_set.add_br(self.resp_agent)
         Storer(
-            self.graph_set, context_map={}, dir_split=10000, n_file_item=1000,
-            output_format="json-ld", zip_output=True,
+            self.graph_set,
+            context_map={},
+            dir_split=10000,
+            n_file_item=1000,
+            output_format="json-ld",
+            zip_output=True,
         ).store_all(base_dir, self.base_iri)
 
         with ZipFile(os.path.join(base_dir, "br", "060", "10000", "1000.zip")) as zf:
@@ -1127,8 +1169,12 @@ class TestFastPath(unittest.TestCase):
         try:
             context_map = {context_url: context_file}
             storer = Storer(
-                self.graph_set, context_map=context_map, dir_split=10000,
-                n_file_item=1000, output_format="json-ld", zip_output=False,
+                self.graph_set,
+                context_map=context_map,
+                dir_split=10000,
+                n_file_item=1000,
+                output_format="json-ld",
+                zip_output=False,
             )
             self.graph_set.add_br(self.resp_agent)
             paths = storer.store_all(base_dir, self.base_iri, context_path=context_url)
@@ -1138,9 +1184,7 @@ class TestFastPath(unittest.TestCase):
                     json.load(f),
                     {
                         "@context": context_url,
-                        "@graph": [
-                            {"@id": "http://test/br/0601", "@type": ["fabio:Expression"]}
-                        ],
+                        "@graph": [{"@id": "http://test/br/0601", "@type": ["fabio:Expression"]}],
                         "@id": "http://test/br/",
                     },
                 )

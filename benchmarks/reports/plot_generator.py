@@ -57,9 +57,7 @@ class BenchmarkPlotGenerator:
         with open(json_path) as f:
             return json.load(f)
 
-    def _extract_benchmarks_by_group(
-        self, data: Dict[str, Any]
-    ) -> Dict[str, List[Dict[str, Any]]]:
+    def _extract_benchmarks_by_group(self, data: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]:
         """
         Group benchmarks by their group name.
 
@@ -153,9 +151,7 @@ class BenchmarkPlotGenerator:
         plt.close()
         print(f"Saved: {output_path}")
 
-    def _draw_comparison_subplot(
-        self, ax: Axes, benchmarks: List[Dict[str, Any]], group: str
-    ):
+    def _draw_comparison_subplot(self, ax: Axes, benchmarks: List[Dict[str, Any]], group: str):
         """Draw comparison bar chart on given axes."""
         names = []
         means = []
@@ -188,9 +184,7 @@ class BenchmarkPlotGenerator:
                 fontsize=8,
             )
 
-    def _draw_scaling_subplot(
-        self, ax: Axes, benchmarks: List[Dict[str, Any]], param_name: str
-    ):
+    def _draw_scaling_subplot(self, ax: Axes, benchmarks: List[Dict[str, Any]], param_name: str):
         """Draw scaling line chart on given axes."""
         test_data = {}
         for bm in benchmarks:
@@ -225,9 +219,7 @@ class BenchmarkPlotGenerator:
         ax.legend(loc="best", fontsize=7)
         ax.grid(True, alpha=0.3)
 
-    def _draw_throughput_subplot(
-        self, ax: Axes, benchmarks: List[Dict[str, Any]], param_name: str
-    ):
+    def _draw_throughput_subplot(self, ax: Axes, benchmarks: List[Dict[str, Any]], param_name: str):
         """Draw throughput line chart on given axes."""
         test_data = {}
         for bm in benchmarks:
@@ -262,9 +254,7 @@ class BenchmarkPlotGenerator:
         ax.set_title(f"Throughput ({param_name})")
         ax.legend(loc="best", fontsize=7)
         ax.grid(True, alpha=0.3)
-        ax.yaxis.set_major_formatter(
-            ticker.FuncFormatter(lambda x, _: format(int(x), ","))
-        )
+        ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: format(int(x), ",")))
 
     def generate_all_plots(self, json_file: str):
         """

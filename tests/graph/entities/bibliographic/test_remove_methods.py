@@ -16,7 +16,7 @@ from oc_ocdm.prov.prov_set import ProvSet
 
 
 class TestBibliographicReferenceRemovers(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -51,7 +51,7 @@ class TestBibliographicReferenceRemovers(unittest.TestCase):
 
 
 class TestReferencePointerRemovers(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -86,7 +86,7 @@ class TestReferencePointerRemovers(unittest.TestCase):
 
 
 class TestPointerListRemovers(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -121,7 +121,7 @@ class TestPointerListRemovers(unittest.TestCase):
 
 
 class TestDiscourseElementRemovers(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -230,7 +230,7 @@ class TestDiscourseElementRemovers(unittest.TestCase):
 
 
 class TestCitationRemovers(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -259,7 +259,7 @@ class TestCitationRemovers(unittest.TestCase):
 
 
 class TestResponsibleAgentRemovers(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -294,7 +294,7 @@ class TestResponsibleAgentRemovers(unittest.TestCase):
 
 
 class TestMetadataRemovers(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -395,7 +395,7 @@ class TestMetadataRemovers(unittest.TestCase):
 
 
 class TestProvRemovers(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -448,5 +448,5 @@ class TestProvRemovers(unittest.TestCase):
         self.assertIsNone(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -17,8 +17,10 @@ from urllib.parse import quote
 
 from rdflib import Graph, Literal
 from rdflib.namespace import XSD as _RDFLIB_XSD
+from rdflib.term import Node
 from triplelite import XSD_STRING, RDFTerm, TripleLite
 
+from oc_ocdm._types import SparqlBinding, SparqlResultRows
 from oc_ocdm.constants import RDF_TYPE, XSD_DATE, XSD_GYEAR, XSD_GYEARMONTH, XSD_STRING
 
 _RDFLIB_XSD_STRING = _RDFLIB_XSD.string
@@ -43,18 +45,24 @@ class ParsedURI:
     prov_subject_count: str
 
 
-def sparql_binding_to_rdfterm(binding: dict) -> RDFTerm:
-    if binding['type'] == 'uri':
-        return RDFTerm("uri", binding['value'])
-    datatype = binding.get('datatype', '')
-    lang = binding.get('xml:lang', '')
+@dataclass
+class ContributorSubList:
+    id: int
+    agents: list[ResponsibleAgent]
+
+
+def sparql_binding_to_rdfterm(binding: SparqlBinding) -> RDFTerm:
+    if binding["type"] == "uri":
+        return RDFTerm("uri", binding["value"])
+    datatype = binding["datatype"] if "datatype" in binding else ""
+    lang = binding["xml:lang"] if "xml:lang" in binding else ""
     if not datatype and not lang:
         datatype = XSD_STRING
-    return RDFTerm("literal", binding['value'], datatype, lang)
+    return RDFTerm("literal", binding["value"], datatype, lang)
 
 
 def normalize_graph_literals(g: Graph) -> None:
-    triples_to_update = []
+    triples_to_update: list[tuple[Node, Node, Literal, Literal]] = []
     for s, p, o in g:
         if isinstance(o, Literal) and o.datatype is None and o.language is None:
             triples_to_update.append((s, p, o, Literal(str(o), datatype=_RDFLIB_XSD_STRING)))
@@ -68,13 +76,17 @@ def create_date(date_list: Optional[List[Optional[int]]] = None) -> Optional[str
     if date_list is not None:
         l_date_list: int = len(date_list)
         if l_date_list != 0 and date_list[0] is not None:
-            if l_date_list == 3 and date_list[1] is not None and date_list[2] is not None and \
-                    (date_list[1] != 1 or date_list[2] != 1):
-                string = datetime(date_list[0], date_list[1], date_list[2]).strftime('%Y-%m-%d')
+            if (
+                l_date_list == 3
+                and date_list[1] is not None
+                and date_list[2] is not None
+                and (date_list[1] != 1 or date_list[2] != 1)
+            ):
+                string = datetime(date_list[0], date_list[1], date_list[2]).strftime("%Y-%m-%d")
             elif l_date_list >= 2 and date_list[1] is not None:
-                string = datetime(date_list[0], date_list[1], 1).strftime('%Y-%m')
+                string = datetime(date_list[0], date_list[1], 1).strftime("%Y-%m")
             else:
-                string = datetime(date_list[0], 1, 1).strftime('%Y')
+                string = datetime(date_list[0], 1, 1).strftime("%Y")
     return string
 
 
@@ -83,27 +95,27 @@ def get_datatype_from_iso_8601(string: str) -> Tuple[str, str]:
     string = string[:10]
 
     try:
-        date_parts: List[int] = [int(s) for s in string.split(sep='-', maxsplit=2)]
+        date_parts: List[int] = [int(s) for s in string.split(sep="-", maxsplit=2)]
     except ValueError:
         raise ValueError("The provided date string is not ISO-8601 compliant!")
 
     num_of_parts: int = len(date_parts)
     if num_of_parts == 3:
-        return XSD_DATE, datetime(date_parts[0], date_parts[1], date_parts[2]).strftime('%Y-%m-%d')
+        return XSD_DATE, datetime(date_parts[0], date_parts[1], date_parts[2]).strftime("%Y-%m-%d")
     elif num_of_parts == 2:
-        return XSD_GYEARMONTH, datetime(date_parts[0], date_parts[1], 1).strftime('%Y-%m')
+        return XSD_GYEARMONTH, datetime(date_parts[0], date_parts[1], 1).strftime("%Y-%m")
     else:
-        return XSD_GYEAR, datetime(date_parts[0], 1, 1).strftime('%Y')
+        return XSD_GYEAR, datetime(date_parts[0], 1, 1).strftime("%Y")
 
-def get_ordered_contributors_from_br(br: BibliographicResource,
-                                     contributor_type: str):
+
+def get_ordered_contributors_from_br(br: BibliographicResource, contributor_type: str) -> List[ResponsibleAgent]:
 
     ar_list: List[AgentRole] = br.get_contributors()
 
     list_id: int = 0
-    heads: Dict[str, Dict] = {}
-    tails: Dict[str, Dict] = {}
-    sub_lists: List[Dict] = []
+    heads: Dict[str, ContributorSubList] = {}
+    tails: Dict[str, ContributorSubList] = {}
+    sub_lists: List[ContributorSubList] = []
     from_id_to_res_in_heads: Dict[int, str] = {}
     for ar in ar_list:
         role_type: Optional[str] = ar.get_role_type()
@@ -116,14 +128,14 @@ def get_ordered_contributors_from_br(br: BibliographicResource,
 
         if role_type is not None and role_type == str(contributor_type) and ra is not None:
             if next_ar_res is not None and next_ar_res in heads:
-                sub_list: Dict = heads[next_ar_res]
-                sub_list['list'].insert(0, ra)
+                sub_list = heads[next_ar_res]
+                sub_list.agents.insert(0, ra)
                 del heads[next_ar_res]
                 heads[ar.res] = sub_list
-                from_id_to_res_in_heads[sub_list['id']] = ar.res
-            elif ar.res is not None and ar.res in tails:
-                sub_list: Dict = tails[ar.res]
-                sub_list['list'].append(ra)
+                from_id_to_res_in_heads[sub_list.id] = ar.res
+            elif ar.res in tails:
+                sub_list = tails[ar.res]
+                sub_list.agents.append(ra)
                 del tails[ar.res]
 
                 if next_ar_res is not None:
@@ -131,23 +143,23 @@ def get_ordered_contributors_from_br(br: BibliographicResource,
             else:
                 # This AR cannot be inserted into any list, so
                 # we need to create an entirely new list for it:
-                sub_list: Dict = {'id': list_id, 'list': [ra]}
+                sub_list = ContributorSubList(list_id, [ra])
                 list_id += 1
                 sub_lists.append(sub_list)
 
                 heads[ar.res] = sub_list
-                from_id_to_res_in_heads[sub_list['id']] = ar.res
+                from_id_to_res_in_heads[sub_list.id] = ar.res
                 if next_ar_res is not None:
                     tails[next_ar_res] = sub_list
 
-    ids_in_heads: Set[int] = {val['id'] for val in heads.values()}
-    ids_in_tails: Set[int] = {val['id'] for val in tails.values()}
+    ids_in_heads: Set[int] = {val.id for val in heads.values()}
+    ids_in_tails: Set[int] = {val.id for val in tails.values()}
     diff_set: Set[int] = ids_in_heads - ids_in_tails
     if len(diff_set) == 0:
         # No contributor was found!
         return []
     elif len(diff_set) != 1:
-        raise ValueError('A malformed list of AgentRole entities was given.')
+        raise ValueError("A malformed list of AgentRole entities was given.")
     else:
         result_list: List[ResponsibleAgent] = []
         cur_id: int = diff_set.pop()
@@ -157,25 +169,25 @@ def get_ordered_contributors_from_br(br: BibliographicResource,
             found: bool = False
             if cur_id in from_id_to_res_in_heads:
                 res: str = from_id_to_res_in_heads[cur_id]
-                subl: Dict = heads[res]
-                subl_id: int = subl['id']
+                subl = heads[res]
+                subl_id: int = subl.id
                 if subl_id not in already_merged_list_ids:
                     found = True
                     already_merged_list_ids.add(subl_id)
-                    result_list = subl['list'] + result_list
+                    result_list = subl.agents + result_list
 
                     # Now we need to get the next cur_id value:
                     if res in tails:
-                        cur_id = tails[res]['id']
+                        cur_id = tails[res].id
                     else:
                         finished = True
 
             if not found:
-                raise ValueError('A malformed list of AgentRole entities was given.')
+                raise ValueError("A malformed list of AgentRole entities was given.")
 
         unmerged_list_ids: Set[int] = ids_in_heads - already_merged_list_ids
         if len(unmerged_list_ids) != 0:
-            raise ValueError('A malformed list of AgentRole entities was given.')
+            raise ValueError("A malformed list of AgentRole entities was given.")
 
         return result_list
 
@@ -273,8 +285,16 @@ def find_local_line_id(res: str, n_file_item: int = 1) -> int:
     return cur_number - cur_file_split
 
 
-def find_paths(res: str, base_dir: str, base_iri: str, default_dir: str, dir_split: int,
-               n_file_item: int, is_json: bool = True, process_id: int|str|None = None) -> Tuple[str, str]:
+def find_paths(
+    res: str,
+    base_dir: str,
+    base_iri: str,
+    default_dir: str,
+    dir_split: int,
+    n_file_item: int,
+    is_json: bool = True,
+    process_id: int | str | None = None,
+) -> Tuple[str, str]:
     """
     This function is responsible for looking for the correct JSON file that contains the data related to the
     resource identified by the variable 'string_iri'. This search takes into account the organisation in
@@ -299,42 +319,62 @@ def find_paths(res: str, base_dir: str, base_iri: str, default_dir: str, dir_spl
 
         if parsed.is_prov:
             sub_folder = parsed.prov_subject_prefix or default_dir or "_"
-            file_extension = '.json' if is_json else '.nq'
-            cur_dir_path = base_dir + parsed.prov_subject_short_name + os.sep + sub_folder + \
-                os.sep + str(cur_split) + os.sep + str(cur_file_split) + os.sep + "prov"
+            file_extension = ".json" if is_json else ".nq"
+            cur_dir_path = (
+                base_dir
+                + parsed.prov_subject_short_name
+                + os.sep
+                + sub_folder
+                + os.sep
+                + str(cur_split)
+                + os.sep
+                + str(cur_file_split)
+                + os.sep
+                + "prov"
+            )
             cur_file_path = cur_dir_path + os.sep + parsed.short_name + process_id_str + file_extension
         else:
             sub_folder = parsed.prefix or default_dir or "_"
-            file_extension = '.json' if is_json else '.nt'
+            file_extension = ".json" if is_json else ".nt"
             cur_dir_path = base_dir + parsed.short_name + os.sep + sub_folder + os.sep + str(cur_split)
             cur_file_path = cur_dir_path + os.sep + str(cur_file_split) + process_id_str + file_extension
     elif dir_split == 0:
         if parsed.is_prov:
             sub_folder = parsed.prov_subject_prefix or default_dir or "_"
-            file_extension = '.json' if is_json else '.nq'
-            cur_dir_path = base_dir + parsed.prov_subject_short_name + os.sep + sub_folder + \
-                os.sep + str(cur_file_split) + os.sep + "prov"
+            file_extension = ".json" if is_json else ".nq"
+            cur_dir_path = (
+                base_dir
+                + parsed.prov_subject_short_name
+                + os.sep
+                + sub_folder
+                + os.sep
+                + str(cur_file_split)
+                + os.sep
+                + "prov"
+            )
             cur_file_path = cur_dir_path + os.sep + parsed.short_name + process_id_str + file_extension
         else:
             sub_folder = parsed.prefix or default_dir or "_"
-            file_extension = '.json' if is_json else '.nt'
+            file_extension = ".json" if is_json else ".nt"
             cur_dir_path = base_dir + parsed.short_name + os.sep + sub_folder
             cur_file_path = cur_dir_path + os.sep + str(cur_file_split) + process_id_str + file_extension
     else:
-        file_extension = '.json' if is_json else '.nq'
+        file_extension = ".json" if is_json else ".nq"
         cur_dir_path = base_dir + parsed.short_name
         cur_file_path = cur_dir_path + os.sep + parsed.prefix + parsed.count + process_id_str + file_extension
 
     return cur_dir_path, cur_file_path
 
+
 def has_supplier_prefix(res: str, base_iri: str) -> bool:
     string_iri: str = str(res)
     return re.search(r"^%s[a-z][a-z]/0" % base_iri, string_iri) is not None
 
-def build_graph_from_results(results: List[Dict]) -> TripleLite:
+
+def build_graph_from_results(results: SparqlResultRows) -> TripleLite:
     graph = TripleLite()
     for triple in results:
-        graph.add((triple['s']['value'], triple['p']['value'], sparql_binding_to_rdfterm(triple['o'])))
+        graph.add((triple["s"]["value"], triple["p"]["value"], sparql_binding_to_rdfterm(triple["o"])))
     return graph
 
 

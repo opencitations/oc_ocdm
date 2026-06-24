@@ -34,7 +34,6 @@ if TYPE_CHECKING:
     from typing import ClassVar, Dict, List, Optional, Set
 
 
-
 class GraphSet(AbstractSet[GraphEntity]):
     # Labels
     labels: ClassVar[Dict[str, str]] = {
@@ -48,16 +47,22 @@ class GraphSet(AbstractSet[GraphEntity]):
         "pl": "single location pointer list",
         "ra": "responsible agent",
         "re": "resource embodiment",
-        "rp": "in-text reference pointer"
+        "rp": "in-text reference pointer",
     }
 
-    def __init__(self, base_iri: str, info_dir: str = "", supplier_prefix: str = "",
-                 wanted_label: bool = True, custom_counter_handler: CounterHandler | None = None) -> None:
+    def __init__(
+        self,
+        base_iri: str,
+        info_dir: str | None = "",
+        supplier_prefix: str = "",
+        wanted_label: bool = True,
+        custom_counter_handler: CounterHandler | None = None,
+    ) -> None:
         super(GraphSet, self).__init__()
         # The following variable maps a URIRef with the related graph entity
         self.res_to_entity: Dict[str, GraphEntity] = {}
         self.base_iri: str = base_iri
-        self.info_dir: str = info_dir
+        self.info_dir: str | None = info_dir
         self.supplier_prefix: str = supplier_prefix
         self.wanted_label: bool = wanted_label
         # Graphs
@@ -88,128 +93,221 @@ class GraphSet(AbstractSet[GraphEntity]):
             return self.res_to_entity[res]
 
     # Add resources related to bibliographic entities
-    def add_an(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: SubgraphView | None = None) -> ReferenceAnnotation:
+    def add_an(
+        self,
+        resp_agent: str | None,
+        source: str | None = None,
+        res: str | None = None,
+        preexisting_graph: SubgraphView | None = None,
+    ) -> ReferenceAnnotation:
         if res is not None and get_short_name(res) != "an":
             raise ValueError(f"Given res: <{res}> is inappropriate for a ReferenceAnnotation entity.")
         if res is not None and res in self.res_to_entity:
             return cast(ReferenceAnnotation, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_an, "an", res)
-        return ReferenceAnnotation(cur_g, self, GraphEntity.iri_note, res,
-                                   resp_agent, source, count, label, "an",
-                                   preexisting_graph)
+        return ReferenceAnnotation(
+            cur_g, self, GraphEntity.iri_note, res, resp_agent, source, count, label, "an", preexisting_graph
+        )
 
-    def add_ar(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: SubgraphView | None = None) -> AgentRole:
+    def add_ar(
+        self,
+        resp_agent: str | None,
+        source: str | None = None,
+        res: str | None = None,
+        preexisting_graph: SubgraphView | None = None,
+    ) -> AgentRole:
         if res is not None and get_short_name(res) != "ar":
             raise ValueError(f"Given res: <{res}> is inappropriate for an AgentRole entity.")
         if res is not None and res in self.res_to_entity:
             return cast(AgentRole, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_ar, "ar", res)
-        return AgentRole(cur_g, self, GraphEntity.iri_role_in_time, res,
-                         resp_agent, source, count, label, "ar",
-                         preexisting_graph)
+        return AgentRole(
+            cur_g, self, GraphEntity.iri_role_in_time, res, resp_agent, source, count, label, "ar", preexisting_graph
+        )
 
-    def add_be(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: SubgraphView | None = None) -> BibliographicReference:
+    def add_be(
+        self,
+        resp_agent: str | None,
+        source: str | None = None,
+        res: str | None = None,
+        preexisting_graph: SubgraphView | None = None,
+    ) -> BibliographicReference:
         if res is not None and get_short_name(res) != "be":
             raise ValueError(f"Given res: <{res}> is inappropriate for a BibliographicReference entity.")
         if res is not None and res in self.res_to_entity:
             return cast(BibliographicReference, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_be, "be", res)
-        return BibliographicReference(cur_g, self, GraphEntity.iri_bibliographic_reference, res,
-                                      resp_agent, source, count, label, "be",
-                                      preexisting_graph)
+        return BibliographicReference(
+            cur_g,
+            self,
+            GraphEntity.iri_bibliographic_reference,
+            res,
+            resp_agent,
+            source,
+            count,
+            label,
+            "be",
+            preexisting_graph,
+        )
 
-    def add_br(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: SubgraphView | None = None) -> BibliographicResource:
+    def add_br(
+        self,
+        resp_agent: str | None,
+        source: str | None = None,
+        res: str | None = None,
+        preexisting_graph: SubgraphView | None = None,
+    ) -> BibliographicResource:
         if res is not None and get_short_name(res) != "br":
             raise ValueError(f"Given res: <{res}> is inappropriate for a BibliographicResource entity.")
         if res is not None and res in self.res_to_entity:
             return cast(BibliographicResource, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_br, "br", res)
-        return BibliographicResource(cur_g, self, GraphEntity.iri_expression, res,
-                                     resp_agent, source, count, label, "br",
-                                     preexisting_graph)
+        return BibliographicResource(
+            cur_g, self, GraphEntity.iri_expression, res, resp_agent, source, count, label, "br", preexisting_graph
+        )
 
-    def add_ci(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: SubgraphView | None = None) -> Citation:
+    def add_ci(
+        self,
+        resp_agent: str | None,
+        source: str | None = None,
+        res: str | None = None,
+        preexisting_graph: SubgraphView | None = None,
+    ) -> Citation:
         if res is not None and get_short_name(res) != "ci":
             raise ValueError(f"Given res: <{res}> is inappropriate for a Citation entity.")
         if res is not None and res in self.res_to_entity:
             return cast(Citation, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_ci, "ci", res)
-        return Citation(cur_g, self, GraphEntity.iri_citation, res,
-                        resp_agent, source, count, label, "ci",
-                        preexisting_graph)
+        return Citation(
+            cur_g, self, GraphEntity.iri_citation, res, resp_agent, source, count, label, "ci", preexisting_graph
+        )
 
-    def add_de(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: SubgraphView | None = None) -> DiscourseElement:
+    def add_de(
+        self,
+        resp_agent: str | None,
+        source: str | None = None,
+        res: str | None = None,
+        preexisting_graph: SubgraphView | None = None,
+    ) -> DiscourseElement:
         if res is not None and get_short_name(res) != "de":
             raise ValueError(f"Given res: <{res}> is inappropriate for a DiscourseElement entity.")
         if res is not None and res in self.res_to_entity:
             return cast(DiscourseElement, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_de, "de", res)
-        return DiscourseElement(cur_g, self, GraphEntity.iri_discourse_element, res,
-                                resp_agent, source, count, label, "de",
-                                preexisting_graph)
+        return DiscourseElement(
+            cur_g,
+            self,
+            GraphEntity.iri_discourse_element,
+            res,
+            resp_agent,
+            source,
+            count,
+            label,
+            "de",
+            preexisting_graph,
+        )
 
-    def add_id(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: SubgraphView | None = None) -> Identifier:
+    def add_id(
+        self,
+        resp_agent: str | None,
+        source: str | None = None,
+        res: str | None = None,
+        preexisting_graph: SubgraphView | None = None,
+    ) -> Identifier:
         if res is not None and get_short_name(res) != "id":
             raise ValueError(f"Given res: <{res}> is inappropriate for an Identifier entity.")
         if res is not None and res in self.res_to_entity:
             return cast(Identifier, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_id, "id", res)
-        return Identifier(cur_g, self, GraphEntity.iri_identifier, res,
-                          resp_agent, source, count, label, "id",
-                          preexisting_graph)
+        return Identifier(
+            cur_g, self, GraphEntity.iri_identifier, res, resp_agent, source, count, label, "id", preexisting_graph
+        )
 
-    def add_pl(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: SubgraphView | None = None) -> PointerList:
+    def add_pl(
+        self,
+        resp_agent: str | None,
+        source: str | None = None,
+        res: str | None = None,
+        preexisting_graph: SubgraphView | None = None,
+    ) -> PointerList:
         if res is not None and get_short_name(res) != "pl":
             raise ValueError(f"Given res: <{res}> is inappropriate for a PointerList entity.")
         if res is not None and res in self.res_to_entity:
             return cast(PointerList, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_pl, "pl", res)
-        return PointerList(cur_g, self, GraphEntity.iri_singleloc_pointer_list, res,
-                           resp_agent, source, count, label, "pl",
-                           preexisting_graph)
+        return PointerList(
+            cur_g,
+            self,
+            GraphEntity.iri_singleloc_pointer_list,
+            res,
+            resp_agent,
+            source,
+            count,
+            label,
+            "pl",
+            preexisting_graph,
+        )
 
-    def add_rp(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: SubgraphView | None = None) -> ReferencePointer:
+    def add_rp(
+        self,
+        resp_agent: str | None,
+        source: str | None = None,
+        res: str | None = None,
+        preexisting_graph: SubgraphView | None = None,
+    ) -> ReferencePointer:
         if res is not None and get_short_name(res) != "rp":
             raise ValueError(f"Given res: <{res}> is inappropriate for a ReferencePointer entity.")
         if res is not None and res in self.res_to_entity:
             return cast(ReferencePointer, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_rp, "rp", res)
-        return ReferencePointer(cur_g, self, GraphEntity.iri_intextref_pointer, res,
-                                resp_agent, source, count, label, "rp",
-                                preexisting_graph)
+        return ReferencePointer(
+            cur_g,
+            self,
+            GraphEntity.iri_intextref_pointer,
+            res,
+            resp_agent,
+            source,
+            count,
+            label,
+            "rp",
+            preexisting_graph,
+        )
 
-    def add_ra(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: SubgraphView | None = None) -> ResponsibleAgent:
+    def add_ra(
+        self,
+        resp_agent: str | None,
+        source: str | None = None,
+        res: str | None = None,
+        preexisting_graph: SubgraphView | None = None,
+    ) -> ResponsibleAgent:
         if res is not None and get_short_name(res) != "ra":
             raise ValueError(f"Given res: <{res}> is inappropriate for a ResponsibleAgent entity.")
         if res is not None and res in self.res_to_entity:
             return cast(ResponsibleAgent, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_ra, "ra", res)
-        return ResponsibleAgent(cur_g, self, GraphEntity.iri_agent, res,
-                                resp_agent, source, count, label, "ra",
-                                preexisting_graph)
+        return ResponsibleAgent(
+            cur_g, self, GraphEntity.iri_agent, res, resp_agent, source, count, label, "ra", preexisting_graph
+        )
 
-    def add_re(self, resp_agent: str | None, source: str | None = None, res: str | None = None,
-               preexisting_graph: SubgraphView | None = None) -> ResourceEmbodiment:
+    def add_re(
+        self,
+        resp_agent: str | None,
+        source: str | None = None,
+        res: str | None = None,
+        preexisting_graph: SubgraphView | None = None,
+    ) -> ResourceEmbodiment:
         if res is not None and get_short_name(res) != "re":
             raise ValueError(f"Given res: <{res}> is inappropriate for a ResourceEmbodiment entity.")
         if res is not None and res in self.res_to_entity:
             return cast(ResourceEmbodiment, self.res_to_entity[res])
         cur_g, count, label = self._add(self.g_re, "re", res)
-        return ResourceEmbodiment(cur_g, self, GraphEntity.iri_manifestation, res,
-                                  resp_agent, source, count, label, "re",
-                                  preexisting_graph)
+        return ResourceEmbodiment(
+            cur_g, self, GraphEntity.iri_manifestation, res, resp_agent, source, count, label, "re", preexisting_graph
+        )
 
-    def _add(self, graph_url: str, short_name: str, res: str | None = None) -> tuple[TripleLite, str | None, str | None]:
+    def _add(
+        self, graph_url: str, short_name: str, res: str | None = None
+    ) -> tuple[TripleLite, str | None, str | None]:
         cur_g = TripleLite(identifier=graph_url)
 
         count: Optional[str] = None
@@ -224,7 +322,9 @@ class GraphSet(AbstractSet[GraphEntity]):
                 self.counter_handler.set_counter(res_count, short_name, supplier_prefix=supplier_prefix)
             return cur_g, count, label
 
-        count = supplier_prefix + str(self.counter_handler.increment_counter(short_name, supplier_prefix=supplier_prefix))
+        count = supplier_prefix + str(
+            self.counter_handler.increment_counter(short_name, supplier_prefix=supplier_prefix)
+        )
 
         if self.wanted_label:
             label = "%s %s [%s/%s]" % (self.labels[short_name], count, short_name, count)
@@ -255,10 +355,13 @@ class GraphSet(AbstractSet[GraphEntity]):
                 nt_bytes = sparql_construct(ts_url, query)
                 if nt_bytes:
                     from oc_ocdm.reader import Reader
+
                     rdflib_g = Graph()
-                    rdflib_g.parse(BytesIO(nt_bytes), format='nt')
+                    rdflib_g.parse(BytesIO(nt_bytes), format="nt")
                     graphs = from_rdflib(rdflib_g)
-                    imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(self, graphs[0], resp_agent)
+                    imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(
+                        self, graphs[0], resp_agent
+                    )
                     for imported_entity in imported_entities:
                         imported_entity.g.remove((imported_entity.res, None, RDFTerm("uri", str(entity_res))))
 

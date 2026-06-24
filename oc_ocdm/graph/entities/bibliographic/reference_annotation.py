@@ -23,12 +23,12 @@ from oc_ocdm.graph.graph_entity import GraphEntity
 
 class ReferenceAnnotation(BibliographicEntity):
     """Reference annotation (short: an): an annotation, attached either to an in-text
-       reference pointer or to a bibliographic reference, describing the related citation. If an
-       in-text reference pointer is annotated, the related citation may be characterized with a
-       citation function (the reason for that citation) specific to the textual location of that
-       in-text reference pointer within the citing entity. If a bibliographic reference is
-       annotated, the related citation may be similarly characterized in a more general way
-       with a citation function (the reason for that citation)."""
+    reference pointer or to a bibliographic reference, describing the related citation. If an
+    in-text reference pointer is annotated, the related citation may be characterized with a
+    citation function (the reason for that citation) specific to the textual location of that
+    in-text reference pointer within the citing entity. If a bibliographic reference is
+    annotated, the related citation may be similarly characterized in a more general way
+    with a citation function (the reason for that citation)."""
 
     def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
@@ -63,11 +63,11 @@ class ReferenceAnnotation(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_body, 'ci')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_body, "ci")
         if uri is not None:
             return self.g_set.add_ci(self.resp_agent, self.source, uri)
 
-    @accepts_only('ci')
+    @accepts_only("ci")
     def has_body_annotation(self, ci_res: Citation) -> None:
         """
         Setter method corresponding to the ``oa:hasBody`` RDF predicate.

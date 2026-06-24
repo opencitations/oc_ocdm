@@ -8,3 +8,5 @@
 
 from oc_ocdm.graph.entities.bibliographic_entity import BibliographicEntity
 from oc_ocdm.graph.entities.identifier import Identifier
+
+__all__ = ["BibliographicEntity", "Identifier"]

@@ -14,7 +14,7 @@ from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestBibliographicEntity(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -37,10 +37,10 @@ class TestBibliographicEntity(unittest.TestCase):
         id3 = self.graph_set.add_id(self.resp_agent)
         id4 = self.graph_set.add_id(self.resp_agent)
 
-        id1.create_issn('1111-2222')
-        id2.create_doi('1111-2222')
-        id3.create_issn('3333-4444')
-        id4.create_issn('1111-2222')
+        id1.create_issn("1111-2222")
+        id2.create_doi("1111-2222")
+        id3.create_issn("3333-4444")
+        id4.create_issn("1111-2222")
 
         self.entity.has_identifier(id1)
         self.entity.has_identifier(id2)
@@ -57,12 +57,14 @@ class TestBibliographicEntity(unittest.TestCase):
         # Tuples were used down below inside the sets because they're are hashable (since they're immutable):
         id_list_set = {(i.get_scheme(), i.get_literal_value()) for i in id_list}
 
-        non_duplicated_ids = {(GraphEntity.iri_issn, '1111-2222'),
-                              (GraphEntity.iri_issn, '3333-4444'),
-                              (GraphEntity.iri_doi, '1111-2222')}
+        non_duplicated_ids = {
+            (GraphEntity.iri_issn, "1111-2222"),
+            (GraphEntity.iri_issn, "3333-4444"),
+            (GraphEntity.iri_doi, "1111-2222"),
+        }
 
         self.assertSetEqual(id_list_set, non_duplicated_ids)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

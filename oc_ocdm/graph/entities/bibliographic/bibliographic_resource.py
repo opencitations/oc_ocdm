@@ -28,7 +28,7 @@ from oc_ocdm.graph.graph_entity import GraphEntity
 
 class BibliographicResource(BibliographicEntity):
     """Bibliographic resource (short: br): a published bibliographic resource that cites/is
-       cited by another published bibliographic resource."""
+    cited by another published bibliographic resource."""
 
     def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
@@ -107,7 +107,7 @@ class BibliographicResource(BibliographicEntity):
         if not (prefer_self and self.get_related_documents()):
             for doc in related_doc_list:
                 self.has_related_document(doc)
-                
+
     # HAS TITLE
     def get_title(self) -> Optional[str]:
         """
@@ -181,11 +181,11 @@ class BibliographicResource(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_part_of, 'br')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_part_of, "br")
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source, uri)
 
-    @accepts_only('br')
+    @accepts_only("br")
     def is_part_of(self, br_res: BibliographicResource) -> None:
         """
         Setter method corresponding to the ``frbr:partOf`` RDF predicate.
@@ -218,13 +218,13 @@ class BibliographicResource(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_cites, 'br')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_cites, "br")
         result: List[BibliographicResource] = []
         for uri in uri_list:
             result.append(self.g_set.add_br(self.resp_agent, self.source, uri))
         return result
 
-    @accepts_only('br')
+    @accepts_only("br")
     def has_citation(self, br_res: BibliographicResource) -> None:
         """
         Setter method corresponding to the ``cito:cites`` RDF predicate.
@@ -239,7 +239,7 @@ class BibliographicResource(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.iri_cites, RDFTerm("uri", str(br_res.res))))
 
-    @accepts_only('br')
+    @accepts_only("br")
     def remove_citation(self, br_res: BibliographicResource | None = None) -> None:
         """
         Remover method corresponding to the ``cito:cites`` RDF predicate.
@@ -282,9 +282,8 @@ class BibliographicResource(BibliographicEntity):
         :return: None
         """
         cur_type, string = get_datatype_from_iso_8601(string)
-        if cur_type is not None and string is not None:
-            self.remove_pub_date()
-            self._create_literal(GraphEntity.iri_has_publication_date, string, cur_type, False)
+        self.remove_pub_date()
+        self._create_literal(GraphEntity.iri_has_publication_date, string, cur_type, False)
 
     def remove_pub_date(self) -> None:
         """
@@ -301,13 +300,13 @@ class BibliographicResource(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_embodiment, 're')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_embodiment, "re")
         result: List[ResourceEmbodiment] = []
         for uri in uri_list:
             result.append(self.g_set.add_re(self.resp_agent, self.source, uri))
         return result
 
-    @accepts_only('re')
+    @accepts_only("re")
     def has_format(self, re_res: ResourceEmbodiment) -> None:
         """
         Setter method corresponding to the ``frbr:embodiment`` RDF predicate.
@@ -322,7 +321,7 @@ class BibliographicResource(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.iri_embodiment, RDFTerm("uri", str(re_res.res))))
 
-    @accepts_only('re')
+    @accepts_only("re")
     def remove_format(self, re_res: ResourceEmbodiment | None = None) -> None:
         """
         Remover method corresponding to the ``frbr:embodiment`` RDF predicate.
@@ -418,13 +417,13 @@ class BibliographicResource(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_contains_reference, 'be')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_contains_reference, "be")
         result: List[BibliographicReference] = []
         for uri in uri_list:
             result.append(self.g_set.add_be(self.resp_agent, self.source, uri))
         return result
 
-    @accepts_only('be')
+    @accepts_only("be")
     def contains_in_reference_list(self, be_res: BibliographicReference) -> None:
         """
         Setter method corresponding to the ``frbr:part`` RDF predicate.
@@ -439,7 +438,7 @@ class BibliographicResource(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.iri_contains_reference, RDFTerm("uri", str(be_res.res))))
 
-    @accepts_only('be')
+    @accepts_only("be")
     def remove_contained_in_reference_list(self, be_res: BibliographicReference | None = None) -> None:
         """
         Remover method corresponding to the ``frbr:part`` RDF predicate.
@@ -465,13 +464,13 @@ class BibliographicResource(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_contains_de, 'de')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_contains_de, "de")
         result: List[DiscourseElement] = []
         for uri in uri_list:
             result.append(self.g_set.add_de(self.resp_agent, self.source, uri))
         return result
 
-    @accepts_only('de')
+    @accepts_only("de")
     def contains_discourse_element(self, de_res: DiscourseElement) -> None:
         """
         Setter method corresponding to the ``frbr:part`` RDF predicate.
@@ -486,7 +485,7 @@ class BibliographicResource(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.iri_contains_de, RDFTerm("uri", str(de_res.res))))
 
-    @accepts_only('de')
+    @accepts_only("de")
     def remove_contained_discourse_element(self, de_res: DiscourseElement | None = None) -> None:
         """
         Remover method corresponding to the ``frbr:part`` RDF predicate.
@@ -512,13 +511,13 @@ class BibliographicResource(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_is_document_context_for, 'ar')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_is_document_context_for, "ar")
         result: List[AgentRole] = []
         for uri in uri_list:
             result.append(self.g_set.add_ar(self.resp_agent, self.source, uri))
         return result
 
-    @accepts_only('ar')
+    @accepts_only("ar")
     def has_contributor(self, ar_res: AgentRole):
         """
         Setter method corresponding to the ``pro:isDocumentContextFor`` RDF predicate.
@@ -530,7 +529,7 @@ class BibliographicResource(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.iri_is_document_context_for, RDFTerm("uri", str(ar_res.res))))
 
-    @accepts_only('ar')
+    @accepts_only("ar")
     def remove_contributor(self, ar_res: AgentRole | None = None):
         """
         Remover method corresponding to the ``frbr:part`` RDF predicate.
@@ -591,7 +590,7 @@ class BibliographicResource(BibliographicEntity):
             self.g.remove((self.res, GraphEntity.iri_relation, RDFTerm("uri", str(thing_res))))
         else:
             self.g.remove((self.res, GraphEntity.iri_relation, None))
-    
+
     def create_abstract(self) -> None:
         """
         Setter method corresponding to the ``rdf:type`` RDF predicate.
@@ -982,7 +981,7 @@ class BibliographicResource(BibliographicEntity):
         :return: None
         """
         self._create_type(GraphEntity.iri_newspaper_editorial)
-    
+
     def create_newspaper_issue(self) -> None:
         """
         Setter method corresponding to the ``rdf:type`` RDF predicate.

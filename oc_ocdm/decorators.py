@@ -15,7 +15,7 @@ from oc_ocdm.abstract_entity import AbstractEntity
 
 if TYPE_CHECKING:
     from typing import Callable
-F = TypeVar('F', bound='Callable[..., object]')
+F = TypeVar("F", bound="Callable[..., object]")
 
 
 def accepts_only(param_type: str) -> Callable[[F], F]:
@@ -32,17 +32,20 @@ def accepts_only(param_type: str) -> Callable[[F], F]:
     :param param_type: A short string representing the expected type
     :type param_type: str
     """
+
     def accepts_only_decorator(function: F) -> F:
         lowercase_type = param_type.lower()
 
         @wraps(function)
         def accepts_only_wrapper(self: object, param: object = None, **kwargs: object) -> object:
-            if param is None or \
-                    (isinstance(param, AbstractEntity) and param.short_name == lowercase_type):
+            if param is None or (isinstance(param, AbstractEntity) and param.short_name == lowercase_type):
                 return function(self, param, **kwargs)
             else:
-                raise TypeError('[%s.%s] Expected argument type: %s. Provided argument type: %s.' %
-                                (self.__class__.__name__, function.__name__, lowercase_type, type(param).__name__))
+                raise TypeError(
+                    "[%s.%s] Expected argument type: %s. Provided argument type: %s."
+                    % (self.__class__.__name__, function.__name__, lowercase_type, type(param).__name__)
+                )
 
         return cast(F, accepts_only_wrapper)
+
     return accepts_only_decorator

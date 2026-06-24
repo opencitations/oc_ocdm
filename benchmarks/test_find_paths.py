@@ -10,7 +10,6 @@ from oc_ocdm.support.support import find_paths
 
 
 class TestFindPaths:
-
     @pytest.mark.benchmark(group="find_paths")
     @pytest.mark.parametrize("uri_count", [100, 500, 1000])
     def test_find_paths(self, benchmark, uri_count):

@@ -8,3 +8,5 @@
 
 from oc_ocdm.prov.prov_entity import ProvEntity
 from oc_ocdm.prov.prov_set import ProvSet
+
+__all__ = ["ProvEntity", "ProvSet"]

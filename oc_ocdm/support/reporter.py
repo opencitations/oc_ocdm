@@ -44,16 +44,16 @@ class Reporter(object):
         return self.last_sentence
 
     def get_articles_as_string(self) -> str:
-        parts = []
+        parts: List[str] = []
         for article in self.articles:
             for sentence in article:
                 parts.append(sentence)
                 parts.append("\n")
             parts.append("\n")
-        return ''.join(parts)
+        return "".join(parts)
 
-    def write_file(self, file_path) -> None:
-        with open(file_path, 'wt', encoding='utf-8') as f:
+    def write_file(self, file_path: str) -> None:
+        with open(file_path, "wt", encoding="utf-8") as f:
             f.write(self.get_articles_as_string())
 
     def is_empty(self) -> bool:

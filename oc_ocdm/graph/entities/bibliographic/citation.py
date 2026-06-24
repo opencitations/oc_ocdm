@@ -25,13 +25,13 @@ from oc_ocdm.graph.graph_entity import GraphEntity
 
 class Citation(BibliographicEntity):
     """Citation (short: ci): a permanent conceptual directional link from the citing
-       bibliographic resource to a cited bibliographic resource. A citation is created by the
-       performative act of an author citing a published work that is relevant to the current
-       work by using a particular textual device. Typically, citations are made by including a
-       bibliographic reference in the reference list of the citing work and by denoting such a
-       bibliographic reference using one or more in-text reference pointers (e.g. '[1]'), or by
-       the inclusion within the citing work of a link, in the form of an HTTP Uniform Resource
-       Locator (URL), to the cited bibliographic resource on the World Wide Web."""
+    bibliographic resource to a cited bibliographic resource. A citation is created by the
+    performative act of an author citing a published work that is relevant to the current
+    work by using a particular textual device. Typically, citations are made by including a
+    bibliographic reference in the reference list of the citing work and by denoting such a
+    bibliographic reference using one or more in-text reference pointers (e.g. '[1]'), or by
+    the inclusion within the citing work of a link, in the form of an HTTP Uniform Resource
+    Locator (URL), to the cited bibliographic resource on the World Wide Web."""
 
     def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
@@ -82,11 +82,11 @@ class Citation(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_citing_entity, 'br')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_citing_entity, "br")
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source, uri)
 
-    @accepts_only('br')
+    @accepts_only("br")
     def has_citing_entity(self, citing_res: BibliographicResource) -> None:
         """
         Setter method corresponding to the ``cito:hasCitingEntity`` RDF predicate.
@@ -118,11 +118,11 @@ class Citation(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_cited_entity, 'br')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_cited_entity, "br")
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source, uri)
 
-    @accepts_only('br')
+    @accepts_only("br")
     def has_cited_entity(self, cited_res: BibliographicResource) -> None:
         """
         Setter method corresponding to the ``cito:hasCitedEntity`` RDF predicate.
@@ -174,9 +174,8 @@ class Citation(BibliographicEntity):
         :return: None
         """
         cur_type, string = get_datatype_from_iso_8601(string)
-        if cur_type is not None and string is not None:
-            self.remove_citation_creation_date()
-            self._create_literal(GraphEntity.iri_has_citation_creation_date, string, cur_type, False)
+        self.remove_citation_creation_date()
+        self._create_literal(GraphEntity.iri_has_citation_creation_date, string, cur_type, False)
 
     def remove_citation_creation_date(self) -> None:
         """

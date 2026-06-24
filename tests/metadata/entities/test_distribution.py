@@ -16,7 +16,7 @@ from oc_ocdm.metadata.metadata_set import MetadataSet
 
 
 class TestBibliographicResource(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -157,5 +157,5 @@ class TestBibliographicResource(unittest.TestCase):
         self.assertEqual(self.di.get_byte_size(), byte_size)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

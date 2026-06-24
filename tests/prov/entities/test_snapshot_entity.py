@@ -17,7 +17,7 @@ from oc_ocdm.prov.prov_set import ProvSet
 
 
 class TestSnapshotEntity(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -93,5 +93,5 @@ class TestSnapshotEntity(unittest.TestCase):
         self.assertIn(triple, self.se.g)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

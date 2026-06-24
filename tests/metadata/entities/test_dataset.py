@@ -16,7 +16,7 @@ from oc_ocdm.metadata.metadata_set import MetadataSet
 
 
 class TestDataset(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -247,7 +247,6 @@ class TestDataset(unittest.TestCase):
         subjects = self.dataset.get_subjects()
         self.assertEqual(len(subjects), 2)
 
-
     def test_get_sub_datasets(self):
         self.dataset.has_sub_dataset(self.sub_dataset)
         sub_datasets = self.dataset.get_sub_datasets()
@@ -264,5 +263,5 @@ class TestDataset(unittest.TestCase):
         self.assertEqual(len(distributions), 1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -15,7 +15,7 @@ from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestReferencePointer(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -57,5 +57,5 @@ class TestReferencePointer(unittest.TestCase):
         self.assertIn(triple, self.rp1.g)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

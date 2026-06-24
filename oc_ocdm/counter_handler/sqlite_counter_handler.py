@@ -30,8 +30,14 @@ class SqliteCounterHandler(CounterHandler):
             entity TEXT PRIMARY KEY,
             count INTEGER)""")
 
-    def set_counter(self, new_value: int, entity_short_name: str, prov_short_name: str = "",  # type: ignore[override]
-                    identifier: int = 1, supplier_prefix: str = "") -> None:
+    def set_counter(
+        self,
+        new_value: int,
+        entity_short_name: str,
+        prov_short_name: str = "",  # type: ignore[override]
+        identifier: int = 1,
+        supplier_prefix: str = "",
+    ) -> None:
         """
         It allows to set the counter value of provenance entities.
 
@@ -50,8 +56,13 @@ class SqliteCounterHandler(CounterHandler):
         self.cur.execute(f"INSERT OR REPLACE INTO info (entity, count) VALUES ('{entity_short_name}', {new_value})")
         self.con.commit()
 
-    def read_counter(self, entity_short_name: str, prov_short_name: str = "",  # type: ignore[override]
-                     identifier: int = 1, supplier_prefix: str = "") -> int:
+    def read_counter(
+        self,
+        entity_short_name: str,
+        prov_short_name: str = "",  # type: ignore[override]
+        identifier: int = 1,
+        supplier_prefix: str = "",
+    ) -> int:
         """
         It allows to read the counter value of provenance entities.
 
@@ -65,10 +76,15 @@ class SqliteCounterHandler(CounterHandler):
         elif len(rows) == 0:
             return 0
         else:
-            raise(Exception("There is more than one counter for this entity. The databse id broken"))
+            raise (Exception("There is more than one counter for this entity. The databse id broken"))
 
-    def increment_counter(self, entity_short_name: str, prov_short_name: str = "",  # type: ignore[override]
-                          identifier: int = 1, supplier_prefix: str = "") -> int:
+    def increment_counter(
+        self,
+        entity_short_name: str,
+        prov_short_name: str = "",  # type: ignore[override]
+        identifier: int = 1,
+        supplier_prefix: str = "",
+    ) -> int:
         """
         It allows to increment the counter value of graph and provenance entities by one unit.
 
@@ -97,8 +113,8 @@ class SqliteCounterHandler(CounterHandler):
         The database path is preserved and the connection will be recreated upon unpickling.
         """
         state = self.__dict__.copy()
-        del state['con']
-        del state['cur']
+        del state["con"]
+        del state["cur"]
         return state
 
     def __setstate__(self, state: dict[str, object]) -> None:

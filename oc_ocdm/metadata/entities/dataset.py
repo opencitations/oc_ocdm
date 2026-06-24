@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 class Dataset(MetadataEntity):
     """Dataset (short: not applicable and strictly dependent on the implementation of the
-       dataset infrastructure): a set of collected information about something."""
+    dataset infrastructure): a set of collected information about something."""
 
     def _merge_properties(self, other: MetadataEntity) -> None:
         """
@@ -257,7 +257,13 @@ class Dataset(MetadataEntity):
         :return: None
         """
         if string is not None:
-            self.g.remove((self.res, MetadataEntity.iri_keyword, RDFTerm("literal", string, "http://www.w3.org/2001/XMLSchema#string")))
+            self.g.remove(
+                (
+                    self.res,
+                    MetadataEntity.iri_keyword,
+                    RDFTerm("literal", string, "http://www.w3.org/2001/XMLSchema#string"),
+                )
+            )
         else:
             self.g.remove((self.res, MetadataEntity.iri_keyword, None))
 
@@ -342,13 +348,13 @@ class Dataset(MetadataEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[str] = self._get_multiple_uri_references(MetadataEntity.iri_subset, '_dataset_')
+        uri_list: List[str] = self._get_multiple_uri_references(MetadataEntity.iri_subset, "_dataset_")
         result: List[Dataset] = []
         for uri in uri_list:
             result.append(self.m_set.add_dataset(self.dataset_name, self.resp_agent or "", self.source, uri))
         return result
 
-    @accepts_only('_dataset_')
+    @accepts_only("_dataset_")
     def has_sub_dataset(self, obj: Dataset) -> None:
         """
         Setter method corresponding to the ``void:subset`` RDF predicate.
@@ -362,7 +368,7 @@ class Dataset(MetadataEntity):
         """
         self.g.add((self.res, MetadataEntity.iri_subset, RDFTerm("uri", str(obj.res))))
 
-    @accepts_only('_dataset_')
+    @accepts_only("_dataset_")
     def remove_sub_dataset(self, dataset_res: Dataset | None = None) -> None:
         """
         Remover method corresponding to the ``void:subset`` RDF predicate.
@@ -422,13 +428,13 @@ class Dataset(MetadataEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri_list: List[str] = self._get_multiple_uri_references(MetadataEntity.iri_distribution, 'di')
+        uri_list: List[str] = self._get_multiple_uri_references(MetadataEntity.iri_distribution, "di")
         result: List[Distribution] = []
         for uri in uri_list:
             result.append(self.m_set.add_di(self.dataset_name, self.resp_agent or "", self.source, uri))
         return result
 
-    @accepts_only('di')
+    @accepts_only("di")
     def has_distribution(self, obj: Distribution) -> None:
         """
         Setter method corresponding to the ``dcat:distribution`` RDF predicate.
@@ -442,7 +448,7 @@ class Dataset(MetadataEntity):
         """
         self.g.add((self.res, MetadataEntity.iri_distribution, RDFTerm("uri", str(obj.res))))
 
-    @accepts_only('di')
+    @accepts_only("di")
     def remove_distribution(self, di_res: Distribution | None = None) -> None:
         """
         Remover method corresponding to the ``dcat:distribution`` RDF predicate.

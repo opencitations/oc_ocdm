@@ -18,7 +18,7 @@ from oc_ocdm.abstract_entity import AbstractEntity
 if TYPE_CHECKING:
     from typing import ClassVar, Dict, List, Optional
 
-E = TypeVar('E', bound=AbstractEntity)
+E = TypeVar("E", bound=AbstractEntity)
 
 
 class AbstractSet(ABC, Generic[E]):

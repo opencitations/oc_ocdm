@@ -40,14 +40,20 @@ class ProvEntity(AbstractEntity):
     iri_description: ClassVar[str] = GraphEntity.DCTERMS.description
     iri_has_update_query: ClassVar[str] = GraphEntity.OCO.hasUpdateQuery
 
-    short_name_to_type_iri: ClassVar[Dict[str, str]] = {
-        'se': iri_entity
-    }
+    short_name_to_type_iri: ClassVar[Dict[str, str]] = {"se": iri_entity}
 
-    def __init__(self, prov_subject: GraphEntity, g: TripleLite, p_set: ProvSet,
-                 res: Optional[str] = None, resp_agent: Optional[str] = None, source: Optional[str] = None,
-                 count: Optional[str] = None, label: Optional[str] = None,
-                 short_name: str = "se") -> None:
+    def __init__(
+        self,
+        prov_subject: GraphEntity,
+        g: TripleLite,
+        p_set: ProvSet,
+        res: Optional[str] = None,
+        resp_agent: Optional[str] = None,
+        source: Optional[str] = None,
+        count: Optional[str] = None,
+        label: Optional[str] = None,
+        short_name: str = "se",
+    ) -> None:
         super(ProvEntity, self).__init__()
         self.prov_subject: GraphEntity = prov_subject
 
@@ -66,9 +72,8 @@ class ProvEntity(AbstractEntity):
         else:
             raise ValueError("Either 'res' or 'count' must be provided")
 
-        if p_set is not None:
-            if self.res not in p_set.res_to_entity:
-                p_set.res_to_entity[self.res] = self
+        if self.res not in p_set.res_to_entity:
+            p_set.res_to_entity[self.res] = self
 
         self._create_type(self.short_name_to_type_iri[short_name])
         if label is not None:

@@ -14,7 +14,7 @@ from oc_ocdm.metadata.metadata_set import MetadataSet
 
 
 class TestMetadataSet(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     def setUp(self):
         self.metadata_set = MetadataSet("http://test/", "./info_dir/", False)
@@ -58,5 +58,5 @@ class TestMetadataSet(unittest.TestCase):
         self.assertEqual(iri, result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

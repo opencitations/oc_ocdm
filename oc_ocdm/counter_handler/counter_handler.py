@@ -13,8 +13,14 @@ class CounterHandler(ABC):
     """Abstract class representing the interface for every concrete counter handler."""
 
     @abstractmethod
-    def set_counter(self, new_value: int, entity_short_name: str, prov_short_name: str = "",
-                    identifier: int = 1, supplier_prefix: str = "") -> None:
+    def set_counter(
+        self,
+        new_value: int,
+        entity_short_name: str,
+        prov_short_name: str = "",
+        identifier: int = 1,
+        supplier_prefix: str = "",
+    ) -> None:
         """
         Method signature for concrete implementations that allow setting the counter value
         of graph and provenance entities.
@@ -36,7 +42,9 @@ class CounterHandler(ABC):
         raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
-    def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
+    def read_counter(
+        self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = ""
+    ) -> int:
         """
         Method signature for concrete implementations that allow reading the counter value
         of graph and provenance entities.
@@ -56,7 +64,9 @@ class CounterHandler(ABC):
         raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
-    def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
+    def increment_counter(
+        self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = ""
+    ) -> int:
         """
         Method signature for concrete implementations that allow incrementing by one unit
         the counter value of graph and provenance entities.
@@ -76,7 +86,7 @@ class CounterHandler(ABC):
         raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
-    def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str) -> None:
+    def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str | None) -> None:
         """
         Method signature for concrete implementations that allow setting the counter value
         of metadata entities.
@@ -93,7 +103,7 @@ class CounterHandler(ABC):
         raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
-    def read_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+    def read_metadata_counter(self, entity_short_name: str, dataset_name: str | None) -> int:
         """
         Method signature for concrete implementations that allow reading the counter value
         of metadata entities.
@@ -108,7 +118,7 @@ class CounterHandler(ABC):
         raise NotImplementedError  # pragma: no cover
 
     @abstractmethod
-    def increment_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+    def increment_metadata_counter(self, entity_short_name: str, dataset_name: str | None) -> int:
         """
         Method signature for concrete implementations that allow incrementing by one unit
         the counter value of metadata entities.

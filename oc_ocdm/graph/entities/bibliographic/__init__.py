@@ -16,3 +16,16 @@ from oc_ocdm.graph.entities.bibliographic.reference_annotation import ReferenceA
 from oc_ocdm.graph.entities.bibliographic.reference_pointer import ReferencePointer
 from oc_ocdm.graph.entities.bibliographic.resource_embodiment import ResourceEmbodiment
 from oc_ocdm.graph.entities.bibliographic.responsible_agent import ResponsibleAgent
+
+__all__ = [
+    "AgentRole",
+    "BibliographicReference",
+    "BibliographicResource",
+    "Citation",
+    "DiscourseElement",
+    "PointerList",
+    "ReferenceAnnotation",
+    "ReferencePointer",
+    "ResourceEmbodiment",
+    "ResponsibleAgent",
+]

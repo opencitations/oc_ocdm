@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List
 
-from triplelite import RDFTerm, SubgraphView, TripleLite, rdflib_to_rdfterm
+from triplelite import RDFTerm, SubgraphView, Triple, TripleLite, rdflib_to_rdfterm
 
 from oc_ocdm.abstract_entity import AbstractEntity
 from oc_ocdm.constants import Namespace
@@ -43,15 +43,23 @@ class MetadataEntity(AbstractEntity):
     iri_media_type = DCAT.mediaType
     iri_byte_size = DCAT.byteSize
 
-    short_name_to_type_iri: ClassVar[Dict[str, str]] = {
-        '_dataset_': iri_dataset,
-        'di': iri_datafile
-    }
+    short_name_to_type_iri: ClassVar[Dict[str, str]] = {"_dataset_": iri_dataset, "di": iri_datafile}
 
-    def __init__(self, g: TripleLite, base_iri: str, dataset_name: str, m_set: MetadataSet,
-                 res_type: str, res: str | None = None, resp_agent: str | None = None,
-                 source: str | None = None, count: str | None = None, label: str | None = None, short_name: str = "",
-                 preexisting_graph: SubgraphView | None = None) -> None:
+    def __init__(
+        self,
+        g: TripleLite,
+        base_iri: str,
+        dataset_name: str,
+        m_set: MetadataSet,
+        res_type: str,
+        res: str | None = None,
+        resp_agent: str | None = None,
+        source: str | None = None,
+        count: str | None = None,
+        label: str | None = None,
+        short_name: str = "",
+        preexisting_graph: SubgraphView | None = None,
+    ) -> None:
         super(MetadataEntity, self).__init__()
         self.g: TripleLite = g
         self.base_iri: str = base_iri
@@ -60,7 +68,7 @@ class MetadataEntity(AbstractEntity):
         self.source: str | None = source
         self.short_name: str = short_name
         self.m_set: MetadataSet = m_set
-        self._preexisting_triples: frozenset = frozenset()
+        self._preexisting_triples: frozenset[Triple] = frozenset()
         self._merge_list: tuple[MetadataEntity, ...] = ()
         # FLAGS
         self._to_be_deleted: bool = False
@@ -70,16 +78,15 @@ class MetadataEntity(AbstractEntity):
         # otherwise use the provided one
         if res is None:
             base_res: str = self.base_iri + self.dataset_name
-            if base_res[-1] != '/':
-                base_res += '/'
+            if base_res[-1] != "/":
+                base_res += "/"
             self.res = self._generate_new_res(count, base_res, short_name)
         else:
             self.res = res
 
-        if m_set is not None:
-            # If not already done, register this MetadataEntity instance inside the MetadataSet
-            if self.res not in m_set.res_to_entity:
-                m_set.res_to_entity[self.res] = self
+        # If not already done, register this MetadataEntity instance inside the MetadataSet
+        if self.res not in m_set.res_to_entity:
+            m_set.res_to_entity[self.res] = self
 
         if preexisting_graph is not None:
             self.remove_every_triple()
@@ -95,7 +102,7 @@ class MetadataEntity(AbstractEntity):
 
     @staticmethod
     def _generate_new_res(count: str | None, base_res: str, short_name: str) -> str:
-        if short_name == '_dataset_':
+        if short_name == "_dataset_":
             return base_res
         else:
             assert count is not None
@@ -113,17 +120,21 @@ class MetadataEntity(AbstractEntity):
     def merge_list(self) -> tuple[MetadataEntity, ...]:
         return self._merge_list
 
+    @property
+    def preexisting_triples(self) -> frozenset[Triple]:
+        return self._preexisting_triples
+
     def mark_as_to_be_deleted(self) -> None:
         # Here we must REMOVE triples pointing
         # to 'self' [THIS CANNOT BE UNDONE]:
         for res, entity in self.m_set.res_to_entity.items():
-            triples_list: List[tuple] = list(entity.g.triples((res, None, RDFTerm("uri", str(self.res)))))
+            triples_list: List[Triple] = list(entity.g.triples((res, None, RDFTerm("uri", str(self.res)))))
             for triple in triples_list:
                 entity.g.remove(triple)
 
         self._to_be_deleted = True
 
-    def merge(self, other: MetadataEntity) -> None:
+    def merge(self, other: object) -> None:
         """
         **WARNING:** ``MetadataEntity`` **is an abstract class that cannot be instantiated at runtime.
         As such, it's only possible to execute this method on entities generated from**
@@ -144,7 +155,7 @@ class MetadataEntity(AbstractEntity):
         # Here we must REDIRECT triples pointing
         # to 'other' to make them point to 'self':
         for res, entity in self.m_set.res_to_entity.items():
-            triples_list: List[tuple] = list(entity.g.triples((res, None, RDFTerm("uri", str(other.res)))))
+            triples_list: List[Triple] = list(entity.g.triples((res, None, RDFTerm("uri", str(other.res)))))
             for triple in triples_list:
                 entity.g.remove(triple)
                 new_triple = (triple[0], triple[1], RDFTerm("uri", str(self.res)))
@@ -171,7 +182,7 @@ class MetadataEntity(AbstractEntity):
     def _merge_properties(self, other: MetadataEntity) -> None:
         pass
 
-    def commit_changes(self):
+    def commit_changes(self) -> None:
         if self._to_be_deleted:
             self._preexisting_triples = frozenset()
             self.remove_every_triple()

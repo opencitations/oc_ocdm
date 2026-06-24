@@ -8,3 +8,5 @@
 
 from oc_ocdm.metadata.metadata_entity import MetadataEntity
 from oc_ocdm.metadata.metadata_set import MetadataSet
+
+__all__ = ["MetadataEntity", "MetadataSet"]

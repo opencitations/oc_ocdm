@@ -6,9 +6,11 @@
 
 # -*- coding: utf-8 -*-
 
+from collections.abc import Callable
 from typing import Dict, Optional, Tuple, Union, cast
 
 import redis
+from redis.client import Pipeline
 from tqdm import tqdm
 
 from oc_ocdm.counter_handler.counter_handler import CounterHandler
@@ -18,7 +20,7 @@ class RedisCounterHandler(CounterHandler):
     """A concrete implementation of the ``CounterHandler`` interface that persistently stores
     the counter values within a Redis database."""
 
-    def __init__(self, host: str = 'localhost', port: int = 6379, db: int = 0, password: Optional[str] = None) -> None:
+    def __init__(self, host: str = "localhost", port: int = 6379, db: int = 0, password: Optional[str] = None) -> None:
         """
         Constructor of the ``RedisCounterHandler`` class.
 
@@ -35,13 +37,13 @@ class RedisCounterHandler(CounterHandler):
         self.port = port
         self.db = db
         self.password = password
-        self.redis = redis.Redis(host=host, port=port, db=db, password=password, decode_responses=True)
+        self.redis: redis.Redis = redis.Redis(host=host, port=port, db=db, password=password, decode_responses=True)
 
     def __getstate__(self):
         """Support for pickle serialization."""
         state = self.__dict__.copy()
         # Remove Redis connection (not picklable)
-        del state['redis']
+        del state["redis"]
         return state
 
     def __setstate__(self, state: dict[str, object]) -> None:
@@ -49,15 +51,17 @@ class RedisCounterHandler(CounterHandler):
         vars(self).update(state)
         # Recreate Redis connection
         self.redis = redis.Redis(
-            host=self.host,
-            port=self.port,
-            db=self.db,
-            password=self.password,
-            decode_responses=True
+            host=self.host, port=self.port, db=self.db, password=self.password, decode_responses=True
         )
 
-    def set_counter(self, new_value: int, entity_short_name: str, prov_short_name: str = "",
-                    identifier: int = 1, supplier_prefix: str = "") -> None:
+    def set_counter(
+        self,
+        new_value: int,
+        entity_short_name: str,
+        prov_short_name: str = "",
+        identifier: int = 1,
+        supplier_prefix: str = "",
+    ) -> None:
         """
         It allows to set the counter value of graph and provenance entities.
 
@@ -83,7 +87,9 @@ class RedisCounterHandler(CounterHandler):
         key = self._get_key(entity_short_name, prov_short_name, identifier, supplier_prefix)
         self.redis.set(key, new_value)
 
-    def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
+    def read_counter(
+        self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = ""
+    ) -> int:
         """
         It allows to read the counter value of graph and provenance entities.
 
@@ -104,7 +110,9 @@ class RedisCounterHandler(CounterHandler):
         value = cast(Optional[str], self.redis.get(key))
         return int(value) if value is not None else 0
 
-    def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
+    def increment_counter(
+        self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = ""
+    ) -> int:
         """
         It allows to increment the counter value of graph and provenance entities by one unit.
 
@@ -124,7 +132,7 @@ class RedisCounterHandler(CounterHandler):
         key = self._get_key(entity_short_name, prov_short_name, identifier, supplier_prefix)
         return cast(int, self.redis.incr(key))
 
-    def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str) -> None:
+    def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str | None) -> None:
         """
         It allows to set the counter value of metadata entities.
 
@@ -143,7 +151,7 @@ class RedisCounterHandler(CounterHandler):
         key = f"metadata:{dataset_name}:{entity_short_name}"
         self.redis.set(key, new_value)
 
-    def read_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+    def read_metadata_counter(self, entity_short_name: str, dataset_name: str | None) -> int:
         """
         It allows to read the counter value of metadata entities.
 
@@ -158,7 +166,7 @@ class RedisCounterHandler(CounterHandler):
         value = cast(Optional[str], self.redis.get(key))
         return int(value) if value is not None else 0
 
-    def increment_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+    def increment_metadata_counter(self, entity_short_name: str, dataset_name: str | None) -> int:
         """
         It allows to increment the counter value of metadata entities by one unit.
 
@@ -172,7 +180,13 @@ class RedisCounterHandler(CounterHandler):
         key = f"metadata:{dataset_name}:{entity_short_name}"
         return cast(int, self.redis.incr(key))
 
-    def _get_key(self, entity_short_name: str, prov_short_name: str = "", identifier: Union[str, int, None] = None, supplier_prefix: str = "") -> str:
+    def _get_key(
+        self,
+        entity_short_name: str,
+        prov_short_name: str = "",
+        identifier: Union[str, int, None] = None,
+        supplier_prefix: str = "",
+    ) -> str:
         """
         Generate a Redis key for the given parameters.
 
@@ -193,7 +207,7 @@ class RedisCounterHandler(CounterHandler):
         if prov_short_name:
             key_parts.append(str(identifier))
             key_parts.append(prov_short_name)
-        return ':'.join(filter(None, key_parts))
+        return ":".join(filter(None, key_parts))
 
     def batch_update_counters(self, updates: Dict[str, Dict[Tuple[str, str], Dict[int, int]]]) -> None:
         """
@@ -210,22 +224,22 @@ class RedisCounterHandler(CounterHandler):
             }
         :type updates: Dict[str, Dict[Tuple[str, str], Dict[int, int]]]
         """
-        all_updates = []
+        all_updates: list[tuple[str, int]] = []
         for supplier_prefix, value in updates.items():
             for (short_name, prov_short_name), counters in value.items():
                 for identifier, counter_value in counters.items():
                     key = self._get_key(short_name, prov_short_name, identifier, supplier_prefix)
                     all_updates.append((key, counter_value))
-        
+
         total_updates = len(all_updates)
         batch_size = 1_000_000
 
         with tqdm(total=total_updates, desc="Updating counters") as pbar:
             for i in range(0, total_updates, batch_size):
-                batch = all_updates[i:i+batch_size]
-                pipeline = self.redis.pipeline()
+                batch = all_updates[i : i + batch_size]
+                pipeline_factory = cast(Callable[[], Pipeline], getattr(self.redis, "pipeline"))
+                pipeline = pipeline_factory()
                 for key, value in batch:
                     pipeline.set(key, value)
                 pipeline.execute()
                 pbar.update(len(batch))
-                

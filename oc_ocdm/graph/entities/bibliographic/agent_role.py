@@ -70,11 +70,11 @@ class AgentRole(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_next, 'ar')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_has_next, "ar")
         if uri is not None:
             return self.g_set.add_ar(self.resp_agent, self.source, uri)
 
-    @accepts_only('ar')
+    @accepts_only("ar")
     def has_next(self, ar_res: AgentRole) -> None:
         """
         Setter method corresponding to the ``oco:hasNext`` RDF predicate.
@@ -107,11 +107,11 @@ class AgentRole(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_is_held_by, 'ra')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_is_held_by, "ra")
         if uri is not None:
             return self.g_set.add_ra(self.resp_agent, self.source, uri)
 
-    @accepts_only('ra')
+    @accepts_only("ra")
     def is_held_by(self, ra_res: ResponsibleAgent):
         """
         Setter method corresponding to the ``pro:isHeldBy`` RDF predicate.

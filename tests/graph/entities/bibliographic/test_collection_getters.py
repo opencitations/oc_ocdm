@@ -11,7 +11,7 @@ from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestBibliographicReferenceGetters(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -63,7 +63,7 @@ class TestBibliographicReferenceGetters(unittest.TestCase):
 
 
 class TestReferencePointerGetters(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -120,7 +120,7 @@ class TestReferencePointerGetters(unittest.TestCase):
 
 
 class TestPointerListGetters(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -144,7 +144,7 @@ class TestPointerListGetters(unittest.TestCase):
 
 
 class TestDiscourseElementGetters(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -239,7 +239,7 @@ class TestDiscourseElementGetters(unittest.TestCase):
 
 
 class TestResponsibleAgentGetters(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -271,7 +271,7 @@ class TestResponsibleAgentGetters(unittest.TestCase):
 
 
 class TestResourceEmbodimentGetters(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -295,7 +295,7 @@ class TestResourceEmbodimentGetters(unittest.TestCase):
 
 
 class TestCitationGetters(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -322,5 +322,5 @@ class TestCitationGetters(unittest.TestCase):
         self.assertEqual(result.res, br.res)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

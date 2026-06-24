@@ -14,7 +14,6 @@ from oc_ocdm.storer import Storer
 
 
 class TestStorer:
-
     @pytest.mark.benchmark(group="storer")
     @pytest.mark.parametrize("entity_count", [50, 100, 200])
     def test_store_all(self, benchmark, redis_counter_handler, entity_count):

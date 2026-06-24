@@ -10,7 +10,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, AbstractSet, List, Set
 
-from triplelite import RDFTerm
+from rdflib.term import Node
+from triplelite import RDFTerm, Triple
 
 if TYPE_CHECKING:
     from typing import Tuple
@@ -20,29 +21,29 @@ if TYPE_CHECKING:
 MAX_TRIPLES_PER_QUERY = 500
 
 
-def _term_to_nt(term) -> str:
+def _term_to_nt(term: str | RDFTerm | Node) -> str:
     if isinstance(term, RDFTerm):
         if term.type == "literal":
-            escaped = term.value.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r')
+            escaped = term.value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n").replace("\r", "\\r")
             if term.lang:
                 return f'"{escaped}"@{term.lang}'
             return f'"{escaped}"^^<{term.datatype}>'
-        return f'<{term.value}>'
+        return f"<{term.value}>"
     if isinstance(term, str):
-        return f'<{term}>'
+        return f"<{term}>"
     return term.n3()
 
 
-def _serialize_triples_to_nt(triples: AbstractSet) -> str:
+def _serialize_triples_to_nt(triples: AbstractSet[Triple]) -> str:
     return "".join(f"{_term_to_nt(s)} {_term_to_nt(p)} {_term_to_nt(o)} ." for s, p, o in triples)
 
 
-def _chunk_set(data: AbstractSet, chunk_size: int) -> List[Set]:
+def _chunk_set(data: AbstractSet[Triple], chunk_size: int) -> List[Set[Triple]]:
     data_list = list(data)
-    return [set(data_list[i:i + chunk_size]) for i in range(0, len(data_list), chunk_size)]
+    return [set(data_list[i : i + chunk_size]) for i in range(0, len(data_list), chunk_size)]
 
 
-def get_delete_query(graph_iri: str, data: AbstractSet) -> Tuple[List[str], int]:
+def get_delete_query(graph_iri: str, data: AbstractSet[Triple]) -> Tuple[List[str], int]:
     num_of_statements: int = len(data)
     if num_of_statements <= 0:
         return [], 0
@@ -52,14 +53,14 @@ def get_delete_query(graph_iri: str, data: AbstractSet) -> Tuple[List[str], int]
         return [f"DELETE DATA {{ GRAPH <{graph_iri}> {{ {statements} }} }}"], num_of_statements
 
     chunks = _chunk_set(data, MAX_TRIPLES_PER_QUERY)
-    queries = []
+    queries: List[str] = []
     for chunk in chunks:
         statements = _serialize_triples_to_nt(chunk)
         queries.append(f"DELETE DATA {{ GRAPH <{graph_iri}> {{ {statements} }} }}")
     return queries, num_of_statements
 
 
-def get_insert_query(graph_iri: str, data: AbstractSet) -> Tuple[List[str], int]:
+def get_insert_query(graph_iri: str, data: AbstractSet[Triple]) -> Tuple[List[str], int]:
     num_of_statements: int = len(data)
     if num_of_statements <= 0:
         return [], 0
@@ -69,14 +70,14 @@ def get_insert_query(graph_iri: str, data: AbstractSet) -> Tuple[List[str], int]
         return [f"INSERT DATA {{ GRAPH <{graph_iri}> {{ {statements} }} }}"], num_of_statements
 
     chunks = _chunk_set(data, MAX_TRIPLES_PER_QUERY)
-    queries = []
+    queries: List[str] = []
     for chunk in chunks:
         statements = _serialize_triples_to_nt(chunk)
         queries.append(f"INSERT DATA {{ GRAPH <{graph_iri}> {{ {statements} }} }}")
     return queries, num_of_statements
 
 
-def _compute_graph_changes(entity: AbstractEntity, entity_type: str) -> Tuple[AbstractSet, AbstractSet, int, int]:
+def _compute_graph_changes(entity: AbstractEntity, entity_type: str) -> Tuple[Set[Triple], Set[Triple], int, int]:
     """
     Computes the triples to insert and delete for an entity.
 
@@ -97,18 +98,18 @@ def _compute_graph_changes(entity: AbstractEntity, entity_type: str) -> Tuple[Ab
 
     assert isinstance(entity, GraphEntity)
     to_be_deleted: bool = entity.to_be_deleted
-    preexisting_triples = entity._preexisting_triples
+    preexisting_triples = entity.preexisting_triples
 
     if to_be_deleted:
         return set(), set(preexisting_triples), 0, len(preexisting_triples)
 
     current_triples = set(entity.g)
 
-    if len(preexisting_triples) == len(current_triples) and preexisting_triples == current_triples:
+    if len(preexisting_triples) == len(current_triples) and set(preexisting_triples) == current_triples:
         return set(), set(), 0, 0
 
-    removed_triples = preexisting_triples - current_triples
-    added_triples = current_triples - preexisting_triples
+    removed_triples = set(preexisting_triples) - current_triples
+    added_triples = current_triples - set(preexisting_triples)
 
     return added_triples, removed_triples, len(added_triples), len(removed_triples)
 

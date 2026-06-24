@@ -14,11 +14,10 @@ from oc_ocdm.counter_handler.redis_counter_handler import RedisCounterHandler
 
 
 class TestRedisCounterHandler(unittest.TestCase):
-
     def setUp(self):
         self.mock_redis = MagicMock()
-        with patch('redis.Redis', return_value=self.mock_redis):
-            self.counter_handler = RedisCounterHandler(host='localhost', port=6379, db=0)
+        with patch("redis.Redis", return_value=self.mock_redis):
+            self.counter_handler = RedisCounterHandler(host="localhost", port=6379, db=0)
 
     def test_set_counter(self):
         with self.subTest("Set counter for bibliographic resource"):
@@ -116,7 +115,7 @@ class TestRedisCounterHandler(unittest.TestCase):
             pickled = pickle.dumps(self.counter_handler)
 
             # Unpickle it
-            with patch('redis.Redis', return_value=self.mock_redis):
+            with patch("redis.Redis", return_value=self.mock_redis):
                 restored = pickle.loads(pickled)
 
             # Verify connection parameters are preserved
@@ -129,5 +128,6 @@ class TestRedisCounterHandler(unittest.TestCase):
             self.assertEqual(result, 42)
             self.mock_redis.get.assert_called_with("br:060")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

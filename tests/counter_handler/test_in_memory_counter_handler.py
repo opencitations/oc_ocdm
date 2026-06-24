@@ -11,7 +11,6 @@ from oc_ocdm.counter_handler.in_memory_counter_handler import InMemoryCounterHan
 
 
 class TestFilesystemCounterHandler(unittest.TestCase):
-
     def setUp(self) -> None:
         self.counter_handler = InMemoryCounterHandler()
 
@@ -35,7 +34,7 @@ class TestFilesystemCounterHandler(unittest.TestCase):
         with self.subTest("Set SE counter"):
             count = 99
             identifier = 1234
-            counter_list = [0]*identifier
+            counter_list = [0] * identifier
             counter_list[-1] = count
             self.counter_handler.prov_counters["br"]["se"] = counter_list
 
@@ -46,7 +45,7 @@ class TestFilesystemCounterHandler(unittest.TestCase):
         with self.subTest("Set SE counter, long number"):
             long_count = 2**256
             identifier = 1234
-            counter_list = [0]*identifier
+            counter_list = [0] * identifier
             counter_list[-1] = long_count
             self.counter_handler.prov_counters["br"]["se"] = counter_list
 
@@ -78,7 +77,7 @@ class TestFilesystemCounterHandler(unittest.TestCase):
         with self.subTest("Read SE counter"):
             count = 99
             identifier = 1234
-            counter_list = [0]*identifier
+            counter_list = [0] * identifier
             counter_list[-1] = count
             self.counter_handler.prov_counters["br"]["se"] = counter_list
 
@@ -88,7 +87,7 @@ class TestFilesystemCounterHandler(unittest.TestCase):
         with self.subTest("Read SE counter, long number"):
             long_count = 2**256
             identifier = 1234
-            counter_list = [0]*identifier
+            counter_list = [0] * identifier
             counter_list[-1] = long_count
             self.counter_handler.prov_counters["br"]["se"] = counter_list
 
@@ -120,7 +119,7 @@ class TestFilesystemCounterHandler(unittest.TestCase):
         with self.subTest("Increment SE counter"):
             count = 99
             identifier = 1234
-            counter_list = [0]*identifier
+            counter_list = [0] * identifier
             counter_list[-1] = count
             self.counter_handler.prov_counters["br"]["se"] = counter_list
 
@@ -131,7 +130,7 @@ class TestFilesystemCounterHandler(unittest.TestCase):
         with self.subTest("Increment SE counter, long number"):
             long_count = 2**256
             identifier = 1234
-            counter_list = [0]*identifier
+            counter_list = [0] * identifier
             counter_list[-1] = long_count
             self.counter_handler.prov_counters["br"]["se"] = counter_list
 
@@ -155,7 +154,7 @@ class TestFilesystemCounterHandler(unittest.TestCase):
             self.assertIsNone(result)
             self.assertEqual(self.counter_handler.metadata_counters[dataset_name]["di"], new_count)
         with self.subTest("Set DI counter, long number"):
-            long_count = 2 ** 256
+            long_count = 2**256
             self.counter_handler.metadata_counters[dataset_name] = {"di": long_count}
 
             new_count = 2**512
@@ -210,5 +209,5 @@ class TestFilesystemCounterHandler(unittest.TestCase):
             self.assertRaises(ValueError, self.counter_handler.increment_metadata_counter, "di", None)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

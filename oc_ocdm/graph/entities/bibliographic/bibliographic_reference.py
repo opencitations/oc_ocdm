@@ -111,13 +111,13 @@ class BibliographicReference(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_has_annotation, 'an')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_has_annotation, "an")
         result: List[ReferenceAnnotation] = []
         for uri in uri_list:
             result.append(self.g_set.add_an(self.resp_agent, self.source, uri))
         return result
 
-    @accepts_only('an')
+    @accepts_only("an")
     def has_annotation(self, an_res: ReferenceAnnotation) -> None:
         """
         Setter method corresponding to the ``oco:hasAnnotation`` RDF predicate.
@@ -132,7 +132,7 @@ class BibliographicReference(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.iri_has_annotation, RDFTerm("uri", str(an_res.res))))
 
-    @accepts_only('an')
+    @accepts_only("an")
     def remove_annotation(self, an_res: ReferenceAnnotation | None = None) -> None:
         """
         Remover method corresponding to the ``oco:hasAnnotation`` RDF predicate.
@@ -158,11 +158,11 @@ class BibliographicReference(BibliographicEntity):
 
         :return: The requested value if found, None otherwise
         """
-        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_references, 'br')
+        uri: Optional[str] = self._get_uri_reference(GraphEntity.iri_references, "br")
         if uri is not None:
             return self.g_set.add_br(self.resp_agent, self.source, uri)
 
-    @accepts_only('br')
+    @accepts_only("br")
     def references_br(self, br_res: BibliographicResource) -> None:
         """
         Setter method corresponding to the ``biro:references`` RDF predicate.

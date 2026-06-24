@@ -7,3 +7,5 @@
 # -*- coding: utf-8 -*-
 
 from oc_ocdm.prov.entities.snapshot_entity import SnapshotEntity
+
+__all__ = ["SnapshotEntity"]

@@ -15,7 +15,7 @@ from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestDiscourseElement(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -185,5 +185,5 @@ class TestDiscourseElement(unittest.TestCase):
         self.assertIn(triple, self.de1.g)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

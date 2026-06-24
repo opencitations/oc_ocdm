@@ -16,7 +16,7 @@ from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestCitation(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -26,7 +26,12 @@ class TestCitation(unittest.TestCase):
         self.br1 = self.graph_set.add_br(self.resp_agent)
         self.br2 = self.graph_set.add_br(self.resp_agent)
         self.ci = self.graph_set.add_ci(self.resp_agent)
-        self.ci_oci = self.graph_set.add_ci(self.resp_agent, res=URIRef('https://w3id.org/oc/index/coci/ci/020010000023601000907630001040258020000010008010559090238044008040338381018136312231227010309014203370037122439026325-020010305093619112227370109090937010437073701020309'))
+        self.ci_oci = self.graph_set.add_ci(
+            self.resp_agent,
+            res=URIRef(
+                "https://w3id.org/oc/index/coci/ci/020010000023601000907630001040258020000010008010559090238044008040338381018136312231227010309014203370037122439026325-020010305093619112227370109090937010437073701020309"
+            ),
+        )
 
     def test_has_citing_entity(self):
         result = self.ci.has_citing_entity(self.br1)
@@ -137,5 +142,5 @@ class TestCitation(unittest.TestCase):
         self.assertIn(triple, self.ci.g)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

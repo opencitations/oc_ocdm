@@ -21,7 +21,7 @@ from oc_ocdm.graph.graph_entity import GraphEntity
 
 class ResourceEmbodiment(BibliographicEntity):
     """Resource embodiment (short: re): the particular physical or digital format in which a
-       bibliographic resource was made available by its publisher."""
+    bibliographic resource was made available by its publisher."""
 
     def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """

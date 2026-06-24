@@ -68,6 +68,11 @@ select = ["I", "F401", "E402"]
 [tool.ruff.lint.isort]
 known-first-party = ["oc_ocdm"]
 
+[tool.pyright]
+include = ["oc_ocdm"]
+typeCheckingMode = "strict"
+pythonVersion = "3.10"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 

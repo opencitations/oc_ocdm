@@ -27,18 +27,15 @@ from oc_ocdm.metadata.metadata_entity import MetadataEntity
 
 class MetadataSet(AbstractSet[MetadataEntity]):
     # Labels
-    labels: ClassVar[Dict[str, str]] = {
-        "_dataset_": "dataset",
-        "di": "distribution"
-    }
+    labels: ClassVar[Dict[str, str]] = {"_dataset_": "dataset", "di": "distribution"}
 
-    def __init__(self, base_iri: str, info_dir: str = "", wanted_label: bool = True) -> None:
+    def __init__(self, base_iri: str, info_dir: str | None = "", wanted_label: bool = True) -> None:
         super(MetadataSet, self).__init__()
         # The following variable maps a str with the related metadata entity
         self.res_to_entity: Dict[str, MetadataEntity] = {}
         self.base_iri: str = base_iri
-        if self.base_iri[-1] != '/':
-            self.base_iri += '/'
+        if self.base_iri[-1] != "/":
+            self.base_iri += "/"
         self.wanted_label: bool = wanted_label
 
         if info_dir is not None and info_dir != "":
@@ -50,8 +47,14 @@ class MetadataSet(AbstractSet[MetadataEntity]):
         if res in self.res_to_entity:
             return self.res_to_entity[res]
 
-    def add_dataset(self, dataset_name: str, resp_agent: str, source: str | None = None, res: str | None = None,
-                    preexisting_graph: SubgraphView | None = None) -> Dataset:
+    def add_dataset(
+        self,
+        dataset_name: str,
+        resp_agent: str,
+        source: str | None = None,
+        res: str | None = None,
+        preexisting_graph: SubgraphView | None = None,
+    ) -> Dataset:
         if res is not None and not is_dataset(res):
             raise ValueError(f"Given res: <{res}> is inappropriate for a Dataset entity.")
         if res is not None and res in self.res_to_entity:
@@ -60,32 +63,59 @@ class MetadataSet(AbstractSet[MetadataEntity]):
         # any particular short name for this type of entity. It's only used internally to distinguish
         # between different metadata entities but it's meaningless outside of this scope.
         cur_g, count, label = self._add_metadata("_dataset_", dataset_name, res)
-        return Dataset(cur_g, self.base_iri, dataset_name, self,
-                       MetadataEntity.iri_dataset, res,
-                       resp_agent, source, count, label, "_dataset_",
-                       preexisting_graph)
+        return Dataset(
+            cur_g,
+            self.base_iri,
+            dataset_name,
+            self,
+            MetadataEntity.iri_dataset,
+            res,
+            resp_agent,
+            source,
+            count,
+            label,
+            "_dataset_",
+            preexisting_graph,
+        )
 
-    def add_di(self, dataset_name: str, resp_agent: str, source: str | None = None,
-               res: str | None = None, preexisting_graph: SubgraphView | None = None) -> Distribution:
+    def add_di(
+        self,
+        dataset_name: str,
+        resp_agent: str,
+        source: str | None = None,
+        res: str | None = None,
+        preexisting_graph: SubgraphView | None = None,
+    ) -> Distribution:
         if res is not None and get_short_name(res) != "di":
             raise ValueError(f"Given res: <{res}> is inappropriate for a Distribution entity.")
         if res is not None and res in self.res_to_entity:
             return cast(Distribution, self.res_to_entity[res])
         cur_g, count, label = self._add_metadata("di", dataset_name, res)
-        return Distribution(cur_g, self.base_iri, dataset_name, self,
-                            MetadataEntity.iri_datafile, res,
-                            resp_agent, source, count, label, "di",
-                            preexisting_graph)
+        return Distribution(
+            cur_g,
+            self.base_iri,
+            dataset_name,
+            self,
+            MetadataEntity.iri_datafile,
+            res,
+            resp_agent,
+            source,
+            count,
+            label,
+            "di",
+            preexisting_graph,
+        )
 
-    def _add_metadata(self, short_name: str, dataset_name: str,
-                      res: str | None = None) -> Tuple[TripleLite, str | None, str | None]:
+    def _add_metadata(
+        self, short_name: str, dataset_name: str, res: str | None = None
+    ) -> Tuple[TripleLite, str | None, str | None]:
         cur_g = TripleLite()
 
         count: str | None = None
         label: str | None = None
 
         if res is not None:
-            if short_name != '_dataset_':  # Datasets don't have a counter associated with them...
+            if short_name != "_dataset_":  # Datasets don't have a counter associated with them...
                 try:
                     res_count: int = int(get_count(res))
                 except ValueError:
@@ -94,7 +124,7 @@ class MetadataSet(AbstractSet[MetadataEntity]):
                     self.counter_handler.set_metadata_counter(res_count, short_name, dataset_name)
             return cur_g, count, label
 
-        if short_name != '_dataset_':  # Datasets don't have a counter associated with them...
+        if short_name != "_dataset_":  # Datasets don't have a counter associated with them...
             count = str(self.counter_handler.increment_metadata_counter(short_name, dataset_name))
 
         if self.wanted_label:

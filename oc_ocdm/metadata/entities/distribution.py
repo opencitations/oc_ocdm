@@ -15,7 +15,7 @@ from oc_ocdm.metadata.metadata_entity import MetadataEntity
 
 class Distribution(MetadataEntity):
     """Distribution (short: di): an accessible form of a dataset, for example a downloadable
-       file."""
+    file."""
 
     def _merge_properties(self, other: MetadataEntity) -> None:
         """

@@ -22,34 +22,125 @@ from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.support import create_date
 
 FIRST_NAMES = [
-    "John", "Jane", "Michael", "Emily", "David", "Sarah", "James", "Emma",
-    "Robert", "Olivia", "William", "Sophia", "Richard", "Isabella", "Joseph",
-    "Mia", "Thomas", "Charlotte", "Charles", "Amelia", "Christopher", "Harper",
-    "Daniel", "Evelyn", "Matthew", "Abigail", "Anthony", "Elizabeth"
+    "John",
+    "Jane",
+    "Michael",
+    "Emily",
+    "David",
+    "Sarah",
+    "James",
+    "Emma",
+    "Robert",
+    "Olivia",
+    "William",
+    "Sophia",
+    "Richard",
+    "Isabella",
+    "Joseph",
+    "Mia",
+    "Thomas",
+    "Charlotte",
+    "Charles",
+    "Amelia",
+    "Christopher",
+    "Harper",
+    "Daniel",
+    "Evelyn",
+    "Matthew",
+    "Abigail",
+    "Anthony",
+    "Elizabeth",
 ]
 
 LAST_NAMES = [
-    "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller",
-    "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez",
-    "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin",
-    "Lee", "Perez", "Thompson", "White", "Harris", "Sanchez", "Clark", "Ramirez"
+    "Smith",
+    "Johnson",
+    "Williams",
+    "Brown",
+    "Jones",
+    "Garcia",
+    "Miller",
+    "Davis",
+    "Rodriguez",
+    "Martinez",
+    "Hernandez",
+    "Lopez",
+    "Gonzalez",
+    "Wilson",
+    "Anderson",
+    "Thomas",
+    "Taylor",
+    "Moore",
+    "Jackson",
+    "Martin",
+    "Lee",
+    "Perez",
+    "Thompson",
+    "White",
+    "Harris",
+    "Sanchez",
+    "Clark",
+    "Ramirez",
 ]
 
 JOURNAL_NAMES = [
-    "Nature", "Science", "Cell", "The Lancet", "JAMA", "BMJ", "PNAS",
-    "Physical Review Letters", "Journal of the American Chemical Society",
-    "Angewandte Chemie", "Chemical Reviews", "Advanced Materials",
-    "Nature Communications", "Scientific Reports", "PLOS ONE"
+    "Nature",
+    "Science",
+    "Cell",
+    "The Lancet",
+    "JAMA",
+    "BMJ",
+    "PNAS",
+    "Physical Review Letters",
+    "Journal of the American Chemical Society",
+    "Angewandte Chemie",
+    "Chemical Reviews",
+    "Advanced Materials",
+    "Nature Communications",
+    "Scientific Reports",
+    "PLOS ONE",
 ]
 
 TITLE_WORDS = [
-    "analysis", "study", "investigation", "approach", "method", "system",
-    "model", "framework", "algorithm", "technique", "evaluation", "assessment",
-    "review", "comparison", "development", "implementation", "design",
-    "optimization", "characterization", "synthesis", "application", "effect",
-    "impact", "role", "mechanism", "structure", "function", "dynamics",
-    "properties", "performance", "novel", "new", "improved", "enhanced",
-    "efficient", "robust", "scalable", "comprehensive", "systematic"
+    "analysis",
+    "study",
+    "investigation",
+    "approach",
+    "method",
+    "system",
+    "model",
+    "framework",
+    "algorithm",
+    "technique",
+    "evaluation",
+    "assessment",
+    "review",
+    "comparison",
+    "development",
+    "implementation",
+    "design",
+    "optimization",
+    "characterization",
+    "synthesis",
+    "application",
+    "effect",
+    "impact",
+    "role",
+    "mechanism",
+    "structure",
+    "function",
+    "dynamics",
+    "properties",
+    "performance",
+    "novel",
+    "new",
+    "improved",
+    "enhanced",
+    "efficient",
+    "robust",
+    "scalable",
+    "comprehensive",
+    "systematic",
 ]
 
 
@@ -78,10 +169,7 @@ class DataFactory:
     @staticmethod
     def random_orcid() -> str:
         """Generate a random ORCID identifier."""
-        parts = [
-            "".join(random.choices(string.digits, k=4))
-            for _ in range(4)
-        ]
+        parts = ["".join(random.choices(string.digits, k=4)) for _ in range(4)]
         return "-".join(parts)
 
     @staticmethod
@@ -128,12 +216,7 @@ class DataFactory:
         """Generate a random issue number."""
         return str(random.randint(1, 12))
 
-    def create_author(
-        self,
-        graph_set: GraphSet,
-        resp_agent: str,
-        index: int = 0
-    ) -> AgentRole:
+    def create_author(self, graph_set: GraphSet, resp_agent: str, index: int = 0) -> AgentRole:
         """
         Create an author with ResponsibleAgent and AgentRole.
 
@@ -161,12 +244,7 @@ class DataFactory:
 
         return ar
 
-    def create_editor(
-        self,
-        graph_set: GraphSet,
-        resp_agent: str,
-        index: int = 0
-    ) -> AgentRole:
+    def create_editor(self, graph_set: GraphSet, resp_agent: str, index: int = 0) -> AgentRole:
         """
         Create an editor with ResponsibleAgent and AgentRole.
 
@@ -194,11 +272,7 @@ class DataFactory:
 
         return ar
 
-    def create_publisher(
-        self,
-        graph_set: GraphSet,
-        resp_agent: str
-    ) -> AgentRole:
+    def create_publisher(self, graph_set: GraphSet, resp_agent: str) -> AgentRole:
         """
         Create a publisher with ResponsibleAgent and AgentRole.
 
@@ -210,8 +284,13 @@ class DataFactory:
             AgentRole for the publisher.
         """
         publishers = [
-            "Springer Nature", "Elsevier", "Wiley", "Taylor & Francis",
-            "SAGE Publications", "Oxford University Press", "Cambridge University Press"
+            "Springer Nature",
+            "Elsevier",
+            "Wiley",
+            "Taylor & Francis",
+            "SAGE Publications",
+            "Oxford University Press",
+            "Cambridge University Press",
         ]
 
         ra = graph_set.add_ra(resp_agent)
@@ -224,11 +303,7 @@ class DataFactory:
         return ar
 
     def create_identifier(
-        self,
-        graph_set: GraphSet,
-        resp_agent: str,
-        scheme: str = "doi",
-        index: int = 0
+        self, graph_set: GraphSet, resp_agent: str, scheme: str = "doi", index: int = 0
     ) -> Identifier:
         """
         Create an identifier entity.
@@ -263,7 +338,7 @@ class DataFactory:
         index: int = 0,
         num_authors: int = 2,
         with_identifiers: bool = True,
-        with_pages: bool = True
+        with_pages: bool = True,
     ) -> BibliographicResource:
         """
         Create a complete journal article with authors and identifiers.
@@ -308,10 +383,7 @@ class DataFactory:
         return br
 
     def create_journal_hierarchy(
-        self,
-        graph_set: GraphSet,
-        resp_agent: str,
-        index: int = 0
+        self, graph_set: GraphSet, resp_agent: str, index: int = 0
     ) -> Tuple[BibliographicResource, BibliographicResource, BibliographicResource]:
         """
         Create a journal > volume > issue hierarchy.
@@ -344,11 +416,7 @@ class DataFactory:
         return journal_br, volume_br, issue_br
 
     def create_complete_bibliographic_record(
-        self,
-        graph_set: GraphSet,
-        resp_agent: str,
-        index: int = 0,
-        num_authors: int = 2
+        self, graph_set: GraphSet, resp_agent: str, index: int = 0, num_authors: int = 2
     ) -> BibliographicResource:
         """
         Create a complete bibliographic record with full hierarchy.
@@ -373,13 +441,10 @@ class DataFactory:
             BibliographicResource for the article.
         """
         article_br = self.create_journal_article(
-            graph_set, resp_agent, index, num_authors,
-            with_identifiers=True, with_pages=True
+            graph_set, resp_agent, index, num_authors, with_identifiers=True, with_pages=True
         )
 
-        journal_br, _, issue_br = self.create_journal_hierarchy(
-            graph_set, resp_agent, index
-        )
+        journal_br, _, issue_br = self.create_journal_hierarchy(graph_set, resp_agent, index)
 
         article_br.is_part_of(issue_br)
 
@@ -389,11 +454,7 @@ class DataFactory:
         return article_br
 
     def populate_graph_set(
-        self,
-        graph_set: GraphSet,
-        resp_agent: str,
-        num_records: int,
-        num_authors_per_record: int = 2
+        self, graph_set: GraphSet, resp_agent: str, num_records: int, num_authors_per_record: int = 2
     ) -> List[BibliographicResource]:
         """
         Populate a GraphSet with multiple bibliographic records.
@@ -409,8 +470,6 @@ class DataFactory:
         """
         articles = []
         for i in range(num_records):
-            article = self.create_complete_bibliographic_record(
-                graph_set, resp_agent, i, num_authors_per_record
-            )
+            article = self.create_complete_bibliographic_record(graph_set, resp_agent, i, num_authors_per_record)
             articles.append(article)
         return articles

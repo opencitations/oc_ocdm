@@ -25,7 +25,7 @@ from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestGraphSet(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     def setUp(self):
         self.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
@@ -333,5 +333,5 @@ class TestGraphSet(unittest.TestCase):
         self.assertEqual(set(restored_br._preexisting_triples), expected)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

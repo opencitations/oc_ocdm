@@ -8,3 +8,5 @@
 
 from oc_ocdm.metadata.entities.dataset import Dataset
 from oc_ocdm.metadata.entities.distribution import Distribution
+
+__all__ = ["Dataset", "Distribution"]

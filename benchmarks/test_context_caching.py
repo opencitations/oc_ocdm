@@ -38,18 +38,13 @@ CONTEXT_DATA = {
 
 
 class TestContextCaching:
-
     @pytest.mark.benchmark(group="context_caching")
     @pytest.mark.parametrize("entity_count", [10, 50, 100])
-    def test_serialize_with_local_context(
-        self, benchmark, redis_counter_handler, entity_count
-    ):
+    def test_serialize_with_local_context(self, benchmark, redis_counter_handler, entity_count):
         """Benchmark with local context dict (current hack approach)."""
 
         def setup():
-            graph_set, _ = create_populated_graph_set(
-                redis_counter_handler, entity_count
-            )
+            graph_set, _ = create_populated_graph_set(redis_counter_handler, entity_count)
             dataset = Dataset()
             for g in graph_set.graphs():
                 dataset.addN((s, p, o, g.identifier) for s, p, o in g)  # type: ignore[arg-type]
@@ -58,22 +53,16 @@ class TestContextCaching:
         def serialize(dataset):
             return dataset.serialize(format="json-ld", context=CONTEXT_DATA)
 
-        result = benchmark.pedantic(
-            serialize, setup=setup, rounds=BENCHMARK_ROUNDS
-        )
+        result = benchmark.pedantic(serialize, setup=setup, rounds=BENCHMARK_ROUNDS)
         assert len(result) > 0
 
     @pytest.mark.benchmark(group="context_caching")
     @pytest.mark.parametrize("entity_count", [10, 50, 100])
-    def test_serialize_with_remote_context(
-        self, benchmark, redis_counter_handler, entity_count
-    ):
+    def test_serialize_with_remote_context(self, benchmark, redis_counter_handler, entity_count):
         """Benchmark with remote context URL (fetches from network)."""
 
         def setup():
-            graph_set, _ = create_populated_graph_set(
-                redis_counter_handler, entity_count
-            )
+            graph_set, _ = create_populated_graph_set(redis_counter_handler, entity_count)
             dataset = Dataset()
             for g in graph_set.graphs():
                 dataset.addN((s, p, o, g.identifier) for s, p, o in g)  # type: ignore[arg-type]
@@ -82,7 +71,5 @@ class TestContextCaching:
         def serialize(dataset):
             return dataset.serialize(format="json-ld", context=CONTEXT_URL)
 
-        result = benchmark.pedantic(
-            serialize, setup=setup, rounds=BENCHMARK_ROUNDS
-        )
+        result = benchmark.pedantic(serialize, setup=setup, rounds=BENCHMARK_ROUNDS)
         assert len(result) > 0

@@ -10,13 +10,17 @@ from __future__ import annotations
 
 import json
 import os
-from typing import TYPE_CHECKING
+from collections.abc import Callable
+from importlib import import_module
+from typing import TYPE_CHECKING, BinaryIO, TextIO, cast
 from zipfile import ZipFile
 
 import orjson
 from rdflib import Dataset, Graph, URIRef
+from rdflib.term import Node
 from triplelite import TripleLite, from_rdflib
 
+from oc_ocdm._types import ContextMap, JsonLdDocument, JsonObject, JsonValue, SparqlResultRows
 from oc_ocdm.constants import RDF_TYPE
 from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.support.reporter import Reporter
@@ -24,36 +28,37 @@ from oc_ocdm.support.sparql import SPARQLEndpointError, sparql_query
 from oc_ocdm.support.support import build_graph_from_results, normalize_graph_literals
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-    from typing import Any, Dict, List, Optional
+    from typing import List, Optional
 
     from oc_ocdm.graph.graph_set import GraphSet
 
-from pyshacl import validate
+_validate = cast(Callable[..., tuple[object, object, object]], getattr(import_module("pyshacl"), "validate"))
 
 
-def _transform_jsonld_value(value: dict | str, uri_fn: Callable[[str], str]) -> dict | str:
+def _transform_jsonld_value(value: JsonValue, uri_fn: Callable[[str], str]) -> JsonValue:
     if isinstance(value, dict):
         if "@id" in value:
-            return {"@id": uri_fn(value["@id"])}
-        result: dict = {}
+            return {"@id": uri_fn(cast(str, value["@id"]))}
+        result: JsonObject = {}
         if "@value" in value:
             result["@value"] = value["@value"]
         if "@type" in value:
-            result["@type"] = uri_fn(value["@type"])
+            result["@type"] = uri_fn(cast(str, value["@type"]))
         if "@language" in value:
             result["@language"] = value["@language"]
         return result
     return value
 
 
-def _transform_jsonld_entity(entity: dict, uri_fn: Callable[[str], str]) -> dict:
-    transformed: dict = {}
+def _transform_jsonld_entity(entity: JsonObject, uri_fn: Callable[[str], str]) -> JsonObject:
+    transformed: JsonObject = {}
     for key, value in entity.items():
         if key == "@id":
-            transformed["@id"] = uri_fn(value)
+            transformed["@id"] = uri_fn(cast(str, value))
         elif key == "@type":
-            transformed["@type"] = [uri_fn(t) for t in value] if isinstance(value, list) else [uri_fn(value)]
+            transformed["@type"] = (
+                [uri_fn(cast(str, t)) for t in value] if isinstance(value, list) else [uri_fn(cast(str, value))]
+            )
         elif key.startswith("@"):
             continue
         else:
@@ -65,14 +70,16 @@ def _transform_jsonld_entity(entity: dict, uri_fn: Callable[[str], str]) -> dict
     return transformed
 
 
-def _transform_jsonld_graphs(data: list[dict], uri_fn: Callable[[str], str]) -> list[dict]:
-    result = []
+def transform_jsonld_graphs(data: JsonLdDocument, uri_fn: Callable[[str], str]) -> JsonLdDocument:
+    result: JsonLdDocument = []
     for graph_obj in data:
-        new_graph: dict = {}
+        new_graph: JsonObject = {}
         if "@id" in graph_obj:
-            new_graph["@id"] = uri_fn(graph_obj["@id"])
+            new_graph["@id"] = uri_fn(cast(str, graph_obj["@id"]))
         if "@graph" in graph_obj:
-            new_graph["@graph"] = [_transform_jsonld_entity(e, uri_fn) for e in graph_obj["@graph"]]
+            new_graph["@graph"] = [
+                _transform_jsonld_entity(entity, uri_fn) for entity in cast(list[JsonObject], graph_obj["@graph"])
+            ]
         result.append(new_graph)
     return result
 
@@ -83,28 +90,32 @@ def _expand_uri(curie: str, prefix_to_ns: dict[str, str]) -> str:
         prefix = curie[:colon]
         ns = prefix_to_ns.get(prefix)
         if ns is not None:
-            return ns + curie[colon + 1:]
+            return ns + curie[colon + 1 :]
     return curie
 
 
-def _expand_jsonld(data: list[dict], prefix_to_ns: dict[str, str]) -> list[dict]:
-    return _transform_jsonld_graphs(data, lambda uri: _expand_uri(uri, prefix_to_ns))
+def _expand_jsonld(data: JsonLdDocument, prefix_to_ns: dict[str, str]) -> JsonLdDocument:
+    return transform_jsonld_graphs(data, lambda uri: _expand_uri(uri, prefix_to_ns))
 
 
 class Reader(object):
-
-    def __init__(self, repok: Optional[Reporter] = None, reperr: Optional[Reporter] = None, context_map: Optional[Dict[str, Any]] = None) -> None:
+    def __init__(
+        self,
+        repok: Optional[Reporter] = None,
+        reperr: Optional[Reporter] = None,
+        context_map: Optional[ContextMap] = None,
+    ) -> None:
 
         if context_map is not None:
-            self.context_map: Dict[str, Any] = context_map
+            self.context_map: ContextMap = context_map
         else:
-            self.context_map: Dict[str, Any] = {}
+            self.context_map: ContextMap = {}
         for context_url in self.context_map:
-            ctx_file_path: Any = self.context_map[context_url]
-            if type(ctx_file_path) == str and os.path.isfile(ctx_file_path):
+            ctx_file_path = self.context_map[context_url]
+            if isinstance(ctx_file_path, str) and os.path.isfile(ctx_file_path):
                 # This expensive operation is done only when it's really needed
-                with open(ctx_file_path, 'rt', encoding='utf-8') as ctx_f:
-                    self.context_map[context_url] = json.load(ctx_f)
+                with open(ctx_file_path, "rt", encoding="utf-8") as ctx_f:
+                    self.context_map[context_url] = cast(JsonObject, json.load(ctx_f))
 
         if repok is None:
             self.repok: Reporter = Reporter(prefix="[Reader: INFO] ")
@@ -122,17 +133,17 @@ class Reader(object):
 
         loaded_graph: Optional[Dataset] = None
         if os.path.isfile(rdf_file_path):
-
             try:
                 loaded_graph = self._load_graph(rdf_file_path)
             except Exception as e:
-                self.reperr.add_sentence("[1] "
-                                         "It was impossible to handle the format used for "
-                                         "storing the file (stored in the temporary path) "
-                                         f"'{rdf_file_path}'. Additional details: {e}")
+                self.reperr.add_sentence(
+                    "[1] "
+                    "It was impossible to handle the format used for "
+                    "storing the file (stored in the temporary path) "
+                    f"'{rdf_file_path}'. Additional details: {e}"
+                )
         else:
-            self.reperr.add_sentence("[2] "
-                                     f"The file specified ('{rdf_file_path}') doesn't exist.")
+            self.reperr.add_sentence(f"[2] The file specified ('{rdf_file_path}') doesn't exist.")
 
         return loaded_graph
 
@@ -159,13 +170,13 @@ class Reader(object):
     def _load_graph(self, file_path: str) -> Dataset:
         loaded_graph = Dataset()
 
-        if file_path.endswith('.zip'):
+        if file_path.endswith(".zip"):
             try:
                 with ZipFile(file=file_path, mode="r") as archive:
                     for zf_name in archive.namelist():
                         formats = self._formats_for_file(zf_name)
                         with archive.open(zf_name) as f:
-                            if self._try_parse(loaded_graph, f, formats):
+                            if self._try_parse(loaded_graph, cast(BinaryIO, f), formats):
                                 for graph in loaded_graph.graphs():
                                     normalize_graph_literals(graph)
                                 return loaded_graph
@@ -174,7 +185,7 @@ class Reader(object):
         else:
             formats = self._formats_for_file(file_path)
             try:
-                with open(file_path, 'rt', encoding='utf-8') as f:
+                with open(file_path, "rt", encoding="utf-8") as f:
                     if self._try_parse(loaded_graph, f, formats):
                         for graph in loaded_graph.graphs():
                             normalize_graph_literals(graph)
@@ -184,17 +195,20 @@ class Reader(object):
 
         raise IOError(f"It was impossible to load the file '{file_path}' with supported formats.")
 
-    def _try_parse(self, graph: Dataset, file_obj, formats: List[str]) -> bool:
+    def _try_parse(self, graph: Dataset, file_obj: TextIO | BinaryIO, formats: List[str]) -> bool:
         for cur_format in formats:
             file_obj.seek(0)
             try:
                 if cur_format == "json-ld":
-                    json_ld_file = json.load(file_obj)
+                    json_ld_file = cast(JsonObject | JsonLdDocument, json.load(file_obj))
                     if isinstance(json_ld_file, dict):
                         json_ld_file = [json_ld_file]
                     for json_ld_resource in json_ld_file:
-                        if "@context" in json_ld_resource and json_ld_resource["@context"] in self.context_map:
-                            json_ld_resource["@context"] = self.context_map[json_ld_resource["@context"]]["@context"]
+                        context_url = json_ld_resource["@context"] if "@context" in json_ld_resource else None
+                        if isinstance(context_url, str) and context_url in self.context_map:
+                            context_data = self.context_map[context_url]
+                            if isinstance(context_data, dict) and "@context" in context_data:
+                                json_ld_resource["@context"] = context_data["@context"]
                     graph.parse(data=json.dumps(json_ld_file, ensure_ascii=False), format=cur_format)
                 else:
                     graph.parse(file=file_obj, format=cur_format)
@@ -203,34 +217,34 @@ class Reader(object):
                 continue
         return False
 
-    def load_jsonld_dict(self, rdf_file_path: str) -> list[dict]:
-        if rdf_file_path.endswith('.zip'):
+    def load_jsonld_dict(self, rdf_file_path: str) -> JsonLdDocument:
+        if rdf_file_path.endswith(".zip"):
             with ZipFile(file=rdf_file_path, mode="r") as archive:
                 for zf_name in archive.namelist():
                     ext = os.path.splitext(zf_name)[1].lower()
-                    if ext in ('.json', '.jsonld'):
+                    if ext in (".json", ".jsonld"):
                         with archive.open(zf_name) as f:
-                            data = orjson.loads(f.read())
+                            data = cast(JsonObject | JsonLdDocument, orjson.loads(f.read()))
                             break
                 else:
                     raise IOError(f"No JSON/JSON-LD file found inside ZIP archive '{rdf_file_path}'.")
         else:
-            with open(rdf_file_path, 'rb') as f:
-                data = orjson.loads(f.read())
+            with open(rdf_file_path, "rb") as f:
+                data = cast(JsonObject | JsonLdDocument, orjson.loads(f.read()))
         if isinstance(data, dict):
             data = [data]
         prefix_to_ns: dict[str, str] | None = None
         for graph_obj in data:
-            ctx_url = graph_obj.get("@context")
-            if ctx_url and ctx_url in self.context_map:
+            ctx_url = graph_obj["@context"] if "@context" in graph_obj else None
+            if isinstance(ctx_url, str) and ctx_url in self.context_map:
                 ctx = self.context_map[ctx_url]
                 if isinstance(ctx, dict) and "@context" in ctx:
-                    ctx = ctx["@context"]
-                prefix_to_ns = {
-                    k: v for k, v in ctx.items()
-                    if isinstance(v, str) and not k.startswith("@")
-                }
-                break
+                    context_value = ctx["@context"]
+                    if isinstance(context_value, dict):
+                        ctx = context_value
+                if isinstance(ctx, dict):
+                    prefix_to_ns = {k: v for k, v in ctx.items() if isinstance(v, str) and not k.startswith("@")}
+                    break
         if prefix_to_ns is not None:
             data = _expand_jsonld(data, prefix_to_ns)
         return data
@@ -239,10 +253,11 @@ class Reader(object):
         valid_graph: Graph = Graph(identifier=graph.identifier)
         sg = Graph()
         if closed:
-            sg.parse(os.path.join('oc_ocdm', 'resources', 'shacle_closed.ttl'))
+            sg.parse(os.path.join("oc_ocdm", "resources", "shacle_closed.ttl"))
         else:
-            sg.parse(os.path.join('oc_ocdm', 'resources', 'shacle.ttl'))
-        _, report_result, _ = validate(graph,
+            sg.parse(os.path.join("oc_ocdm", "resources", "shacle.ttl"))
+        _, report_result, _ = _validate(
+            graph,
             shacl_graph=sg,
             ont_graph=None,
             inference=None,
@@ -252,11 +267,12 @@ class Reader(object):
             meta_shacl=False,
             advanced=False,
             js=False,
-            debug=False)
+            debug=False,
+        )
         if not isinstance(report_result, Graph):
             raise TypeError(f"Expected Graph from SHACL validation, got {type(report_result)}")
-        invalid_nodes = set()
-        for triple in report_result.triples((None, URIRef('http://www.w3.org/ns/shacl#focusNode'), None)):
+        invalid_nodes: set[Node] = set()
+        for triple in report_result.triples((None, URIRef("http://www.w3.org/ns/shacl#focusNode"), None)):
             invalid_nodes.add(triple[2])
         for s in graph.subjects(unique=True):
             if isinstance(s, URIRef) and s not in invalid_nodes:
@@ -265,8 +281,13 @@ class Reader(object):
         return valid_graph
 
     @staticmethod
-    def import_entities_from_graph(g_set: GraphSet, results: List[Dict] | TripleLite | Graph | Dataset, resp_agent: str,
-                                   enable_validation: bool = False, closed: bool = False) -> List[GraphEntity]:
+    def import_entities_from_graph(
+        g_set: GraphSet,
+        results: SparqlResultRows | TripleLite | Graph | Dataset,
+        resp_agent: str,
+        enable_validation: bool = False,
+        closed: bool = False,
+    ) -> List[GraphEntity]:
         if isinstance(results, list):
             graph: TripleLite | Graph = build_graph_from_results(results)
         elif isinstance(results, Dataset):
@@ -291,51 +312,65 @@ class Reader(object):
             types: List[str] = [o.value for o in graph.objects(subject, RDF_TYPE)]
             preexisting = graph.subgraph(subject)
             if GraphEntity.iri_note in types:
-                imported_entities.append(g_set.add_an(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=preexisting))
+                imported_entities.append(
+                    g_set.add_an(resp_agent=resp_agent, res=subject, preexisting_graph=preexisting)
+                )
             elif GraphEntity.iri_role_in_time in types:
-                imported_entities.append(g_set.add_ar(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=preexisting))
+                imported_entities.append(
+                    g_set.add_ar(resp_agent=resp_agent, res=subject, preexisting_graph=preexisting)
+                )
             elif GraphEntity.iri_bibliographic_reference in types:
-                imported_entities.append(g_set.add_be(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=preexisting))
+                imported_entities.append(
+                    g_set.add_be(resp_agent=resp_agent, res=subject, preexisting_graph=preexisting)
+                )
             elif GraphEntity.iri_expression in types:
-                imported_entities.append(g_set.add_br(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=preexisting))
+                imported_entities.append(
+                    g_set.add_br(resp_agent=resp_agent, res=subject, preexisting_graph=preexisting)
+                )
             elif GraphEntity.iri_citation in types:
-                imported_entities.append(g_set.add_ci(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=preexisting))
+                imported_entities.append(
+                    g_set.add_ci(resp_agent=resp_agent, res=subject, preexisting_graph=preexisting)
+                )
             elif GraphEntity.iri_discourse_element in types:
-                imported_entities.append(g_set.add_de(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=preexisting))
+                imported_entities.append(
+                    g_set.add_de(resp_agent=resp_agent, res=subject, preexisting_graph=preexisting)
+                )
             elif GraphEntity.iri_identifier in types:
-                imported_entities.append(g_set.add_id(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=preexisting))
+                imported_entities.append(
+                    g_set.add_id(resp_agent=resp_agent, res=subject, preexisting_graph=preexisting)
+                )
             elif GraphEntity.iri_singleloc_pointer_list in types:
-                imported_entities.append(g_set.add_pl(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=preexisting))
+                imported_entities.append(
+                    g_set.add_pl(resp_agent=resp_agent, res=subject, preexisting_graph=preexisting)
+                )
             elif GraphEntity.iri_agent in types:
-                imported_entities.append(g_set.add_ra(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=preexisting))
+                imported_entities.append(
+                    g_set.add_ra(resp_agent=resp_agent, res=subject, preexisting_graph=preexisting)
+                )
             elif GraphEntity.iri_manifestation in types:
-                imported_entities.append(g_set.add_re(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=preexisting))
+                imported_entities.append(
+                    g_set.add_re(resp_agent=resp_agent, res=subject, preexisting_graph=preexisting)
+                )
             elif GraphEntity.iri_intextref_pointer in types:
-                imported_entities.append(g_set.add_rp(resp_agent=resp_agent, res=subject,
-                                         preexisting_graph=preexisting))
+                imported_entities.append(
+                    g_set.add_rp(resp_agent=resp_agent, res=subject, preexisting_graph=preexisting)
+                )
         return imported_entities
 
     @staticmethod
-    def import_entity_from_triplestore(g_set: GraphSet, ts_url: str, res: str, resp_agent: str,
-                                    enable_validation: bool = False) -> GraphEntity:
+    def import_entity_from_triplestore(
+        g_set: GraphSet, ts_url: str, res: str, resp_agent: str, enable_validation: bool = False
+    ) -> GraphEntity:
         query: str = f"SELECT ?s ?p ?o WHERE {{BIND (<{res}> AS ?s). ?s ?p ?o.}}"
         try:
-            result = sparql_query(ts_url, query, max_retries=3, backoff_factor=2.5)['results']['bindings']
+            result = sparql_query(ts_url, query, max_retries=3, backoff_factor=2.5)["results"]["bindings"]
 
             if not result:
                 raise ValueError(f"The requested entity {res} was not found in the triplestore.")
 
-            imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(g_set, result, resp_agent, enable_validation)
+            imported_entities: List[GraphEntity] = Reader.import_entities_from_graph(
+                g_set, result, resp_agent, enable_validation
+            )
             if len(imported_entities) <= 0:
                 raise ValueError("The requested entity was not recognized as a proper OCDM entity.")
             return imported_entities[0]
@@ -347,8 +382,14 @@ class Reader(object):
             raise
 
     @staticmethod
-    def import_entities_from_triplestore(g_set: GraphSet, ts_url: str, entities: List[str], resp_agent: str,
-                                    enable_validation: bool = False, batch_size: int = 1000) -> List[GraphEntity]:
+    def import_entities_from_triplestore(
+        g_set: GraphSet,
+        ts_url: str,
+        entities: List[str],
+        resp_agent: str,
+        enable_validation: bool = False,
+        batch_size: int = 1000,
+    ) -> List[GraphEntity]:
         if not entities:
             raise ValueError("No entities provided for import")
 
@@ -356,41 +397,40 @@ class Reader(object):
 
         try:
             for i in range(0, len(entities), batch_size):
-                batch = entities[i:i + batch_size]
+                batch = entities[i : i + batch_size]
                 not_found_entities = set(batch)
 
-                union_patterns = []
+                union_patterns: list[str] = []
                 for entity in batch:
                     union_patterns.append(f"{{ BIND(<{entity}> AS ?s) ?s ?p ?o }}")
 
                 query = f"""
                 SELECT ?s ?p ?o
                 WHERE {{
-                    {' UNION '.join(union_patterns)}
+                    {" UNION ".join(union_patterns)}
                 }}
                 """
 
-                results = sparql_query(ts_url, query, max_retries=3, backoff_factor=2.5)['results']['bindings']
+                results = sparql_query(ts_url, query, max_retries=3, backoff_factor=2.5)["results"]["bindings"]
 
                 if not results:
-                    entities_str = ', '.join(not_found_entities)
+                    entities_str = ", ".join(not_found_entities)
                     raise ValueError(f"The requested entities were not found in the triplestore: {entities_str}")
 
                 for result in results:
-                    if 's' in result and 'value' in result['s']:
-                        not_found_entities.discard(result['s']['value'])
+                    if "s" in result and "value" in result["s"]:
+                        not_found_entities.discard(result["s"]["value"])
 
                 batch_entities = Reader.import_entities_from_graph(
-                    g_set=g_set,
-                    results=results,
-                    resp_agent=resp_agent,
-                    enable_validation=enable_validation
+                    g_set=g_set, results=results, resp_agent=resp_agent, enable_validation=enable_validation
                 )
                 imported_entities.extend(batch_entities)
 
                 if not_found_entities:
-                    entities_str = ', '.join(not_found_entities)
-                    raise ValueError(f"The following entities were not recognized as proper OCDM entities: {entities_str}")
+                    entities_str = ", ".join(not_found_entities)
+                    raise ValueError(
+                        f"The following entities were not recognized as proper OCDM entities: {entities_str}"
+                    )
 
         except ValueError:
             raise

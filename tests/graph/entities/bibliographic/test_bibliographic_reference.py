@@ -15,7 +15,7 @@ from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestBibliographicReference(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -49,5 +49,5 @@ class TestBibliographicReference(unittest.TestCase):
         self.assertIn(triple, self.be.g)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

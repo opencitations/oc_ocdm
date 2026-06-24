@@ -16,7 +16,7 @@ from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestResponsibleAgent(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -59,5 +59,5 @@ class TestResponsibleAgent(unittest.TestCase):
         self.assertIn(triple, self.ra.g)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

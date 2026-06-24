@@ -31,13 +31,17 @@ from oc_ocdm.support.support import get_count, get_prefix, get_short_name
 
 
 class ProvSet(AbstractSet[ProvEntity]):
-    labels: ClassVar[Dict[str, str]] = {
-        "se": "snapshot of entity metadata"
-    }
+    labels: ClassVar[Dict[str, str]] = {"se": "snapshot of entity metadata"}
 
-    def __init__(self, prov_subj_graph_set: GraphSet, base_iri: str, info_dir: str = "",
-                 wanted_label: bool = True, custom_counter_handler: Optional[CounterHandler] = None,
-                 supplier_prefix: str = "") -> None:
+    def __init__(
+        self,
+        prov_subj_graph_set: GraphSet,
+        base_iri: str,
+        info_dir: str | None = "",
+        wanted_label: bool = True,
+        custom_counter_handler: Optional[CounterHandler] = None,
+        supplier_prefix: str = "",
+    ) -> None:
         super(ProvSet, self).__init__()
         self.prov_g: GraphSet = prov_subj_graph_set
         self.res_to_entity: Dict[str, ProvEntity] = {}
@@ -66,8 +70,9 @@ class ProvSet(AbstractSet[ProvEntity]):
         g_prov: str = str(prov_subject) + "/prov/"
         supplier_prefix = get_prefix(prov_subject.res)
         cur_g, count, label = self._add_prov(g_prov, "se", prov_subject, res, supplier_prefix)
-        return SnapshotEntity(prov_subject, cur_g, self,
-                              res, prov_subject.resp_agent, prov_subject.source, count, label)
+        return SnapshotEntity(
+            prov_subject, cur_g, self, res, prov_subject.resp_agent, prov_subject.source, count, label
+        )
 
     def _create_snapshot(self, cur_subj: GraphEntity, cur_time: str) -> SnapshotEntity:
         new_snapshot: SnapshotEntity = self.add_se(prov_subject=cur_subj)
@@ -100,8 +105,8 @@ class ProvSet(AbstractSet[ProvEntity]):
         merge_description += "."
         return merge_description
 
-    def generate_provenance(self, c_time: Optional[float] = None) -> set:
-        modified_entities = set()
+    def generate_provenance(self, c_time: Optional[float] = None) -> set[str]:
+        modified_entities: set[str] = set()
 
         if c_time is None:
             cur_time: str = datetime.now(tz=timezone.utc).replace(microsecond=0).isoformat(sep="T")
@@ -110,7 +115,7 @@ class ProvSet(AbstractSet[ProvEntity]):
 
         # MERGED ENTITIES
         for cur_subj in self.prov_g.res_to_entity.values():
-            if cur_subj is None or (not cur_subj.was_merged or cur_subj.to_be_deleted):
+            if not cur_subj.was_merged or cur_subj.to_be_deleted:
                 # Here we must skip every entity that was not merged or that must be deleted.
                 continue
 
@@ -151,7 +156,7 @@ class ProvSet(AbstractSet[ProvEntity]):
 
         # EVERY OTHER ENTITY
         for cur_subj in self.prov_g.res_to_entity.values():
-            if cur_subj is None or (cur_subj.was_merged and not cur_subj.to_be_deleted):
+            if cur_subj.was_merged and not cur_subj.to_be_deleted:
                 # Here we must skip every entity which was merged while not being marked as to be deleted,
                 # since we already processed those entities in the previous loop.
                 continue
@@ -185,7 +190,7 @@ class ProvSet(AbstractSet[ProvEntity]):
                     # RESTORATION SNAPSHOT
                     last_snapshot: SnapshotEntity = self.add_se(prov_subject=cur_subj, res=last_snapshot_res)
                     # Don't set invalidation time on previous snapshot for restorations
-                    
+
                     cur_snapshot: SnapshotEntity = self._create_snapshot(cur_subj, cur_time)
                     cur_snapshot.derives_from(last_snapshot)
                     cur_snapshot.has_description(f"The entity '{cur_subj.res}' has been restored.")
@@ -203,9 +208,15 @@ class ProvSet(AbstractSet[ProvEntity]):
                     cur_snapshot.has_update_action(update_query)
                     modified_entities.add(cur_subj.res)
         return modified_entities
-    
-    def _add_prov(self, graph_url: str, short_name: str, prov_subject: GraphEntity,
-                res: Optional[str] = None, supplier_prefix: str = "") -> Tuple[TripleLite, Optional[str], Optional[str]]:
+
+    def _add_prov(
+        self,
+        graph_url: str,
+        short_name: str,
+        prov_subject: GraphEntity,
+        res: Optional[str] = None,
+        supplier_prefix: str = "",
+    ) -> Tuple[TripleLite, Optional[str], Optional[str]]:
         cur_g = TripleLite(identifier=graph_url)
 
         count: Optional[str] = None
@@ -216,35 +227,56 @@ class ProvSet(AbstractSet[ProvEntity]):
                 res_count: int = int(get_count(res))
             except ValueError:
                 res_count: int = -1
-            
+
             if isinstance(self.counter_handler, SqliteCounterHandler):
                 cur_count: int = self.counter_handler.read_counter(str(prov_subject))
             else:
-                cur_count: int = self.counter_handler.read_counter(prov_subject.short_name, "se", int(get_count(prov_subject.res)), supplier_prefix=supplier_prefix)
+                cur_count: int = self.counter_handler.read_counter(
+                    prov_subject.short_name, "se", int(get_count(prov_subject.res)), supplier_prefix=supplier_prefix
+                )
 
             if res_count > cur_count:
                 if isinstance(self.counter_handler, SqliteCounterHandler):
                     self.counter_handler.set_counter(int(get_count(prov_subject.res)), str(prov_subject))
                 else:
-                    self.counter_handler.set_counter(res_count, prov_subject.short_name, "se", int(get_count(prov_subject.res)), supplier_prefix=supplier_prefix)
+                    self.counter_handler.set_counter(
+                        res_count,
+                        prov_subject.short_name,
+                        "se",
+                        int(get_count(prov_subject.res)),
+                        supplier_prefix=supplier_prefix,
+                    )
             return cur_g, count, label
 
         if isinstance(self.counter_handler, SqliteCounterHandler):
             count = str(self.counter_handler.increment_counter(str(prov_subject)))
         else:
-            count = str(self.counter_handler.increment_counter(prov_subject.short_name, "se", int(get_count(prov_subject.res)), supplier_prefix=supplier_prefix))
+            count = str(
+                self.counter_handler.increment_counter(
+                    prov_subject.short_name, "se", int(get_count(prov_subject.res)), supplier_prefix=supplier_prefix
+                )
+            )
 
         if self.wanted_label:
             cur_short_name = prov_subject.short_name
             cur_entity_count = get_count(prov_subject.res)
             cur_entity_prefix = get_prefix(prov_subject.res)
 
-            related_to_label = "related to %s %s%s" % (GraphSet.labels[cur_short_name], cur_entity_prefix,
-                                                    cur_entity_count)
+            related_to_label = "related to %s %s%s" % (
+                GraphSet.labels[cur_short_name],
+                cur_entity_prefix,
+                cur_entity_count,
+            )
             related_to_short_label = "-> %s/%s%s" % (cur_short_name, cur_entity_prefix, cur_entity_count)
 
-            label = "%s %s %s [%s/%s %s]" % (self.labels[short_name], count, related_to_label, short_name, count,
-                                            related_to_short_label)
+            label = "%s %s %s [%s/%s %s]" % (
+                self.labels[short_name],
+                count,
+                related_to_label,
+                short_name,
+                count,
+                related_to_short_label,
+            )
 
         return cur_g, count, label
 
@@ -253,22 +285,28 @@ class ProvSet(AbstractSet[ProvEntity]):
         try:
             subj_count: str = get_count(prov_subject)
             if int(subj_count) <= 0:
-                raise ValueError('prov_subject is not a valid URIRef. Extracted count value should be a positive '
-                                'non-zero integer number!')
+                raise ValueError(
+                    "prov_subject is not a valid URIRef. Extracted count value should be a positive "
+                    "non-zero integer number!"
+                )
         except ValueError:
-            raise ValueError('prov_subject is not a valid URIRef. Unable to extract the count value!')
+            raise ValueError("prov_subject is not a valid URIRef. Unable to extract the count value!")
 
         supplier_prefix = get_prefix(prov_subject)
 
         if isinstance(self.counter_handler, SqliteCounterHandler):
             last_snapshot_count: str = str(self.counter_handler.read_counter(str(prov_subject)))
         else:
-            last_snapshot_count: str = str(self.counter_handler.read_counter(subj_short_name, "se", int(subj_count), supplier_prefix=supplier_prefix))
+            last_snapshot_count: str = str(
+                self.counter_handler.read_counter(
+                    subj_short_name, "se", int(subj_count), supplier_prefix=supplier_prefix
+                )
+            )
 
         if int(last_snapshot_count) <= 0:
             return None
         else:
-            return str(prov_subject) + '/prov/se/' + last_snapshot_count
+            return str(prov_subject) + "/prov/se/" + last_snapshot_count
 
     def get_se(self) -> Tuple[SnapshotEntity, ...]:
         return tuple(entity for entity in self.res_to_entity.values() if isinstance(entity, SnapshotEntity))

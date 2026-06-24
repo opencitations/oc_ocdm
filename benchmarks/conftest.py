@@ -45,10 +45,7 @@ def create_populated_graph_set(handler, entity_count):
         Tuple of (GraphSet, list of created BibliographicResource entities)
     """
     graph_set = GraphSet(
-        base_iri=BASE_IRI,
-        wanted_label=False,
-        custom_counter_handler=handler,
-        supplier_prefix=SUPPLIER_PREFIX
+        base_iri=BASE_IRI, wanted_label=False, custom_counter_handler=handler, supplier_prefix=SUPPLIER_PREFIX
     )
     factory = DataFactory(seed=42)
     entities = factory.populate_graph_set(graph_set, RESP_AGENT, entity_count)
@@ -71,7 +68,7 @@ def create_prov_set(graph_set, handler):
         base_iri=BASE_IRI,
         wanted_label=False,
         custom_counter_handler=handler,
-        supplier_prefix=SUPPLIER_PREFIX
+        supplier_prefix=SUPPLIER_PREFIX,
     )
 
 

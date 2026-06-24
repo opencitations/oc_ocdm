@@ -28,12 +28,19 @@ class InMemoryCounterHandler(CounterHandler):
         self.prov_short_names: List[str] = ["se"]
         self.metadata_short_names: List[str] = ["di"]
         self.entity_counters: Dict[str, int] = {key: 0 for key in self.short_names}
-        self.prov_counters: Dict[str, Dict[str, List[int]]] = {key1: {key2: [] for key2 in self.prov_short_names}
-                                                               for key1 in self.short_names}
+        self.prov_counters: Dict[str, Dict[str, List[int]]] = {
+            key1: {key2: [] for key2 in self.prov_short_names} for key1 in self.short_names
+        }
         self.metadata_counters: Dict[str, Dict[str, int]] = {}
 
-    def set_counter(self, new_value: int, entity_short_name: str, prov_short_name: str = "",
-                    identifier: int = 1, supplier_prefix: str = "") -> None:
+    def set_counter(
+        self,
+        new_value: int,
+        entity_short_name: str,
+        prov_short_name: str = "",
+        identifier: int = 1,
+        supplier_prefix: str = "",
+    ) -> None:
         """
         It allows to set the counter value of graph and provenance entities.
 
@@ -75,7 +82,9 @@ class InMemoryCounterHandler(CounterHandler):
             # It's an entity!
             self.entity_counters[entity_short_name] = new_value
 
-    def read_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
+    def read_counter(
+        self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = ""
+    ) -> int:
         """
         It allows to read the counter value of graph and provenance entities.
 
@@ -112,7 +121,9 @@ class InMemoryCounterHandler(CounterHandler):
             # It's an entity!
             return self.entity_counters[entity_short_name]
 
-    def increment_counter(self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = "") -> int:
+    def increment_counter(
+        self, entity_short_name: str, prov_short_name: str = "", identifier: int = 1, supplier_prefix: str = ""
+    ) -> int:
         """
         It allows to increment the counter value of graph and provenance entities by one unit.
 
@@ -143,7 +154,7 @@ class InMemoryCounterHandler(CounterHandler):
             # It's a provenance entity!
             missing_counters: int = identifier - (len(self.prov_counters[entity_short_name][prov_short_name]) - 1)
             if missing_counters > 0:
-                self.prov_counters[entity_short_name][prov_short_name] += [0]*missing_counters
+                self.prov_counters[entity_short_name][prov_short_name] += [0] * missing_counters
             self.prov_counters[entity_short_name][prov_short_name][identifier] += 1
             return self.prov_counters[entity_short_name][prov_short_name][identifier]
         else:
@@ -151,7 +162,7 @@ class InMemoryCounterHandler(CounterHandler):
             self.entity_counters[entity_short_name] += 1
             return self.entity_counters[entity_short_name]
 
-    def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str) -> None:
+    def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str | None) -> None:
         """
         It allows to set the counter value of metadata entities.
 
@@ -179,7 +190,7 @@ class InMemoryCounterHandler(CounterHandler):
 
         self.metadata_counters[dataset_name][entity_short_name] = new_value
 
-    def read_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+    def read_metadata_counter(self, entity_short_name: str, dataset_name: str | None) -> int:
         """
         It allows to read the counter value of metadata entities.
 
@@ -204,7 +215,7 @@ class InMemoryCounterHandler(CounterHandler):
             else:
                 return self.metadata_counters[dataset_name][entity_short_name]
 
-    def increment_metadata_counter(self, entity_short_name: str, dataset_name: str) -> int:
+    def increment_metadata_counter(self, entity_short_name: str, dataset_name: str | None) -> int:
         """
         It allows to increment the counter value of metadata entities by one unit.
 

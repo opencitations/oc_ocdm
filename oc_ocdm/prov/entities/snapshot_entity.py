@@ -138,14 +138,14 @@ class SnapshotEntity(ProvEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[str] = self._get_multiple_uri_references(ProvEntity.iri_was_derived_from, 'se')
+        uri_list: List[str] = self._get_multiple_uri_references(ProvEntity.iri_was_derived_from, "se")
         result: List[ProvEntity] = []
         for uri in uri_list:
             # TODO: what is the prov_subject of these snapshots?
             result.append(self.p_set.add_se(self.prov_subject, uri))
         return result
 
-    @accepts_only('se')
+    @accepts_only("se")
     def derives_from(self, se_res: ProvEntity) -> None:
         """
         Setter method corresponding to the ``prov:wasDerivedFrom`` RDF predicate.
@@ -160,7 +160,7 @@ class SnapshotEntity(ProvEntity):
         """
         self.g.add((self.res, ProvEntity.iri_was_derived_from, RDFTerm("uri", str(se_res.res))))
 
-    @accepts_only('se')
+    @accepts_only("se")
     def remove_derives_from(self, se_res: Optional[ProvEntity] = None) -> None:
         """
         Remover method corresponding to the ``prov:wasDerivedFrom`` RDF predicate.

@@ -22,8 +22,8 @@ from oc_ocdm.support.support import encode_url, is_string_empty
 
 class Identifier(GraphEntity):
     """Identifier (short: id): an external identifier (e.g. DOI, ORCID, PubMedID, Open
-       Citation Identifier) associated with the bibliographic entity. Members of this class of
-       metadata are themselves given unique corpus identifiers e.g. 'id/0420129'."""
+    Citation Identifier) associated with the bibliographic entity. Members of this class of
+    metadata are themselves given unique corpus identifiers e.g. 'id/0420129'."""
 
     def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """

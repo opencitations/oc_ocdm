@@ -23,8 +23,8 @@ from oc_ocdm.graph.graph_entity import GraphEntity
 
 class PointerList(BibliographicEntity):
     """Pointer list (short: pl): a textual device (e.g. '[1, 2, 3]' or '[4-9]') which includes a
-       number of reference pointers denoting the specific bibliographic references to which
-       the list pertains."""
+    number of reference pointers denoting the specific bibliographic references to which
+    the list pertains."""
 
     def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         """
@@ -94,13 +94,13 @@ class PointerList(BibliographicEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_has_element, 'rp')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_has_element, "rp")
         result: List[ReferencePointer] = []
         for uri in uri_list:
             result.append(self.g_set.add_rp(self.resp_agent, self.source, uri))
         return result
 
-    @accepts_only('rp')
+    @accepts_only("rp")
     def contains_element(self, rp_res: ReferencePointer) -> None:
         """
         Setter method corresponding to the ``co:element`` RDF predicate.
@@ -115,7 +115,7 @@ class PointerList(BibliographicEntity):
         """
         self.g.add((self.res, GraphEntity.iri_has_element, RDFTerm("uri", str(rp_res.res))))
 
-    @accepts_only('rp')
+    @accepts_only("rp")
     def remove_contained_element(self, rp_res: ReferencePointer | None = None) -> None:
         """
         Remover method corresponding to the ``co:element`` RDF predicate.

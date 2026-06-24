@@ -154,7 +154,7 @@ class AbstractEntity(ABC):
                 continue
             uri = o.value
             if not is_string_empty(short_name):
-                if (short_name == '_dataset_' and is_dataset(uri)) or get_short_name(uri) == short_name:
+                if (short_name == "_dataset_" and is_dataset(uri)) or get_short_name(uri) == short_name:
                     return uri
             else:
                 return uri
@@ -167,7 +167,7 @@ class AbstractEntity(ABC):
                 continue
             uri = o.value
             if not is_string_empty(short_name):
-                if (short_name == '_dataset_' and is_dataset(uri)) or get_short_name(uri) == short_name:
+                if (short_name == "_dataset_" and is_dataset(uri)) or get_short_name(uri) == short_name:
                     result.append(uri)
             else:
                 result.append(uri)

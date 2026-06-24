@@ -54,13 +54,13 @@ class BibliographicEntity(GraphEntity):
 
         :return: A list containing the requested values if found, None otherwise
         """
-        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_has_identifier, 'id')
+        uri_list: List[str] = self._get_multiple_uri_references(GraphEntity.iri_has_identifier, "id")
         result: List[Identifier] = []
         for uri in uri_list:
             result.append(self.g_set.add_id(self.resp_agent, self.source, uri))
         return result
 
-    @accepts_only('id')
+    @accepts_only("id")
     def has_identifier(self, id_res: Identifier) -> None:
         """
         Setter method corresponding to the ``datacite:hasIdentifier`` RDF predicate.
@@ -76,7 +76,7 @@ class BibliographicEntity(GraphEntity):
         """
         self.g.add((self.res, GraphEntity.iri_has_identifier, RDFTerm("uri", str(id_res.res))))
 
-    @accepts_only('id')
+    @accepts_only("id")
     def remove_identifier(self, id_res: Identifier | None = None) -> None:
         """
         Remover method corresponding to the ``datacite:hasIdentifier`` RDF predicate.

@@ -12,7 +12,7 @@ from oc_ocdm.graph.graph_set import GraphSet
 
 
 class TestBibliographicReferenceMerge(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -58,7 +58,7 @@ class TestBibliographicReferenceMerge(unittest.TestCase):
 
 
 class TestReferencePointerMerge(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -116,7 +116,7 @@ class TestReferencePointerMerge(unittest.TestCase):
 
 
 class TestPointerListMerge(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -137,7 +137,7 @@ class TestPointerListMerge(unittest.TestCase):
 
 
 class TestAgentRoleMerge(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -204,7 +204,7 @@ class TestAgentRoleMerge(unittest.TestCase):
 
 
 class TestResponsibleAgentMerge(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -246,7 +246,7 @@ class TestResponsibleAgentMerge(unittest.TestCase):
 
 
 class TestResourceEmbodimentMerge(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -277,7 +277,7 @@ class TestResourceEmbodimentMerge(unittest.TestCase):
 
 
 class TestCitationMerge(unittest.TestCase):
-    resp_agent = 'http://resp_agent.test/'
+    resp_agent = "http://resp_agent.test/"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -311,5 +311,5 @@ class TestCitationMerge(unittest.TestCase):
         self.assertEqual(cited.res, br.res)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
