@@ -1,3 +1,10 @@
+## [11.0.17](https://github.com/opencitations/oc_ocdm/compare/11.0.16...11.0.17) (2026-06-24)
+
+
+### Bug Fixes
+
+* **typing:** enable strict pyright checks for the package [release] ([fbff37e](https://github.com/opencitations/oc_ocdm/commit/fbff37e33646c0b49588b05e356ca2b9fa1c3848))
+
 ## [11.0.16](https://github.com/opencitations/oc_ocdm/compare/11.0.15...11.0.16) (2026-06-13)
 
 
