@@ -1,3 +1,10 @@
+## [11.0.18](https://github.com/opencitations/oc_ocdm/compare/11.0.17...11.0.18) (2026-07-03)
+
+
+### Bug Fixes
+
+* **typing:** accept concrete sets in storer [release] ([acf5ddb](https://github.com/opencitations/oc_ocdm/commit/acf5ddbafed2b5b2e41753002a968a8974be3927))
+
 ## [11.0.17](https://github.com/opencitations/oc_ocdm/compare/11.0.16...11.0.17) (2026-06-24)
 
 
