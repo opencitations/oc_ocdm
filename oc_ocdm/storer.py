@@ -37,7 +37,9 @@ if TYPE_CHECKING:
     from typing import List, Tuple
 
     from oc_ocdm.abstract_entity import AbstractEntity
-    from oc_ocdm.abstract_set import AbstractSet
+    from oc_ocdm.graph.graph_set import GraphSet
+    from oc_ocdm.metadata.metadata_set import MetadataSet
+    from oc_ocdm.prov.prov_set import ProvSet
 
 
 def _entity_to_jsonld_dict(entity: AbstractEntity) -> JsonObject:
@@ -133,7 +135,7 @@ class _JsonLdDoc:
 class Storer(object):
     def __init__(
         self,
-        abstract_set: AbstractSet[AbstractEntity],
+        abstract_set: GraphSet | MetadataSet | ProvSet,
         repok: Reporter | None = None,
         reperr: Reporter | None = None,
         context_map: ContextMap | None = None,
@@ -167,7 +169,7 @@ class Storer(object):
         self.dir_split: int = dir_split
         self.n_file_item: int = n_file_item
         self.default_dir: str = default_dir if default_dir != "" else "_"
-        self.a_set: AbstractSet[AbstractEntity] = abstract_set
+        self.a_set: GraphSet | MetadataSet | ProvSet = abstract_set
         self.modified_entities = modified_entities
 
         if context_map is not None:
