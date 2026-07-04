@@ -31,9 +31,10 @@ class ResponsibleAgent(BibliographicEntity):
         entity gets "redirected" to the current entity: **every other reference contained inside a
         different source (e.g. a triplestore) must be manually handled by the user!**
 
-        In case of functional properties, values from the current entity get overwritten
-        by those coming from the second entity while, in all other cases, values from the
-        second entity are simply appended to those of the current entity. In this context,
+        By default, functional values from the current entity get overwritten by values
+        from the second entity. When ``prefer_self`` is True, existing functional values
+        from the current entity are kept. Non-functional values from the second entity
+        are appended to those of the current entity. In this context,
         ``rdfs:label`` is considered as a functional property, while ``rdf:type`` is not.
 
         :param other: The entity which will be marked as to be deleted and whose properties will
@@ -46,15 +47,15 @@ class ResponsibleAgent(BibliographicEntity):
         assert isinstance(other, ResponsibleAgent)
 
         name: Optional[str] = other.get_name()
-        if name is not None:
+        if name is not None and self._should_merge_functional_property(self.get_name(), prefer_self):
             self.has_name(name)
 
         given_name: Optional[str] = other.get_given_name()
-        if given_name is not None:
+        if given_name is not None and self._should_merge_functional_property(self.get_given_name(), prefer_self):
             self.has_given_name(given_name)
 
         family_name: Optional[str] = other.get_family_name()
-        if family_name is not None:
+        if family_name is not None and self._should_merge_functional_property(self.get_family_name(), prefer_self):
             self.has_family_name(family_name)
 
         related_agents: List[str] = other.get_related_agents()

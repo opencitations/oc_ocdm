@@ -56,6 +56,27 @@ class TestBibliographicReferenceMerge(unittest.TestCase):
         assert referenced is not None
         self.assertEqual(referenced.res, br.res)
 
+    def test_merge_prefer_self_keeps_content(self):
+        be1 = self.graph_set.add_be(self.resp_agent)
+        be2 = self.graph_set.add_be(self.resp_agent)
+
+        be1.has_content("self content")
+        be2.has_content("other content")
+
+        be1.merge(be2, prefer_self=True)
+
+        self.assertEqual(be1.get_content(), "self content")
+
+    def test_merge_prefer_self_fills_missing_content(self):
+        be1 = self.graph_set.add_be(self.resp_agent)
+        be2 = self.graph_set.add_be(self.resp_agent)
+
+        be2.has_content("other content")
+
+        be1.merge(be2, prefer_self=True)
+
+        self.assertEqual(be1.get_content(), "other content")
+
 
 class TestReferencePointerMerge(unittest.TestCase):
     resp_agent = "http://resp_agent.test/"
@@ -114,6 +135,27 @@ class TestReferencePointerMerge(unittest.TestCase):
         annotations = rp1.get_annotations()
         self.assertEqual(len(annotations), 1)
 
+    def test_merge_prefer_self_keeps_content(self):
+        rp1 = self.graph_set.add_rp(self.resp_agent)
+        rp2 = self.graph_set.add_rp(self.resp_agent)
+
+        rp1.has_content("[self]")
+        rp2.has_content("[other]")
+
+        rp1.merge(rp2, prefer_self=True)
+
+        self.assertEqual(rp1.get_content(), "[self]")
+
+    def test_merge_prefer_self_fills_missing_content(self):
+        rp1 = self.graph_set.add_rp(self.resp_agent)
+        rp2 = self.graph_set.add_rp(self.resp_agent)
+
+        rp2.has_content("[other]")
+
+        rp1.merge(rp2, prefer_self=True)
+
+        self.assertEqual(rp1.get_content(), "[other]")
+
 
 class TestPointerListMerge(unittest.TestCase):
     resp_agent = "http://resp_agent.test/"
@@ -134,6 +176,27 @@ class TestPointerListMerge(unittest.TestCase):
         elements = pl1.get_contained_elements()
         self.assertEqual(len(elements), 1)
         self.assertTrue(pl2.to_be_deleted)
+
+    def test_merge_prefer_self_keeps_content(self):
+        pl1 = self.graph_set.add_pl(self.resp_agent)
+        pl2 = self.graph_set.add_pl(self.resp_agent)
+
+        pl1.has_content("self content")
+        pl2.has_content("other content")
+
+        pl1.merge(pl2, prefer_self=True)
+
+        self.assertEqual(pl1.get_content(), "self content")
+
+    def test_merge_prefer_self_fills_missing_content(self):
+        pl1 = self.graph_set.add_pl(self.resp_agent)
+        pl2 = self.graph_set.add_pl(self.resp_agent)
+
+        pl2.has_content("other content")
+
+        pl1.merge(pl2, prefer_self=True)
+
+        self.assertEqual(pl1.get_content(), "other content")
 
 
 class TestAgentRoleMerge(unittest.TestCase):
@@ -202,6 +265,27 @@ class TestAgentRoleMerge(unittest.TestCase):
         role_type = ar1.get_role_type()
         self.assertEqual(role_type, GraphEntity.iri_editor)
 
+    def test_merge_prefer_self_keeps_role_type(self):
+        ar1 = self.graph_set.add_ar(self.resp_agent)
+        ar2 = self.graph_set.add_ar(self.resp_agent)
+
+        ar1.create_author()
+        ar2.create_editor()
+
+        ar1.merge(ar2, prefer_self=True)
+
+        self.assertEqual(ar1.get_role_type(), GraphEntity.iri_author)
+
+    def test_merge_prefer_self_fills_missing_role_type(self):
+        ar1 = self.graph_set.add_ar(self.resp_agent)
+        ar2 = self.graph_set.add_ar(self.resp_agent)
+
+        ar2.create_editor()
+
+        ar1.merge(ar2, prefer_self=True)
+
+        self.assertEqual(ar1.get_role_type(), GraphEntity.iri_editor)
+
 
 class TestResponsibleAgentMerge(unittest.TestCase):
     resp_agent = "http://resp_agent.test/"
@@ -244,6 +328,27 @@ class TestResponsibleAgentMerge(unittest.TestCase):
 
         self.assertEqual(ra1.get_family_name(), family_name)
 
+    def test_merge_prefer_self_keeps_name(self):
+        ra1 = self.graph_set.add_ra(self.resp_agent)
+        ra2 = self.graph_set.add_ra(self.resp_agent)
+
+        ra1.has_name("Self Name")
+        ra2.has_name("Other Name")
+
+        ra1.merge(ra2, prefer_self=True)
+
+        self.assertEqual(ra1.get_name(), "Self Name")
+
+    def test_merge_prefer_self_fills_missing_name(self):
+        ra1 = self.graph_set.add_ra(self.resp_agent)
+        ra2 = self.graph_set.add_ra(self.resp_agent)
+
+        ra2.has_name("Other Name")
+
+        ra1.merge(ra2, prefer_self=True)
+
+        self.assertEqual(ra1.get_name(), "Other Name")
+
 
 class TestResourceEmbodimentMerge(unittest.TestCase):
     resp_agent = "http://resp_agent.test/"
@@ -274,6 +379,27 @@ class TestResourceEmbodimentMerge(unittest.TestCase):
         re1.merge(re2)
 
         self.assertEqual(re1.get_ending_page(), page)
+
+    def test_merge_prefer_self_keeps_starting_page(self):
+        re1 = self.graph_set.add_re(self.resp_agent)
+        re2 = self.graph_set.add_re(self.resp_agent)
+
+        re1.has_starting_page("1")
+        re2.has_starting_page("2")
+
+        re1.merge(re2, prefer_self=True)
+
+        self.assertEqual(re1.get_starting_page(), "1")
+
+    def test_merge_prefer_self_fills_missing_starting_page(self):
+        re1 = self.graph_set.add_re(self.resp_agent)
+        re2 = self.graph_set.add_re(self.resp_agent)
+
+        re2.has_starting_page("2")
+
+        re1.merge(re2, prefer_self=True)
+
+        self.assertEqual(re1.get_starting_page(), "2")
 
 
 class TestCitationMerge(unittest.TestCase):
@@ -309,6 +435,135 @@ class TestCitationMerge(unittest.TestCase):
         cited = ci1.get_cited_entity()
         assert cited is not None
         self.assertEqual(cited.res, br.res)
+
+    def test_merge_prefer_self_keeps_creation_date(self):
+        ci1 = self.graph_set.add_ci(self.resp_agent)
+        ci2 = self.graph_set.add_ci(self.resp_agent)
+
+        ci1.has_citation_creation_date("2020")
+        ci2.has_citation_creation_date("2021")
+
+        ci1.merge(ci2, prefer_self=True)
+
+        self.assertEqual(ci1.get_citation_creation_date(), "2020")
+
+    def test_merge_prefer_self_fills_missing_creation_date(self):
+        ci1 = self.graph_set.add_ci(self.resp_agent)
+        ci2 = self.graph_set.add_ci(self.resp_agent)
+
+        ci2.has_citation_creation_date("2021")
+
+        ci1.merge(ci2, prefer_self=True)
+
+        self.assertEqual(ci1.get_citation_creation_date(), "2021")
+
+
+class TestBibliographicResourceMerge(unittest.TestCase):
+    resp_agent = "http://resp_agent.test/"
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
+
+    def test_merge_prefer_self_keeps_title(self):
+        br1 = self.graph_set.add_br(self.resp_agent)
+        br2 = self.graph_set.add_br(self.resp_agent)
+
+        br1.has_title("Self title")
+        br2.has_title("Other title")
+
+        br1.merge(br2, prefer_self=True)
+
+        self.assertEqual(br1.get_title(), "Self title")
+
+    def test_merge_prefer_self_fills_missing_title(self):
+        br1 = self.graph_set.add_br(self.resp_agent)
+        br2 = self.graph_set.add_br(self.resp_agent)
+
+        br2.has_title("Other title")
+
+        br1.merge(br2, prefer_self=True)
+
+        self.assertEqual(br1.get_title(), "Other title")
+
+    def test_merge_prefer_self_keeps_non_functional_citations(self):
+        br1 = self.graph_set.add_br(self.resp_agent)
+        br2 = self.graph_set.add_br(self.resp_agent)
+        cited1 = self.graph_set.add_br(self.resp_agent)
+        cited2 = self.graph_set.add_br(self.resp_agent)
+
+        br1.has_citation(cited1)
+        br2.has_citation(cited2)
+
+        br1.merge(br2, prefer_self=True)
+
+        citations = sorted(br.res for br in br1.get_citations())
+        self.assertEqual(citations, sorted([cited1.res, cited2.res]))
+
+
+class TestDiscourseElementMerge(unittest.TestCase):
+    resp_agent = "http://resp_agent.test/"
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
+
+    def test_merge_prefer_self_keeps_title(self):
+        de1 = self.graph_set.add_de(self.resp_agent)
+        de2 = self.graph_set.add_de(self.resp_agent)
+
+        de1.has_title("Self title")
+        de2.has_title("Other title")
+
+        de1.merge(de2, prefer_self=True)
+
+        self.assertEqual(de1.get_title(), "Self title")
+
+    def test_merge_prefer_self_fills_missing_title(self):
+        de1 = self.graph_set.add_de(self.resp_agent)
+        de2 = self.graph_set.add_de(self.resp_agent)
+
+        de2.has_title("Other title")
+
+        de1.merge(de2, prefer_self=True)
+
+        self.assertEqual(de1.get_title(), "Other title")
+
+
+class TestReferenceAnnotationMerge(unittest.TestCase):
+    resp_agent = "http://resp_agent.test/"
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.graph_set = GraphSet("http://test/", "./info_dir/", "", False)
+
+    def test_merge_prefer_self_keeps_body_annotation(self):
+        an1 = self.graph_set.add_an(self.resp_agent)
+        an2 = self.graph_set.add_an(self.resp_agent)
+        ci1 = self.graph_set.add_ci(self.resp_agent)
+        ci2 = self.graph_set.add_ci(self.resp_agent)
+
+        an1.has_body_annotation(ci1)
+        an2.has_body_annotation(ci2)
+
+        an1.merge(an2, prefer_self=True)
+
+        body = an1.get_body_annotation()
+        assert body is not None
+        self.assertEqual(body.res, ci1.res)
+
+    def test_merge_prefer_self_fills_missing_body_annotation(self):
+        an1 = self.graph_set.add_an(self.resp_agent)
+        an2 = self.graph_set.add_an(self.resp_agent)
+        ci = self.graph_set.add_ci(self.resp_agent)
+
+        an2.has_body_annotation(ci)
+
+        an1.merge(an2, prefer_self=True)
+
+        body = an1.get_body_annotation()
+        assert body is not None
+        self.assertEqual(body.res, ci.res)
 
 
 if __name__ == "__main__":

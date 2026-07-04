@@ -31,7 +31,7 @@ class BibliographicEntity(GraphEntity):
 
         :param other: The entity whose properties will be merged into the current entity.
         :type other: BibliographicEntity
-        :param prefer_self: If True, prefer values from the current entity for non-functional properties
+        :param prefer_self: If True, keep existing functional values from the current entity
         :type prefer_self: bool
         :return: None
         """

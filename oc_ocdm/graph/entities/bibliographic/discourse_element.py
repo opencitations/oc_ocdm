@@ -38,9 +38,10 @@ class DiscourseElement(BibliographicEntity):
         entity gets "redirected" to the current entity: **every other reference contained inside a
         different source (e.g. a triplestore) must be manually handled by the user!**
 
-        In case of functional properties, values from the current entity get overwritten
-        by those coming from the second entity while, in all other cases, values from the
-        second entity are simply appended to those of the current entity. In this context,
+        By default, functional values from the current entity get overwritten by values
+        from the second entity. When ``prefer_self`` is True, existing functional values
+        from the current entity are kept. Non-functional values from the second entity
+        are appended to those of the current entity. In this context,
         ``rdfs:label`` is considered as a functional property, while ``rdf:type`` is not.
 
         :param other: The entity which will be marked as to be deleted and whose properties will
@@ -53,7 +54,7 @@ class DiscourseElement(BibliographicEntity):
         assert isinstance(other, DiscourseElement)
 
         title: Optional[str] = other.get_title()
-        if title is not None:
+        if title is not None and self._should_merge_functional_property(self.get_title(), prefer_self):
             self.has_title(title)
 
         de_list: List[DiscourseElement] = other.get_contained_discourse_elements()
@@ -61,7 +62,7 @@ class DiscourseElement(BibliographicEntity):
             self.contains_discourse_element(cur_de)
 
         next_de: Optional[DiscourseElement] = other.get_next_de()
-        if next_de is not None:
+        if next_de is not None and self._should_merge_functional_property(self.get_next_de(), prefer_self):
             self.has_next_de(next_de)
 
         rp_list: List[ReferencePointer] = other.get_is_context_of_rp()
@@ -73,11 +74,11 @@ class DiscourseElement(BibliographicEntity):
             self.is_context_of_pl(cur_pl)
 
         content: Optional[str] = other.get_content()
-        if content is not None:
+        if content is not None and self._should_merge_functional_property(self.get_content(), prefer_self):
             self.has_content(content)
 
         number: Optional[str] = other.get_number()
-        if number is not None:
+        if number is not None and self._should_merge_functional_property(self.get_number(), prefer_self):
             self.has_number(number)
 
     # HAS TITLE

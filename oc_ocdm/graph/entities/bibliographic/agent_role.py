@@ -32,9 +32,10 @@ class AgentRole(BibliographicEntity):
         entity gets "redirected" to the current entity: **every other reference contained inside a
         different source (e.g. a triplestore) must be manually handled by the user!**
 
-        In case of functional properties, values from the current entity get overwritten
-        by those coming from the second entity while, in all other cases, values from the
-        second entity are simply appended to those of the current entity. In this context,
+        By default, functional values from the current entity get overwritten by values
+        from the second entity. When ``prefer_self`` is True, existing functional values
+        from the current entity are kept. Non-functional values from the second entity
+        are appended to those of the current entity. In this context,
         ``rdfs:label`` is considered as a functional property, while ``rdf:type`` is not.
 
         :param other: The entity which will be marked as to be deleted and whose properties will
@@ -47,15 +48,15 @@ class AgentRole(BibliographicEntity):
         assert isinstance(other, AgentRole)
 
         next_ar: Optional[AgentRole] = other.get_next()
-        if next_ar is not None:
+        if next_ar is not None and self._should_merge_functional_property(self.get_next(), prefer_self):
             self.has_next(next_ar)
 
         resp_agent: Optional[ResponsibleAgent] = other.get_is_held_by()
-        if resp_agent is not None:
+        if resp_agent is not None and self._should_merge_functional_property(self.get_is_held_by(), prefer_self):
             self.is_held_by(resp_agent)
 
         role_type: Optional[str] = other.get_role_type()
-        if role_type is not None:
+        if role_type is not None and self._should_merge_functional_property(self.get_role_type(), prefer_self):
             if role_type == GraphEntity.iri_publisher:
                 self.create_publisher()
             elif role_type == GraphEntity.iri_author:

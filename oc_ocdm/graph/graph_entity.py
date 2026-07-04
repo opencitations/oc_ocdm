@@ -302,7 +302,7 @@ class GraphEntity(AbstractEntity):
         :param other: The entity which will be marked as to be deleted and whose properties will
          be merged into the current entity.
         :type other: GraphEntity
-        :param prefer_self: If True, prefer values from the current entity for non-functional properties
+        :param prefer_self: If True, keep existing functional values from the current entity
         :type prefer_self: bool
         :raises TypeError: if the parameter is not of the same entity type
         :return: None
@@ -339,7 +339,7 @@ class GraphEntity(AbstractEntity):
             self.g.add((self.res, RDF_TYPE, RDFTerm("uri", final_specific_type)))
 
         label: Optional[str] = other.get_label()
-        if label is not None:
+        if label is not None and self._should_merge_functional_property(self.get_label(), prefer_self):
             self.create_label(label)
 
         self._was_merged = True
@@ -354,6 +354,10 @@ class GraphEntity(AbstractEntity):
 
     def _merge_properties(self, other: GraphEntity, prefer_self: bool) -> None:
         pass
+
+    @staticmethod
+    def _should_merge_functional_property(current_value: object | None, prefer_self: bool) -> bool:
+        return not prefer_self or current_value is None
 
     def commit_changes(self) -> None:
         if self._to_be_deleted:

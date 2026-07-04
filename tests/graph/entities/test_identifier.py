@@ -178,6 +178,29 @@ class TestIdentifier(unittest.TestCase):
         triple = self.identifier.res, GraphEntity.iri_uses_identifier_scheme, RDFTerm("uri", GraphEntity.iri_datacite)
         self.assertIn(triple, self.identifier.g)
 
+    def test_merge_prefer_self_keeps_identifier_signature(self):
+        id1 = self.graph_set.add_id(self.resp_agent)
+        id2 = self.graph_set.add_id(self.resp_agent)
+
+        id1.create_doi("10.1000/self")
+        id2.create_viaf("other")
+
+        id1.merge(id2, prefer_self=True)
+
+        self.assertEqual(id1.get_literal_value(), "10.1000/self")
+        self.assertEqual(id1.get_scheme(), GraphEntity.iri_doi)
+
+    def test_merge_prefer_self_fills_missing_identifier_signature(self):
+        id1 = self.graph_set.add_id(self.resp_agent)
+        id2 = self.graph_set.add_id(self.resp_agent)
+
+        id2.create_doi("10.1000/other")
+
+        id1.merge(id2, prefer_self=True)
+
+        self.assertEqual(id1.get_literal_value(), "10.1000/other")
+        self.assertEqual(id1.get_scheme(), GraphEntity.iri_doi)
+
     def test_create_viaf(self):
         viaf = "abcdefghi"
         result = self.identifier.create_viaf(viaf)

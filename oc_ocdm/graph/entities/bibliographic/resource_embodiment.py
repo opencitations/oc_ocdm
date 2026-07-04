@@ -31,9 +31,10 @@ class ResourceEmbodiment(BibliographicEntity):
         entity gets "redirected" to the current entity: **every other reference contained inside a
         different source (e.g. a triplestore) must be manually handled by the user!**
 
-        In case of functional properties, values from the current entity get overwritten
-        by those coming from the second entity while, in all other cases, values from the
-        second entity are simply appended to those of the current entity. In this context,
+        By default, functional values from the current entity get overwritten by values
+        from the second entity. When ``prefer_self`` is True, existing functional values
+        from the current entity are kept. Non-functional values from the second entity
+        are appended to those of the current entity. In this context,
         ``rdfs:label`` is considered as a functional property, while ``rdf:type`` is not.
 
         :param other: The entity which will be marked as to be deleted and whose properties will
@@ -46,19 +47,19 @@ class ResourceEmbodiment(BibliographicEntity):
         assert isinstance(other, ResourceEmbodiment)
 
         media_type: Optional[str] = other.get_media_type()
-        if media_type is not None:
+        if media_type is not None and self._should_merge_functional_property(self.get_media_type(), prefer_self):
             self.has_media_type(media_type)
 
         starting_page: Optional[str] = other.get_starting_page()
-        if starting_page is not None:
+        if starting_page is not None and self._should_merge_functional_property(self.get_starting_page(), prefer_self):
             self.has_starting_page(starting_page)
 
         ending_page: Optional[str] = other.get_ending_page()
-        if ending_page is not None:
+        if ending_page is not None and self._should_merge_functional_property(self.get_ending_page(), prefer_self):
             self.has_ending_page(ending_page)
 
         url: Optional[str] = other.get_url()
-        if url is not None:
+        if url is not None and self._should_merge_functional_property(self.get_url(), prefer_self):
             self.has_url(url)
 
     # HAS FORMAT

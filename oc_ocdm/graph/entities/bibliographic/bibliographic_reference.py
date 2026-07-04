@@ -37,9 +37,10 @@ class BibliographicReference(BibliographicEntity):
         entity gets "redirected" to the current entity: **every other reference contained inside a
         different source (e.g. a triplestore) must be manually handled by the user!**
 
-        In case of functional properties, values from the current entity get overwritten
-        by those coming from the second entity while, in all other cases, values from the
-        second entity are simply appended to those of the current entity. In this context,
+        By default, functional values from the current entity get overwritten by values
+        from the second entity. When ``prefer_self`` is True, existing functional values
+        from the current entity are kept. Non-functional values from the second entity
+        are appended to those of the current entity. In this context,
         ``rdfs:label`` is considered as a functional property, while ``rdf:type`` is not.
 
         :param other: The entity which will be marked as to be deleted and whose properties will
@@ -52,7 +53,7 @@ class BibliographicReference(BibliographicEntity):
         assert isinstance(other, BibliographicReference)
 
         content: Optional[str] = other.get_content()
-        if content is not None:
+        if content is not None and self._should_merge_functional_property(self.get_content(), prefer_self):
             self.has_content(content)
 
         annotations_list: List[ReferenceAnnotation] = other.get_annotations()
@@ -60,7 +61,7 @@ class BibliographicReference(BibliographicEntity):
             self.has_annotation(cur_annotation)
 
         referenced_br: Optional[BibliographicResource] = other.get_referenced_br()
-        if referenced_br is not None:
+        if referenced_br is not None and self._should_merge_functional_property(self.get_referenced_br(), prefer_self):
             self.references_br(referenced_br)
 
     # HAS BIBLIOGRAPHIC REFERENCE TEXT

@@ -41,9 +41,10 @@ class Citation(BibliographicEntity):
         entity gets "redirected" to the current entity: **every other reference contained inside a
         different source (e.g. a triplestore) must be manually handled by the user!**
 
-        In case of functional properties, values from the current entity get overwritten
-        by those coming from the second entity while, in all other cases, values from the
-        second entity are simply appended to those of the current entity. In this context,
+        By default, functional values from the current entity get overwritten by values
+        from the second entity. When ``prefer_self`` is True, existing functional values
+        from the current entity are kept. Non-functional values from the second entity
+        are appended to those of the current entity. In this context,
         ``rdfs:label`` is considered as a functional property, while ``rdf:type`` is not.
 
         :param other: The entity which will be marked as to be deleted and whose properties will
@@ -56,23 +57,32 @@ class Citation(BibliographicEntity):
         assert isinstance(other, Citation)
 
         citing_br: Optional[BibliographicResource] = other.get_citing_entity()
-        if citing_br is not None:
+        if citing_br is not None and self._should_merge_functional_property(self.get_citing_entity(), prefer_self):
             self.has_citing_entity(citing_br)
 
         cited_br: Optional[BibliographicResource] = other.get_cited_entity()
-        if cited_br is not None:
+        if cited_br is not None and self._should_merge_functional_property(self.get_cited_entity(), prefer_self):
             self.has_cited_entity(cited_br)
 
         creation_date: Optional[str] = other.get_citation_creation_date()
-        if creation_date is not None:
+        if creation_date is not None and self._should_merge_functional_property(
+            self.get_citation_creation_date(),
+            prefer_self,
+        ):
             self.has_citation_creation_date(creation_date)
 
         time_span: Optional[str] = other.get_citation_time_span()
-        if time_span is not None:
+        if time_span is not None and self._should_merge_functional_property(
+            self.get_citation_time_span(),
+            prefer_self,
+        ):
             self.has_citation_time_span(time_span)
 
         characterization: Optional[str] = other.get_citation_characterization()
-        if characterization is not None:
+        if characterization is not None and self._should_merge_functional_property(
+            self.get_citation_characterization(),
+            prefer_self,
+        ):
             self.has_citation_characterization(characterization)
 
     # HAS CITING DOCUMENT (BibliographicResource)

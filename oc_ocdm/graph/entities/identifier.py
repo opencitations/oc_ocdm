@@ -33,9 +33,10 @@ class Identifier(GraphEntity):
         entity gets "redirected" to the current entity: **every other reference contained inside a
         different source (e.g. a triplestore) must be manually handled by the user!**
 
-        In case of functional properties, values from the current entity get overwritten
-        by those coming from the second entity while, in all other cases, values from the
-        second entity are simply appended to those of the current entity. In this context,
+        By default, functional values from the current entity get overwritten by values
+        from the second entity. When ``prefer_self`` is True, existing functional values
+        from the current entity are kept. Non-functional values from the second entity
+        are appended to those of the current entity. In this context,
         ``rdfs:label`` is considered as a functional property, while ``rdf:type`` is not.
 
         :param other: The entity which will be marked as to be deleted and whose properties will
@@ -49,7 +50,8 @@ class Identifier(GraphEntity):
 
         literal_value: Optional[str] = other.get_literal_value()
         scheme: Optional[str] = other.get_scheme()
-        if literal_value is not None and scheme is not None:
+        should_merge_identifier = not prefer_self or self.get_literal_value() is None or self.get_scheme() is None
+        if literal_value is not None and scheme is not None and should_merge_identifier:
             self._associate_identifier_with_scheme(literal_value, scheme)
 
     # HAS LITERAL VALUE and HAS SCHEME

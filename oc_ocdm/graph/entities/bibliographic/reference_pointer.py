@@ -36,9 +36,10 @@ class ReferencePointer(BibliographicEntity):
         entity gets "redirected" to the current entity: **every other reference contained inside a
         different source (e.g. a triplestore) must be manually handled by the user!**
 
-        In case of functional properties, values from the current entity get overwritten
-        by those coming from the second entity while, in all other cases, values from the
-        second entity are simply appended to those of the current entity. In this context,
+        By default, functional values from the current entity get overwritten by values
+        from the second entity. When ``prefer_self`` is True, existing functional values
+        from the current entity are kept. Non-functional values from the second entity
+        are appended to those of the current entity. In this context,
         ``rdfs:label`` is considered as a functional property, while ``rdf:type`` is not.
 
         :param other: The entity which will be marked as to be deleted and whose properties will
@@ -51,15 +52,15 @@ class ReferencePointer(BibliographicEntity):
         assert isinstance(other, ReferencePointer)
 
         content: Optional[str] = other.get_content()
-        if content is not None:
+        if content is not None and self._should_merge_functional_property(self.get_content(), prefer_self):
             self.has_content(content)
 
         next_rp: Optional[ReferencePointer] = other.get_next_rp()
-        if next_rp is not None:
+        if next_rp is not None and self._should_merge_functional_property(self.get_next_rp(), prefer_self):
             self.has_next_rp(next_rp)
 
         denoted_be: Optional[BibliographicReference] = other.get_denoted_be()
-        if denoted_be is not None:
+        if denoted_be is not None and self._should_merge_functional_property(self.get_denoted_be(), prefer_self):
             self.denotes_be(denoted_be)
 
         an_list: List[ReferenceAnnotation] = other.get_annotations()
