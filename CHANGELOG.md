@@ -1,3 +1,11 @@
+## [11.0.19](https://github.com/opencitations/oc_ocdm/compare/11.0.18...11.0.19) (2026-07-04)
+
+
+### Bug Fixes
+
+* **package:** remove stale module version ([4c572c7](https://github.com/opencitations/oc_ocdm/commit/4c572c7ccc2cf8c96f4637e06409150591197f26))
+* **storer:** skip deleted entities in file snapshots [release] ([7b2a264](https://github.com/opencitations/oc_ocdm/commit/7b2a2643bdc707894a1ddf310f556fb256c91e6d))
+
 ## [11.0.18](https://github.com/opencitations/oc_ocdm/compare/11.0.17...11.0.18) (2026-07-03)
 
 
