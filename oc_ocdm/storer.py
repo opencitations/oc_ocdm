@@ -218,10 +218,21 @@ class Storer(object):
             return
 
         cg: Dataset = Dataset()
-        for g in self.a_set.graphs():
-            _add_quads(cg, self._entity_quads(g))
+        for entity in self._snapshot_entities():
+            _add_quads(cg, self._entity_quads(entity.g))
 
         self._store_in_file(cg, file_path, context_path)
+
+    @staticmethod
+    def _is_snapshot_entity(entity: AbstractEntity) -> bool:
+        if len(entity.g) == 0:
+            return False
+        if isinstance(entity, (GraphEntity, MetadataEntity)):
+            return not entity.to_be_deleted
+        return True
+
+    def _snapshot_entities(self) -> list[AbstractEntity]:
+        return [entity for entity in self.a_set.res_to_entity.values() if self._is_snapshot_entity(entity)]
 
     def _store_in_file(self, cur_g: Dataset, cur_file_path: str, context_path: str | None = None) -> None:
         zip_file_path = cur_file_path.replace(os.path.splitext(cur_file_path)[1], ".zip")
@@ -403,10 +414,9 @@ class Storer(object):
 
     def _store_graphs_in_file_jsonld_fast(self, file_path: str, context_path: str | None) -> None:
         doc = _JsonLdDoc([])
-        for entity in self.a_set.res_to_entity.values():
-            if len(entity.g) > 0:
-                graph_iri = cast(str, entity.g.identifier)
-                doc.upsert_entity(graph_iri, entity.res, _entity_to_jsonld_dict(entity))
+        for entity in self._snapshot_entities():
+            graph_iri = cast(str, entity.g.identifier)
+            doc.upsert_entity(graph_iri, entity.res, _entity_to_jsonld_dict(entity))
 
         output_data: JsonLdDocument | JsonObject = doc.to_list()
         if context_path is not None and context_path in self.context_map:

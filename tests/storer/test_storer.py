@@ -549,6 +549,50 @@ class TestStorer(unittest.TestCase):
             if os.path.exists(base_dir):
                 rmtree(base_dir)
 
+    def test_store_graphs_in_file_skips_deleted_entities_jsonld(self):
+        base_dir = os.path.join("tests", "storer", "data", "direct_store_deleted_jsonld") + os.sep
+        os.makedirs(base_dir, exist_ok=True)
+        deleted_br = self.graph_set.add_br(self.resp_agent)
+        deleted_br.has_title("Deleted")
+        deleted_br.mark_as_to_be_deleted()
+
+        try:
+            file_path = os.path.join(base_dir, "output.json")
+            storer = Storer(self.graph_set, output_format="json-ld", zip_output=False)
+
+            storer.store_graphs_in_file(file_path)
+
+            with open(file_path, encoding="utf-8") as f:
+                data = json.load(f)
+            entity_uris = sorted(entity["@id"] for graph in data for entity in graph["@graph"])
+
+            self.assertEqual(entity_uris, [self.br.res])
+        finally:
+            if os.path.exists(base_dir):
+                rmtree(base_dir)
+
+    def test_store_graphs_in_file_skips_deleted_entities_nquads(self):
+        base_dir = os.path.join("tests", "storer", "data", "direct_store_deleted_nquads") + os.sep
+        os.makedirs(base_dir, exist_ok=True)
+        deleted_br = self.graph_set.add_br(self.resp_agent)
+        deleted_br.has_title("Deleted")
+        deleted_br.mark_as_to_be_deleted()
+
+        try:
+            file_path = os.path.join(base_dir, "output.nq")
+            storer = Storer(self.graph_set, output_format="nquads", zip_output=False)
+
+            storer.store_graphs_in_file(file_path)
+
+            dataset = Dataset()
+            dataset.parse(file_path, format="nquads")
+            entity_uris = sorted(str(subject) for subject, _, _, _ in dataset.quads((None, None, None, None)))
+
+            self.assertEqual(entity_uris, [self.br.res])
+        finally:
+            if os.path.exists(base_dir):
+                rmtree(base_dir)
+
     def test_upload_with_failure_marker(self):
         """Test SPARQL upload that creates failure markers on error."""
         base_dir = os.path.join("tests", "storer", "data", "rdf_upload_fail") + os.sep
