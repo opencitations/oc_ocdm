@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: ISC
 
 # -*- coding: utf-8 -*-
+# pyright: reportPrivateUsage=false
 import os
 import shutil
 import tempfile

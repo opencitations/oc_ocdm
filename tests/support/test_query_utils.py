@@ -5,10 +5,12 @@
 # SPDX-License-Identifier: ISC
 
 # -*- coding: utf-8 -*-
+# pyright: reportPrivateUsage=false
 import unittest
 
-from rdflib import Literal, URIRef
+from rdflib import URIRef
 from rdflib.namespace import DCTERMS
+from triplelite import RDFTerm, Triple
 
 from oc_ocdm.constants import RDF_TYPE
 from oc_ocdm.graph.graph_set import GraphSet
@@ -26,7 +28,7 @@ class TestQueryUtils(unittest.TestCase):
     def test_get_insert_query_empty_set(self):
         """Test get_insert_query with empty set returns empty list."""
         graph_iri = URIRef("https://test.org/graph/1")
-        empty_set = set()
+        empty_set: set[Triple] = set()
 
         queries, count = get_insert_query(graph_iri, empty_set)
 
@@ -36,10 +38,10 @@ class TestQueryUtils(unittest.TestCase):
     def test_get_insert_query_with_triples(self):
         """Test get_insert_query with triples generates correct query."""
         graph_iri = URIRef("https://test.org/graph/1")
-        subject = URIRef("https://test.org/resource/1")
-        triples = {
-            (subject, URIRef(RDF_TYPE), URIRef("https://test.org/Class")),
-            (subject, DCTERMS.title, Literal("Test")),
+        subject = "https://test.org/resource/1"
+        triples: set[Triple] = {
+            (subject, RDF_TYPE, RDFTerm("uri", "https://test.org/Class")),
+            (subject, str(DCTERMS.title), RDFTerm("literal", "Test")),
         }
 
         queries, count = get_insert_query(graph_iri, triples)
@@ -52,7 +54,7 @@ class TestQueryUtils(unittest.TestCase):
     def test_get_delete_query_empty_set(self):
         """Test get_delete_query with empty set returns empty list."""
         graph_iri = URIRef("https://test.org/graph/1")
-        empty_set = set()
+        empty_set: set[Triple] = set()
 
         queries, count = get_delete_query(graph_iri, empty_set)
 
@@ -62,8 +64,8 @@ class TestQueryUtils(unittest.TestCase):
     def test_get_delete_query_with_triples(self):
         """Test get_delete_query with triples generates correct query."""
         graph_iri = URIRef("https://test.org/graph/1")
-        subject = URIRef("https://test.org/resource/1")
-        triples = {(subject, URIRef(RDF_TYPE), URIRef("https://test.org/Class"))}
+        subject = "https://test.org/resource/1"
+        triples: set[Triple] = {(subject, RDF_TYPE, RDFTerm("uri", "https://test.org/Class"))}
 
         queries, count = get_delete_query(graph_iri, triples)
 

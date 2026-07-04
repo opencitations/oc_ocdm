@@ -29,5 +29,9 @@ class SparqlResults(TypedDict):
     bindings: SparqlResultRows
 
 
+class SparqlAskResult(TypedDict):
+    boolean: bool
+
+
 class SparqlQueryResult(TypedDict):
     results: SparqlResults

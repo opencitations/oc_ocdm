@@ -46,7 +46,6 @@ class TestSnapshotEntity(unittest.TestCase):
         self.assertIn(triple, self.se.g)
 
     def test_is_snapshot_of(self):
-        ar = self.graph_set.add_ar(self.resp_agent)
         result = self.se.is_snapshot_of(self.prov_subject)
         self.assertIsNone(result)
 

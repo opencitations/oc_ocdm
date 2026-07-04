@@ -42,7 +42,7 @@ class TestMetadataSet(unittest.TestCase):
 
     def test_graphs(self):
         count = 10
-        for i in range(count):
+        for _ in range(count):
             self.metadata_set.add_di("ocdmTest", self.resp_agent)
         result = self.metadata_set.graphs()
         self.assertIsNotNone(result)

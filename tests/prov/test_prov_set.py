@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: ISC
 
 # -*- coding: utf-8 -*-
+# pyright: reportPrivateUsage=false
 
 import os
 import pickle
@@ -53,7 +54,7 @@ class TestProvSet(unittest.TestCase):
         b = self.graph_set.add_br(self.resp_agent)
         a.merge(b, prefer_self=True)
 
-        result = self.prov_set.generate_provenance(self.cur_time)
+        self.prov_set.generate_provenance(self.cur_time)
         se_a = self.prov_set.get_entity(a.res + "/prov/se/1")
         assert isinstance(se_a, SnapshotEntity)
         self.assertEqual(a.res, se_a.get_is_snapshot_of())
@@ -68,13 +69,13 @@ class TestProvSet(unittest.TestCase):
         a = self.graph_set.add_br(self.resp_agent)
         b = self.graph_set.add_br(self.resp_agent)
         a.merge(b)
-        se_a_1 = self.prov_set.add_se(a)
+        self.prov_set.add_se(a)
 
         # This avoids that the presence of the mandatory rdf:type gets interpreted
         # as a modification with respect to an empty preexisting_graph:
         a.remove_every_triple()
 
-        result = self.prov_set.generate_provenance(self.cur_time)
+        self.prov_set.generate_provenance(self.cur_time)
 
         se_a_2 = self.prov_set.get_entity(a.res + "/prov/se/2")
         self.assertIsNone(se_a_2)
@@ -87,7 +88,7 @@ class TestProvSet(unittest.TestCase):
         a.merge(b)
         se_a_1 = self.prov_set.add_se(a)
 
-        result = self.prov_set.generate_provenance(self.cur_time)
+        self.prov_set.generate_provenance(self.cur_time)
 
         self.assertEqual(self.cur_time_str, se_a_1.get_invalidation_time())
 
@@ -123,7 +124,7 @@ class TestProvSet(unittest.TestCase):
         a.merge(b)
         a.merge(c)
 
-        result = self.prov_set.generate_provenance(self.cur_time)
+        self.prov_set.generate_provenance(self.cur_time)
 
         se_a_2 = self.prov_set.get_entity(a.res + "/prov/se/2")
         assert isinstance(se_a_2, SnapshotEntity)
@@ -145,7 +146,7 @@ class TestProvSet(unittest.TestCase):
     def test_creation_non_merged_entity(self):
         a = self.graph_set.add_br(self.resp_agent)
 
-        result = self.prov_set.generate_provenance(self.cur_time)
+        self.prov_set.generate_provenance(self.cur_time)
 
         se_a = self.prov_set.get_entity(a.res + "/prov/se/1")
         assert isinstance(se_a, SnapshotEntity)
@@ -161,20 +162,20 @@ class TestProvSet(unittest.TestCase):
         a = self.graph_set.add_br(self.resp_agent)
         a.mark_as_to_be_deleted()
 
-        result = self.prov_set.generate_provenance(self.cur_time)
+        self.prov_set.generate_provenance(self.cur_time)
 
         se_a = self.prov_set.get_entity(a.res + "/prov/se/1")
         self.assertIsNone(se_a)
 
     def test_no_snapshot_merged_entity_scenario2(self):
         a = self.graph_set.add_br(self.resp_agent)
-        se_a_1 = self.prov_set.add_se(a)
+        self.prov_set.add_se(a)
 
         # This avoids that the presence of the mandatory rdf:type gets interpreted
         # as a modification with respect to an empty preexisting_graph:
         a.remove_every_triple()
 
-        result = self.prov_set.generate_provenance(self.cur_time)
+        self.prov_set.generate_provenance(self.cur_time)
 
         se_a_2 = self.prov_set.get_entity(a.res + "/prov/se/2")
         self.assertIsNone(se_a_2)
@@ -186,7 +187,7 @@ class TestProvSet(unittest.TestCase):
         a.has_title(title)
         a.mark_as_to_be_deleted()
 
-        result = self.prov_set.generate_provenance(self.cur_time)
+        self.prov_set.generate_provenance(self.cur_time)
 
         self.assertEqual(self.cur_time_str, se_a_1.get_invalidation_time())
 
@@ -207,7 +208,7 @@ class TestProvSet(unittest.TestCase):
         se_a_1 = self.prov_set.add_se(a)
         a.has_title(title)
 
-        result = self.prov_set.generate_provenance(self.cur_time)
+        self.prov_set.generate_provenance(self.cur_time)
 
         self.assertEqual(self.cur_time_str, se_a_1.get_invalidation_time())
 
@@ -268,7 +269,7 @@ class TestProvSet(unittest.TestCase):
 
         # Generate provenance after restoration
         restoration_time = "2020-12-08T21:17:39+00:00"
-        result = self.prov_set.generate_provenance(1607462259.846196)  # One day later
+        self.prov_set.generate_provenance(1607462259.846196)  # One day later
 
         # Check the restoration snapshot
         se_a_3 = self.prov_set.get_entity(a.res + "/prov/se/3")
@@ -367,7 +368,7 @@ class TestProvSetWorkflow(unittest.TestCase):
         new_prov_set = ProvSet(new_graph_set, self.base_iri, self.test_dir, supplier_prefix="")
 
         reader = Reader()
-        for dirpath, dirnames, filenames in os.walk(self.test_dir):
+        for dirpath, _, filenames in os.walk(self.test_dir):
             for filename in filenames:
                 if filename.endswith(".json") and not dirpath.endswith("prov"):
                     full_path = os.path.join(dirpath, filename)
@@ -399,10 +400,9 @@ class TestProvSetWorkflow(unittest.TestCase):
 
         # Step 7: Load and check the final state
         final_graph_set = GraphSet(self.base_iri, self.test_dir, supplier_prefix="")
-        final_prov_set = ProvSet(final_graph_set, self.base_iri, self.test_dir, supplier_prefix="")
 
         final_reader = Reader()
-        for dirpath, dirnames, filenames in os.walk(self.test_dir):
+        for dirpath, _, filenames in os.walk(self.test_dir):
             for filename in filenames:
                 if filename.endswith(".json") and not dirpath.endswith("prov"):
                     full_path = os.path.join(dirpath, filename)
@@ -416,6 +416,7 @@ class TestProvSetWorkflow(unittest.TestCase):
         final_a = final_graph_set.get_entity(a.res)
         final_se_a = new_prov_set.get_entity(a.res + "/prov/se/2")
 
+        self.assertIsNotNone(final_a)
         self.assertIsNotNone(final_se_a)
         # self.assertEqual(cur_time, final_se_a.get_generation_time())
         # self.assertNotEqual("2020-01-01T00:00:00Z", final_se_a.get_generation_time())

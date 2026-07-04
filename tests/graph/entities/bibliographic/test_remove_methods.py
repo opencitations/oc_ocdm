@@ -403,7 +403,7 @@ class TestProvRemovers(unittest.TestCase):
         cls.prov_set = ProvSet(cls.graph_set, "http://test/", "./info_dir/")
 
     def test_remove_description(self):
-        br = self.graph_set.add_br(self.resp_agent)
+        self.graph_set.add_br(self.resp_agent)
         self.prov_set.generate_provenance()
 
         # Get the snapshot entity
@@ -422,7 +422,7 @@ class TestProvRemovers(unittest.TestCase):
         self.assertIsNone(desc)
 
     def test_remove_update_action(self):
-        br = self.graph_set.add_br(self.resp_agent)
+        self.graph_set.add_br(self.resp_agent)
         self.prov_set.generate_provenance()
 
         se = list(self.prov_set.res_to_entity.values())[0]
@@ -435,7 +435,7 @@ class TestProvRemovers(unittest.TestCase):
         self.assertIsNone(result)
 
     def test_remove_invalidation_time(self):
-        br = self.graph_set.add_br(self.resp_agent)
+        self.graph_set.add_br(self.resp_agent)
         self.prov_set.generate_provenance()
 
         se = list(self.prov_set.res_to_entity.values())[0]

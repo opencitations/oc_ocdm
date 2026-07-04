@@ -13,6 +13,7 @@ import unittest
 
 from rdflib import RDF, XSD, Dataset, Graph, Literal, Namespace, URIRef
 
+from oc_ocdm._types import ContextMap
 from oc_ocdm.graph import GraphSet
 from oc_ocdm.reader import Reader
 from oc_ocdm.support.reporter import Reporter
@@ -88,7 +89,7 @@ class TestReader(unittest.TestCase):
         imported = self.reader.import_entities_from_triplestore(self.g_set, self.endpoint, entities, self.resp_agent)
 
         # Check if entities of different types were imported correctly
-        entity_types = set()
+        entity_types: set[str] = set()
         for entity in imported:
             for _, _, o in entity.g.triples((entity.res, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", None)):
                 entity_types.add(str(o))
@@ -139,7 +140,7 @@ class TestReader(unittest.TestCase):
             context_file = f.name
 
         try:
-            context_map = {"http://example.org/context": context_file}
+            context_map: ContextMap = {"http://example.org/context": context_file}
             reader = Reader(context_map=context_map)
 
             # Verify the context was loaded from file
@@ -238,7 +239,7 @@ class TestReader(unittest.TestCase):
             jsonld_file = data_f.name
 
         try:
-            context_map = {"http://example.org/custom-context": context_file}
+            context_map: ContextMap = {"http://example.org/custom-context": context_file}
             reader = Reader(context_map=context_map)
 
             # Load JSON-LD file - context should be replaced

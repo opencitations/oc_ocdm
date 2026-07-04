@@ -12,6 +12,8 @@ from rdflib import XSD, Graph, Literal, Namespace, URIRef
 from triplelite import RDFTerm, TripleLite
 
 from oc_ocdm.constants import XSD_DATE, XSD_GYEAR, XSD_GYEARMONTH, XSD_STRING
+from oc_ocdm.graph.entities.bibliographic.agent_role import AgentRole
+from oc_ocdm.graph.entities.bibliographic.responsible_agent import ResponsibleAgent
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
 from oc_ocdm.support.support import (
@@ -36,7 +38,7 @@ class TestSupport(unittest.TestCase):
 
         self.br = self.graph_set.add_br(self.resp_agent)
 
-    def _prepare_ordered_authors_list(self, list_len):
+    def _prepare_ordered_authors_list(self, list_len: int) -> list[AgentRole]:
         # First of all, we must cleanup the GraphSet:
         self.br.remove_contributor()
 
@@ -46,7 +48,7 @@ class TestSupport(unittest.TestCase):
             del self.graph_set.res_to_entity[ra.res]
 
         # Then, we initialize a new well-formed linked list of authors:
-        ar_ordered_list = []
+        ar_ordered_list: list[AgentRole] = []
 
         for i in range(list_len):
             ra = self.graph_set.add_ra(self.resp_agent)
@@ -65,9 +67,9 @@ class TestSupport(unittest.TestCase):
         return ar_ordered_list
 
     @staticmethod
-    def _extract_ra_list(ar_list):
+    def _extract_ra_list(ar_list: list[AgentRole]) -> list[ResponsibleAgent]:
         # Here the RA list is built and returned:
-        ra_list = []
+        ra_list: list[ResponsibleAgent] = []
         for i in range(len(ar_list)):
             ra = ar_list[i].get_is_held_by()
             if ra is not None:
@@ -310,7 +312,7 @@ class TestBuildGraphFromResults(unittest.TestCase):
         g = build_graph_from_results(results)
         self.assertIsInstance(g, TripleLite)
         self.assertEqual(len(g), 1)
-        s, p, o = next(g.triples((None, None, None)))
+        s, _, o = next(g.triples((None, None, None)))
         self.assertEqual(s, "http://example.org/s")
         self.assertEqual(o, RDFTerm("uri", "http://example.org/o"))
 

@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: ISC
 
 # -*- coding: utf-8 -*-
+# pyright: reportPrivateUsage=false
 import pickle
 import unittest
 
@@ -116,7 +117,7 @@ class TestGraphSet(unittest.TestCase):
 
     def test_graphs(self):
         count = 10
-        for i in range(count):
+        for _ in range(count):
             self.graph_set.add_ar(self.resp_agent)
         result = self.graph_set.graphs()
         self.assertIsNotNone(result)

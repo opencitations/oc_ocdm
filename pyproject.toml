@@ -69,7 +69,7 @@ select = ["I", "F401", "E402"]
 known-first-party = ["oc_ocdm"]
 
 [tool.pyright]
-include = ["oc_ocdm"]
+include = ["oc_ocdm", "tests"]
 typeCheckingMode = "strict"
 pythonVersion = "3.10"
 

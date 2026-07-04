@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: ISC
 
 # -*- coding: utf-8 -*-
+# pyright: reportPrivateUsage=false
 import hashlib
 import json
 import os
@@ -13,12 +14,14 @@ import tempfile
 import unittest
 from multiprocessing import Pool
 from shutil import rmtree
+from typing import cast
 from unittest.mock import patch
 from zipfile import ZipFile
 
 from rdflib import Dataset, Graph, URIRef, compare
 from triplelite import SubgraphView
 
+from oc_ocdm._types import ContextMap, JsonLdDocument, SparqlAskResult
 from oc_ocdm.graph.entities.bibliographic.bibliographic_resource import BibliographicResource
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.prov.prov_set import ProvSet
@@ -453,7 +456,7 @@ class TestStorer(unittest.TestCase):
             context_file = f.name
 
         try:
-            context_map = {"http://example.org/context": context_file}
+            context_map: ContextMap = {"http://example.org/context": context_file}
             storer = Storer(self.graph_set, context_map=context_map, output_format="json-ld")
 
             # Verify the context was loaded from file
@@ -474,7 +477,7 @@ class TestStorer(unittest.TestCase):
 
         try:
             os.makedirs(base_dir, exist_ok=True)
-            context_map = {context_url: context_file}
+            context_map: ContextMap = {context_url: context_file}
             storer = Storer(
                 self.graph_set,
                 context_map=context_map,
@@ -654,11 +657,11 @@ class TestStorer(unittest.TestCase):
 
         self.assertTrue(result)
 
-        results = sparql_query(self.ts, f"ASK {{ <{br1.res}> ?p ?o }}")
+        results = cast(SparqlAskResult, sparql_query(self.ts, f"ASK {{ <{br1.res}> ?p ?o }}"))
         self.assertTrue(results["boolean"])
-        results = sparql_query(self.ts, f"ASK {{ <{br2.res}> ?p ?o }}")
+        results = cast(SparqlAskResult, sparql_query(self.ts, f"ASK {{ <{br2.res}> ?p ?o }}"))
         self.assertFalse(results["boolean"])
-        results = sparql_query(self.ts, f"ASK {{ <{br3.res}> ?p ?o }}")
+        results = cast(SparqlAskResult, sparql_query(self.ts, f"ASK {{ <{br3.res}> ?p ?o }}"))
         self.assertTrue(results["boolean"])
 
     def test_store_graphs_save_queries(self):
@@ -1131,7 +1134,7 @@ class TestFastPath(unittest.TestCase):
                 )
 
     def test_compact_jsonld(self):
-        data = [
+        data: JsonLdDocument = [
             {
                 "@graph": [
                     {
@@ -1166,7 +1169,7 @@ class TestFastPath(unittest.TestCase):
         )
 
     def test_expand_jsonld(self):
-        data = [
+        data: JsonLdDocument = [
             {
                 "@graph": [
                     {
@@ -1211,7 +1214,7 @@ class TestFastPath(unittest.TestCase):
 
         base_dir = os.path.join(self.data_dir, "context_roundtrip") + os.sep
         try:
-            context_map = {context_url: context_file}
+            context_map: ContextMap = {context_url: context_file}
             storer = Storer(
                 self.graph_set,
                 context_map=context_map,
@@ -1252,7 +1255,7 @@ class TestFastPath(unittest.TestCase):
             os.unlink(context_file)
 
 
-def process_entity(entity):
+def process_entity(entity: str) -> None:
     base_iri = "http://test/"
     ts = os.environ["SPARQL_TEST_ENDPOINT"]
     resp_agent = "http://resp_agent.test/"

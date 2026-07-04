@@ -4,12 +4,17 @@
 
 import os
 import unittest
+from collections.abc import Callable
+from importlib import import_module
+from typing import cast
 
-from pyshacl import validate
 from rdflib import Dataset, Graph, Literal, URIRef
 
+from oc_ocdm._types import SparqlResultRows
 from oc_ocdm.graph.graph_set import GraphSet
 from oc_ocdm.reader import Reader
+
+validate_shacl = cast(Callable[..., tuple[bool, object, object]], getattr(import_module("pyshacl"), "validate"))
 
 
 class TestShacle(unittest.TestCase):
@@ -18,7 +23,7 @@ class TestShacle(unittest.TestCase):
         sg = Graph()
         data_graph.parse(source=os.path.join("tests", "resources", "data.json"), format="json-ld")
         sg.parse(source=os.path.join("oc_ocdm", "resources", "shacle.ttl"), format="text/turtle")
-        r = validate(
+        conforms, _, _ = validate_shacl(
             data_graph,
             shacl_graph=sg,
             ont_graph=None,
@@ -31,7 +36,6 @@ class TestShacle(unittest.TestCase):
             js=False,
             debug=False,
         )
-        conforms, _, _ = r
         self.assertEqual(conforms, True)
 
     def test_reader(self):
@@ -39,7 +43,7 @@ class TestShacle(unittest.TestCase):
         g_set = GraphSet(base_iri="https://w3id.org/oc/meta/")
         g = Dataset()
         g.parse(source=os.path.join("tests", "resources", "data_reader.json"))
-        results = []
+        results: SparqlResultRows = []
         for triple in g:
             o = triple[2]
             o_type = "uri" if isinstance(o, URIRef) else "literal"
@@ -81,7 +85,7 @@ class TestShacle(unittest.TestCase):
         g_set = GraphSet(base_iri="https://w3id.org/oc/meta/")
         g = Dataset()
         g.parse(source=os.path.join("tests", "resources", "data_reader_invalid.json"))
-        results = []
+        results: SparqlResultRows = []
         for triple in g:
             o = triple[2]
             o_type = "uri" if isinstance(o, URIRef) else "literal"
