@@ -1,3 +1,10 @@
+## [11.0.20](https://github.com/opencitations/oc_ocdm/compare/11.0.19...11.0.20) (2026-07-04)
+
+
+### Bug Fixes
+
+* **merge:** honor prefer_self for functional properties ([731e71b](https://github.com/opencitations/oc_ocdm/commit/731e71bb781c1cb87e60bb7a4b673b46b603b3d5))
+
 ## [11.0.19](https://github.com/opencitations/oc_ocdm/compare/11.0.18...11.0.19) (2026-07-04)
 
 
