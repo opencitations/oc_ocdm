@@ -1,3 +1,10 @@
+## [11.0.21](https://github.com/opencitations/oc_ocdm/compare/11.0.20...11.0.21) (2026-07-06)
+
+
+### Bug Fixes
+
+* **counter:** stop parallel flushes from overwriting each other [release] ([bdb4f6b](https://github.com/opencitations/oc_ocdm/commit/bdb4f6b3ae4161968e2afb461cce31813e1f2b69))
+
 ## [11.0.20](https://github.com/opencitations/oc_ocdm/compare/11.0.19...11.0.20) (2026-07-04)
 
 
