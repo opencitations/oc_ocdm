@@ -29,6 +29,7 @@ class TestFilesystemCounterHandler(unittest.TestCase):
             file.write("\n")
         self.counter_handler._cache[self.file_path] = [0]
         self.counter_handler._dirty.discard(self.file_path)
+        self.counter_handler._dirty_lines.pop(self.file_path, None)
 
     def test_set_number(self):
         number = 18
@@ -126,6 +127,19 @@ class TestFilesystemCounterHandler(unittest.TestCase):
         info_path = tmp_dir + "info_file_br.txt"
         with open(info_path, "r") as f:
             self.assertEqual(f.readline().strip(), "77")
+        shutil.rmtree(tmp_dir)
+
+    def test_flush_preserves_concurrent_writes_from_other_handler(self):
+        tmp_dir = tempfile.mkdtemp() + os.sep
+        first = FilesystemCounterHandler(tmp_dir)
+        second = FilesystemCounterHandler(tmp_dir)
+        first.set_counter(10, "br", "se", 1)
+        second.set_counter(20, "br", "se", 2)
+        first.flush()
+        second.flush()
+        reader = FilesystemCounterHandler(tmp_dir)
+        self.assertEqual(reader.read_counter("br", "se", 1), 10)
+        self.assertEqual(reader.read_counter("br", "se", 2), 20)
         shutil.rmtree(tmp_dir)
 
 

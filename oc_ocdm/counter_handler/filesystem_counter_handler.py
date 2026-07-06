@@ -11,6 +11,8 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 
+from filelock import FileLock
+
 if TYPE_CHECKING:
     from typing import Dict, List, Tuple
 
@@ -47,6 +49,7 @@ class FilesystemCounterHandler(CounterHandler):
 
         self._cache: Dict[str, List[int]] = {}
         self._dirty: set[str] = set()
+        self._dirty_lines: Dict[str, set[int]] = {}
         self._loaded_dirs: set[str] = set()
 
         self._ensure_loaded(supplier_prefix)
@@ -80,9 +83,28 @@ class FilesystemCounterHandler(CounterHandler):
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path)
             cache_list = self._cache[file_path]
-            with open(file_path, "w") as f:
-                f.writelines(f"{v}\n" if v else "\n" for v in cache_list)
+            dirty_lines = self._dirty_lines[file_path]
+            # Read-modify-write under a lock so concurrent handlers sharing this info_dir
+            # do not overwrite one another's counters: only the lines this handler changed
+            # are written, every other line is preserved from the current on-disk content.
+            with FileLock(file_path + ".lock"):
+                merged = self._read_persisted_counters(file_path)
+                if len(merged) < len(cache_list):
+                    merged.extend([0] * (len(cache_list) - len(merged)))
+                for line_index in dirty_lines:
+                    merged[line_index] = cache_list[line_index]
+                with open(file_path, "w") as f:
+                    f.writelines(f"{v}\n" if v else "\n" for v in merged)
+            self._cache[file_path] = merged
         self._dirty.clear()
+        self._dirty_lines.clear()
+
+    @staticmethod
+    def _read_persisted_counters(file_path: str) -> List[int]:
+        if not os.path.exists(file_path):
+            return []
+        with open(file_path, "r") as f:
+            return [int(line.rstrip("\n")) if line.rstrip("\n") else 0 for line in f]
 
     def set_counter(
         self,
@@ -145,8 +167,10 @@ class FilesystemCounterHandler(CounterHandler):
         needed = max(updates.keys()) + 1 - len(cache_list)
         if needed > 0:
             cache_list.extend([0] * needed)
+        dirty_lines = self._dirty_lines.setdefault(file_path, set())
         for line_number, new_value in updates.items():
             cache_list[line_number - 1] = new_value
+            dirty_lines.add(line_number - 1)
         self._dirty.add(file_path)
 
     def read_counter(
@@ -241,6 +265,7 @@ class FilesystemCounterHandler(CounterHandler):
             cache_list.extend([0] * needed)
         cache_list[line_number - 1] = new_value
         self._dirty.add(file_path)
+        self._dirty_lines.setdefault(file_path, set()).add(line_number - 1)
 
     def set_metadata_counter(self, new_value: int, entity_short_name: str, dataset_name: str | None) -> None:
         """
