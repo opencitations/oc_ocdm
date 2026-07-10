@@ -14,7 +14,7 @@ from oc_ocdm.abstract_entity import AbstractEntity
 from oc_ocdm.constants import RDF_TYPE, Namespace
 
 if TYPE_CHECKING:
-    from typing import ClassVar, Dict, List, Optional
+    from typing import ClassVar, Dict, Iterable, List, Optional
 
     from oc_ocdm.graph.graph_set import GraphSet
 
@@ -293,7 +293,13 @@ class GraphEntity(AbstractEntity):
                 return type_uri.value
         return None
 
-    def merge(self, other: object, prefer_self: bool = False) -> None:
+    def merge(
+        self,
+        other: object,
+        prefer_self: bool = False,
+        *,
+        reference_sources: Iterable[GraphEntity] | None = None,
+    ) -> None:
         """
         **WARNING:** ``GraphEntity`` **is an abstract class that cannot be instantiated at runtime.
         As such, it's only possible to execute this method on entities generated from**
@@ -304,6 +310,9 @@ class GraphEntity(AbstractEntity):
         :type other: GraphEntity
         :param prefer_self: If True, keep existing functional values from the current entity
         :type prefer_self: bool
+        :param reference_sources: Entities whose references to ``other`` must be redirected. If omitted,
+         every entity in the graph set is inspected.
+        :type reference_sources: Iterable[GraphEntity] | None
         :raises TypeError: if the parameter is not of the same entity type
         :return: None
         """
@@ -314,8 +323,9 @@ class GraphEntity(AbstractEntity):
             )
 
         # Redirect triples pointing to 'other' to point to 'self'
-        for res, entity in self.g_set.res_to_entity.items():
-            triples_list: List[Triple] = list(entity.g.triples((res, None, RDFTerm("uri", str(other.res)))))
+        entities = self.g_set.res_to_entity.values() if reference_sources is None else reference_sources
+        for entity in entities:
+            triples_list: List[Triple] = list(entity.g.triples((entity.res, None, RDFTerm("uri", str(other.res)))))
             for triple in triples_list:
                 entity.g.remove(triple)
                 new_triple = (triple[0], triple[1], RDFTerm("uri", str(self.res)))
@@ -345,10 +355,10 @@ class GraphEntity(AbstractEntity):
         self._was_merged = True
         self._merge_list = (*self._merge_list, other)
 
-        # 'other' must be deleted AFTER the redirection of
-        # triples pointing to it, since mark_as_to_be_deleted
-        # also removes every triple pointing to 'other'
-        other.mark_as_to_be_deleted()
+        if reference_sources is None and other.g_set is not self.g_set:
+            other.mark_as_to_be_deleted()
+        else:
+            other._to_be_deleted = True
 
         self._merge_properties(other, prefer_self)
 

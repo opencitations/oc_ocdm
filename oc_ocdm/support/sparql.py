@@ -10,7 +10,7 @@ from typing import cast
 from urllib.error import HTTPError, URLError
 from urllib.parse import parse_qs, urlparse
 
-from SPARQLWrapper import JSON, N3, POST, URLENCODED, SPARQLWrapper
+from SPARQLWrapper import GET, JSON, N3, POST, URLENCODED, SPARQLWrapper
 
 from oc_ocdm._types import SparqlQueryResult
 
@@ -35,15 +35,15 @@ def _execute_with_retry(
     query: str,
     return_format: str,
     *,
-    is_update: bool = False,
+    method: str = GET,
     max_retries: int = 5,
     backoff_factor: float = 0.5,
 ) -> bytes:
     sparql = _make_sparql_client(endpoint)
     sparql.setQuery(query)
     sparql.setReturnFormat(return_format)
-    if is_update:
-        sparql.setMethod(POST)
+    sparql.setMethod(method)
+    if method == POST:
         sparql.setRequestMethod(URLENCODED)
 
     last_error: SPARQLEndpointError | None = None
@@ -71,10 +71,18 @@ def sparql_query(
     endpoint: str,
     query: str,
     *,
+    method: str = GET,
     max_retries: int = 5,
     backoff_factor: float = 0.5,
 ) -> SparqlQueryResult:
-    raw = _execute_with_retry(endpoint, query, JSON, max_retries=max_retries, backoff_factor=backoff_factor)
+    raw = _execute_with_retry(
+        endpoint,
+        query,
+        JSON,
+        method=method,
+        max_retries=max_retries,
+        backoff_factor=backoff_factor,
+    )
     return cast(SparqlQueryResult, json.loads(raw))
 
 
@@ -85,7 +93,7 @@ def sparql_update(
     max_retries: int = 5,
     backoff_factor: float = 0.5,
 ) -> None:
-    _execute_with_retry(endpoint, query, JSON, is_update=True, max_retries=max_retries, backoff_factor=backoff_factor)
+    _execute_with_retry(endpoint, query, JSON, method=POST, max_retries=max_retries, backoff_factor=backoff_factor)
 
 
 def sparql_construct(

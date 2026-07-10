@@ -10,13 +10,29 @@ import json
 import os
 import tempfile
 import unittest
+from unittest.mock import MagicMock, call, patch
 
 from rdflib import RDF, XSD, Dataset, Graph, Literal, Namespace, URIRef
+from SPARQLWrapper import POST
 
-from oc_ocdm._types import ContextMap
+from oc_ocdm._types import ContextMap, SparqlQueryResult, SparqlResultRow, SparqlResultRows
+from oc_ocdm.constants import RDF_TYPE
 from oc_ocdm.graph import GraphSet
+from oc_ocdm.graph.graph_entity import GraphEntity
 from oc_ocdm.reader import Reader
 from oc_ocdm.support.reporter import Reporter
+
+
+def _sparql_triple(subject: str, predicate: str, object_type: str, object_value: str) -> SparqlResultRow:
+    return {
+        "s": {"type": "uri", "value": subject},
+        "p": {"type": "uri", "value": predicate},
+        "o": {"type": object_type, "value": object_value},
+    }
+
+
+def _sparql_result(rows: SparqlResultRows) -> SparqlQueryResult:
+    return {"results": {"bindings": rows}}
 
 
 class TestReader(unittest.TestCase):
@@ -83,7 +99,7 @@ class TestReader(unittest.TestCase):
         entities = [
             "https://w3id.org/oc/meta/br/0605",  # Bibliographic Resource
             "https://w3id.org/oc/meta/id/0605",  # Identifier
-            "https://w3id.org/oc/meta/re/0605",  # Resource Embodiment
+            "https://w3id.org/oc/meta/ra/06360300897",  # Responsible Agent
         ]
 
         imported = self.reader.import_entities_from_triplestore(self.g_set, self.endpoint, entities, self.resp_agent)
@@ -92,14 +108,130 @@ class TestReader(unittest.TestCase):
         entity_types: set[str] = set()
         for entity in imported:
             for _, _, o in entity.g.triples((entity.res, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", None)):
-                entity_types.add(str(o))
+                entity_types.add(o.value)
 
-        self.assertTrue(len(entity_types) >= 2)  # Should have multiple types
+        self.assertEqual(
+            entity_types,
+            {
+                GraphEntity.iri_expression,
+                GraphEntity.iri_journal_article,
+                GraphEntity.iri_identifier,
+                GraphEntity.iri_agent,
+            },
+        )
 
     def test_empty_batch_import(self):
         """Test importing an empty list of entities."""
         with self.assertRaises(ValueError):
             self.reader.import_entities_from_triplestore(self.g_set, self.endpoint, [], self.resp_agent)
+
+    def test_batch_import_rejects_non_positive_batch_size(self):
+        entity = "https://w3id.org/oc/meta/id/1"
+        for batch_size in (0, -1):
+            with self.subTest(batch_size=batch_size):
+                with self.assertRaises(ValueError) as error:
+                    self.reader.import_entities_from_triplestore(
+                        self.g_set,
+                        self.endpoint,
+                        [entity],
+                        self.resp_agent,
+                        batch_size=batch_size,
+                    )
+
+                self.assertEqual(str(error.exception), "Batch size must be greater than zero")
+
+    @patch("oc_ocdm.reader.sparql_query")
+    def test_batch_import_uses_post_values_and_respects_batch_size(self, mock_query: MagicMock):
+        entities = [
+            "https://w3id.org/oc/meta/br/1",
+            "https://w3id.org/oc/meta/id/1",
+            "https://w3id.org/oc/meta/re/1",
+        ]
+        mock_query.side_effect = [
+            _sparql_result(
+                [
+                    _sparql_triple(entities[0], RDF_TYPE, "uri", GraphEntity.iri_expression),
+                    _sparql_triple(entities[1], RDF_TYPE, "uri", GraphEntity.iri_identifier),
+                ]
+            ),
+            _sparql_result([_sparql_triple(entities[2], RDF_TYPE, "uri", GraphEntity.iri_manifestation)]),
+        ]
+
+        imported = self.reader.import_entities_from_triplestore(
+            self.g_set,
+            self.endpoint,
+            entities,
+            self.resp_agent,
+            batch_size=2,
+        )
+
+        self.assertEqual({str(entity.res) for entity in imported}, set(entities))
+        self.assertEqual(
+            mock_query.call_args_list,
+            [
+                call(
+                    self.endpoint,
+                    f"SELECT ?s ?p ?o WHERE {{ VALUES ?s {{ <{entities[0]}> <{entities[1]}> }} ?s ?p ?o . }}",
+                    method=POST,
+                    max_retries=3,
+                    backoff_factor=2.5,
+                ),
+                call(
+                    self.endpoint,
+                    f"SELECT ?s ?p ?o WHERE {{ VALUES ?s {{ <{entities[2]}> }} ?s ?p ?o . }}",
+                    method=POST,
+                    max_retries=3,
+                    backoff_factor=2.5,
+                ),
+            ],
+        )
+
+    @patch("oc_ocdm.reader.sparql_query")
+    def test_batch_import_rejects_missing_entity_before_import(self, mock_query: MagicMock):
+        found_entity = "https://w3id.org/oc/meta/br/1"
+        missing_entity = "https://w3id.org/oc/meta/id/1"
+        mock_query.return_value = _sparql_result(
+            [_sparql_triple(found_entity, RDF_TYPE, "uri", GraphEntity.iri_expression)]
+        )
+
+        with self.assertRaises(ValueError) as error:
+            self.reader.import_entities_from_triplestore(
+                self.g_set,
+                self.endpoint,
+                [found_entity, missing_entity],
+                self.resp_agent,
+            )
+
+        self.assertEqual(
+            str(error.exception),
+            f"The requested entities were not found in the triplestore: {missing_entity}",
+        )
+        self.assertEqual(self.g_set.res_to_entity, {})
+
+    @patch("oc_ocdm.reader.sparql_query")
+    def test_batch_import_reports_entity_not_imported_as_graph_entity(self, mock_query: MagicMock):
+        recognized_entity = "https://w3id.org/oc/meta/br/1"
+        unrecognized_entity = "https://w3id.org/oc/meta/id/1"
+        mock_query.return_value = _sparql_result(
+            [
+                _sparql_triple(recognized_entity, RDF_TYPE, "uri", GraphEntity.iri_expression),
+                _sparql_triple(unrecognized_entity, RDF_TYPE, "uri", "http://example.org/Unknown"),
+            ]
+        )
+
+        with self.assertRaises(ValueError) as error:
+            self.reader.import_entities_from_triplestore(
+                self.g_set,
+                self.endpoint,
+                [recognized_entity, unrecognized_entity],
+                self.resp_agent,
+            )
+
+        self.assertEqual(
+            str(error.exception),
+            f"The following entities could not be imported as GraphEntity instances: {unrecognized_entity}",
+        )
+        self.assertEqual(set(self.g_set.res_to_entity), {recognized_entity})
 
     def test_load_nonexistent_file(self):
         """Test loading a file that doesn't exist."""

@@ -18,6 +18,7 @@ from zipfile import ZipFile
 import orjson
 from rdflib import Dataset, Graph, URIRef
 from rdflib.term import Node
+from SPARQLWrapper import POST
 from triplelite import TripleLite, from_rdflib
 
 from oc_ocdm._types import ContextMap, JsonLdDocument, JsonObject, JsonValue, SparqlResultRows
@@ -392,53 +393,45 @@ class Reader(object):
     ) -> List[GraphEntity]:
         if not entities:
             raise ValueError("No entities provided for import")
+        if batch_size <= 0:
+            raise ValueError("Batch size must be greater than zero")
 
         imported_entities: List[GraphEntity] = []
 
         try:
             for i in range(0, len(entities), batch_size):
                 batch = entities[i : i + batch_size]
-                not_found_entities = set(batch)
+                requested_entities = set(batch)
+                values = " ".join(f"<{entity}>" for entity in batch)
+                query = f"SELECT ?s ?p ?o WHERE {{ VALUES ?s {{ {values} }} ?s ?p ?o . }}"
+                results = sparql_query(
+                    ts_url,
+                    query,
+                    method=POST,
+                    max_retries=3,
+                    backoff_factor=2.5,
+                )["results"]["bindings"]
 
-                union_patterns: list[str] = []
-                for entity in batch:
-                    union_patterns.append(f"{{ BIND(<{entity}> AS ?s) ?s ?p ?o }}")
-
-                query = f"""
-                SELECT ?s ?p ?o
-                WHERE {{
-                    {" UNION ".join(union_patterns)}
-                }}
-                """
-
-                results = sparql_query(ts_url, query, max_retries=3, backoff_factor=2.5)["results"]["bindings"]
-
-                if not results:
-                    entities_str = ", ".join(not_found_entities)
+                returned_entities = {result["s"]["value"] for result in results}
+                not_found_entities = requested_entities - returned_entities
+                if not_found_entities:
+                    entities_str = ", ".join(sorted(not_found_entities))
                     raise ValueError(f"The requested entities were not found in the triplestore: {entities_str}")
-
-                for result in results:
-                    if "s" in result and "value" in result["s"]:
-                        not_found_entities.discard(result["s"]["value"])
 
                 batch_entities = Reader.import_entities_from_graph(
                     g_set=g_set, results=results, resp_agent=resp_agent, enable_validation=enable_validation
                 )
+                imported_entity_uris = {str(entity.res) for entity in batch_entities}
+                not_imported_entities = requested_entities - imported_entity_uris
+                if not_imported_entities:
+                    entities_str = ", ".join(sorted(not_imported_entities))
+                    raise ValueError(
+                        f"The following entities could not be imported as GraphEntity instances: {entities_str}"
+                    )
                 imported_entities.extend(batch_entities)
 
-                if not_found_entities:
-                    entities_str = ", ".join(not_found_entities)
-                    raise ValueError(
-                        f"The following entities were not recognized as proper OCDM entities: {entities_str}"
-                    )
-
-        except ValueError:
-            raise
         except SPARQLEndpointError as e:
             print(f"[3] Could not import batch due to communication problems: {e}")
             raise
-
-        if not imported_entities:
-            raise ValueError("None of the requested entities were found or recognized as proper OCDM entities.")
 
         return imported_entities
