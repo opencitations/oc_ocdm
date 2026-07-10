@@ -1,3 +1,10 @@
+## [11.0.22](https://github.com/opencitations/oc_ocdm/compare/11.0.21...11.0.22) (2026-07-10)
+
+
+### Bug Fixes
+
+* optimize graph merges and bulk imports [release] ([4d1b367](https://github.com/opencitations/oc_ocdm/commit/4d1b367bd5bd3e30080bbf17c7d47146104a81ee))
+
 ## [11.0.21](https://github.com/opencitations/oc_ocdm/compare/11.0.20...11.0.21) (2026-07-06)
 
 
